@@ -55,6 +55,13 @@ export const WebScreen: FunctionComponent = () => {
         }}
       />
       <WebpageImageButton
+        name="Astranaut"
+        source={require("../../assets/image/webpage/stargaze.png")}
+        onPress={() => {
+          smartNavigation.pushSmart("Web.Astranaut", {});
+        }}
+      />    
+      <WebpageImageButton
         overrideInner={
           <View style={style.flatten(["flex-1", "items-center"])}>
             <Text

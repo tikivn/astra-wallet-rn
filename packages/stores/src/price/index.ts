@@ -2,10 +2,10 @@ import { ObservableQuery, QueryResponse } from "../common";
 import { CoinGeckoSimplePrice } from "./types";
 import Axios, { CancelToken } from "axios";
 import { KVStore, toGenerator } from "@keplr-wallet/common";
-import { Dec, CoinPretty, Int, PricePretty } from "@keplr-wallet/unit";
+import { Dec, CoinPretty, Int } from "@keplr-wallet/unit";
 import { FiatCurrency } from "@keplr-wallet/types";
+import { PricePretty } from "@keplr-wallet/unit/build/price-pretty";
 import { DeepReadonly } from "utility-types";
-import deepmerge from "deepmerge";
 import { action, flow, makeObservable, observable } from "mobx";
 
 export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
@@ -27,10 +27,11 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     defaultVsCurrency: string
   ) {
     const instance = Axios.create({
-      baseURL: "https://api.coingecko.com/api/v3",
+      baseURL: "https://api.tiki.vn/sandseel/api/v2",
     });
 
-    super(kvStore, instance, "/simple/price");
+    super(kvStore, instance, "/public/markets/astra/summary");
+    super.fetch();
 
     this.coinIds = [];
     this.vsCurrencies = [];
@@ -77,37 +78,11 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     return this._supportedVsCurrencies[currency];
   }
 
-  protected canFetch(): boolean {
-    return this.coinIds.length > 0 && this.vsCurrencies.length > 0;
-  }
-
   protected async fetchResponse(
     cancelToken: CancelToken
   ): Promise<{ response: QueryResponse<CoinGeckoSimplePrice>; headers: any }> {
-    const { response, headers } = await super.fetchResponse(cancelToken);
-    // Because this store only queries the price of the tokens that have been requested from start,
-    // it will remove the prior prices that have not been requested to just return the fetching result.
-    // So, to prevent this problem, merge the prior response and current response with retaining the prior response's price.
-    return {
-      headers,
-      response: {
-        ...response,
-        ...{
-          data: deepmerge(
-            this.response ? this.response.data : {},
-            response.data
-          ),
-        },
-      },
-    };
-  }
-
-  protected refetch() {
-    const url = `/simple/price?ids=${this.coinIds.join(
-      ","
-    )}&vs_currencies=${this.vsCurrencies.join(",")}`;
-
-    this.setUrl(url);
+      const response = await super.fetchResponse(cancelToken);
+    return response;
   }
 
   protected getCacheKey(): string {
@@ -120,39 +95,9 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     })}`;
   }
 
-  getPrice(coinId: string, vsCurrency?: string): number | undefined {
-    if (!vsCurrency) {
-      vsCurrency = this.defaultVsCurrency;
-    }
-
-    if (!this.supportedVsCurrencies[vsCurrency]) {
-      return undefined;
-    }
-
-    if (
-      !this.coinIds.includes(coinId) ||
-      !this.vsCurrencies.includes(vsCurrency)
-    ) {
-      if (!this.coinIds.includes(coinId)) {
-        this.coinIds.push(coinId);
-      }
-
-      if (!this.vsCurrencies.includes(vsCurrency)) {
-        this.vsCurrencies.push(vsCurrency);
-      }
-
-      this.refetch();
-    }
-
-    if (!this.response) {
-      return undefined;
-    }
-
-    const coinPrices = this.response.data[coinId];
-    if (!coinPrices) {
-      return undefined;
-    }
-    return coinPrices[vsCurrency];
+  getPrice(): number {
+    const coinPrice = this.response?.data?.ticker?.last;
+    return Number(coinPrice || 0);
   }
 
   calculatePrice(
@@ -172,14 +117,13 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
       return undefined;
     }
 
-    const price = this.getPrice(coin.currency.coinGeckoId, vsCurrrency);
+    const price = this.getPrice();
     if (price === undefined) {
       return new PricePretty(fiatCurrency, new Int(0)).ready(false);
     }
 
     const dec = coin.toDec();
     const priceDec = new Dec(price.toString());
-
     return new PricePretty(fiatCurrency, dec.mul(priceDec));
   }
 }

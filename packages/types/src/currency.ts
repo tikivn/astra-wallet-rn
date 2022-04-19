@@ -65,4 +65,5 @@ export interface FiatCurrency {
   readonly symbol: string;
   readonly maxDecimals: number;
   readonly locale: string;
+  readonly isCustom?: boolean;
 }

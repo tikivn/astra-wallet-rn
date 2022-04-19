@@ -50,7 +50,7 @@ export const TokenSymbol: FunctionComponent<{
   size,
   currency,
   chainInfo,
-  imageScale = 32 / 44,
+  imageScale = 1,
 }) => {
   const style = useStyle();
 

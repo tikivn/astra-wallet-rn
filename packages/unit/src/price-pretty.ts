@@ -53,6 +53,10 @@ export class PricePretty {
     return this._fiatCurrency;
   }
 
+  get isCustom(): boolean {
+    return !!this._fiatCurrency.isCustom;
+  }
+
   separator(str: string): PricePretty {
     const pretty = this.clone();
     pretty._options.separator = str;
@@ -197,6 +201,12 @@ export class PricePretty {
       !dec.isZero() &&
       dec.abs().lt(DecUtils.getTenExponentN(-options.maxDecimals))
     ) {
+      if (this.isCustom) {
+        return this.intPretty.toStringWithSymbols(
+          "",
+          ` ${symbol}${this._options.separator}`
+        );
+      }
       return this.intPretty.toStringWithSymbols(
         `${symbol}${this._options.separator}`,
         ""
@@ -213,6 +223,10 @@ export class PricePretty {
     const isNeg = localeString.charAt(0) === "-";
     if (isNeg) {
       localeString = localeString.slice(1);
+    }
+
+    if (this.isCustom) {
+      return `${isNeg ? "-" : ""}${localeString} ${symbol}`;
     }
 
     return `${isNeg ? "-" : ""}${symbol}${

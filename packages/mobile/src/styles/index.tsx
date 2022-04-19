@@ -4,6 +4,7 @@ import { Platform } from "react-native";
 import { getPlatformFontWeight } from "./builder/utils";
 
 export const Colors = {
+  main_bg: "141828",
   primary: "#4762E7",
   "primary-10": "#F1F3FC",
   "primary-50": "#E2E8FF",
@@ -213,7 +214,7 @@ export const { StyleProvider, useStyle } = createStyleProvider({
   colors: {
     ...Colors,
     ...{
-      "splash-background": "#FBF8FF",
+      "splash-background": "#141828",
 
       // Belows are for the button props and may not be used as styles.
       "rect-button-default-ripple": "#CCCCCC",

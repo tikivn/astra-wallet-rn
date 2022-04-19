@@ -230,11 +230,17 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         style={style.flatten([
           "absolute-fill",
           "background-color-splash-background",
-        ])}
-      />
+        ])}>
+          <Image
+            style={style.flatten(["width-full", "height-full"])}
+            resizeMode="contain"
+            source={require("../../assets/logo/splash-screen-background.png")}
+          />
+        </View>
       <View
-        style={style.flatten(["flex-1", "background-color-splash-background"])}
+        style={style.flatten(["flex-1", "background-color-transparent"])}
       >
+
         <KeyboardAwareScrollView
           contentContainerStyle={style.flatten(["flex-grow-1"])}
         >
@@ -243,7 +249,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
             style={StyleSheet.flatten([style.flatten(["width-full"])])}
             fadeDuration={0}
             resizeMode="contain"
-            source={require("../../assets/logo/splash-image.png")}
+            source={require("../../assets/logo/Astra.png")}
           />
           <View style={style.get("flex-3")} />
           <View style={style.flatten(["padding-x-page"])}>

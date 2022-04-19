@@ -30,7 +30,7 @@ export interface FeeButtonsProps {
 
 class FeeButtonState {
   @observable
-  protected _isGasInputOpen: boolean = false;
+  protected _isGasInputOpen: boolean = true;
 
   constructor() {
     makeObservable(this);
