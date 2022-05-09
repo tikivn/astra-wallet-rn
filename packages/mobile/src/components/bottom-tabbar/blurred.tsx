@@ -59,7 +59,7 @@ export const BlurredBottomTabBar: FunctionComponent<
         style={StyleSheet.flatten([
           style,
           {
-            backgroundColor: "#FFFFFF00",
+            backgroundColor: "#202433",
           },
         ])}
         {...rest}

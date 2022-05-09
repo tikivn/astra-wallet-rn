@@ -5,7 +5,7 @@ import { getPlatformFontWeight } from "./builder/utils";
 
 export const Colors = {
   main_bg: "#141828",
-  primary: "#4762E7",
+  primary: "#0B74E5",
   "primary-10": "#F1F3FC",
   "primary-50": "#E2E8FF",
   "primary-100": "#B3BEF7",
@@ -57,7 +57,7 @@ export const Colors = {
   "text-black-medium": "#2C4163",
   "text-black-low": "#83838F",
   "text-black-very-low": "#899BB6",
-  "text-black-very-very-low": "#C6C6CD",
+  "text-black-very-very-low": "#808089",
   "text-black-very-very-very-low": "#DCDCE3",
   "border-gray": "#C6C6CD",
   "border-white": "#F5F5F5",
