@@ -4,7 +4,7 @@ import { Platform } from "react-native";
 import { getPlatformFontWeight } from "./builder/utils";
 
 export const Colors = {
-  main_bg: "141828",
+  main_bg: "#141828",
   primary: "#4762E7",
   "primary-10": "#F1F3FC",
   "primary-50": "#E2E8FF",
