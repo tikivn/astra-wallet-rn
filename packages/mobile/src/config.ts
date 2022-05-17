@@ -22,11 +22,11 @@ export const EmbedChainInfos: AppChainInfo[] = [
     chainId: "astra-devnet-001",
     chainName: "Astra",
     stakeCurrency: {
-      coinDenom: "ASTRA",
+      coinDenom: "ASA",
       coinMinimalDenom: "astra",
       coinDecimals: 6,
       coinGeckoId: "astra",
-      coinImageUrl: "https://salt.tikicdn.com/ts/upload/2a/74/6d/1000f0249fd530a9313a07fc3e13c1b2.png",
+      coinImageUrl: "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
     },
     bip44: {
       coinType: 118,
@@ -34,25 +34,25 @@ export const EmbedChainInfos: AppChainInfo[] = [
     bech32Config: Bech32Address.defaultBech32Config("astra"),
     currencies: [
       {
-        coinDenom: "ASTRA",
+        coinDenom: "ASA",
         coinMinimalDenom: "astra",
         coinDecimals: 6,
         coinGeckoId: "astra",
-        coinImageUrl: "https://salt.tikicdn.com/ts/upload/2a/74/6d/1000f0249fd530a9313a07fc3e13c1b2.png",
+        coinImageUrl: "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
       },
     ],
     feeCurrencies: [
       {
-        coinDenom: "ASTRA",
+        coinDenom: "ASA",
         coinMinimalDenom: "astra",
         coinDecimals: 6,
         coinGeckoId: "astra",
-        coinImageUrl: "https://salt.tikicdn.com/ts/upload/2a/74/6d/1000f0249fd530a9313a07fc3e13c1b2.png",
+        coinImageUrl: "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
       },
     ],
     coinType: 118,
     features: ["ibc-transfer", "ibc-go"],
-    chainSymbolImageUrl: "https://salt.tikicdn.com/ts/upload/2a/74/6d/1000f0249fd530a9313a07fc3e13c1b2.png",
+    chainSymbolImageUrl: "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
     txExplorer: {
       name: "Mintscan",
       txUrl: "https://www.mintscan.io/cosmos/txs/{txHash}",
@@ -64,11 +64,11 @@ export const EmbedChainInfos: AppChainInfo[] = [
     chainId: "astra_11110-1",
     chainName: "Astranaut",
     stakeCurrency: {
-      coinDenom: "AASTRA",
+      coinDenom: "ASA",
       coinMinimalDenom: "aastra",
       coinDecimals: 6,
       coinGeckoId: "aastra",
-      coinImageUrl: "https://salt.tikicdn.com/ts/upload/2a/74/6d/1000f0249fd530a9313a07fc3e13c1b2.png",
+      coinImageUrl: "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
     },
     bip44: {
       coinType: 60,
@@ -76,18 +76,25 @@ export const EmbedChainInfos: AppChainInfo[] = [
     bech32Config: Bech32Address.defaultBech32Config("astra"),
     currencies: [
       {
-        coinDenom: "AASTRA",
+        coinDenom: "ASA",
         coinMinimalDenom: "aastra",
-        coinDecimals: 6,
+        coinDecimals: 18,
         coinGeckoId: "aastra",
-        coinImageUrl: "https://salt.tikicdn.com/ts/upload/2a/74/6d/1000f0249fd530a9313a07fc3e13c1b2.png",
+        coinImageUrl: "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
+      },
+      {
+        coinDenom: "UST",
+        coinMinimalDenom: "uusd",
+        coinDecimals: 6,
+        coinGeckoId: "ust",
+        coinImageUrl: "https://salt.tikicdn.com/ts/upload/e0/3a/3f/73b30182fd438639dbfb1ed26ab98497.png",
       },
     ],
     feeCurrencies: [
       {
-        coinDenom: "AASTRA",
+        coinDenom: "ASA",
         coinMinimalDenom: "aastra",
-        coinDecimals: 6,
+        coinDecimals: 18,
         coinGeckoId: "aastra",
         coinImageUrl: "https://salt.tikicdn.com/ts/upload/2a/74/6d/1000f0249fd530a9313a07fc3e13c1b2.png",
       },

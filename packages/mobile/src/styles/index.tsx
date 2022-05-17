@@ -4,7 +4,8 @@ import { Platform } from "react-native";
 import { getPlatformFontWeight } from "./builder/utils";
 
 export const Colors = {
-  main_bg: "#141828",
+  background: "#141828",
+  "background-secondary" : "#222940",
   primary: "#0B74E5",
   "primary-10": "#F1F3FC",
   "primary-50": "#E2E8FF",
@@ -28,7 +29,7 @@ export const Colors = {
   "secondary-700": "#A23A83",
   "secondary-800": "#762C64",
   "secondary-900": "#471D40",
-  danger: "#F5365C",
+  danger: "#D44E67",
   "danger-10": "#FFF1F4",
   "danger-50": "#FFD8E0",
   "danger-100": "#FFBCC9",
@@ -52,10 +53,13 @@ export const Colors = {
   card: "rgba(255,255,255,0.95)",
   success: "#2DCE89",
   error: "#F5365C",
+  "text-green": "#4AB57C",
+  "text-red": "#D44E67",
+  "text-yellow": "#FFD530",
   "text-black-very-high": "#030C1D",
   "text-black-high": "#132340",
   "text-black-medium": "#2C4163",
-  "text-black-low": "#83838F",
+  "text-black-low": "#818DA6",
   "text-black-very-low": "#899BB6",
   "text-black-very-very-low": "#808089",
   "text-black-very-very-very-low": "#DCDCE3",
@@ -76,6 +80,18 @@ export const Colors = {
 
 export const { StyleProvider, useStyle } = createStyleProvider({
   custom: {
+    title1 :{
+      fontSize: 32,
+      lineHeight: 40,
+      letterSpacing: 0.3,
+      ...getPlatformFontWeight("600"),
+    },
+    title2 :{
+      fontSize: 16,
+      lineHeight: 24,
+      letterSpacing: 0.3,
+      ...getPlatformFontWeight("700"),
+    },
     h1: {
       fontSize: 32,
       lineHeight: 56,
@@ -130,7 +146,19 @@ export const { StyleProvider, useStyle } = createStyleProvider({
     },
     subtitle3: {
       fontSize: 14,
-      lineHeight: 21,
+      lineHeight: 20,
+      letterSpacing: 0.1,
+      ...getPlatformFontWeight("500"),
+    },
+    subtitle4: {
+      fontSize: 12,
+      lineHeight: 16,
+      letterSpacing: 0.1,
+      ...getPlatformFontWeight("500"),
+    },
+    subtitle5: {
+      fontSize: 10,
+      lineHeight: 12,
       letterSpacing: 0.1,
       ...getPlatformFontWeight("500"),
     },
@@ -192,6 +220,12 @@ export const { StyleProvider, useStyle } = createStyleProvider({
     "text-underline": {
       textDecorationLine: "underline" as EnumTextDecorationLine,
     },
+    "text-amount-input": {
+      fontSize: 24,
+      lineHeight: 32,
+      letterSpacing: 0.3,
+      ...getPlatformFontWeight("400"),
+    },
     // This style is for the text input and aims to mock the body2 style.
     // In IOS, it is hard to position the input text to the middle vertically.
     // So, to solve this problem, decrease the line height and add the additional vertical padding.
@@ -215,8 +249,6 @@ export const { StyleProvider, useStyle } = createStyleProvider({
   colors: {
     ...Colors,
     ...{
-      "splash-background": "#141828",
-
       // Belows are for the button props and may not be used as styles.
       "rect-button-default-ripple": "#CCCCCC",
       // Active opacity is 0.055 by default.
@@ -257,7 +289,7 @@ export const { StyleProvider, useStyle } = createStyleProvider({
       "button-danger-fill-underlay": Colors["danger-500"],
       "button-danger-light-underlay": Colors["danger-100"],
       "button-danger-outline-underlay": Colors["danger-50"],
-
+      "button-background-main": Colors["background-secondary"],
       // Belows are for the chip props and may not be used as styles.
       "chip-light-primary": Colors["primary-50"],
       "chip-light-secondary": Colors["secondary-50"],
@@ -290,6 +322,8 @@ export const { StyleProvider, useStyle } = createStyleProvider({
     "80": 80,
     "122": 122,
     "160": 160,
+    "200": 200,
+    "248": 248,
     "240": 240,
     "292": 292,
     "300": 300,
@@ -316,12 +350,14 @@ export const { StyleProvider, useStyle } = createStyleProvider({
     "38": 38,
     "40": 40,
     "44": 44,
+    "48": 48,
     "50": 50,
     "56": 56,
     "58": 58,
     "62": 62,
-    "66": 66,
     "64": 64,
+    "66": 66,
+    "68": 68,
     "72": 72,
     "74": 74,
     "80": 80,
@@ -332,6 +368,7 @@ export const { StyleProvider, useStyle } = createStyleProvider({
     "104": 104,
     "116": 116,
     "122": 122,
+    "200": 200,
     "214": 214,
     "400": 400,
     "600": 600,
@@ -450,6 +487,7 @@ export const { StyleProvider, useStyle } = createStyleProvider({
     "12": 12,
     "16": 16,
     "32": 32,
+    "52": 52,
     "64": 64,
   },
   opacities: {

@@ -4,6 +4,7 @@ import { StyleSheet, View, ViewStyle } from "react-native";
 import { useStyle } from "../../styles";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { HeaderBackButtonIcon } from "./icon";
+import { LeftArrowIcon } from "../icon";
 
 export const HeaderLeftButton: FunctionComponent<StackHeaderLeftButtonProps> = ({
   children,
@@ -48,6 +49,21 @@ export const HeaderLeftBackButton: FunctionComponent<StackHeaderLeftButtonProps>
       {props.canGoBack ? (
         <HeaderLeftButton {...props}>
           <HeaderBackButtonIcon />
+        </HeaderLeftButton>
+      ) : null}
+    </React.Fragment>
+  );
+};
+
+export const WalletLeftBackButton: FunctionComponent<StackHeaderLeftButtonProps> = (
+  props
+) => {
+  const style = useStyle();
+  return (
+    <React.Fragment>
+      {props.canGoBack ? (
+        <HeaderLeftButton {...props}>
+          <LeftArrowIcon size={24} color={style.get("color-white").color} />
         </HeaderLeftButton>
       ) : null}
     </React.Fragment>

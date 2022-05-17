@@ -100,6 +100,11 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     return Number(coinPrice || 0);
   }
 
+  getPriceChangePercent(): string {
+    const percent = this.response?.data?.ticker?.price_change_percent;
+    return String(percent || '0%');
+  }
+
   calculatePrice(
     coin: CoinPretty,
     vsCurrrency?: string

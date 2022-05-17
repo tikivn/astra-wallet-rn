@@ -229,7 +229,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       <View
         style={style.flatten([
           "absolute-fill",
-          "background-color-splash-background",
+          "background-color-background",
         ])}>
           <Image
             style={style.flatten(["width-full", "height-full"])}
@@ -514,7 +514,7 @@ export const SplashContinuityEffectView: FunctionComponent<{
       <View
         style={style.flatten([
           "absolute-fill",
-          "background-color-splash-background",
+          "background-color-background",
         ])}
       />
       <View

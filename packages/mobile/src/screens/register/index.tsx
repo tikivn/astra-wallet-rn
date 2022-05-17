@@ -3,7 +3,7 @@ import { useHeaderHeight } from "@react-navigation/stack";
 import { PageWithScrollView } from "../../components/page";
 import { KeplrLogo } from "../../components/svg";
 import { useStyle } from "../../styles";
-import { View, Dimensions } from "react-native";
+import { View, Dimensions, ImageBackground } from "react-native";
 import { Button } from "../../components/button";
 import { useSmartNavigation } from "../../navigation";
 import { useRegisterConfig } from "@keplr-wallet/hooks";
@@ -25,50 +25,58 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
   const actualHeightHeight = headerHeight - safeAreaInsets.top;
 
   return (
-    <PageWithScrollView
-      contentContainerStyle={style.get("flex-grow-1")}
-      style={{
-        ...style.flatten(["padding-x-42"]),
-        paddingTop: Dimensions.get("window").height * 0.22 - actualHeightHeight,
-        paddingBottom: Dimensions.get("window").height * 0.11,
-      }}
-    >
-      <View
-        style={style.flatten(["flex-grow-1", "items-center", "padding-x-18"])}
-      >
-        <KeplrLogo width="100%" />
-      </View>
-      <Button
-        containerStyle={style.flatten(["margin-bottom-16"])}
-        text="Create a new wallet"
-        size="large"
-        mode="light"
-        onPress={() => {
-          smartNavigation.navigateSmart("Register.NewUser", {
-            registerConfig,
-          });
-        }}
-      />
-      <Button
-        containerStyle={style.flatten(["margin-bottom-16"])}
-        text="Import existing wallet"
-        size="large"
-        onPress={() => {
-          smartNavigation.navigateSmart("Register.NotNewUser", {
-            registerConfig,
-          });
-        }}
-      />
-      <Button
-        text="Import Ledger Nano X"
-        size="large"
-        mode="text"
-        onPress={() => {
-          smartNavigation.navigateSmart("Register.NewLedger", {
-            registerConfig,
-          });
-        }}
-      />
-    </PageWithScrollView>
+    <View style={style.get("background-color-background")}>
+      <ImageBackground
+        style={style.flatten(["width-full", "height-full"])}
+        source={require("../../assets/logo/main_background.png")}
+        resizeMode="contain">
+        <PageWithScrollView
+          backgroundColor={style.get("color-transparent").color}  
+          contentContainerStyle={style.get("flex-grow-1")}
+          style={{
+            ...style.flatten(["padding-x-42"]),
+            paddingTop: Dimensions.get("window").height * 0.22 - actualHeightHeight,
+            paddingBottom: Dimensions.get("window").height * 0.11,
+          }}
+        >
+          <View
+            style={style.flatten(["flex-grow-1", "items-center", "padding-x-18"])}
+          >
+            <KeplrLogo width="100%" />
+          </View>
+          <Button
+            containerStyle={style.flatten(["margin-bottom-16"])}
+            text="Create a new wallet"
+            size="large"
+            mode="light"
+            onPress={() => {
+              smartNavigation.navigateSmart("Register.NewUser", {
+                registerConfig,
+              });
+            }}
+          />
+          <Button
+            containerStyle={style.flatten(["margin-bottom-16"])}
+            text="Import existing wallet"
+            size="large"
+            onPress={() => {
+              smartNavigation.navigateSmart("Register.NotNewUser", {
+                registerConfig,
+              });
+            }}
+          />
+          <Button
+            text="Import Ledger Nano X"
+            size="large"
+            mode="text"
+            onPress={() => {
+              smartNavigation.navigateSmart("Register.NewLedger", {
+                registerConfig,
+              });
+            }}
+          />
+        </PageWithScrollView>
+      </ImageBackground>
+    </View>
   );
 });

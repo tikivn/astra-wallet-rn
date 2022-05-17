@@ -211,7 +211,7 @@ export class RootStore {
         xu: {
           currency: "xu",
           symbol: "Xu",
-          maxDecimals: 2,
+          maxDecimals: 0,
           locale: "vi-VN",
           isCustom: true,
         },

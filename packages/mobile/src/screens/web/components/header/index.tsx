@@ -25,7 +25,7 @@ const ArrowLeftIcon: FunctionComponent<{
   );
 };
 
-const ArrowRightIcon: FunctionComponent<{
+const ArrowAllIcon: FunctionComponent<{
   size: number;
   color: string;
 }> = ({ size = 32, color }) => {
@@ -189,7 +189,7 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = () => {
               }
             }}
           >
-            <ArrowRightIcon
+            <ArrowAllIcon
               size={32}
               color={style.get("color-primary").color}
             />
