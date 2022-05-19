@@ -62,6 +62,8 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
         }
     }, [route.params.recipient, sendConfigs.recipientConfig]);
 
+    sendConfigs.gasConfig.setGas(200000);
+
     const sendConfigError =
         sendConfigs.recipientConfig.error ??
         sendConfigs.amountConfig.error ??
