@@ -3,7 +3,7 @@ import { useHeaderHeight } from "@react-navigation/stack";
 import { PageWithScrollView } from "../../components/page";
 import { KeplrLogo } from "../../components/svg";
 import { useStyle } from "../../styles";
-import { View, Dimensions, ImageBackground } from "react-native";
+import { View, Dimensions, ImageBackground, Image,Text } from "react-native";
 import { Button } from "../../components/button";
 import { useSmartNavigation } from "../../navigation";
 import { useRegisterConfig } from "@keplr-wallet/hooks";
@@ -31,46 +31,41 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
         source={require("../../assets/logo/main_background.png")}
         resizeMode="contain">
         <PageWithScrollView
-          backgroundColor={style.get("color-transparent").color}  
+          backgroundColor={style.get("color-transparent").color}
           contentContainerStyle={style.get("flex-grow-1")}
           style={{
             ...style.flatten(["padding-x-42"]),
             paddingTop: Dimensions.get("window").height * 0.22 - actualHeightHeight,
-            paddingBottom: Dimensions.get("window").height * 0.11,
+            // paddingBottom: Dimensions.get("window").height * 0.11,
           }}
         >
           <View
             style={style.flatten(["flex-grow-1", "items-center", "padding-x-18"])}
           >
-            <KeplrLogo width="100%" />
+            <Image 
+              resizeMode='contain'
+              source={require("../../assets/logo/Astra.png")} />
+              <Text style={style.flatten(["color-white", "title3", "text-center"])}>Astra Wallet</Text>
+              <Text style={style.flatten(["color-white", "text-caption", "padding-top-4", "text-center"])}>Nơi an toàn để lưu giữ Astra của bạn</Text>
           </View>
           <Button
-            containerStyle={style.flatten(["margin-bottom-16"])}
-            text="Create a new wallet"
+            textStyle={style.flatten(["subtitle2", "color-background"])}
+            containerStyle={style.flatten(["margin-bottom-16", "border-radius-52"])}
+            text="Bắt đầu"
             size="large"
             mode="light"
             onPress={() => {
-              smartNavigation.navigateSmart("Register.NewUser", {
-                registerConfig,
-              });
+              smartNavigation.navigateSmart("Register.Tutorial", {})
             }}
           />
           <Button
-            containerStyle={style.flatten(["margin-bottom-16"])}
-            text="Import existing wallet"
+            textStyle={style.flatten(["subtitle2", "color-white"])}
+            containerStyle={style.flatten(["margin-bottom-16", "border-radius-52", "background-color-transparent", "border-color-border-white"])}
+            text="Khôi phục tài khoản đã có"
             size="large"
+            mode="outline"
             onPress={() => {
-              smartNavigation.navigateSmart("Register.NotNewUser", {
-                registerConfig,
-              });
-            }}
-          />
-          <Button
-            text="Import Ledger Nano X"
-            size="large"
-            mode="text"
-            onPress={() => {
-              smartNavigation.navigateSmart("Register.NewLedger", {
+              smartNavigation.navigateSmart("Register.RecoverMnemonic", {
                 registerConfig,
               });
             }}

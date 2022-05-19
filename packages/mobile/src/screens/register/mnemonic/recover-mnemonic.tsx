@@ -11,8 +11,8 @@ import { StyleSheet, View } from "react-native";
 import { Button } from "../../../components/button";
 import Clipboard from "expo-clipboard";
 import { useStore } from "../../../stores";
-import { BIP44AdvancedButton, useBIP44Option } from "../bip44";
 import { Buffer } from "buffer/";
+import { useBIP44Option } from "../bip44";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
@@ -127,6 +127,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollView
+      backgroundColor={style.get("color-background").color}
       contentContainerStyle={style.get("flex-grow-1")}
       style={style.flatten(["padding-x-page"])}
     >
@@ -166,13 +167,18 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
         render={({ field: { onChange, onBlur, value, ref } }) => {
           return (
             <TextInput
-              label="Mnemonic seed"
+              labelStyle={style.flatten(["color-text-black-low", "body3"])}
+              label="Khôi phục tài khoản đã có bằng cách nhập cụm từ bí mật vào ô bên dưới"
               returnKeyType="next"
               multiline={true}
               numberOfLines={4}
               inputContainerStyle={style.flatten([
                 "padding-x-20",
                 "padding-y-16",
+                "background-color-background-secondary",
+                "border-width-0", 
+                "border-radius-12",
+                "margin-top-12",
               ])}
               bottomInInputContainer={
                 <View style={style.flatten(["flex-row"])}>
@@ -196,7 +202,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                 </View>
               }
               style={StyleSheet.flatten([
-                style.flatten(["h6", "color-text-black-medium"]),
+                style.flatten(["h6", "color-text-gray", "background-color-background-secondary"]),
                 {
                   minHeight: 20 * 4,
                   textAlignVertical: "top",
@@ -216,7 +222,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
         name="mnemonic"
         defaultValue=""
       />
-      <Controller
+      {/* <Controller
         control={control}
         rules={{
           required: "Name is required",
@@ -246,7 +252,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
         name="name"
         defaultValue=""
       />
-      <BIP44AdvancedButton bip44Option={bip44Option} />
+      <BIP44AdvancedButton bip44Option={bip44Option} /> */}
       {mode === "create" ? (
         <React.Fragment>
           <Controller

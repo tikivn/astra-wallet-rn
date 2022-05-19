@@ -17,25 +17,35 @@ export const WordChip: FunctionComponent<{
     <View
       style={style.flatten(
         [
+          "flex-row",
           "padding-x-12",
           "padding-y-4",
           "border-radius-8",
           "background-color-white",
-          "border-width-2",
-          "border-color-primary",
+          "border-width-1",
+          "border-color-white",
           "margin-right-12",
           "margin-bottom-16",
+          "items-center",
         ],
-        [empty && "border-color-primary-100", dashedBorder && "border-dashed"]
+        [empty && "border-color-text-black-low", empty && "background-color-transparent", empty && "border-dashed"]
       )}
     >
       <Text
         style={style.flatten(
-          ["subtitle2", "color-primary"],
+          ["text-caption", "color-text-black-low"],
+          [hideWord && "opacity-transparent"]
+        )}
+      >
+        {`${index} `}
+      </Text>
+      <Text
+        style={style.flatten(
+          ["subtitle3", "color-background", "min-width-40"],
           [empty && "color-primary-100", hideWord && "opacity-transparent"]
         )}
       >
-        {empty ? `${index}.           ` : `${index}. ${word}`}
+        {empty ? `` : `${word}`}
       </Text>
     </View>
   );

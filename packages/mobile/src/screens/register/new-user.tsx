@@ -26,7 +26,6 @@ export const RegisterNewUserScreen: FunctionComponent = observer(() => {
   const actualHeightHeight = headerHeight - safeAreaInsets.top;
 
   return (
-    
     <PageWithScrollView
       contentContainerStyle={style.get("flex-grow-1")}
       style={StyleSheet.flatten([

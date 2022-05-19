@@ -62,7 +62,7 @@ import {
   ValidatorDetailsScreen,
   ValidatorListScreen,
 } from "./screens/stake";
-import { HistoryTabbarIcon, HomeTabbarIcon, LeftArrowIcon, OpenDrawerIcon, ScanIcon, SettingTabbarIcon, StakeTabbarIcon } from "./components/icon";
+import { HistoryTabbarIcon, HomeTabbarIcon, OpenDrawerIcon, ScanIcon, SettingTabbarIcon, StakeTabbarIcon } from "./components/icon";
 import {
   AddAddressBookScreen,
   AddressBookScreen,
@@ -113,6 +113,9 @@ import { WebpageScreenScreenOptionsPreset } from "./screens/web/components/webpa
 import Bugsnag from "@bugsnag/react-native";
 import { MainScreen } from "./screens/main";
 import { ReceiveScreen, SendConfirmScreen, SendTokenScreen, SwapScreen } from "./screens/main/screens";
+import { RegisterTutorialcreen } from "./screens/register/tutorial";
+import { PinCodeScreen } from "./screens/register/pincode";
+import { VerifyPinCodeScreen } from "./screens/register/pincode/verify";
 
 const {
   SmartNavigatorProvider,
@@ -153,6 +156,15 @@ const {
       upperScreenName: "Register",
     },
     "Register.End": {
+      upperScreenName: "Register",
+    },
+    "Register.Tutorial": {
+      upperScreenName: "Register",
+    },
+    "Register.SetPincode": {
+      upperScreenName: "Register",
+    },
+    "Register.VerifyPincode": {
       upperScreenName: "Register",
     },
     Home: {
@@ -439,7 +451,7 @@ export const NewMainNavigation: FunctionComponent = () => {
   return (
     <Stack.Navigator
       screenOptions={{
-        ...WebpageScreenScreenOptionsPreset,
+        ...WalletHeaderScreenOptionsPreset,
         headerTitle: "",
       }}
       initialRouteName="NewHome"
@@ -448,6 +460,9 @@ export const NewMainNavigation: FunctionComponent = () => {
       <Stack.Screen
         name="NewHome"
         component={MainScreen}
+        options={{
+          headerShown: false,
+        }}
       />
     </Stack.Navigator>
   );
@@ -459,19 +474,29 @@ export const RegisterNavigation: FunctionComponent = () => {
   return (
     <Stack.Navigator
       screenOptions={{
-        ...PlainHeaderScreenOptionsPreset,
-        headerTitleStyle: style.flatten(["h5", "color-text-black-high"]),
+        ...WalletHeaderScreenOptionsPreset,
+        headerStyle: style.get("background-color-background"),
+        headerTitleStyle: style.flatten(["title2", "color-white"]),
       }}
       initialRouteName="Register.Intro"
       headerMode="screen"
     >
       <Stack.Screen
         options={{
+          headerShown: false,
           title: "",
         }}
         name="Register.Intro"
         component={RegisterIntroScreen}
       />
+      <Stack.Screen
+        options={{
+          title: "Tạo tài khoản mới",
+        }}
+        name="Register.Tutorial"
+        component={RegisterTutorialcreen}
+      />
+      
       <Stack.Screen
         options={{
           title: "Create a New Wallet",
@@ -488,21 +513,21 @@ export const RegisterNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          title: "Create New Mnemonic",
+          title: "Tạo tài khoản mới",
         }}
         name="Register.NewMnemonic"
         component={NewMnemonicScreen}
       />
       <Stack.Screen
         options={{
-          title: "Verify Mnemonic",
+          title: "Tạo tài khoản mới",
         }}
         name="Register.VerifyMnemonic"
         component={VerifyMnemonicScreen}
       />
       <Stack.Screen
         options={{
-          title: "Import Existing Wallet",
+          title: "Khôi phục tài khoản đã có",
         }}
         name="Register.RecoverMnemonic"
         component={RecoverMnemonicScreen}
@@ -544,9 +569,44 @@ export const RegisterNavigation: FunctionComponent = () => {
         name="Register.End"
         component={RegisterEndScreen}
       />
+      <Stack.Screen
+        options={{
+          title: "Tạo tài khoản mới",
+        }}
+        name="Register.SetPincode"
+        component={PinCodeScreen}
+      />
+      <Stack.Screen
+        options={{
+          title: "Tạo tài khoản mới",
+        }}
+        name="Register.VerifyPincode"
+        component={VerifyPinCodeScreen}
+      />
     </Stack.Navigator>
   );
 };
+
+export const StakingNavigation : FunctionComponent = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        ...WalletHeaderScreenOptionsPreset,
+        headerTitle: "",
+      }}
+      initialRouteName="Staking"
+      headerMode="screen"
+    >
+      <Stack.Screen
+        name="Staking"
+        component={StakingDashboardScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
 
 export const OtherNavigation: FunctionComponent = () => {
   const style = useStyle();
@@ -696,7 +756,7 @@ export const WalletNavigation: FunctionComponent = () => {
         headerTitleStyle: style.flatten(["title2", "color-white"]),
       }}
       headerMode="screen"
-      
+
     >
       <Stack.Screen
         options={{
@@ -801,13 +861,14 @@ export const SettingsStackScreen: FunctionComponent = () => {
   return (
     <Stack.Navigator
       screenOptions={{
-        ...WebpageScreenScreenOptionsPreset,
+        ...WalletHeaderScreenOptionsPreset,
       }}
       headerMode="screen"
     >
       <Stack.Screen
         options={{
           title: "Settings",
+          headerShown: false,
         }}
         name="Setting"
         component={SettingsScreen}
@@ -1009,7 +1070,7 @@ export const MainTabNavigation: FunctionComponent = () => {
       />
       <Tab.Screen
         name="Stake"
-        component={WebNavigation}
+        component={StakingNavigation}
         options={{
           tabBarLabel: "Tiết kiệm",
         }} />
@@ -1124,7 +1185,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
               />
               <Stack.Screen name="Register" component={RegisterNavigation} />
               <Stack.Screen name="Others" component={OtherNavigation} />
-              <Stack.Screen name="Wallet" component={WalletNavigation}/>
+              <Stack.Screen name="Wallet" component={WalletNavigation} />
               <Stack.Screen
                 name="AddressBooks"
                 component={AddressBookStackScreen}

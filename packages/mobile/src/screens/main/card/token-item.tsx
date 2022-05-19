@@ -19,7 +19,7 @@ export const TokenItemNew: FunctionComponent<{
     };
     balance: CoinPretty;
     priceChange: string;
-}> = ({ containerStyle, chainInfo, balance, priceChange }) => {
+}> = ({ containerStyle, balance, priceChange }) => {
     const style = useStyle();
 
     const smartNavigation = useSmartNavigation();

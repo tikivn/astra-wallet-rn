@@ -6,7 +6,7 @@ export const KeplrLogo: FunctionComponent<{
   height?: number | string;
 }> = ({ width = 101, height = 101 }) => {
   return (
-    <Svg width="101" height="101" viewBox="0 0 101 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <Svg width={width} height={height} viewBox="0 0 101 101" fill="none">
     <Circle cx="50.6" cy="50.5996" r="50" fill="url(#paint0_linear_115_91)"/>
     <G clip-path="url(#clip0_115_91)">
     <Path d="M57.6087 42.2975H65.2791L50.6 5.59961L35.9209 42.2975H44.4377C45.4599 42.2975 46.3792 41.6751 46.7589 40.726L50.6 31.1231L54.1269 39.9402C54.6963 41.3639 56.0753 42.2975 57.6087 42.2975Z" fill="white"/>

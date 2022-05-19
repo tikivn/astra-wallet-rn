@@ -89,7 +89,7 @@ const AppBody: FunctionComponent = () => {
           <StatusBar
             translucent={true}
             backgroundColor="#FFFFFF00"
-            barStyle="dark-content"
+            barStyle="light-content"
           />
           <SafeAreaProvider>
             <ModalsProvider>

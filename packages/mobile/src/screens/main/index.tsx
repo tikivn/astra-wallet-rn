@@ -16,7 +16,7 @@ import {
     Text,
 } from "react-native";
 import { useStore } from "../../stores";
-import { Colors, useStyle } from "../../styles";
+import { useStyle } from "../../styles";
 
 import { observer } from "mobx-react-lite";
 

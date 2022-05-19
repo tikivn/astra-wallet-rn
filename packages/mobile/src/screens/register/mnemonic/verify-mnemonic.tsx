@@ -76,6 +76,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollView
+      backgroundColor={style.get("color-background").color}
       contentContainerStyle={style.get("flex-grow-1")}
       style={style.flatten(["padding-x-page"])}
     >
@@ -99,7 +100,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
           };
         })}
       />
-      <View style={style.flatten(["flex-row", "flex-wrap"])}>
+      <View style={style.flatten(["flex-row", "flex-wrap", "justify-center"])}>
         {candidateWords.map(({ word, usedIndex }, i) => {
           return (
             <WordButton
@@ -133,7 +134,9 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
       </View>
       <View style={style.flatten(["flex-1"])} />
       <Button
-        text="Next"
+        containerStyle={style.flatten(["border-radius-4", "height-44"])}
+        textStyle={style.flatten(["subtitle2"])}
+        text="Tiếp tục"
         size="large"
         loading={isCreating}
         disabled={wordSet.join(" ") !== newMnemonicConfig.mnemonic}
@@ -180,18 +183,18 @@ const WordButton: FunctionComponent<{
     <RectButton
       style={style.flatten(
         [
-          "background-color-primary",
+          "background-color-white",
           "padding-x-12",
           "padding-y-4",
           "margin-right-12",
           "margin-bottom-12",
           "border-radius-8",
         ],
-        [used && "background-color-primary-100"]
+        [used && "opacity-40", used && "background-color-disabled"],
       )}
       onPress={onPress}
     >
-      <Text style={style.flatten(["subtitle2", "color-white"])}>{word}</Text>
+      <Text style={style.flatten(["subtitle3", "color-background"])}>{word}</Text>
     </RectButton>
   );
 };
@@ -210,9 +213,9 @@ const WordsCard: FunctionComponent<{
       style={style.flatten([
         "margin-top-14",
         "margin-bottom-20",
-        "padding-y-24",
-        "padding-x-28",
-        "background-color-white",
+        "padding-top-16",
+        "padding-left-16",
+        "background-color-background-secondary",
         "border-radius-8",
         "flex-row",
         "flex-wrap",
