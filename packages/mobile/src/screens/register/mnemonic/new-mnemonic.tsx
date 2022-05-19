@@ -16,6 +16,13 @@ import { useSmartNavigation } from "../../../navigation";
 import { useSimpleTimer } from "../../../hooks";
 import { BIP44AdvancedButton, useBIP44Option } from "../bip44";
 import Svg, { ClipPath, Defs, G, Path, Rect } from "react-native-svg";
+import {
+  CodeField,
+  Cursor,
+  useBlurOnFulfill,
+  useClearByFocusCell,
+} from 'react-native-confirmation-code-field';
+
 
 interface FormData {
   name: string;
@@ -64,6 +71,13 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
       newMnemonicConfig,
       bip44HDPath: bip44Option.bip44HDPath,
     });
+  });
+
+  const [value, setValue] = useState('');
+  const ref = useBlurOnFulfill({value, cellCount: 6});
+  const [props, getCellOnLayoutHandler] = useClearByFocusCell({
+    value,
+    setValue,
   });
 
   return (
@@ -125,6 +139,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
         defaultValue=""
       />
       <BIP44AdvancedButton bip44Option={bip44Option} /> */}
+
       {mode === "create" ? (
         <React.Fragment>
           <Controller

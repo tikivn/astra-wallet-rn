@@ -5,12 +5,11 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Dimensions, Image, StatusBar, StyleSheet, View } from "react-native";
+import { Dimensions, Image, StatusBar, StyleSheet, View, Text } from "react-native";
 import Animated, { Easing } from "react-native-reanimated";
 import { observer } from "mobx-react-lite";
 import { useStyle } from "../../styles";
 import * as SplashScreen from "expo-splash-screen";
-import { TextInput } from "../../components/input";
 import { Button } from "../../components/button";
 import delay from "delay";
 import { useStore } from "../../stores";
@@ -20,6 +19,12 @@ import { KeyRingStatus } from "@keplr-wallet/background";
 import { KeychainStore } from "../../stores/keychain";
 import { IAccountStore } from "@keplr-wallet/stores";
 import { autorun } from "mobx";
+import {
+  CodeField,
+  useBlurOnFulfill,
+  useClearByFocusCell,
+} from 'react-native-confirmation-code-field';
+import { useRegisterConfig } from "@keplr-wallet/hooks";
 
 let splashScreenHided = false;
 async function hideSplashScreen() {
@@ -110,7 +115,8 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   const [animatedContinuityEffectOpacity] = useState(
     () => new Animated.Value(1)
   );
-
+  const registerConfig = useRegisterConfig(keyRingStore, []);
+  
   const navigateToHomeOnce = useRef(false);
   const navigateToHome = useCallback(async () => {
     if (!navigateToHomeOnce.current) {
@@ -223,6 +229,14 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       })();
     }
   }, [keyRingStore.status, navigateToHome]);
+  const cellCount = 8;
+  
+  const [value, setValue] = useState('');
+  const ref = useBlurOnFulfill({ value, cellCount: cellCount });
+  const [props, getCellOnLayoutHandler] = useClearByFocusCell({
+    value,
+    setValue,
+  });
 
   return (
     <React.Fragment>
@@ -231,12 +245,12 @@ export const UnlockScreen: FunctionComponent = observer(() => {
           "absolute-fill",
           "background-color-background",
         ])}>
-          <Image
-            style={style.flatten(["width-full", "height-full"])}
-            resizeMode="contain"
-            source={require("../../assets/logo/splash-screen-background.png")}
-          />
-        </View>
+        <Image
+          style={style.flatten(["width-full", "height-full"])}
+          resizeMode="contain"
+          source={require("../../assets/logo/splash-screen-background.png")}
+        />
+      </View>
       <View
         style={style.flatten(["flex-1", "background-color-transparent"])}
       >
@@ -244,31 +258,53 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         <KeyboardAwareScrollView
           contentContainerStyle={style.flatten(["flex-grow-1"])}
         >
-          <View style={style.get("flex-5")} />
-          <Image
-            style={StyleSheet.flatten([style.flatten(["width-full"])])}
-            fadeDuration={0}
-            resizeMode="contain"
-            source={require("../../assets/logo/Astra.png")}
-          />
+          
           <View style={style.get("flex-3")} />
+
           <View style={style.flatten(["padding-x-page"])}>
-            <TextInput
-              containerStyle={style.flatten(["padding-bottom-40"])}
-              label="Password"
-              returnKeyType="done"
-              secureTextEntry={true}
-              value={password}
-              error={isFailed ? "Invalid password" : undefined}
-              onChangeText={setPassword}
-              onSubmitEditing={tryUnlock}
-            />
-            <Button
-              text="Sign in"
-              size="large"
-              loading={isLoading}
-              onPress={tryUnlock}
-            />
+          <Text style={style.flatten(["color-white", "h4", "text-center", "margin-bottom-64"])}>Nhập mật khẩu</Text>
+          
+          <CodeField
+            ref={ref}
+            {...props}
+            // Use `caretHidden={false}` when users can't paste a text value, because context menu doesn't appear
+            value={password}
+            onChangeText={setPassword}
+            cellCount={cellCount}
+            rootStyle={style.flatten(["flex-1", "padding-20"])}
+            keyboardType="number-pad"
+            textContentType="oneTimeCode"
+            renderCell={({ index, symbol, isFocused }) => (
+              <Text
+                key={index}
+                style={style.flatten(["background-color-gray-80", "width-40", "height-40", "border-width-1", "border-color-gray-80", "border-radius-6", "color-white", "text-center", "h3"], [isFocused && "border-color-white"])}
+                onLayout={getCellOnLayoutHandler(index)}>
+                {symbol ? '•' : null}
+              </Text>
+            )}
+          />
+          <Button
+            textStyle={style.flatten(["subtitle2", "color-background"])}
+            containerStyle={style.flatten(["margin-bottom-16", "border-radius-52", "margin-top-16"])}
+            text="Đăng nhập"
+            size="large"
+            mode="light"
+            loading={isLoading}
+            onPress={tryUnlock}
+          />
+          <Button
+            textStyle={style.flatten(["subtitle2", "color-white"])}
+            containerStyle={style.flatten(["margin-bottom-16"])}
+            text="Quên mật khẩu"
+            size="large"
+            mode="text"
+            onPress={() => {
+              // navigation.navigate("Register.RecoverMnemonic", {
+              //   registerConfig,
+              // });
+            }}
+          />
+
             {keychainStore.isBiometryOn ? (
               <Button
                 containerStyle={style.flatten(["margin-top-40"])}
@@ -323,9 +359,9 @@ export const SplashContinuityEffectView: FunctionComponent<{
   const [isBackgroundLoaded, setIsBackgroundLoaded] = useState(false);
   const [logoSize, setLogoSize] = useState<
     | {
-        width: number;
-        height: number;
-      }
+      width: number;
+      height: number;
+    }
     | undefined
   >();
 
@@ -542,7 +578,7 @@ export const SplashContinuityEffectView: FunctionComponent<{
                 inputRange: [0, 1],
                 outputRange: [
                   Dimensions.get("window").height +
-                    (StatusBar.currentHeight ?? 0),
+                  (StatusBar.currentHeight ?? 0),
                   expectedLogoSize,
                 ],
               }),
@@ -568,7 +604,7 @@ export const SplashContinuityEffectView: FunctionComponent<{
                   inputRange: [0, 1],
                   outputRange: [
                     Dimensions.get("window").height +
-                      (StatusBar.currentHeight ?? 0),
+                    (StatusBar.currentHeight ?? 0),
                     expectedLogoSize,
                   ],
                 }),
