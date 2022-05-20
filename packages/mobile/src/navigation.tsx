@@ -114,7 +114,7 @@ import Bugsnag from "@bugsnag/react-native";
 import { MainScreen } from "./screens/main";
 import { ReceiveScreen, SendConfirmScreen, SendTokenScreen, SwapScreen } from "./screens/main/screens";
 import { RegisterTutorialcreen } from "./screens/register/tutorial";
-import { PinCodeScreen } from "./screens/register/pincode";
+import { NewPincodeScreen } from "./screens/register/pincode";
 import { VerifyPinCodeScreen } from "./screens/register/pincode/verify";
 
 const {
@@ -271,6 +271,11 @@ const {
       registerConfig: RegisterConfig;
     };
     "Register.VerifyMnemonic": {
+      registerConfig: RegisterConfig;
+      newMnemonicConfig: NewMnemonicConfig;
+      bip44HDPath: BIP44HDPath;
+    };
+    "Register.SetPincode": {
       registerConfig: RegisterConfig;
       newMnemonicConfig: NewMnemonicConfig;
       bip44HDPath: BIP44HDPath;
@@ -574,7 +579,7 @@ export const RegisterNavigation: FunctionComponent = () => {
           title: "Tạo tài khoản mới",
         }}
         name="Register.SetPincode"
-        component={PinCodeScreen}
+        component={NewPincodeScreen}
       />
       <Stack.Screen
         options={{

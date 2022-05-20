@@ -229,7 +229,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       })();
     }
   }, [keyRingStore.status, navigateToHome]);
-  const cellCount = 8;
+  const cellCount = 6;
   
   const [value, setValue] = useState('');
   const ref = useBlurOnFulfill({ value, cellCount: cellCount });

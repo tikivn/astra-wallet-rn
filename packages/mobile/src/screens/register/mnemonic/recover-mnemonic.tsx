@@ -13,6 +13,7 @@ import Clipboard from "expo-clipboard";
 import { useStore } from "../../../stores";
 import { Buffer } from "buffer/";
 import { useBIP44Option } from "../bip44";
+import { useNewMnemonicConfig } from "./hook";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
@@ -70,7 +71,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
 
   const registerConfig: RegisterConfig = route.params.registerConfig;
   const bip44Option = useBIP44Option();
-  const [mode] = useState(registerConfig.mode);
+  const newMnemonicConfig = useNewMnemonicConfig(registerConfig);
 
   const {
     control,
@@ -87,41 +88,11 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
     setIsCreating(true);
 
     const mnemonic = trimWordsStr(getValues("mnemonic"));
-
-    if (!isPrivateKey(mnemonic)) {
-      await registerConfig.createMnemonic(
-        getValues("name"),
-        mnemonic,
-        getValues("password"),
-        bip44Option.bip44HDPath
-      );
-      analyticsStore.setUserProperties({
-        registerType: "seed",
-        accountType: "mnemonic",
-      });
-    } else {
-      const privateKey = Buffer.from(mnemonic.trim().replace("0x", ""), "hex");
-      await registerConfig.createPrivateKey(
-        getValues("name"),
-        privateKey,
-        getValues("password")
-      );
-      analyticsStore.setUserProperties({
-        registerType: "seed",
-        accountType: "privateKey",
-      });
-    }
-
-    smartNavigation.reset({
-      index: 0,
-      routes: [
-        {
-          name: "Register.End",
-          params: {
-            password: getValues("password"),
-          },
-        },
-      ],
+    newMnemonicConfig.setMnemonic(mnemonic);
+    smartNavigation.navigateSmart("Register.SetPincode", {
+      registerConfig,
+      newMnemonicConfig,
+      bip44HDPath: bip44Option.bip44HDPath,
     });
   });
 
@@ -176,7 +147,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                 "padding-x-20",
                 "padding-y-16",
                 "background-color-background-secondary",
-                "border-width-0", 
+                "border-width-0",
                 "border-radius-12",
                 "margin-top-12",
               ])}
@@ -222,107 +193,11 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
         name="mnemonic"
         defaultValue=""
       />
-      {/* <Controller
-        control={control}
-        rules={{
-          required: "Name is required",
-        }}
-        render={({ field: { onChange, onBlur, value, ref } }) => {
-          return (
-            <TextInput
-              label="Wallet nickname"
-              containerStyle={style.flatten(["padding-bottom-6"])}
-              returnKeyType={mode === "add" ? "done" : "next"}
-              onSubmitEditing={() => {
-                if (mode === "add") {
-                  submit();
-                }
-                if (mode === "create") {
-                  setFocus("password");
-                }
-              }}
-              error={errors.name?.message}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              ref={ref}
-            />
-          );
-        }}
-        name="name"
-        defaultValue=""
-      />
-      <BIP44AdvancedButton bip44Option={bip44Option} /> */}
-      {mode === "create" ? (
-        <React.Fragment>
-          <Controller
-            control={control}
-            rules={{
-              required: "Password is required",
-              validate: (value: string) => {
-                if (value.length < 8) {
-                  return "Password must be longer than 8 characters";
-                }
-              },
-            }}
-            render={({ field: { onChange, onBlur, value, ref } }) => {
-              return (
-                <TextInput
-                  label="Password"
-                  returnKeyType="next"
-                  secureTextEntry={true}
-                  onSubmitEditing={() => {
-                    setFocus("confirmPassword");
-                  }}
-                  error={errors.password?.message}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  ref={ref}
-                />
-              );
-            }}
-            name="password"
-            defaultValue=""
-          />
-          <Controller
-            control={control}
-            rules={{
-              required: "Confirm password is required",
-              validate: (value: string) => {
-                if (value.length < 8) {
-                  return "Password must be longer than 8 characters";
-                }
-
-                if (getValues("password") !== value) {
-                  return "Password doesn't match";
-                }
-              },
-            }}
-            render={({ field: { onChange, onBlur, value, ref } }) => {
-              return (
-                <TextInput
-                  label="Confirm password"
-                  returnKeyType="done"
-                  secureTextEntry={true}
-                  onSubmitEditing={() => {
-                    submit();
-                  }}
-                  error={errors.confirmPassword?.message}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  ref={ref}
-                />
-              );
-            }}
-            name="confirmPassword"
-            defaultValue=""
-          />
-        </React.Fragment>
-      ) : null}
       <View style={style.flatten(["flex-1"])} />
-      <Button text="Next" size="large" loading={isCreating} onPress={submit} />
+      <Button containerStyle={style.flatten(["border-radius-4", "background-color-primary", "height-44"])}
+        textStyle={style.flatten(["subtitle2"])}
+        text="Xác nhận"
+        size="large" loading={isCreating} onPress={submit} />
       {/* Mock element for bottom padding */}
       <View style={style.flatten(["height-page-pad"])} />
     </PageWithScrollView>

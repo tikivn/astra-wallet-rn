@@ -16,13 +16,6 @@ import { useSmartNavigation } from "../../../navigation";
 import { useSimpleTimer } from "../../../hooks";
 import { BIP44AdvancedButton, useBIP44Option } from "../bip44";
 import Svg, { ClipPath, Defs, G, Path, Rect } from "react-native-svg";
-import {
-  CodeField,
-  Cursor,
-  useBlurOnFulfill,
-  useClearByFocusCell,
-} from 'react-native-confirmation-code-field';
-
 
 interface FormData {
   name: string;
@@ -51,7 +44,6 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
   const bip44Option = useBIP44Option();
 
   const newMnemonicConfig = useNewMnemonicConfig(registerConfig);
-  const [mode] = useState(registerConfig.mode);
 
   const words = newMnemonicConfig.mnemonic.split(" ");
 
@@ -64,20 +56,11 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
   } = useForm<FormData>();
 
   const submit = handleSubmit(() => {
-    newMnemonicConfig.setName(getValues("name"));
-    newMnemonicConfig.setPassword(getValues("password"));
     smartNavigation.navigateSmart("Register.VerifyMnemonic", {
       registerConfig,
       newMnemonicConfig,
       bip44HDPath: bip44Option.bip44HDPath,
     });
-  });
-
-  const [value, setValue] = useState('');
-  const ref = useBlurOnFulfill({value, cellCount: 6});
-  const [props, getCellOnLayoutHandler] = useClearByFocusCell({
-    value,
-    setValue,
   });
 
   return (
@@ -108,106 +91,6 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
         Vui lòng ghi hoặc sao chép chuỗi 12 từ bên dưới và lưu trữ lại ở một nơi an toàn.
       </Text>
       <WordsCard words={words} />
-      {/* <Controller
-        control={control}
-        rules={{
-          required: "Name is required",
-        }}
-        render={({ field: { onChange, onBlur, value, ref } }) => {
-          return (
-            <TextInput
-              label="Wallet nickname"
-              containerStyle={style.flatten(["padding-bottom-6"])}
-              returnKeyType={mode === "add" ? "done" : "next"}
-              onSubmitEditing={() => {
-                if (mode === "add") {
-                  submit();
-                }
-                if (mode === "create") {
-                  setFocus("password");
-                }
-              }}
-              error={errors.name?.message}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              ref={ref}
-            />
-          );
-        }}
-        name="name"
-        defaultValue=""
-      />
-      <BIP44AdvancedButton bip44Option={bip44Option} /> */}
-
-      {mode === "create" ? (
-        <React.Fragment>
-          <Controller
-            control={control}
-            rules={{
-              required: "Password is required",
-              validate: (value: string) => {
-                if (value.length < 8) {
-                  return "Password must be longer than 8 characters";
-                }
-              },
-            }}
-            render={({ field: { onChange, onBlur, value, ref } }) => {
-              return (
-                <TextInput
-                  label="Password"
-                  returnKeyType="next"
-                  secureTextEntry={true}
-                  onSubmitEditing={() => {
-                    setFocus("confirmPassword");
-                  }}
-                  error={errors.password?.message}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  ref={ref}
-                />
-              );
-            }}
-            name="password"
-            defaultValue=""
-          />
-          <Controller
-            control={control}
-            rules={{
-              required: "Confirm password is required",
-              validate: (value: string) => {
-                if (value.length < 8) {
-                  return "Password must be longer than 8 characters";
-                }
-
-                if (getValues("password") !== value) {
-                  return "Password doesn't match";
-                }
-              },
-            }}
-            render={({ field: { onChange, onBlur, value, ref } }) => {
-              return (
-                <TextInput
-                  label="Confirm password"
-                  returnKeyType="done"
-                  secureTextEntry={true}
-                  onSubmitEditing={() => {
-                    submit();
-                  }}
-                  error={errors.confirmPassword?.message}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  ref={ref}
-                />
-              );
-            }}
-            name="confirmPassword"
-            defaultValue=""
-          />
-        </React.Fragment>
-      ) : null}
       <View style={style.flatten(["flex-1"])} />
       <View style={style.flatten(["background-color-orange-30", "border-radius-8", "flex-row", "padding-12"])}>
         <View style={style.flatten(["width-20", "height-20", "margin-right-12"])}>
@@ -292,18 +175,10 @@ const WordsCard: FunctionComponent<{
       <View style={style.flatten(["width-full"])}>
         <Button
           textStyle={style.flatten([
-            "subtitle3",
-            isTimedOut ? "color-success" : "color-primary",
+            "subtitle3", "color-primary",
           ])}
           mode="text"
-          {...(isTimedOut && {
-            rightIcon: (
-              <View style={style.flatten(["margin-left-8"])}>
-                <CheckIcon />
-              </View>
-            ),
-          })}
-          text="Sao chép"
+          text={isTimedOut ? "Đã sao chép" : "Sao chép"}
           onPress={() => {
             Clipboard.setString(words.join(" "));
             setTimer(3000);

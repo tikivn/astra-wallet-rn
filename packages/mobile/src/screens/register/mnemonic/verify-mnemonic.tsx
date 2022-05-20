@@ -12,6 +12,8 @@ import { observer } from "mobx-react-lite";
 import { RectButton } from "../../../components/rect-button";
 import { BIP44HDPath } from "@keplr-wallet/background";
 import { useStore } from "../../../stores";
+import { useBIP44Option } from "../bip44";
+import { useForm } from "react-hook-form";
 
 export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -73,6 +75,23 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
   );
 
   const [isCreating, setIsCreating] = useState(false);
+  
+  const bip44Option = useBIP44Option();
+  const {
+    control,
+    handleSubmit,
+    setFocus,
+    getValues,
+    formState: { errors },
+  } = useForm<FormData>();
+
+  const submit = handleSubmit(() => {
+    smartNavigation.navigateSmart("Register.SetPincode", {
+      registerConfig,
+      newMnemonicConfig,
+      bip44HDPath: bip44Option.bip44HDPath,
+    });
+  });
 
   return (
     <PageWithScrollView
@@ -82,14 +101,22 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
     >
       <Text
         style={style.flatten([
-          "h5",
-          "color-text-black-medium",
-          "margin-top-32",
+          "h4",
+          "color-text-gray",
           "margin-bottom-4",
           "text-center",
         ])}
       >
-        Backup your mnemonic seed securely.
+        Xếp lại cụm từ bí mật
+      </Text>
+      <Text
+        style={style.flatten([
+          "text-caption",
+          "color-text-black-low",
+          "margin-bottom-4",
+        ])}
+      >
+        Bạn vui lòng sắp xếp lại theo thứ tự ở bước trước. Bước này nhằm đảm bảo bạn đã lưu trữ lại chuỗi kí tự cẩn thận. 
       </Text>
       <WordsCard
         wordSet={wordSet.map((word, i) => {
@@ -140,31 +167,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
         size="large"
         loading={isCreating}
         disabled={wordSet.join(" ") !== newMnemonicConfig.mnemonic}
-        onPress={async () => {
-          setIsCreating(true);
-          await registerConfig.createMnemonic(
-            newMnemonicConfig.name,
-            newMnemonicConfig.mnemonic,
-            newMnemonicConfig.password,
-            route.params.bip44HDPath
-          );
-          analyticsStore.setUserProperties({
-            registerType: "seed",
-            accountType: "mnemonic",
-          });
-
-          smartNavigation.reset({
-            index: 0,
-            routes: [
-              {
-                name: "Register.End",
-                params: {
-                  password: newMnemonicConfig.password,
-                },
-              },
-            ],
-          });
-        }}
+        onPress={submit}
       />
       {/* Mock element for bottom padding */}
       <View style={style.flatten(["height-page-pad"])} />
