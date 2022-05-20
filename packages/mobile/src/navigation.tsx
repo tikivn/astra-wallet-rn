@@ -988,18 +988,18 @@ export const WebNavigation: FunctionComponent = () => {
 export const MainTabNavigation: FunctionComponent = () => {
   const style = useStyle();
 
-  const navigation = useNavigation();
+  // const navigation = useNavigation();
 
-  const focusedScreen = useFocusedScreen();
-  const isDrawerOpen = useIsDrawerOpen();
+  // const focusedScreen = useFocusedScreen();
+  // const isDrawerOpen = useIsDrawerOpen();
 
-  useEffect(() => {
-    // When the focused screen is not "Home" screen and the drawer is open,
-    // try to close the drawer forcely.
-    if (focusedScreen.name !== "Home" && isDrawerOpen) {
-      navigation.dispatch(DrawerActions.toggleDrawer());
-    }
-  }, [focusedScreen.name, isDrawerOpen, navigation]);
+  // useEffect(() => {
+  //   // When the focused screen is not "Home" screen and the drawer is open,
+  //   // try to close the drawer forcely.
+  //   if (focusedScreen.name !== "Home" && isDrawerOpen) {
+  //     navigation.dispatch(DrawerActions.toggleDrawer());
+  //   }
+  // }, [focusedScreen.name, isDrawerOpen, navigation]);
 
   return (
     <Tab.Navigator
@@ -1059,13 +1059,7 @@ export const MainTabNavigation: FunctionComponent = () => {
         <BlurredBottomTabBar {...props} enabledScreens={["Home"]} />
       )}
     >
-      <Tab.Screen
-        name="Main"
-        component={MainNavigation}
-        options={{
-          tabBarLabel: "Tài sản",
-        }}
-      />
+
       <Tab.Screen
         name="NewMain"
         component={NewMainNavigation}
@@ -1084,7 +1078,14 @@ export const MainTabNavigation: FunctionComponent = () => {
         component={SettingStackScreen}
         options={{
           unmountOnBlur: true,
-          tabBarLabel: "Lịch sử giao dịch",
+          tabBarLabel: "Lịch sử",
+        }}
+      />
+      <Tab.Screen
+        name="Main"
+        component={MainNavigation}
+        options={{
+          tabBarLabel: "Tài sản",
         }}
       />
       <Tab.Screen
@@ -1186,7 +1187,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
               <Stack.Screen name="Unlock" component={UnlockScreen} />
               <Stack.Screen
                 name="MainTabDrawer"
-                component={MainTabNavigationWithDrawer}
+                component={MainTabNavigation}
               />
               <Stack.Screen name="Register" component={RegisterNavigation} />
               <Stack.Screen name="Others" component={OtherNavigation} />
