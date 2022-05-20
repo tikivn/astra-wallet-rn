@@ -116,6 +116,7 @@ import { ReceiveScreen, SendConfirmScreen, SendTokenScreen, SwapScreen } from ".
 import { RegisterTutorialcreen } from "./screens/register/tutorial";
 import { NewPincodeScreen } from "./screens/register/pincode";
 import { VerifyPincodeScreen } from "./screens/register/pincode/verify";
+import { DeleteWalletScreen, EnterPincodeScreen } from "./screens/settings/screens";
 
 const {
   SmartNavigatorProvider,
@@ -228,7 +229,7 @@ const {
       upperScreenName: "Settings",
     },
     "Setting.ViewPrivateData": {
-      upperScreenName: "Settings",
+      upperScreenName: "Wallet",
     },
     "Setting.Version": {
       upperScreenName: "Settings",
@@ -265,6 +266,12 @@ const {
     },
     "Web.Astranaut": {
       upperScreenName: "Web",
+    },
+    "Settings.EnterPincode": {
+      upperScreenName: "Wallet",
+    },
+    "Settings.DeleteWallet": {
+      upperScreenName: "Wallet",
     },
   }).withParams<{
     "Register.NewMnemonic": {
@@ -459,11 +466,13 @@ export const MainNavigation: FunctionComponent = () => {
 };
 
 export const NewMainNavigation: FunctionComponent = () => {
+  const style = useStyle();
   return (
     <Stack.Navigator
       screenOptions={{
         ...WalletHeaderScreenOptionsPreset,
-        headerTitle: "",
+        headerStyle: style.get("background-color-background"),
+        headerTitleStyle: style.flatten(["title2", "color-white"]),
       }}
       initialRouteName="NewHome"
       headerMode="screen"
@@ -507,7 +516,7 @@ export const RegisterNavigation: FunctionComponent = () => {
         name="Register.Tutorial"
         component={RegisterTutorialcreen}
       />
-      
+
       <Stack.Screen
         options={{
           title: "Create a New Wallet",
@@ -598,7 +607,7 @@ export const RegisterNavigation: FunctionComponent = () => {
   );
 };
 
-export const StakingNavigation : FunctionComponent = () => {
+export const StakingNavigation: FunctionComponent = () => {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -797,6 +806,26 @@ export const WalletNavigation: FunctionComponent = () => {
         name="Swap"
         component={SwapScreen}
       />
+      <Stack.Screen
+        options={{
+         title: "",
+        }}
+        name="Setting.ViewPrivateData"
+        component={ViewPrivateDataScreen}
+      />
+
+      <Stack.Screen
+        options={{
+          title: "",
+        }}
+        name="Settings.EnterPincode"
+        component={EnterPincodeScreen} />
+      <Stack.Screen
+        options={{
+          title: "",
+        }}
+        name="Settings.DeleteWallet"
+        component={DeleteWalletScreen} />
     </Stack.Navigator>
   );
 };
@@ -847,10 +876,7 @@ export const SettingStackScreen: FunctionComponent = () => {
         }}
         component={SettingSelectAccountScreen}
       />
-      <Stack.Screen
-        name="Setting.ViewPrivateData"
-        component={ViewPrivateDataScreen}
-      />
+
       <Stack.Screen
         options={{
           title: "Version",
@@ -864,15 +890,12 @@ export const SettingStackScreen: FunctionComponent = () => {
 
 export const SettingsStackScreen: FunctionComponent = () => {
   const style = useStyle();
-
-  const navigation = useNavigation();
-
-  const { analyticsStore } = useStore();
-
   return (
     <Stack.Navigator
       screenOptions={{
         ...WalletHeaderScreenOptionsPreset,
+        headerStyle: style.get("background-color-background"),
+        headerTitleStyle: style.flatten(["title2", "color-white"]),
       }}
       headerMode="screen"
     >
@@ -883,11 +906,6 @@ export const SettingsStackScreen: FunctionComponent = () => {
         }}
         name="Setting"
         component={SettingsScreen}
-      />
-
-      <Stack.Screen
-        name="Setting.ViewPrivateData"
-        component={ViewPrivateDataScreen}
       />
     </Stack.Navigator>
   );
@@ -1055,17 +1073,10 @@ export const MainTabNavigation: FunctionComponent = () => {
         }} />
       <Tab.Screen
         name="History"
-        component={SettingStackScreen}
+        component={MainNavigation}
         options={{
           unmountOnBlur: true,
           tabBarLabel: "Lịch sử",
-        }}
-      />
-      <Tab.Screen
-        name="Main"
-        component={MainNavigation}
-        options={{
-          tabBarLabel: "Tài sản",
         }}
       />
       <Tab.Screen

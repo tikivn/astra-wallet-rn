@@ -9,9 +9,7 @@ import { AllIcon } from "../../components/icon";
 import { SettingsAccountItem } from "./items/select-account";
 import { AccountItem } from "./components";
 import { AccountNetworkItem } from "./items/select-network";
-import { AccountSignoutItem } from "./items/signout-item";
 import { AccountVersionItem } from "./items/version-item";
-import { AccountViewPrivateDataItem } from "./items/view-private-data";
 export const SettingsScreen: FunctionComponent = observer(() => {
     const { keychainStore, keyRingStore } = useStore();
 
@@ -37,18 +35,27 @@ export const SettingsScreen: FunctionComponent = observer(() => {
                         label="Đổi mật khẩu truy cập"
                         right={<AllIcon color={style.get("color-white").color} />}
                         onPress={() => {
-                            
+
                         }}
                     />
                     <View style={style.get("height-8")} />
-                    <AccountViewPrivateDataItem />
+                    <AccountItem
+                        containerStyle={style.flatten(["margin-left-16", "margin-right-16", "border-radius-8", "overflow-hidden"])}
+                        label="Xem cụm từ bí mật"
+                        right={<AllIcon color={style.get("color-white").color} />}
+                        onPress={() => {
+                            smartNavigation.navigateSmart("Settings.EnterPincode", {
+                            });
+                        }}
+                    />
+
                     <View style={style.get("height-32")} />
                     <AccountItem
                         label="FAQ"
                         containerStyle={style.flatten(["margin-left-16", "margin-right-16", "border-radius-8", "overflow-hidden"])}
                         right={<AllIcon color={style.get("color-white").color} />}
                         onPress={() => {
-                            
+
                         }}
                     />
                     <View style={style.get("height-8")} />
@@ -57,7 +64,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
                         label="Cộng đồng hỗ trợ"
                         right={<AllIcon color={style.get("color-white").color} />}
                         onPress={() => {
-                            
+
                         }}
                     />
                     <View style={style.get("height-32")} />
@@ -66,20 +73,28 @@ export const SettingsScreen: FunctionComponent = observer(() => {
                     <AccountItem
                         containerStyle={style.flatten(["margin-left-16", "margin-right-16", "border-radius-8", "overflow-hidden"])}
                         label="Màn hình khoá"
-                        onPress={ async () => {
+                        onPress={async () => {
                             keyRingStore.lock();
                             smartNavigation.reset({
                                 index: 0,
                                 routes: [
-                                  {
-                                    name: "Unlock",
-                                  },
+                                    {
+                                        name: "Unlock",
+                                    },
                                 ],
-                              });
+                            });
                         }}
                     />
                     <View style={style.get("height-8")} />
-                    <AccountSignoutItem />
+                    <AccountItem
+                        label="Xoá ví"
+                        onPress={() => {
+                            smartNavigation.navigateSmart("Settings.DeleteWallet", {
+                            });
+                        }}
+                        containerStyle={style.flatten(["margin-left-16", "margin-right-16", "border-radius-8", "overflow-hidden"])}
+                        labelStyle={style.flatten(["body3", "color-danger"])}
+                    />
                     <View style={style.get("height-32")} />
                     <AccountVersionItem />
                 </PageWithScrollViewInBottomTabView>

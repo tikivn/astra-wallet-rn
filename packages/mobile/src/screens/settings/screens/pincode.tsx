@@ -14,9 +14,10 @@ import {
     useClearByFocusCell,
 } from 'react-native-confirmation-code-field';
 
-export const DeleteWalletScreen: FunctionComponent = observer(() => {
+export const EnterPincodeScreen: FunctionComponent = observer(() => {
+
     const style = useStyle();
-    const { keyRingStore, keychainStore } = useStore();
+    const { keyRingStore } = useStore();
     const smartNavigation = useSmartNavigation();
 
     const [password, setPassword] = useState("");
@@ -37,28 +38,20 @@ export const DeleteWalletScreen: FunctionComponent = observer(() => {
         }
     };
 
-    const onEnterPassword= async () => {
+    const onEnterPassword = async () => {
         const index = keyRingStore.multiKeyStoreInfo.findIndex(
-          (keyStore) => keyStore.selected
+            (keyStore) => keyStore.selected
         );
 
         if (index >= 0) {
-          await keyRingStore.deleteKeyRing(index, password);
-
-          if (keyRingStore.multiKeyStoreInfo.length === 0) {
-            await keychainStore.reset();
-
-            smartNavigation.reset({
-              index: 0,
-              routes: [
-                {
-                  name: "Unlock",
-                },
-              ],
+            const privateData = await keyRingStore.showKeyRing(index, password);
+            smartNavigation.navigateSmart("Setting.ViewPrivateData", {
+                privateData,
+                privateDataType: keyRingStore.keyRingType,
             });
-          }
         }
     };
+
 
     const [value, setValue] = useState('');
     const ref = useBlurOnFulfill({ value, cellCount: cellCount });
@@ -83,7 +76,8 @@ export const DeleteWalletScreen: FunctionComponent = observer(() => {
                     contentContainerStyle={style.flatten(["flex-grow-1", "padding-x-page"])}
                 >
                     <View style={style.get("flex-1")} />
-                    <Text style={style.flatten(["color-gray-30", "text-caption", "text-center", "margin-bottom-64"])}>Bạn có thể hồi phục lại được ví sau khi xoá nếu bạn đã sao lưu lại cụm từ bí mất.</Text>
+                    <Text style={style.flatten(["color-white", "h4", "text-center", "margin-bottom-12"])}>Xác nhận lại mật khẩu truy cập</Text>
+                    <Text style={style.flatten(["color-gray-30", "text-caption", "text-center", "margin-bottom-64"])}>Đây là mật khẩu để truy cập vào Astra Wallet, khác với mật khẩu đăng nhập vào Tiki.</Text>
                     <View>
                         <CodeField
                             ref={ref}
@@ -115,12 +109,11 @@ export const DeleteWalletScreen: FunctionComponent = observer(() => {
                     <Button
                         containerStyle={style.flatten(["border-radius-4", "height-44"])}
                         textStyle={style.flatten(["subtitle2"])}
-                        text="Xoá ví"
+                        text="Xem"
                         size="large"
                         loading={isLoading}
                         onPress={submitPassword}
                         disabled={password.length < 6}
-                        color="danger"
                     />
                     <View style={style.get("flex-5")} />
                 </KeyboardAwareScrollView>
