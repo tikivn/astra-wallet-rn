@@ -115,7 +115,7 @@ import { MainScreen } from "./screens/main";
 import { ReceiveScreen, SendConfirmScreen, SendTokenScreen, SwapScreen } from "./screens/main/screens";
 import { RegisterTutorialcreen } from "./screens/register/tutorial";
 import { NewPincodeScreen } from "./screens/register/pincode";
-import { VerifyPinCodeScreen } from "./screens/register/pincode/verify";
+import { VerifyPincodeScreen } from "./screens/register/pincode/verify";
 
 const {
   SmartNavigatorProvider,
@@ -279,6 +279,12 @@ const {
       registerConfig: RegisterConfig;
       newMnemonicConfig: NewMnemonicConfig;
       bip44HDPath: BIP44HDPath;
+    };
+    "Register.VerifyPincode": {
+      registerConfig: RegisterConfig;
+      newMnemonicConfig: NewMnemonicConfig;
+      bip44HDPath: BIP44HDPath;
+      password: string;
     };
     "Register.RecoverMnemonic": {
       registerConfig: RegisterConfig;
@@ -586,7 +592,7 @@ export const RegisterNavigation: FunctionComponent = () => {
           title: "Tạo tài khoản mới",
         }}
         name="Register.VerifyPincode"
-        component={VerifyPinCodeScreen}
+        component={VerifyPincodeScreen}
       />
     </Stack.Navigator>
   );
@@ -878,36 +884,10 @@ export const SettingsStackScreen: FunctionComponent = () => {
         name="Setting"
         component={SettingsScreen}
       />
-      <Stack.Screen
-        name="SettingSelectAccount"
-        options={{
-          title: "Select Account",
-          headerRight: () => (
-            <HeaderRightButton
-              onPress={() => {
-                analyticsStore.logEvent("Add additional account started");
-                navigation.navigate("Register", {
-                  screen: "Register.Intro",
-                });
-              }}
-            >
-              <HeaderAddIcon />
-            </HeaderRightButton>
-          ),
-          ...BlurredHeaderScreenOptionsPreset,
-        }}
-        component={SettingSelectAccountScreen}
-      />
+
       <Stack.Screen
         name="Setting.ViewPrivateData"
         component={ViewPrivateDataScreen}
-      />
-      <Stack.Screen
-        options={{
-          title: "Version",
-        }}
-        name="Setting.Version"
-        component={KeplrVersionScreen}
       />
     </Stack.Navigator>
   );

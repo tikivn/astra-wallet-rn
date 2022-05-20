@@ -19,7 +19,7 @@ export const AccountSignoutItem: FunctionComponent<{
   return (
     <React.Fragment>
       <AccountItem
-        label="Đăng xuất"
+        label="Xoá ví"
         onPress={() => {
           setIsOpenModal(true);
         }}
@@ -29,7 +29,7 @@ export const AccountSignoutItem: FunctionComponent<{
       <PasswordInputModal
         isOpen={isOpenModal}
         close={() => setIsOpenModal(false)}
-        title="Đăng xuất"
+        title="Xoá ví"
         onEnterPassword={async (password) => {
           const index = keyRingStore.multiKeyStoreInfo.findIndex(
             (keyStore) => keyStore.selected

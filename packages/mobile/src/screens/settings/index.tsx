@@ -37,7 +37,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
                         label="Đổi mật khẩu truy cập"
                         right={<AllIcon color={style.get("color-white").color} />}
                         onPress={() => {
-                            smartNavigation.navigateSmart("AddressBook", {});
+                            
                         }}
                     />
                     <View style={style.get("height-8")} />
@@ -48,7 +48,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
                         containerStyle={style.flatten(["margin-left-16", "margin-right-16", "border-radius-8", "overflow-hidden"])}
                         right={<AllIcon color={style.get("color-white").color} />}
                         onPress={() => {
-                            smartNavigation.navigateSmart("AddressBook", {});
+                            
                         }}
                     />
                     <View style={style.get("height-8")} />
@@ -57,12 +57,28 @@ export const SettingsScreen: FunctionComponent = observer(() => {
                         label="Cộng đồng hỗ trợ"
                         right={<AllIcon color={style.get("color-white").color} />}
                         onPress={() => {
-                            smartNavigation.navigateSmart("AddressBook", {});
+                            
                         }}
                     />
                     <View style={style.get("height-32")} />
                     <AccountNetworkItem />
                     <View style={style.get("height-32")} />
+                    <AccountItem
+                        containerStyle={style.flatten(["margin-left-16", "margin-right-16", "border-radius-8", "overflow-hidden"])}
+                        label="Màn hình khoá"
+                        onPress={ async () => {
+                            keyRingStore.lock();
+                            smartNavigation.reset({
+                                index: 0,
+                                routes: [
+                                  {
+                                    name: "Unlock",
+                                  },
+                                ],
+                              });
+                        }}
+                    />
+                    <View style={style.get("height-8")} />
                     <AccountSignoutItem />
                     <View style={style.get("height-32")} />
                     <AccountVersionItem />

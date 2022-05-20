@@ -15,7 +15,7 @@ import {
     useClearByFocusCell,
 } from 'react-native-confirmation-code-field';
 
-export const NewPincodeScreen: FunctionComponent = observer(() => {
+export const DeleteWalletScreen: FunctionComponent = observer(() => {
     const route = useRoute<
         RouteProp<
             Record<
@@ -24,6 +24,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
                     registerConfig: RegisterConfig;
                     newMnemonicConfig: NewMnemonicConfig;
                     bip44HDPath: BIP44HDPath;
+                    password: string;
                 }
             >,
             string
@@ -36,9 +37,10 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
 
     const registerConfig = route.params.registerConfig;
     const newMnemonicConfig = route.params.newMnemonicConfig;
-    const bip44HDPath = route.params.bip44HDPath;
-    const [password, setPassword] = useState("");
 
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [isCreating, setIsCreating] = useState(false);
+    const [isFailed, setIsFailed] = useState(false);
     const cellCount = 6;
 
     const [value, setValue] = useState('');
@@ -47,14 +49,32 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
         value,
         setValue,
     });
+    const password = route.params.password;
 
     const onCreate = async () => {
-        smartNavigation.navigateSmart("Register.VerifyPincode", {
-            registerConfig,
-            newMnemonicConfig,
-            bip44HDPath,
-            password,
-          });
+        if (confirmPassword === password) {
+            setIsCreating(true);
+            await registerConfig.createMnemonic(
+                newMnemonicConfig.name,
+                newMnemonicConfig.mnemonic,
+                confirmPassword,
+                route.params.bip44HDPath
+            );
+    
+            smartNavigation.reset({
+                index: 0,
+                routes: [
+                    {
+                        name: "Register.End",
+                        params: {
+                            password: confirmPassword,
+                        },
+                    },
+                ],
+            });
+        } else {
+            setIsFailed(true);
+        }
     };
 
     return (
@@ -72,31 +92,34 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
                     contentContainerStyle={style.flatten(["flex-grow-1", "padding-x-page"])}
                 >
                     <View style={style.get("flex-1")} />
-                    <Text style={style.flatten(["color-white", "h4", "text-center", "margin-bottom-12"])}>Đặt mật khẩu truy cập</Text>
+                    <Text style={style.flatten(["color-white", "h4", "text-center", "margin-bottom-12"])}>Xác nhận lại mật khẩu truy cập</Text>
                     <Text style={style.flatten(["color-gray-30", "text-caption", "text-center", "margin-bottom-64"])}>Đây là mật khẩu để truy cập vào Astra Wallet, khác với mật khẩu đăng nhập vào Tiki.</Text>
                     <View>
                         <CodeField
                             ref={ref}
                             {...props}
                             // Use `caretHidden={false}` when users can't paste a text value, because context menu doesn't appear
-                            value={password}
-                            onChangeText={setPassword}
+                            value={confirmPassword}
+                            onChangeText={(text) => {
+                                setConfirmPassword(text);
+                                setIsFailed(false);
+                            }}
                             cellCount={cellCount}
                             rootStyle={style.flatten(["flex-1", "padding-20"])}
                             keyboardType="number-pad"
                             textContentType="oneTimeCode"
                             renderCell={({ index, symbol, isFocused }) => (
-                                <View style={style.flatten(["items-center", "overflow-hidden", "background-color-gray-80", "width-42", "height-42", "border-width-1", "border-color-gray-80", "border-radius-6"], [isFocused && "border-color-white"])}>
-                                  <Text
-                                  key={index}
-                                  style={style.flatten(["text-center", "h2", "color-white"])}
-                                  onLayout={getCellOnLayoutHandler(index)}>
-                                  {symbol ? '•' : null}
-                                </Text>
+                                <View style={style.flatten(["items-center", "overflow-hidden", "background-color-gray-80", "width-42", "height-42", "border-width-1", "border-color-gray-80", "border-radius-6"], [isFocused && "border-color-white", isFailed && "border-color-danger"])}>
+                                    <Text
+                                        key={index}
+                                        style={style.flatten(["text-center", "h2", "color-white"])}
+                                        onLayout={getCellOnLayoutHandler(index)}>
+                                        {symbol ? '•' : null}
+                                    </Text>
                                 </View>
-                              )}
+                            )}
                         />
-
+                        <Text style={style.flatten(["color-danger", "text-caption2"])}>{isFailed ? "Mật khẩu không đúng, vui lòng nhập lại" : null}</Text>
                     </View>
                     <View style={style.get("flex-1")} />
                     <Button
@@ -104,8 +127,9 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
                         textStyle={style.flatten(["subtitle2"])}
                         text="Xác nhận"
                         size="large"
+                        loading={isCreating}
                         onPress={onCreate}
-                        disabled={password.length < 6}
+                        disabled={confirmPassword.length < 6}
                     />
                     <View style={style.get("flex-5")} />
                 </KeyboardAwareScrollView>

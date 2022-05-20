@@ -269,20 +269,26 @@ export const UnlockScreen: FunctionComponent = observer(() => {
             {...props}
             // Use `caretHidden={false}` when users can't paste a text value, because context menu doesn't appear
             value={password}
-            onChangeText={setPassword}
+            onChangeText={(text) => {
+              setPassword(text);
+              setIsFailed(false);
+            }}
             cellCount={cellCount}
-            rootStyle={style.flatten(["flex-1", "padding-20"])}
+            rootStyle={style.flatten(["flex-1", "padding-y-10"])}
             keyboardType="number-pad"
             textContentType="oneTimeCode"
             renderCell={({ index, symbol, isFocused }) => (
-              <Text
+              <View style={style.flatten(["items-center", "overflow-hidden", "background-color-gray-80", "width-42", "height-42", "border-width-1", "border-color-gray-80", "border-radius-6"], [isFocused && "border-color-white", isFailed && "border-color-danger"])}>
+                <Text
                 key={index}
-                style={style.flatten(["background-color-gray-80", "width-40", "height-40", "border-width-1", "border-color-gray-80", "border-radius-6", "color-white", "text-center", "h3"], [isFocused && "border-color-white"])}
+                style={style.flatten(["text-center", "h2", "color-white"])}
                 onLayout={getCellOnLayoutHandler(index)}>
                 {symbol ? '•' : null}
               </Text>
+              </View>
             )}
           />
+          <Text style={style.flatten(["color-danger", "text-caption2"])}>{isFailed ? "Mật khẩu không đúng, vui lòng nhập lại" : null}</Text>
           <Button
             textStyle={style.flatten(["subtitle2", "color-background"])}
             containerStyle={style.flatten(["margin-bottom-16", "border-radius-52", "margin-top-16"])}
@@ -291,6 +297,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
             mode="light"
             loading={isLoading}
             onPress={tryUnlock}
+            disabled={password.length < cellCount}
           />
           <Button
             textStyle={style.flatten(["subtitle2", "color-white"])}
