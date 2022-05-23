@@ -103,12 +103,12 @@ export const InteractionModalsProivder: FunctionComponent = observer(
 
           return null;
         })}
-        {signInteractionStore.waitingData ? (
+        {/* {signInteractionStore.waitingData ? (
           <SignModal
             isOpen={true}
             close={() => signInteractionStore.rejectAll()}
           />
-        ) : null}
+        ) : null} */}
         {children}
       </React.Fragment>
     );

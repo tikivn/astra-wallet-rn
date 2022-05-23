@@ -118,6 +118,7 @@ import { NewPincodeScreen } from "./screens/register/pincode";
 import { VerifyPincodeScreen } from "./screens/register/pincode/verify";
 import { DeleteWalletScreen, EnterPincodeScreen } from "./screens/settings/screens";
 import { CurrentPincodeScreen, ChangePincodeScreen } from "./screens/settings/screens/change-pincode";
+import { ConfirmTransactionScreen } from "./screens/confirm-transaction";
 
 const {
   SmartNavigatorProvider,
@@ -176,6 +177,9 @@ const {
       upperScreenName: "Wallet",
     },
     "Wallet.Send": {
+      upperScreenName: "Wallet",
+    },
+    "Wallet.ConfirmTransaction": {
       upperScreenName: "Wallet",
     },
     "Wallet.SendConfirm": {
@@ -794,6 +798,13 @@ export const WalletNavigation: FunctionComponent = () => {
         }}
         name="Wallet.Send"
         component={SendTokenScreen}
+      />
+      <Stack.Screen 
+        options={{
+          title: "Confirm Transaction",
+        }}
+        name="Wallet.ConfirmTransaction" 
+        component={ConfirmTransactionScreen}
       />
       <Stack.Screen
         options={{

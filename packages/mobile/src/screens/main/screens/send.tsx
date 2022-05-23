@@ -13,122 +13,123 @@ import { EthereumEndpoint } from "../../../config";
 import { RouteProp, useRoute } from "@react-navigation/native";
 
 export const SendTokenScreen: FunctionComponent = observer(() => {
-    const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
+  const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
 
-    const route = useRoute<
-        RouteProp<
-            Record<
-                string,
+  const route = useRoute<
+    RouteProp<
+      Record<
+        string,
+        {
+          chainId?: string;
+          currency?: string;
+          recipient?: string;
+        }
+      >,
+      string
+    >
+  >();
+
+
+  const chainId = route.params.chainId
+    ? route.params.chainId
+    : chainStore.current.chainId;
+
+  const account = accountStore.getAccount(chainId);
+
+  const sendConfigs = useSendTxConfig(
+    chainStore,
+    queriesStore,
+    accountStore,
+    chainId,
+    account.bech32Address,
+    EthereumEndpoint
+  );
+
+  useEffect(() => {
+    if (route.params.currency) {
+      const currency = sendConfigs.amountConfig.sendableCurrencies.find(
+        (cur) => cur.coinMinimalDenom === route.params.currency
+      );
+      if (currency) {
+        sendConfigs.amountConfig.setSendCurrency(currency);
+      }
+    }
+  }, [route.params.currency, sendConfigs.amountConfig]);
+
+  useEffect(() => {
+    if (route.params.recipient) {
+      sendConfigs.recipientConfig.setRawRecipient(route.params.recipient);
+    }
+  }, [route.params.recipient, sendConfigs.recipientConfig]);
+
+  sendConfigs.gasConfig.setGas(200000);
+
+  const sendConfigError =
+    sendConfigs.recipientConfig.error ??
+    sendConfigs.amountConfig.error ??
+    sendConfigs.memoConfig.error ??
+    sendConfigs.gasConfig.error ??
+    sendConfigs.feeConfig.error;
+  const txStateIsValid = sendConfigError == null;
+  const style = useStyle();
+  const smartNavigation = useSmartNavigation();
+
+  return (
+    <PageWithScrollView
+      style={style.flatten(["margin-top-16", "padding-x-16"])}
+      backgroundColor={style.get("color-background").color}
+    >
+      <Text style={style.flatten(["color-text-black-low", "margin-top-16", "text-left", "body3"])}>Bạn có thể sao chép địa chỉ này và dán vào ô địa chỉ khi gửi Astra từ nguồn khác vào đây.</Text>
+      <View style={style.get("height-12")} />
+      <AddressInput recipientConfig={sendConfigs.recipientConfig}
+        memoConfig={sendConfigs.memoConfig}></AddressInput>
+      <View style={style.get("height-12")} />
+      <AmountInput amountConfig={sendConfigs.amountConfig} />
+      <View style={style.get("height-12")} />
+      <Button
+        text="Tiếp tục"
+        size="large"
+        containerStyle={style.flatten(["border-radius-4"])}
+        textStyle={style.flatten(["subtitle2"])}
+        disabled={!account.isReadyToSendMsgs || !txStateIsValid}
+        loading={account.isSendingMsg === "send"}
+        onPress={async () => {
+          if (account.isReadyToSendMsgs && txStateIsValid) {
+            smartNavigation.pushSmart("Wallet.ConfirmTransaction", {});
+            try {
+              await account.sendToken(
+                sendConfigs.amountConfig.amount,
+                sendConfigs.amountConfig.sendCurrency,
+                sendConfigs.recipientConfig.recipient,
+                sendConfigs.memoConfig.memo,
+                sendConfigs.feeConfig.toStdFee(),
                 {
-                    chainId?: string;
-                    currency?: string;
-                    recipient?: string;
+                  preferNoSetFee: true,
+                  preferNoSetMemo: true,
+                },
+                {
+                  onBroadcasted: (txHash) => {
+                    analyticsStore.logEvent("Send token tx broadcasted", {
+                      chainId: chainStore.current.chainId,
+                      chainName: chainStore.current.chainName,
+                      feeType: sendConfigs.feeConfig.feeType,
+                    });
+                    smartNavigation.pushSmart("TxPendingResult", {
+                      txHash: Buffer.from(txHash).toString("hex"),
+                    });
+                  },
                 }
-            >,
-            string
-        >
-    >();
-
-
-    const chainId = route.params.chainId
-        ? route.params.chainId
-        : chainStore.current.chainId;
-
-    const account = accountStore.getAccount(chainId);
-
-    const sendConfigs = useSendTxConfig(
-        chainStore,
-        queriesStore,
-        accountStore,
-        chainId,
-        account.bech32Address,
-        EthereumEndpoint
-    );
-
-    useEffect(() => {
-        if (route.params.currency) {
-            const currency = sendConfigs.amountConfig.sendableCurrencies.find(
-                (cur) => cur.coinMinimalDenom === route.params.currency
-            );
-            if (currency) {
-                sendConfigs.amountConfig.setSendCurrency(currency);
+              );
+            } catch (e) {
+              if (e?.message === "Request rejected") {
+                return;
+              }
+              console.log(e);
+              smartNavigation.navigateSmart("Home", {});
             }
-        }
-    }, [route.params.currency, sendConfigs.amountConfig]);
-
-    useEffect(() => {
-        if (route.params.recipient) {
-            sendConfigs.recipientConfig.setRawRecipient(route.params.recipient);
-        }
-    }, [route.params.recipient, sendConfigs.recipientConfig]);
-
-    sendConfigs.gasConfig.setGas(200000);
-
-    const sendConfigError =
-        sendConfigs.recipientConfig.error ??
-        sendConfigs.amountConfig.error ??
-        sendConfigs.memoConfig.error ??
-        sendConfigs.gasConfig.error ??
-        sendConfigs.feeConfig.error;
-    const txStateIsValid = sendConfigError == null;
-    const style = useStyle();
-    const smartNavigation = useSmartNavigation();
-
-    return (
-        <PageWithScrollView
-            style={style.flatten(["margin-top-16", "padding-x-16"])}
-            backgroundColor={style.get("color-background").color}
-        >
-            <Text style={style.flatten(["color-text-black-low", "margin-top-16", "text-left", "body3"])}>Bạn có thể sao chép địa chỉ này và dán vào ô địa chỉ khi gửi Astra từ nguồn khác vào đây.</Text>
-            <View style={style.get("height-12")}/>
-            <AddressInput recipientConfig={sendConfigs.recipientConfig}
-                memoConfig={sendConfigs.memoConfig}></AddressInput>
-            <View style={style.get("height-12")}/>
-            <AmountInput amountConfig={sendConfigs.amountConfig} />
-            <View style={style.get("height-12")}/>
-            <Button
-                text="Tiếp tục"
-                size="large"
-                containerStyle={style.flatten(["border-radius-4"])}
-                textStyle={style.flatten(["subtitle2"])}
-                disabled={!account.isReadyToSendMsgs || !txStateIsValid}
-                loading={account.isSendingMsg === "send"}
-                onPress={async () => {
-                    if (account.isReadyToSendMsgs && txStateIsValid) {
-                        try {
-                            await account.sendToken(
-                                sendConfigs.amountConfig.amount,
-                                sendConfigs.amountConfig.sendCurrency,
-                                sendConfigs.recipientConfig.recipient,
-                                sendConfigs.memoConfig.memo,
-                                sendConfigs.feeConfig.toStdFee(),
-                                {
-                                    preferNoSetFee: true,
-                                    preferNoSetMemo: true,
-                                },
-                                {
-                                    onBroadcasted: (txHash) => {
-                                        analyticsStore.logEvent("Send token tx broadcasted", {
-                                            chainId: chainStore.current.chainId,
-                                            chainName: chainStore.current.chainName,
-                                            feeType: sendConfigs.feeConfig.feeType,
-                                        });
-                                        smartNavigation.pushSmart("TxPendingResult", {
-                                            txHash: Buffer.from(txHash).toString("hex"),
-                                        });
-                                    },
-                                }
-                            );
-                        } catch (e) {
-                            if (e?.message === "Request rejected") {
-                                return;
-                            }
-                            console.log(e);
-                            smartNavigation.navigateSmart("Home", {});
-                        }
-                    }
-                }}
-            />
-        </PageWithScrollView>
-    );
+          }
+        }}
+      />
+    </PageWithScrollView>
+  );
 });
