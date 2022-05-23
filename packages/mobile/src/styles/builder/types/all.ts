@@ -18,6 +18,7 @@ export const StaticStyles = {
 
 export type StyleBuilderDefinitions<
   Custom extends Record<string, unknown>,
+  Typos extends Record<string, unknown>,
   Colors extends Record<string, string>,
   Widths extends Record<string, string | number>,
   Heights extends Record<string, string | number>,
@@ -27,6 +28,7 @@ export type StyleBuilderDefinitions<
   BorderRadiuses extends Record<string, number>,
   Opacities extends Record<string, number>
 > = StaticStylesDefinitions<Custom> &
+  StaticStylesDefinitions<Typos> &
   StyleBuilderLayoutDefinitions &
   StyleBuilderColorDefinitions<Colors> &
   StyleBuilderSizeDefinitions<Widths, Heights> &

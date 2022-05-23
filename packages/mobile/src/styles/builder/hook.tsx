@@ -8,6 +8,7 @@ import { StyleBuilder } from "./builder";
 
 const createStyleContext = <
   Custom extends Record<string, unknown>,
+  Typos extends Record<string, unknown>,
   Colors extends Record<string, string>,
   Widths extends Record<string, string | number>,
   Heights extends Record<string, string | number>,
@@ -21,6 +22,7 @@ const createStyleContext = <
     | {
         builder: StyleBuilder<
           Custom,
+          Typos,
           Colors,
           Widths,
           Heights,
@@ -36,6 +38,7 @@ const createStyleContext = <
 
 export const createStyleProvider = <
   Custom extends Record<string, unknown>,
+  Typos extends Record<string, unknown>,
   Colors extends Record<string, string>,
   Widths extends Record<string, string | number>,
   Heights extends Record<string, string | number>,
@@ -46,6 +49,7 @@ export const createStyleProvider = <
   Opacities extends Record<string, number>
 >(configs: {
   custom: Custom;
+  typos: Typos;
   colors: Colors;
   widths: Widths;
   heights: Heights;
@@ -58,6 +62,7 @@ export const createStyleProvider = <
   StyleProvider: FunctionComponent;
   useStyle: () => StyleBuilder<
     Custom,
+    Typos,
     Colors,
     Widths,
     Heights,
@@ -70,6 +75,7 @@ export const createStyleProvider = <
 } => {
   const context = createStyleContext<
     Custom,
+    Typos,
     Colors,
     Widths,
     Heights,

@@ -42,6 +42,7 @@ export class DefinitionKebabCase {
 
 export class StyleBuilder<
   Custom extends Record<string, unknown>,
+  Typos extends Record<string, unknown>,
   Colors extends Record<string, string>,
   Widths extends Record<string, string | number>,
   Heights extends Record<string, string | number>,
@@ -93,6 +94,7 @@ export class StyleBuilder<
   constructor(
     protected readonly configs: {
       custom: Custom;
+      typos: Typos;
       colors: Colors;
       widths: Widths;
       heights: Heights;
@@ -117,6 +119,7 @@ export class StyleBuilder<
 
     this.staticStyles = {
       ...configs.custom,
+      ...configs.typos,
       ...StaticStyles,
     };
   }
@@ -124,6 +127,7 @@ export class StyleBuilder<
   flatten<
     D extends StyleBuilderDefinitions<
       Custom,
+      Typos,
       Colors,
       Widths,
       Heights,
@@ -139,6 +143,7 @@ export class StyleBuilder<
   flatten<
     D extends StyleBuilderDefinitions<
       Custom,
+      Typos,
       Colors,
       Widths,
       Heights,
@@ -158,6 +163,7 @@ export class StyleBuilder<
   flatten<
     D extends StyleBuilderDefinitions<
       Custom,
+      Typos,
       Colors,
       Widths,
       Heights,
@@ -188,6 +194,7 @@ export class StyleBuilder<
   get<
     D extends StyleBuilderDefinitions<
       Custom,
+      Typos,
       Colors,
       Widths,
       Heights,
