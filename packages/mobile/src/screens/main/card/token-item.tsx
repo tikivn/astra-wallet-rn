@@ -37,7 +37,7 @@ export const TokenItemNew: FunctionComponent<{
                 containerStyle,
             ])}
             onPress={() => {
-                smartNavigation.navigateSmart("Send", {
+                smartNavigation.navigateSmart("Wallet.Send", {
                     currency: balance.currency.coinMinimalDenom,
                 });
             }}

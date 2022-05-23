@@ -36,7 +36,7 @@ export const AccountCardNew: FunctionComponent<{
   
     const total = stakable.add(stakedSum);
   
-    const totalPrice = priceStore.calculatePrice(total);
+    const totalPrice = priceStore.calculatePrice(stakable);
   
   
     return (
