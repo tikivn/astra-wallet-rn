@@ -1,7 +1,6 @@
 import React, { FunctionComponent, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-import { SignModal } from "../../modals/sign";
 import { LedgerGranterModal } from "../../modals/ledger";
 import { WalletConnectApprovalModal } from "../../modals/wallet-connect-approval";
 import { WCMessageRequester } from "../../stores/wallet-connect/msg-requester";
@@ -103,12 +102,6 @@ export const InteractionModalsProivder: FunctionComponent = observer(
 
           return null;
         })}
-        {/* {signInteractionStore.waitingData ? (
-          <SignModal
-            isOpen={true}
-            close={() => signInteractionStore.rejectAll()}
-          />
-        ) : null} */}
         {children}
       </React.Fragment>
     );

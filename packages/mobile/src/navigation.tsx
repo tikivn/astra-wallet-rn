@@ -179,9 +179,6 @@ const {
     "Wallet.Send": {
       upperScreenName: "Wallet",
     },
-    "Wallet.ConfirmTransaction": {
-      upperScreenName: "Wallet",
-    },
     "Wallet.SendConfirm": {
       upperScreenName: "Wallet",
     },
@@ -614,6 +611,30 @@ export const RegisterNavigation: FunctionComponent = () => {
   );
 };
 
+export const TransactionNavigation: FunctionComponent = () => {
+  const style = useStyle();
+
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        ...WalletHeaderScreenOptionsPreset,
+        headerStyle: style.get("background-color-background"),
+        headerTitleStyle: style.flatten(["title2", "color-white"]),
+      }}
+      headerMode="screen"
+      initialRouteName="Transaction.Confirm"
+    >
+      <Stack.Screen
+        name="Transaction.Confirm"
+        component={ConfirmTransactionScreen}
+        options={{
+          title: "Gửi Astra",
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
 export const StakingNavigation: FunctionComponent = () => {
   return (
     <Stack.Navigator
@@ -798,13 +819,6 @@ export const WalletNavigation: FunctionComponent = () => {
         }}
         name="Wallet.Send"
         component={SendTokenScreen}
-      />
-      <Stack.Screen 
-        options={{
-          title: "Confirm Transaction",
-        }}
-        name="Wallet.ConfirmTransaction" 
-        component={ConfirmTransactionScreen}
       />
       <Stack.Screen
         options={{
@@ -1144,10 +1158,16 @@ const BugsnagNavigationContainer = (() => {
 })();
 
 export const AppNavigation: FunctionComponent = observer(() => {
-  const { keyRingStore, analyticsStore } = useStore();
-
+  const { keyRingStore, analyticsStore, signInteractionStore } = useStore();
+  
   const navigationRef = useRef<NavigationContainerRef | null>(null);
   const routeNameRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (signInteractionStore.waitingData) {
+      navigationRef.current?.navigate("Transaction");
+    }
+  }, [signInteractionStore.waitingData]);
 
   return (
     <PageScrollPositionProvider>
@@ -1197,6 +1217,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
               <Stack.Screen name="Register" component={RegisterNavigation} />
               <Stack.Screen name="Others" component={OtherNavigation} />
               <Stack.Screen name="Wallet" component={WalletNavigation} />
+              <Stack.Screen name="Transaction" component={TransactionNavigation} />
               <Stack.Screen
                 name="AddressBooks"
                 component={AddressBookStackScreen}

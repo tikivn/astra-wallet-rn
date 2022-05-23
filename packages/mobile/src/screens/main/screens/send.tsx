@@ -95,7 +95,6 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
         loading={account.isSendingMsg === "send"}
         onPress={async () => {
           if (account.isReadyToSendMsgs && txStateIsValid) {
-            smartNavigation.pushSmart("Wallet.ConfirmTransaction", {});
             try {
               await account.sendToken(
                 sendConfigs.amountConfig.amount,

@@ -1,8 +1,7 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { useStyle } from "../../../styles";
-import AstraIcon from "../../../assets/svg/astra.svg";
 import { useStore } from "../../../stores";
 import FastImage from "react-native-fast-image";
 import { VectorCharacter } from "../../../components/vector-character";
@@ -38,8 +37,9 @@ export const UserBalance: FunctionComponent<IUserBalance> = observer(({
   const icon = currency.coinImageUrl ? (
     <FastImage
         style={{
-            width: 24 * 1,
-            height: 24 * 1,
+            width: 24,
+            height: 24,
+            margin: 4,
         }}
         resizeMode={FastImage.resizeMode.contain}
         source={{
@@ -57,7 +57,6 @@ export const UserBalance: FunctionComponent<IUserBalance> = observer(({
   return (
     <View style={styles.container}>
       {icon}
-      {/* <AstraIcon width={24} height={24} style={style.flatten(["margin-4"])} /> */}
       <View style={style.flatten(["margin-left-8"])}>
         <Text style={style.flatten(["text-medium-regular", "color-gray-10"])}>{name}</Text>
         <Text style={style.flatten(["text-small-regular", "color-gray-30"])}>Số dư: {balance}</Text>
