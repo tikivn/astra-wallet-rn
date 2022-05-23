@@ -1,0 +1,11 @@
+def getProp(key) {
+  if (System.getenv(key) != null) {
+    return System.getenv(key)
+  }
+  if (project.hasProperty(key)) {
+    return project.property(key)
+  }
+  return ""
+}
+
+ext.getProp = this.&getProp

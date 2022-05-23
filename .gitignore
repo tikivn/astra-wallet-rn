@@ -1,6 +1,7 @@
 .DS_Store
 .idea
 .vscode
+.gradle
 node_modules
 dist
 prod

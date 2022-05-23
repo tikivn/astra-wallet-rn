@@ -125,8 +125,10 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  * and the benefits of using Hermes will therefore be sharply reduced.
  */
 def enableHermes = project.ext.react.get("enableHermes", false);
+apply from: '../gradle/props.ext.gradle'
 
 android {
+    ext.theRootDir = "$project.rootDir"
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     compileOptions {
@@ -135,7 +137,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.chainapsis.keplr"
+        applicationId "vn.tiki.app.astra.wallet"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 6
@@ -153,10 +155,32 @@ android {
     }
     signingConfigs {
         debug {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
+            def keyFolder = "$theRootDir/keys/debug"
+            def keysPass = file("$keyFolder/keys-pass").readLines()
+            storeFile file("$keyFolder/debug.keystore")
+            storePassword keysPass.get(0)
+            keyAlias keysPass.get(1)
+            keyPassword keysPass.get(2)
+        }
+        release {
+            // Caution! DO NOT commit raw value of release key to git
+            def keyFile = getProp("ASTRA_WALLET_ANDROID_KEY_FILE")
+            def keyPassFile = getProp("ASTRA_WALLET_ANDROID_KEY_PASS_FILE")
+            def isCI = getProp("CI")
+            if (isCI == '1') {
+                keyFile = "$theRootDir/keys/debug/debug.keystore"
+                keyPassFile = "$theRootDir/keys/debug/keys-pass"
+            } else if (keyFile == "" || keyPassFile == "") {
+                throw new GradleException(
+                    "No value for env key: 'ASTRA_WALLET_ANDROID_KEY_FILE' or 'ASTRA_WALLET_ANDROID_KEY_PASS_FILE'." + 
+                    "\nFor local build and use debug key, set env key 'CI' to 1"
+                )
+            }
+            def keysPass = file(keyPassFile).readLines()
+            storeFile file(keyFile)
+            storePassword keysPass.get(0)
+            keyAlias keysPass.get(1)
+            keyPassword keysPass.get(2)
         }
     }
     buildTypes {

@@ -76,3 +76,5 @@ injected-provider.bundle.js
 *.certSigningRequest
 *.zip
 *.mobileprovision
+
+android/keys/release/*
