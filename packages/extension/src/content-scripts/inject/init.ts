@@ -15,7 +15,7 @@ export function init(
   // Give a priority to production build.
   if (process.env.NODE_ENV !== "production") {
     if (!window.astra) {
-      window.astra = astra;
+      window.astra = keplr;
     }
 
     if (!window.getOfflineSigner) {

@@ -11,6 +11,9 @@ packages/extension/src/config.var.tsx
 yarn-error.log
 
 build
+packages/extension/src/config.var.ts
+packages/extension/src/config.var.tsx
+packages/extension/src/config.ui.var.ts
 packages/extension/src/config.ui.var.tsx
 
 .cache
