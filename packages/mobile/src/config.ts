@@ -82,13 +82,13 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: "aastra",
         coinImageUrl: "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
       },
-      {
-        coinDenom: "UST",
-        coinMinimalDenom: "uusd",
-        coinDecimals: 6,
-        coinGeckoId: "ust",
-        coinImageUrl: "https://salt.tikicdn.com/ts/upload/e0/3a/3f/73b30182fd438639dbfb1ed26ab98497.png",
-      },
+      // {
+      //   coinDenom: "UST",
+      //   coinMinimalDenom: "uusd",
+      //   coinDecimals: 6,
+      //   coinGeckoId: "ust",
+      //   coinImageUrl: "https://salt.tikicdn.com/ts/upload/e0/3a/3f/73b30182fd438639dbfb1ed26ab98497.png",
+      // },
     ],
     feeCurrencies: [
       {

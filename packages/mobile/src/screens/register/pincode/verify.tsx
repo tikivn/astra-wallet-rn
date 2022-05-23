@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { Text, View, Image } from "react-native";
 import { useStyle } from "../../../styles";
 import { Button } from "../../../components/button";
 import { RouteProp, useRoute } from "@react-navigation/native";
@@ -25,6 +25,7 @@ export const VerifyPincodeScreen: FunctionComponent = observer(() => {
                     newMnemonicConfig: NewMnemonicConfig;
                     bip44HDPath: BIP44HDPath;
                     password: string;
+                    type: "new" | "restore";
                 }
             >,
             string
@@ -60,7 +61,7 @@ export const VerifyPincodeScreen: FunctionComponent = observer(() => {
                 confirmPassword,
                 route.params.bip44HDPath
             );
-    
+
             smartNavigation.reset({
                 index: 0,
                 routes: [
@@ -91,10 +92,14 @@ export const VerifyPincodeScreen: FunctionComponent = observer(() => {
                 <KeyboardAwareScrollView
                     contentContainerStyle={style.flatten(["flex-grow-1", "padding-x-page"])}
                 >
-                    <View style={style.get("flex-1")} />
+                    <View style={style.flatten(["margin-y-32", "items-center"])}>
+                        {(route.params.type === "new") ?
+                        <Image style={style.flatten(["height-16"])} source={require('../../../assets/image/step-3.png')} resizeMode='contain' /> : null}
+                    </View>
                     <Text style={style.flatten(["color-white", "h4", "text-center", "margin-bottom-12"])}>Xác nhận lại mật khẩu truy cập</Text>
-                    <Text style={style.flatten(["color-gray-30", "text-caption", "text-center", "margin-bottom-64"])}>Đây là mật khẩu để truy cập vào Astra Wallet, khác với mật khẩu đăng nhập vào Tiki.</Text>
+                    
                     <View>
+                    <Text style={style.flatten(["color-gray-30", "text-caption"])}>Đây là mật khẩu để truy cập vào Astra Wallet, khác với mật khẩu đăng nhập vào Tiki.</Text>
                         <CodeField
                             ref={ref}
                             {...props}

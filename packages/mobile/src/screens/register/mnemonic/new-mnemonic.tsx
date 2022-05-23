@@ -1,5 +1,5 @@
 import React, { Fragment, FunctionComponent, useEffect, useState } from "react";
-import { View, Text } from "react-native";
+import { View, Text, Image } from "react-native";
 import { observer } from "mobx-react-lite";
 import { RouteProp, useIsFocused, useRoute } from "@react-navigation/native";
 import { RegisterConfig } from "@keplr-wallet/hooks";
@@ -70,7 +70,9 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
       style={style.flatten(["padding-x-page"])}
     >
       {/* Mock for flexible margin top */}
-      <View style={style.flatten(["max-height-64", "flex"])} />
+      <View style={style.flatten(["margin-y-32", "items-center"])}>
+        <Image style={style.flatten(["height-16"])} source={require('../../../assets/image/step-1.png')} resizeMode='contain'/>
+      </View>
       <Text
         style={style.flatten([
           "h4",

@@ -65,8 +65,6 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
 
   const style = useStyle();
 
-  const { analyticsStore } = useStore();
-
   const smartNavigation = useSmartNavigation();
 
   const registerConfig: RegisterConfig = route.params.registerConfig;
@@ -194,7 +192,8 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
         defaultValue=""
       />
       <View style={style.flatten(["flex-1"])} />
-      <Button containerStyle={style.flatten(["border-radius-4", "background-color-primary", "height-44"])}
+      <Button 
+        containerStyle={style.flatten(["border-radius-4", "background-color-primary", "height-44"])}
         textStyle={style.flatten(["subtitle2"])}
         text="Xác nhận"
         size="large" loading={isCreating} onPress={submit} />

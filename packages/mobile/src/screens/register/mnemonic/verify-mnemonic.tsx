@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { PageWithScrollView } from "../../../components/page";
-import { Text, View } from "react-native";
+import { Image, Text, View } from "react-native";
 import { useStyle } from "../../../styles";
 import { WordChip } from "../../../components/mnemonic";
 import { Button } from "../../../components/button";
@@ -90,6 +90,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
       registerConfig,
       newMnemonicConfig,
       bip44HDPath: bip44Option.bip44HDPath,
+      type: 'new',
     });
   });
 
@@ -99,6 +100,9 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
       contentContainerStyle={style.get("flex-grow-1")}
       style={style.flatten(["padding-x-page"])}
     >
+      <View style={style.flatten(["margin-y-32", "items-center"])}>
+        <Image style={style.flatten(["height-16"])} source={require('../../../assets/image/step-2.png')} resizeMode='contain'/>
+      </View>
       <Text
         style={style.flatten([
           "h4",

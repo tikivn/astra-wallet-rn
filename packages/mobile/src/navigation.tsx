@@ -117,6 +117,7 @@ import { RegisterTutorialcreen } from "./screens/register/tutorial";
 import { NewPincodeScreen } from "./screens/register/pincode";
 import { VerifyPincodeScreen } from "./screens/register/pincode/verify";
 import { DeleteWalletScreen, EnterPincodeScreen } from "./screens/settings/screens";
+import { CurrentPincodeScreen, ChangePincodeScreen } from "./screens/settings/screens/change-pincode";
 
 const {
   SmartNavigatorProvider,
@@ -184,7 +185,7 @@ const {
       upperScreenName: "Wallet",
     },
     NewHome: {
-      upperScreenName: "Main",
+      upperScreenName: "NewMain",
     },
     Send: {
       upperScreenName: "Others",
@@ -286,12 +287,14 @@ const {
       registerConfig: RegisterConfig;
       newMnemonicConfig: NewMnemonicConfig;
       bip44HDPath: BIP44HDPath;
+      type: "new" | "restore";
     };
     "Register.VerifyPincode": {
       registerConfig: RegisterConfig;
       newMnemonicConfig: NewMnemonicConfig;
       bip44HDPath: BIP44HDPath;
       password: string;
+      type: "new" | "restore";
     };
     "Register.RecoverMnemonic": {
       registerConfig: RegisterConfig;

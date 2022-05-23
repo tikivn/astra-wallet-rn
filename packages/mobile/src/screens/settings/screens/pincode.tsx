@@ -75,10 +75,11 @@ export const EnterPincodeScreen: FunctionComponent = observer(() => {
                 <KeyboardAwareScrollView
                     contentContainerStyle={style.flatten(["flex-grow-1", "padding-x-page"])}
                 >
-                    <View style={style.get("flex-1")} />
-                    <Text style={style.flatten(["color-white", "h4", "text-center", "margin-bottom-12"])}>Xác nhận lại mật khẩu truy cập</Text>
-                    <Text style={style.flatten(["color-gray-30", "text-caption", "text-center", "margin-bottom-64"])}>Đây là mật khẩu để truy cập vào Astra Wallet, khác với mật khẩu đăng nhập vào Tiki.</Text>
+                    <View style={style.get("flex")}/>
+                    <Text style={style.flatten(["color-white", "h4", "text-center", "margin-bottom-12"])}>Xem cụm từ bí mật</Text>
+                    <View style={style.get("flex-1")}/>
                     <View>
+                        <Text style={style.flatten(["color-gray-30", "text-caption", "text-center"])}>Mật khẩu bảo mật</Text>
                         <CodeField
                             ref={ref}
                             {...props}
@@ -105,7 +106,7 @@ export const EnterPincodeScreen: FunctionComponent = observer(() => {
                         />
                         <Text style={style.flatten(["color-danger", "text-caption2"])}>{isInvalidPassword ? "Mật khẩu không đúng, vui lòng nhập lại" : null}</Text>
                     </View>
-                    <View style={style.get("flex-1")} />
+                    
                     <Button
                         containerStyle={style.flatten(["border-radius-4", "height-44"])}
                         textStyle={style.flatten(["subtitle2"])}
