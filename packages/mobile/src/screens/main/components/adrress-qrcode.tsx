@@ -16,7 +16,7 @@ export const AddressQRCodeItem: FunctionComponent<{
 
     return (
         <View style={StyleSheet.flatten([
-            style.flatten(["width-248", "flex-1", "background-color-background-secondary", "overflow-hidden", "border-radius-12", "items-center", "padding-24"]),
+            style.flatten(["width-248", "flex-0", "background-color-background-secondary", "overflow-hidden", "border-radius-12", "items-center", "padding-24"]),
             propStyle,
         ])}>
             <View style={style.flatten(["width-200", "height-200"])}>

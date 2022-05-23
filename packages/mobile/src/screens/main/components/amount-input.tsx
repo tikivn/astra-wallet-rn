@@ -56,7 +56,7 @@ export const AmountInput: FunctionComponent<{
         return (
             <React.Fragment>
                 <View style={
-                    style.flatten(["padding-x-16", "padding-y-12", "flex-1", "background-color-background-secondary", "overflow-hidden", "border-radius-12", "justify-between"])}>
+                    style.flatten(["padding-x-16", "padding-y-12", "flex-0", "background-color-background-secondary", "overflow-hidden", "border-radius-12", "justify-between"])}>
                     <View style={style.flatten(["flex-row", "justify-between"])}>
                         <Text style={style.flatten(["color-text-black-low", "text-caption2"])}>Số Astra muốn gửi</Text>
                         <View style={style.flatten(["flex-row"])}>
