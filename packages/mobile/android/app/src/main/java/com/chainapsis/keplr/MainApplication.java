@@ -20,6 +20,7 @@ import org.unimodules.adapters.react.ReactModuleRegistryProvider;
 
 import com.microsoft.codepush.react.CodePush;
 import com.bugsnag.android.Bugsnag;
+import vn.tiki.app.astra.wallet.BuildConfig;
 
 public class MainApplication extends Application implements ReactApplication {
   private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(new BasePackageList().getPackageList(), null);

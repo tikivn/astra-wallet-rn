@@ -9,7 +9,8 @@
   },
   "scripts": {
     "clean": "sh ./scripts/clean.sh",
-    "android": "yarn build:provider && npx react-native run-android",
+    "android": "yarn build:provider && yarn build-and-run-android",
+    "build-and-run-android": "npx react-native run-android --main-activity com.chainapsis.keplr.MainActivity",
     "ios": "yarn build:provider && npx react-native run-ios",
     "android:connect": "adb reverse tcp:8081 tcp:8081",
     "typecheck": "tsc",
