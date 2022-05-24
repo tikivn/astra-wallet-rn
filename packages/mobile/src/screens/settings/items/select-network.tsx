@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useState, useMemo } from "react";
 import { useStore } from "../../../stores";
-import { SelectorModal } from "../../../components/input";
+import { BottomSheet } from "../../../components/input";
 import { AccountItem } from "../components";
 import { Text } from "react-native";
 import { useStyle } from "../../../styles";
@@ -22,7 +22,8 @@ export const AccountNetworkItem: FunctionComponent<{
       )
     return (
       <React.Fragment>
-        <SelectorModal
+        <BottomSheet
+          label="Network"
           isOpen={isOpenModal}
           close={() => setIsOpenModal(false)}
           maxItemsToShow={4}
