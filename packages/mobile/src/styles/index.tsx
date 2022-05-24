@@ -2,6 +2,7 @@ import { createStyleProvider } from "./builder";
 import { EnumTextTransform, EnumTextDecorationLine } from "./builder/types";
 import { Platform } from "react-native";
 import { getPlatformFontWeight } from "./builder/utils";
+import { Typos } from "./typos";
 
 export const Colors = {
   background: "#141828",
@@ -267,38 +268,7 @@ export const { StyleProvider, useStyle } = createStyleProvider({
       },
     }),
   },
-  typos: {
-    "text-small-regular": {
-      fontSize: 12,
-      lineHeight: 16,
-      ...getPlatformFontWeight("400"),
-    },
-    "text-base-regular": {
-      fontSize: 14,
-      lineHeight: 20,
-      ...getPlatformFontWeight("400"),
-    },
-    "text-base-semi-bold": {
-      fontSize: 14,
-      lineHeight: 20,
-      ...getPlatformFontWeight("600"),
-    },
-    "text-medium-regular": {
-      fontSize: 16,
-      lineHeight: 24,
-      ...getPlatformFontWeight("400"),
-    },
-    "text-large-medium": {
-      fontSize: 20,
-      lineHeight: 32,
-      ...getPlatformFontWeight("500"),
-    },
-    "text-2x-large-regular": {
-      fontSize: 24,
-      lineHeight: 32,
-      ...getPlatformFontWeight("400"),
-    },
-  },
+  typos: Typos,
   colors: {
     ...Colors,
     ...{
