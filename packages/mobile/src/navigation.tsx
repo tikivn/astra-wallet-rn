@@ -117,8 +117,8 @@ import { RegisterTutorialcreen } from "./screens/register/tutorial";
 import { NewPincodeScreen } from "./screens/register/pincode";
 import { VerifyPincodeScreen } from "./screens/register/pincode/verify";
 import { DeleteWalletScreen, EnterPincodeScreen } from "./screens/settings/screens";
-import { CurrentPincodeScreen, ChangePincodeScreen } from "./screens/settings/screens/change-pincode";
 import { ConfirmTransactionScreen } from "./screens/confirm-transaction";
+import { NewStakingDashboardScreen, NewValidatorDetailsScreen, NewValidatorListScreen } from "./screens/staking";
 
 const {
   SmartNavigatorProvider,
@@ -275,6 +275,15 @@ const {
     "Settings.DeleteWallet": {
       upperScreenName: "Wallet",
     },
+    "Staking.Dashboard.New": {
+      upperScreenName: "Stake",
+    },
+    "Validator.Details.New": {
+      upperScreenName: "Wallet",
+    },
+    "Validator.List.New": {
+      upperScreenName: "Wallet",
+    },
   }).withParams<{
     "Register.NewMnemonic": {
       registerConfig: RegisterConfig;
@@ -329,7 +338,13 @@ const {
     "Validator.Details": {
       validatorAddress: string;
     };
+    "Validator.Details.New": {
+      validatorAddress: string;
+    };
     "Validator.List": {
+      validatorSelector?: (validatorAddress: string) => void;
+    };
+    "Validator.List.New": {
       validatorSelector?: (validatorAddress: string) => void;
     };
     Delegate: {
@@ -636,21 +651,21 @@ export const TransactionNavigation: FunctionComponent = () => {
 }
 
 export const StakingNavigation: FunctionComponent = () => {
+  const style = useStyle();
   return (
     <Stack.Navigator
       screenOptions={{
         ...WalletHeaderScreenOptionsPreset,
-        headerTitle: "",
+        headerStyle: style.get("background-color-background"),
+        headerTitleStyle: style.flatten(["title2", "color-white"]),
+        headerTitle: "Staking",
       }}
-      initialRouteName="Staking"
+      initialRouteName="Staking.Dashboard.New"
       headerMode="screen"
     >
       <Stack.Screen
-        name="Staking"
-        component={StakingDashboardScreen}
-        options={{
-          headerShown: false,
-        }}
+        name="Staking.Dashboard.New"
+        component={NewStakingDashboardScreen}
       />
     </Stack.Navigator>
   );
@@ -836,7 +851,7 @@ export const WalletNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-         title: "",
+          title: "",
         }}
         name="Setting.ViewPrivateData"
         component={ViewPrivateDataScreen}
@@ -854,6 +869,18 @@ export const WalletNavigation: FunctionComponent = () => {
         }}
         name="Settings.DeleteWallet"
         component={DeleteWalletScreen} />
+      <Stack.Screen
+        options={{
+          title: "Quỹ đầu tư",
+        }}
+        name="Validator.Details.New"
+        component={NewValidatorDetailsScreen} />
+      <Stack.Screen
+        options={{
+          title: "Chọn quỹ đầu tư",
+        }}
+        name="Validator.List.New"
+        component={NewValidatorListScreen} />
     </Stack.Navigator>
   );
 };
@@ -1159,7 +1186,7 @@ const BugsnagNavigationContainer = (() => {
 
 export const AppNavigation: FunctionComponent = observer(() => {
   const { keyRingStore, analyticsStore, signInteractionStore } = useStore();
-  
+
   const navigationRef = useRef<NavigationContainerRef | null>(null);
   const routeNameRef = useRef<string | null>(null);
 
