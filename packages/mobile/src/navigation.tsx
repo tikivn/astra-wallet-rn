@@ -211,13 +211,13 @@ const {
       upperScreenName: "Others",
     },
     Delegate: {
-      upperScreenName: "Others",
+      upperScreenName: "Wallet",
     },
     Undelegate: {
-      upperScreenName: "Others",
+      upperScreenName: "Wallet",
     },
     Redelegate: {
-      upperScreenName: "Others",
+      upperScreenName: "Wallet",
     },
     Governance: {
       upperScreenName: "Others",
@@ -763,27 +763,7 @@ export const OtherNavigation: FunctionComponent = () => {
         name="Validator.List"
         component={ValidatorListScreen}
       />
-      <Stack.Screen
-        options={{
-          title: "Nhập tiền đầu tư",
-        }}
-        name="Delegate"
-        component={DelegateScreen}
-      />
-      <Stack.Screen
-        options={{
-          title: "Unstake",
-        }}
-        name="Undelegate"
-        component={UndelegateScreen}
-      />
-      <Stack.Screen
-        options={{
-          title: "Switch Validator",
-        }}
-        name="Redelegate"
-        component={RedelegateScreen}
-      />
+      
       <Stack.Screen
         options={{
           gestureEnabled: false,
@@ -892,7 +872,27 @@ export const WalletNavigation: FunctionComponent = () => {
         }}
         name="Staking.Rewards"
         component={StakingRewardScreen} />
-
+<Stack.Screen
+        options={{
+          title: "Nhập tiền đầu tư",
+        }}
+        name="Delegate"
+        component={DelegateScreen}
+      />
+      <Stack.Screen
+        options={{
+          title: "Unstake",
+        }}
+        name="Undelegate"
+        component={UndelegateScreen}
+      />
+      <Stack.Screen
+        options={{
+          title: "Switch Validator",
+        }}
+        name="Redelegate"
+        component={RedelegateScreen}
+      />
     </Stack.Navigator>
   );
 };

@@ -17,10 +17,11 @@ export const RewardsItem: FunctionComponent<{
 
     const account = accountStore.getAccount(chainStore.current.chainId);
     const queries = queriesStore.get(chainStore.current.chainId);
-
-    const pendingStakableReward = queries.cosmos.queryRewards.getQueryBech32Address(
+    
+    const rewardsQueries = queries.cosmos.queryRewards.getQueryBech32Address(
         account.bech32Address
-    ).stakableReward;
+    );
+    const pendingStakableReward = rewardsQueries.stakableReward;
 
     const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
         account.bech32Address
@@ -32,7 +33,7 @@ export const RewardsItem: FunctionComponent<{
 
     const totalReward = priceStore.calculatePrice(pendingStakableReward);
 
-    // const apy = queries.cosmos.queryInflation.inflation;
+    const isRewardExist = rewardsQueries.rewards.length > 0;
 
     return (
         <View style={style.flatten(["height-184", "padding-0", "margin-x-16", "margin-y-16", "justify-between", "border-radius-16", "border-color-gray-60", "border-width-1"])}>
@@ -93,11 +94,12 @@ export const RewardsItem: FunctionComponent<{
                             : pendingStakableReward.shrink(true).maxDecimals(6).toString()}
                     </Text>
                 </View>
-                <Button containerStyle={style.flatten(["self-center", "border-radius-4", "border-color-gray-30", "border-width-1", "width-132"])}
+                <Button containerStyle={style.flatten(["self-center", "border-radius-4", "border-color-gray-30", "border-width-1", "width-132"], [!isRewardExist && "opacity-40"])}
                     text="Nhận tiền lãi"
                     mode="text" size="small"
                     underlayColor={style.get("color-background").color}
                     textStyle={style.flatten(["color-gray-10", "body3"])}
+                    disabled={!isRewardExist}
                     onPress={() => {
                         smartNavigation.navigateSmart("Staking.Rewards", {});
                     }} />
