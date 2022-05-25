@@ -69,7 +69,9 @@ export const StakingRewardScreen: FunctionComponent = () => {
                 containerStyle={style.flatten(["border-radius-4", "height-44", "margin-16"])}
                 textStyle={style.flatten(["subtitle2"])}
                 text="Nhận tiền lãi"
-                size="large" onPress={withdrawAllRewards} />
+                size="large" onPress={withdrawAllRewards}
+                loading={account.txTypeInProgress === "withdrawRewards"}
+                />
             {/* Mock element for bottom padding */}
             <View style={style.flatten(["height-page-pad"])} />
         </PageWithScrollView>

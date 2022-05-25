@@ -54,12 +54,9 @@ export const RewardsItem: FunctionComponent<{
                     </Text>
                     <Text
                         style={style.flatten(["color-gray-80", "subtitle4", "margin-bottom-0"])}>
-                        ~ {totalDelegated
-                            .shrink(true)
-                            .maxDecimals(6)
-                            .trim(true)
-                            .upperCase(true)
-                            .toString()}
+                            ~ {totalDelegated
+                            ? totalDelegated.toString()
+                            : delegated.shrink(true).maxDecimals(6).toString()}
                     </Text>
                 </View>
                 <Button containerStyle={style.flatten(["self-center", "border-radius-4", "border-color-gray-30", "border-width-1", "width-132"])}
