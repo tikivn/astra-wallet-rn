@@ -1,9 +1,9 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
-import { StyleSheet, Text, View, ViewStyle } from "react-native";
-import { Image } from "react-native-svg";
+import { Text, View, ViewStyle } from "react-native";
 import { Colors, useStyle } from "../../styles";
-// import WarningIcon from "../../assets/svg/warning.svg";
+import { WarningIcon } from "../icon/warning";
+import { allStyles, styles } from "./styles";
 
 interface IAlertInline {
   style?: ViewStyle;
@@ -24,10 +24,16 @@ export const AlertInline: FunctionComponent<IAlertInline> = observer(({
 
   return (
     <View style={{ ...styles.container, ...viewContainer, ...style }}>
-      {/* <Image style={{ ...styles.logo }} source={require("../../assets/logo/Astra.png")} /> */}
-      {/* <WarningIcon style={{ ...styles.logo, fill: "red" }} /> */}
-      {/* <Image width={24} height={24} href={require("../../assets/svg/warning.svg")} /> */}
-      <View style={{ ...styles.textContainer}}>
+      <WarningIcon
+        containerStyle={{ marginRight: 8, }}
+        style={{
+          height: 16,
+          width: 16,
+          ...allStyles[type].logo,
+          color: Colors["orange-60"],
+        }}
+      />
+      <View style={{ ...styles.textContainer }}>
         {title && (
           <Text style={styleBuilder.flatten(["text-base-medium"])}>{title}</Text>
         )}
@@ -37,74 +43,4 @@ export const AlertInline: FunctionComponent<IAlertInline> = observer(({
       </View>
     </View >
   );
-});
-
-const InfoStyles = StyleSheet.create({
-  container: {
-    backgroundColor: Colors["orange-10"],
-    borderColor: Colors["orange-30"],
-  },
-
-});
-
-const SuccessStyles = StyleSheet.create({
-  container: {
-    backgroundColor: Colors["orange-10"],
-    borderColor: Colors["orange-30"],
-  },
-
-});
-
-const ErrorStyles = StyleSheet.create({
-  container: {
-    backgroundColor: Colors["orange-10"],
-    borderColor: Colors["orange-30"],
-  },
-
-});
-
-const WarningStyles = StyleSheet.create({
-  container: {
-    backgroundColor: Colors["orange-10"],
-    borderColor: Colors["orange-30"],
-  },
-
-});
-
-const allStyles = {
-  info: {
-    container: InfoStyles.container,
-  },
-  success: {
-    container: SuccessStyles.container,
-  },
-  error: {
-    container: ErrorStyles.container,
-  },
-  warning: {
-    container: WarningStyles.container,
-  },
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    alignContent: "stretch",
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,    
-  },
-  textContainer: {
-    marginRight: 16,
-  },
-  logo: {
-    height: 16,
-    width: 16,
-    marginRight: 8,
-  },
-  content: {
-
-  },
 });

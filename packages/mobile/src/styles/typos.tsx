@@ -40,15 +40,18 @@ const MediumTypos = {
 };
 
 const LargeTypos = {
-  "text-large-medium": {
-    fontSize: 20,
-    lineHeight: 32,
-    ...getPlatformFontWeight("500"),
-  },
   "text-large-bold": {
     fontSize: 18,
     lineHeight: 27,
     ...getPlatformFontWeight("700"),
+  },
+};
+
+const XLargeTypos = {
+  "text-x-large-medium": {
+    fontSize: 20,
+    lineHeight: 32,
+    ...getPlatformFontWeight("500"),
   },
 };
 
@@ -65,5 +68,6 @@ export const Typos = {
   ...BaseTypos,
   ...MediumTypos,
   ...LargeTypos,
+  ...XLargeTypos,
   ...XXLargeTypos,
 };

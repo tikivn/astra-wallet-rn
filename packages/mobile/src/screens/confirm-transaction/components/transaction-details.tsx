@@ -1,11 +1,10 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, TextStyle, View, ViewStyle } from "react-native";
 import { HairLine } from "../../../components/foundation-view/hair-line";
 import { AlignItems, ItemRow } from "../../../components/foundation-view/item-row";
-import { TextStyle } from "../../../components/foundation-view/text-style";
 import { Colors } from "../../../styles";
-import { Amount } from "../models/amount";
+import { Typos } from "../../../styles/typos";
 import { ITransaction } from "../models/transaction";
 
 export const TransactionDetails: FunctionComponent<ITransaction> = observer(({
@@ -14,83 +13,42 @@ export const TransactionDetails: FunctionComponent<ITransaction> = observer(({
   amounts,
   feeAmount,
 }) => {
+  function item(label?: string, value?: string, labelStyle?: ViewStyle | TextStyle, valueStyle?: ViewStyle | TextStyle, alignItems?: AlignItems): React.ReactNode {
+    return <ItemRow
+      alignItems={alignItems}
+      itemSpacing={12}
+      columns={[
+        {
+          text: label ?? "",
+          textStyle: labelStyle ?? Typos["text-base-regular"],
+          textColor: Colors["gray-30"],
+          flex: 3,
+        },
+        {
+          text: value ?? "",
+          textStyle: valueStyle ?? Typos["text-base-regular"],
+          textColor: Colors["gray-10"],
+          flex: 7,
+        },
+      ]}
+    />;
+  }
+
+  function hairlineItem(): React.ReactNode {
+    return <HairLine style={{ backgroundColor: Colors["gray-90"], }} />;
+  }
+
   function buildItems() {
-    const amountsData = amounts?.map((amount) => {
-      return {
-        alignCenter: true,
-        leftText: "Số Astra", leftTextStyle: TextStyle.baseRegular,
-        rightText: amount.toString(), rightTextStyle: TextStyle.x2LargeRegular,
-      };
+    const amountItems = amounts?.map((amount) => {
+      return item("Số Astra", amount.toString(), undefined, Typos["text-2x-large-regular"]);
     }) || [];
 
-    const totalAmount = amounts?.reduce((prevAmount, amount) => {
-      return prevAmount.adding(amount);
-    }).adding(feeAmount ?? Amount.empty());
-
-    console.log("__DEBUG__ total astra:", totalAmount);
-
-    const data: Array<{
-      highlight?: boolean;
-      alignCenter?: boolean;
-      leftText?: string;
-      leftTextStyle?: TextStyle;
-      rightText?: string;
-      rightTextStyle?: TextStyle;
-    }> = [
-        {
-          leftText: "Người nhận", leftTextStyle: TextStyle.baseRegular,
-          rightText: `${toAddress}`, rightTextStyle: TextStyle.baseRegular
-        },
-        ...amountsData,
-        {},// hair line
-        {
-          alignCenter: true,
-          leftText: "Phí giao dịch", leftTextStyle: TextStyle.baseRegular,
-          rightText: feeAmount?.toString(), rightTextStyle: TextStyle.baseSemiBold,
-        },
-        {
-          highlight: true,
-          alignCenter: true,
-          leftText: "Tổng cộng", leftTextStyle: TextStyle.baseRegular,
-          rightText: totalAmount?.toString(), rightTextStyle: TextStyle.xLargeMedium
-        },
-      ];
-
-    const items = data.map((d) => {
-      const {
-        highlight = false,
-        alignCenter,
-        leftText = "",
-        leftTextStyle,
-        rightText = "",
-        rightTextStyle
-      } = d;
-      if (!leftText && !rightText) {
-        return <HairLine />
-      }
-
-      const alignItems = alignCenter ? AlignItems.center : AlignItems.top;
-
-      return <ItemRow
-        highlight={highlight}
-        alignItems={alignItems}
-        itemSpacing={12}
-        columns={[
-          {
-            text: leftText,
-            textStyle: leftTextStyle,
-            textColor: Colors["gray-30"],
-            flex: 1
-          },
-          {
-            text: rightText,
-            textStyle: rightTextStyle,
-            textColor: Colors["gray-10"],
-            flex: 2
-          },
-        ]}
-      />
-    });
+    const items: React.ReactNode[] = [
+      item("Người nhận", toAddress || ""),
+      ...amountItems,
+      hairlineItem(),
+      item("Phí giao dịch", feeAmount?.toString() ?? "", undefined, undefined, AlignItems.center),
+    ]
 
     return items;
   };

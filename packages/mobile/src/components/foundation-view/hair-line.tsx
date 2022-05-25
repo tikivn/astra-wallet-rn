@@ -1,12 +1,15 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
-import { View } from "react-native";
-import { useStyle } from "../../styles";
+import { View, ViewStyle } from "react-native";
 
-export const HairLine: FunctionComponent = observer(() => {
-  const style = useStyle();
-
+export const HairLine: FunctionComponent<{
+  style?: ViewStyle,
+}> = observer(({style}) => {
   return (
-    <View style={style.flatten(["height-1", "margin-8"])} />
+    <View style={{
+      height: 1,
+      margin: 8,
+      ...style,
+    }} />
   );
 });

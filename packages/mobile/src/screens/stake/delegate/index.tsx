@@ -1,16 +1,21 @@
 import React, { FunctionComponent, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { PageWithScrollView } from "../../../components/page";
-import { useStyle } from "../../../styles";
+import { Colors, useStyle } from "../../../styles";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { View } from "react-native";
 import { useStore } from "../../../stores";
 import { useDelegateTxConfig } from "@keplr-wallet/hooks";
 import { EthereumEndpoint } from "../../../config";
-import { AmountInput, FeeButtons, MemoInput } from "../../../components/input";
+import { AmountInput } from "../../../components/input";
 import { Button } from "../../../components/button";
 import { useSmartNavigation } from "../../../navigation";
 import { Staking } from "@keplr-wallet/stores";
+import { ValidatorInfo } from "./components/validator-info";
+import { AlertInline } from "../../../components/alert-inline";
+import { AlignItems, ItemRow } from "../../../components/foundation-view/item-row";
+import { TextAlign } from "../../../components/foundation-view/text-style";
+import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
 
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -27,7 +32,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
 
   const validatorAddress = route.params.validatorAddress;
 
-  const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
+  const { chainStore, accountStore, queriesStore, analyticsStore, userBalanceStore } = useStore();
 
   const style = useStyle();
   const smartNavigation = useSmartNavigation();
@@ -61,39 +66,83 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   );
 
   const validator = bondedValidators.getValidator(validatorAddress);
+  // console.log("__DEBUG__ validator:", JSON.stringify(validator));
+
+  const balance = userBalanceStore.getBalanceString();
+
+  const name = validator?.description.moniker ?? "";
+  const thumbnailUrl = bondedValidators.getValidatorThumbnail(validatorAddress);
+
+  const commission = new IntPretty(
+    new Dec(validator?.commission.commission_rates.rate || 0)
+  )
+    .decreasePrecision(2)
+    .maxDecimals(2)
+    .trim(true)
+    .toString() + "%";
+
+  const votingPower = new CoinPretty(
+    chainStore.current.stakeCurrency,
+    new Dec(validator?.tokens || 0)
+  )
+    .maxDecimals(0)
+    .toString();
+
+  sendConfigs.feeConfig.setFeeType("average");
+  const fee = sendConfigs.feeConfig.fee?.trim(true).toString() ?? "";
+  // console.log("__DEBUG__ sendConfigs:", sendConfigs.feeConfig.fee);
+
+  function item(label: string, value: string): React.ReactNode {
+    return <ItemRow
+      style={{ marginHorizontal: 0, paddingHorizontal: 0, }}
+      alignItems={AlignItems.center}
+      itemSpacing={12}
+      columns={[
+        {
+          text: label,
+          textColor: Colors["gray-30"],
+        },
+        {
+          text: value,
+          textColor: Colors["gray-10"],
+          textAlign: TextAlign.right,
+          flex: 1,
+        },
+      ]}
+    />;
+  }
+
+  const items = [
+    item("Khả dụng", balance),
+    item("Phí", fee),
+  ];
 
   return (
     <PageWithScrollView
       style={style.flatten(["padding-x-page"])}
       contentContainerStyle={style.get("flex-grow-1")}
+      backgroundColor={Colors["gray-100"]}
     >
       <View style={style.flatten(["height-page-pad"])} />
-      {/*
-        // The recipient validator is selected by the route params, so no need to show the address input.
-        <AddressInput
-          label="Recipient"
-          recipientConfig={sendConfigs.recipientConfig}
-        />
-      */}
-      {/*
-      Delegate tx only can be sent with just stake currency. So, it is not needed to show the currency selector because the stake currency is one.
-      <CurrencySelector
-        label="Token"
-        placeHolder="Select Token"
+      <AlertInline
+        type="warning"
+        content="Sau khi đầu tư, nếu bạn muốn rút tiền, thì bạn sẽ nhận được tiền sau 14 ngày."
+      />
+      <ValidatorInfo
+        style={{ marginTop: 24, }}
+        {...{ name, thumbnailUrl, commission, votingPower }}
+      />
+      <AmountInput
+        containerStyle={{ marginTop: 24, }}
+        label="Số lượng"
         amountConfig={sendConfigs.amountConfig}
       />
-      */}
-      <AmountInput label="Amount" amountConfig={sendConfigs.amountConfig} />
-      <MemoInput label="Memo (Optional)" memoConfig={sendConfigs.memoConfig} />
-      <FeeButtons
-        label="Fee"
-        gasLabel="gas"
-        feeConfig={sendConfigs.feeConfig}
-        gasConfig={sendConfigs.gasConfig}
-      />
+
+      {items}
+
       <View style={style.flatten(["flex-1"])} />
       <Button
-        text="Stake"
+        text="Đầu tư"
         size="large"
         disabled={!account.isReadyToSendMsgs || !txStateIsValid}
         loading={account.isSendingMsg === "delegate"}
