@@ -1,18 +1,20 @@
 import React, { FunctionComponent, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 
-import { Text, TextInput, View } from "react-native";
+import { Text, TextInput, View, Image } from "react-native";
 import { Staking } from "@keplr-wallet/stores";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { RectButton } from "react-native-gesture-handler";
 import { CardDivider } from "../../../components/card";
-import { AllIcon, RightArrowIcon } from "../../../components/icon";
+import { AllIcon } from "../../../components/icon";
 import { PageWithSectionList } from "../../../components/page";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
 import { useSmartNavigation } from "../../../navigation";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
+import { TooltipLabel } from "../component";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type Sort = "APY" | "Voting Power" | "Name";
 
@@ -76,8 +78,9 @@ export const NewValidatorListScreen: FunctionComponent = observer(() => {
 
     return (
         <React.Fragment>
-
+            
             <PageWithSectionList style={style.get("background-color-background")}
+                // contentContainerStyle={style.flatten(["min-height-full"])}
                 sections={[
                     {
                         data,
@@ -107,9 +110,7 @@ export const NewValidatorListScreen: FunctionComponent = observer(() => {
                         <View style={style.flatten(["flex-1", "height-40", "padding-top-12"])}>
                             <View style={style.flatten(["flex-row", "justify-between", "padding-x-16", "margin-bottom-8"])}>
                                 <Text style={style.flatten(["color-gray-30", "text-caption2"])}>Tên</Text>
-                                <View style={style.flatten(["flex-row", "padding-x-16", "justify-end"])}>
-                                    <Text style={style.flatten(["color-gray-30", "text-caption2"])}>Tổng số cổ phần</Text>
-                                </View>
+                                <TooltipLabel text="Tổng số cổ phần"/>
                             </View>
                             <CardDivider style={style.flatten(["background-color-gray-70", "margin-bottom-0"])} />
                         </View>
@@ -197,7 +198,7 @@ const ValidatorItem: FunctionComponent<{
                                 .maxDecimals(0)
                                 .toString()}
                         </Text>
-                        <View style={style.flatten(["width-20", "height-20","items-center", "justify-center","margin-right-12"])}>
+                        <View style={style.flatten(["width-20", "height-20", "items-center", "justify-center", "margin-right-12"])}>
                             <AllIcon
                                 color={style.get("color-gray-10").color}
                             />

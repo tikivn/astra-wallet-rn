@@ -38,7 +38,7 @@ export const PageWithSectionList: FunctionComponent<
       >
         <GradientBackground />
       </View>
-      <SafeAreaView style={style.get("flex-1")}>
+      {/* <SafeAreaView style={style.get("flex-1")}> */}
         <AnimatedKeyboardAwareSectionList
           style={StyleSheet.flatten([
             style.flatten(["flex-1", "padding-0", "overflow-visible"]),
@@ -55,7 +55,7 @@ export const PageWithSectionList: FunctionComponent<
           )}
           {...restProps}
         />
-      </SafeAreaView>
+      {/* </SafeAreaView> */}
     </React.Fragment>
   );
 };

@@ -4,14 +4,11 @@ import { useStore } from "../../../stores";
 import { Card, CardBody, CardDivider } from "../../../components/card";
 import { Text, View, ViewStyle, Image } from "react-native";
 import { useStyle } from "../../../styles";
-
-import { Button } from "../../../components/button";
 import { Staking } from "@keplr-wallet/stores";
 import { RightArrowIcon } from "../../../components/icon";
 import { useSmartNavigation } from "../../../navigation";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
 import { RectButton } from "../../../components/rect-button";
-import { RightArrow } from "../../setting/components";
 import { Dec, IntPretty } from "@keplr-wallet/unit";
 
 export const DelegationsItem: FunctionComponent<{
@@ -179,12 +176,11 @@ export const DelegationsItem: FunctionComponent<{
                                             {amount.maxDecimals(6).trim(true).shrink(true).toString()}
                                         </Text>
                                         <Text
-                                            style={style.flatten(["color-gray-30", "subtitle4", "margin-bottom-0"])}>
-                                            ~ {total.shrink(true)
-                                                .maxDecimals(6)
-                                                .trim(true)
-                                                .upperCase(true)
-                                                .toString()}
+                                            style={style.flatten(["color-gray-80", "subtitle4", "margin-bottom-0"])}>
+                                            ~ {total
+                                                ? total.toString()
+                                                : amount.shrink(true).maxDecimals(6).toString()}
+
                                         </Text>
                                     </View>
                                     <View style={style.flatten(["flex-1", "margin-left-0", "items-start"])}>
@@ -197,12 +193,9 @@ export const DelegationsItem: FunctionComponent<{
                                             {rewards.maxDecimals(6).trim(true).shrink(true).toString()}
                                         </Text>
                                         <Text
-                                            style={style.flatten(["color-gray-30", "subtitle4", "margin-bottom-0"])}>
-                                            ~ {totalRewards.shrink(true)
-                                                .maxDecimals(6)
-                                                .trim(true)
-                                                .upperCase(true)
-                                                .toString()}
+                                            style={style.flatten(["color-gray-80", "subtitle4", "margin-bottom-0"])}>
+                                            ~ {totalRewards ? totalRewards.toString()
+                                                : rewards.shrink(true).maxDecimals(6).toString()}
                                         </Text>
                                     </View>
                                 </View>

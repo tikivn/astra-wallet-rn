@@ -1,7 +1,6 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { Text } from "react-native";
-import { Svg, Path } from "react-native-svg";
 import { useSmartNavigation } from "../../../navigation";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";

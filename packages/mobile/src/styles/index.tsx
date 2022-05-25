@@ -99,6 +99,7 @@ export const Colors = {
   "camera-loading-background": "rgba(255,255,255,0.95)",
   "big-image-placeholder": "#E7E4EF",
   "chain-list-element-dragging": "rgba(242, 242, 247, 0.8)",
+  "black-transparent": "rgba(0, 0, 0, 0.2)",
 };
 
 export const { StyleProvider, useStyle } = createStyleProvider({
@@ -414,6 +415,7 @@ export const { StyleProvider, useStyle } = createStyleProvider({
     "160": 160,
     "184": 184,
     "200": 200,
+    "208": 208,
     "214": 214,
     "400": 400,
     "600": 600,

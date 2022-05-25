@@ -119,6 +119,7 @@ import { VerifyPincodeScreen } from "./screens/register/pincode/verify";
 import { DeleteWalletScreen, EnterPincodeScreen } from "./screens/settings/screens";
 import { ConfirmTransactionScreen } from "./screens/confirm-transaction";
 import { NewStakingDashboardScreen, NewValidatorDetailsScreen, NewValidatorListScreen } from "./screens/staking";
+import { StakingRewardScreen } from "./screens/staking/rewards";
 
 const {
   SmartNavigatorProvider,
@@ -284,6 +285,9 @@ const {
     "Validator.List.New": {
       upperScreenName: "Wallet",
     },
+    "Staking.Rewards": {
+      upperScreenName: "Wallet",
+    }
   }).withParams<{
     "Register.NewMnemonic": {
       registerConfig: RegisterConfig;
@@ -872,6 +876,7 @@ export const WalletNavigation: FunctionComponent = () => {
       <Stack.Screen
         options={{
           title: "Quỹ đầu tư",
+          headerShown: false
         }}
         name="Validator.Details.New"
         component={NewValidatorDetailsScreen} />
@@ -881,6 +886,13 @@ export const WalletNavigation: FunctionComponent = () => {
         }}
         name="Validator.List.New"
         component={NewValidatorListScreen} />
+      <Stack.Screen
+        options={{
+          title: "Nhận tiền lãi",
+        }}
+        name="Staking.Rewards"
+        component={StakingRewardScreen} />
+
     </Stack.Navigator>
   );
 };

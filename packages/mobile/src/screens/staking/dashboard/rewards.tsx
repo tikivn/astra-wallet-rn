@@ -39,7 +39,7 @@ export const RewardsItem: FunctionComponent<{
             <View style={style.flatten(["height-90", "padding-y-16", "margin-x-16", "margin-y-1", "flex-row"])} >
                 <View style={style.flatten(["flex-1", "margin-left-0", "items-start"])}>
                     <Text
-                        style={style.flatten(["color-gray-30", "subtitle4", "margin-top-0"])}>
+                        style={style.flatten(["color-gray-80", "subtitle4", "margin-top-0"])}>
                         Tổng đầu tư
                     </Text>
                     <Text
@@ -52,7 +52,7 @@ export const RewardsItem: FunctionComponent<{
                             .toString()}
                     </Text>
                     <Text
-                        style={style.flatten(["color-gray-30", "subtitle4", "margin-bottom-0"])}>
+                        style={style.flatten(["color-gray-80", "subtitle4", "margin-bottom-0"])}>
                         ~ {totalDelegated
                             .shrink(true)
                             .maxDecimals(6)
@@ -74,7 +74,7 @@ export const RewardsItem: FunctionComponent<{
             <View style={style.flatten(["height-90", "padding-y-16", "margin-x-16", "margin-y-1", "flex-row"])} >
                 <View style={style.flatten(["flex-1", "margin-left-0", "items-start"])}>
                     <Text
-                        style={style.flatten(["color-gray-30", "subtitle4", "margin-top-0"])}>
+                        style={style.flatten(["color-gray-80", "subtitle4", "margin-top-0"])}>
                         Tổng tiền lãi
                     </Text>
                     <Text
@@ -87,22 +87,21 @@ export const RewardsItem: FunctionComponent<{
                             .toString()}
                     </Text>
                     <Text
-                        style={style.flatten(["color-gray-30", "subtitle4", "margin-bottom-0"])}>
+                        style={style.flatten(["color-gray-80", "subtitle4", "margin-bottom-0"])}>
                         ~ {totalReward
-                            .shrink(true)
-                            .maxDecimals(6)
-                            .trim(true)
-                            .upperCase(true)
-                            .toString()}
+                            ? totalReward.toString()
+                            : pendingStakableReward.shrink(true).maxDecimals(6).toString()}
                     </Text>
                 </View>
                 <Button containerStyle={style.flatten(["self-center", "border-radius-4", "border-color-gray-30", "border-width-1", "width-132"])}
                     text="Nhận tiền lãi"
                     mode="text" size="small"
                     underlayColor={style.get("color-background").color}
-                    textStyle={style.flatten(["color-gray-10", "body3"])} />
+                    textStyle={style.flatten(["color-gray-10", "body3"])}
+                    onPress={() => {
+                        smartNavigation.navigateSmart("Staking.Rewards", {});
+                    }} />
             </View>
-
 
         </View>
     );
