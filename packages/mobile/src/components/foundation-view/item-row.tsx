@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { useStyle } from "../../styles";
+import { Colors, useStyle } from "../../styles";
 import { TextAlign, TextStyle } from "./text-style";
 
 export enum AlignItems {
@@ -14,6 +14,7 @@ interface IColumn {
   text: string;
   textStyle?: TextStyle;
   textAlign?: TextAlign;
+  textColor?: string;
   flex: number;
 }
 
@@ -37,17 +38,19 @@ export const ItemRow: FunctionComponent<IItemRow> = observer(({
       text,
       textStyle = TextStyle.baseRegular,
       textAlign = TextAlign.left,
-      flex
+      textColor,
+      flex,
     } = column;
 
     const marginRight = index < columns.length - 1 ? itemSpacing : 0;
 
     return <Text style={{
-      ...style.flatten([textStyle, "color-gray-10"]),
+      ...style.flatten([textStyle]),
       ...{
         flex: flex,
         marginRight: marginRight,
         textAlign: textAlign,
+        color: textColor,
       },
     }}>{text}</Text>;
   });
@@ -69,8 +72,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     borderRadius: 12,
     flexDirection: "row",
-    // alignContent: "stretch",
-    // justifyContent: "space-between",
   },
   itemHighlight: {
     paddingVertical: 12,

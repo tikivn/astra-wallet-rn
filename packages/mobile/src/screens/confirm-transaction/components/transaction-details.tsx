@@ -4,6 +4,7 @@ import { StyleSheet, View } from "react-native";
 import { HairLine } from "../../../components/foundation-view/hair-line";
 import { AlignItems, ItemRow } from "../../../components/foundation-view/item-row";
 import { TextStyle } from "../../../components/foundation-view/text-style";
+import { Colors } from "../../../styles";
 import { Amount } from "../models/amount";
 import { ITransaction } from "../models/transaction";
 
@@ -78,11 +79,13 @@ export const TransactionDetails: FunctionComponent<ITransaction> = observer(({
           {
             text: leftText,
             textStyle: leftTextStyle,
+            textColor: Colors["gray-30"],
             flex: 1
           },
           {
             text: rightText,
             textStyle: rightTextStyle,
+            textColor: Colors["gray-10"],
             flex: 2
           },
         ]}

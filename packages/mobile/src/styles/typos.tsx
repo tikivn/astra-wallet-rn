@@ -45,6 +45,11 @@ const LargeTypos = {
     lineHeight: 32,
     ...getPlatformFontWeight("500"),
   },
+  "text-large-bold": {
+    fontSize: 18,
+    lineHeight: 27,
+    ...getPlatformFontWeight("700"),
+  },
 };
 
 const XXLargeTypos = {
