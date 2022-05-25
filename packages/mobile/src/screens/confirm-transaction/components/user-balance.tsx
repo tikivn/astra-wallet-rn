@@ -6,16 +6,8 @@ import { useStore } from "../../../stores";
 import FastImage from "react-native-fast-image";
 import { VectorCharacter } from "../../../components/vector-character";
 
-interface IUserBalance {
-  name: string;
-  amount: number;
-}
-
-export const UserBalance: FunctionComponent<IUserBalance> = observer(({
-  name,
-  amount
-}) => {
-  const { chainStore, accountStore, queriesStore } = useStore();
+export const UserBalance: FunctionComponent = observer(() => {
+  const { chainStore, accountStore, queriesStore, userBalanceStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
@@ -23,12 +15,7 @@ export const UserBalance: FunctionComponent<IUserBalance> = observer(({
     account.bech32Address
   ).stakable;
   const stakable = queryStakable.balance;
-  const balance = stakable.trim(true)
-  .shrink(true)
-  .maxDecimals(6)
-  .upperCase(true)
-  .hideDenom(true)
-  .toString();
+  const balance = userBalanceStore.getBalanceString();
 
   const style = useStyle();
 
@@ -36,29 +23,29 @@ export const UserBalance: FunctionComponent<IUserBalance> = observer(({
 
   const icon = currency.coinImageUrl ? (
     <FastImage
-        style={{
-            width: 24,
-            height: 24,
-            margin: 4,
-        }}
-        resizeMode={FastImage.resizeMode.contain}
-        source={{
-            uri: currency.coinImageUrl,
-        }}
+      style={{
+        width: 24,
+        height: 24,
+        margin: 4,
+      }}
+      resizeMode={FastImage.resizeMode.contain}
+      source={{
+        uri: currency.coinImageUrl,
+      }}
     />
-) : (
+  ) : (
     <VectorCharacter
-        char={currency.coinDenom[0]}
-        height={Math.floor(24 * 0.35)}
-        color="white"
+      char={currency.coinDenom[0]}
+      height={Math.floor(24 * 0.35)}
+      color="white"
     />
-);
+  );
 
   return (
     <View style={styles.container}>
       {icon}
       <View style={style.flatten(["margin-left-8"])}>
-        <Text style={style.flatten(["text-medium-regular", "color-gray-10"])}>{name}</Text>
+        <Text style={style.flatten(["text-medium-regular", "color-gray-10"])}>Tài sản của tôi</Text>
         <Text style={style.flatten(["text-small-regular", "color-gray-30"])}>Số dư: {balance}</Text>
       </View>
     </View>

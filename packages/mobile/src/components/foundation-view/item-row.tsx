@@ -1,8 +1,9 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TextStyle, View, ViewStyle } from "react-native";
 import { useStyle } from "../../styles";
-import { TextAlign, TextStyle } from "./text-style";
+import { Typos } from "../../styles/typos";
+import { TextAlign } from "./text-style";
 
 export enum AlignItems {
   top = "items-start",
@@ -10,14 +11,18 @@ export enum AlignItems {
   bottom = "items-end"
 }
 
-interface IColumn {
+interface ITextColumn {
   text: string;
-  textStyle?: TextStyle;
+  textStyle?: ViewStyle | TextStyle;
   textAlign?: TextAlign;
-  flex: number;
+  textColor?: string;
+  flex?: number;
 }
 
+type IColumn = ITextColumn | React.ReactNode;
+
 interface IItemRow {
+  style?: ViewStyle;
   highlight?: boolean;
   alignItems?: AlignItems;
   itemSpacing?: number;
@@ -25,29 +30,36 @@ interface IItemRow {
 }
 
 export const ItemRow: FunctionComponent<IItemRow> = observer(({
+  style,
   highlight = false,
   alignItems = AlignItems.top,
   itemSpacing,
   columns,
 }) => {
-  const style = useStyle();
+  const styleBuilder = useStyle();
 
   var cols = columns.map((column, index) => {
     const {
       text,
-      textStyle = TextStyle.baseRegular,
+      textStyle = Typos["text-base-regular"],
       textAlign = TextAlign.left,
-      flex
-    } = column;
+      textColor,
+      flex,
+    } = column as ITextColumn;
+
+    if (text == undefined) {
+      return column;
+    }
 
     const marginRight = index < columns.length - 1 ? itemSpacing : 0;
 
     return <Text style={{
-      ...style.flatten([textStyle, "color-gray-10"]),
+      ...textStyle,
       ...{
         flex: flex,
         marginRight: marginRight,
         textAlign: textAlign,
+        color: textColor,
       },
     }}>{text}</Text>;
   });
@@ -56,7 +68,8 @@ export const ItemRow: FunctionComponent<IItemRow> = observer(({
     <View style={{
       ...styles.itemContainer,
       ...highlight ? styles.itemHighlight : {},
-      ...style.flatten([alignItems]),
+      ...styleBuilder.flatten([alignItems]),
+      ...style,
     }}>
       {cols}
     </View>
@@ -69,8 +82,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     borderRadius: 12,
     flexDirection: "row",
-    // alignContent: "stretch",
-    // justifyContent: "space-between",
   },
   itemHighlight: {
     paddingVertical: 12,

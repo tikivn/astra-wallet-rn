@@ -119,7 +119,7 @@ export const ConfirmTransactionScreen: FunctionComponent = observer(() => {
       backgroundColor={style.get("color-background").color}
     >
       <View style={style.get("background-color-background")}>
-        <UserBalance name="Tài sản của tôi" amount={1000} />
+        <UserBalance />
         <TransactionDetails {...transactionData} />
       </View>
       {wcSession ? (

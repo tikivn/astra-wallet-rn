@@ -2,6 +2,7 @@ import { createStyleProvider } from "./builder";
 import { EnumTextTransform, EnumTextDecorationLine } from "./builder/types";
 import { Platform } from "react-native";
 import { getPlatformFontWeight } from "./builder/utils";
+import { Typos } from "./typos";
 
 export const Colors = {
   background: "#141828",
@@ -49,14 +50,27 @@ export const Colors = {
   "profile-red": "#FF6D88",
   "profile-orange": "#FEC078",
   "profile-yellow": "#F2ED64",
-  "gray-10": "#d5d9e0",
+  "blue-10": "#F0F8FF",
+  "blue-30": "#C2E1FF",
+  "blue-70": "#0B74E5",
+  "gray-10": "#D5D9E0",
   "gray-30": "#818DA6",
+  "gray-50": "#4C5975",
   "gray-60": "#3A4561",
   "gray-70": "#2C364F",
   "gray-80": "#818DA6",
   "gray-90": "#1A2033",
-  "orange-30" : "#FFF5EB",
+  "gray-100": "#141828",
+  "orange-10" : "#FFF5EB",
+  "orange-30" : "#FFD1A4",
+  "orange-60" : "#FC820A",
+  "green-10": "#EFFFF4",
+  "green-30": "#B7EFC3",
   "green-50": "#4AB57C",
+  "green-60": "#00AB56",
+  "red-10": "#FFF0F1",
+  "red-30": "#FFB8BC",
+  "red-60": "#FF424E",
   icon: "#2C4163",
   card: "rgba(255,255,255,0.95)",
   success: "#2DCE89",
@@ -267,38 +281,7 @@ export const { StyleProvider, useStyle } = createStyleProvider({
       },
     }),
   },
-  typos: {
-    "text-small-regular": {
-      fontSize: 12,
-      lineHeight: 16,
-      ...getPlatformFontWeight("400"),
-    },
-    "text-base-regular": {
-      fontSize: 14,
-      lineHeight: 20,
-      ...getPlatformFontWeight("400"),
-    },
-    "text-base-semi-bold": {
-      fontSize: 14,
-      lineHeight: 20,
-      ...getPlatformFontWeight("600"),
-    },
-    "text-medium-regular": {
-      fontSize: 16,
-      lineHeight: 24,
-      ...getPlatformFontWeight("400"),
-    },
-    "text-large-medium": {
-      fontSize: 20,
-      lineHeight: 32,
-      ...getPlatformFontWeight("500"),
-    },
-    "text-2x-large-regular": {
-      fontSize: 24,
-      lineHeight: 32,
-      ...getPlatformFontWeight("400"),
-    },
-  },
+  typos: Typos,
   colors: {
     ...Colors,
     ...{

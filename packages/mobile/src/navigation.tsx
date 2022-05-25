@@ -761,7 +761,7 @@ export const OtherNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          title: "Stake",
+          title: "Nhập tiền đầu tư",
         }}
         name="Delegate"
         component={DelegateScreen}
