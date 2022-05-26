@@ -146,6 +146,7 @@ export const Button: FunctionComponent<{
             `height-button-${size}` as any,
             "border-radius-8",
             "overflow-hidden",
+            "height-44"
           ],
           [
             mode === "outline" && "border-width-1",
@@ -184,6 +185,7 @@ export const Button: FunctionComponent<{
         <Text
           style={StyleSheet.flatten([
             style.flatten(
+              ["subtitle2"],
               [textDefinition, "text-center", textColorDefinition as any],
               [loading && "opacity-transparent"]
             ),

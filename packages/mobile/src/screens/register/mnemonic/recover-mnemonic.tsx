@@ -193,7 +193,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
       />
       <View style={style.flatten(["flex-1"])} />
       <Button 
-        containerStyle={style.flatten(["border-radius-4", "background-color-primary", "height-44"])}
+        containerStyle={style.flatten(["border-radius-4", "height-44"])}
         textStyle={style.flatten(["subtitle2"])}
         text="Xác nhận"
         size="large" loading={isCreating} onPress={submit} />

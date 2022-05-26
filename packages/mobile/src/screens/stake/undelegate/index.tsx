@@ -2,10 +2,10 @@ import React, { FunctionComponent, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useStore } from "../../../stores";
-import { useStyle } from "../../../styles";
+import { Colors, useStyle } from "../../../styles";
 import { useUndelegateTxConfig } from "@keplr-wallet/hooks";
 import { PageWithScrollView } from "../../../components/page";
-import { AmountInput, FeeButtons, MemoInput } from "../../../components/input";
+import { AmountInput, ValidatorItem } from "../../../components/input";
 import { Text, View } from "react-native";
 import { Button } from "../../../components/button";
 import { Card, CardBody, CardDivider } from "../../../components/card";
@@ -13,6 +13,9 @@ import { Staking } from "@keplr-wallet/stores";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
 import { Buffer } from "buffer/";
 import { useSmartNavigation } from "../../../navigation";
+import { AlertInline } from "../../../components/alert-inline";
+import { AlignItems, ItemRow } from "../../../components/foundation-view/item-row";
+import { TextAlign } from "../../../components/foundation-view/text-style";
 
 export const UndelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -50,14 +53,14 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
 
   const validatorThumbnail = validator
     ? queries.cosmos.queryValidators
-        .getQueryStatus(Staking.BondStatus.Bonded)
-        .getValidatorThumbnail(validatorAddress) ||
-      queries.cosmos.queryValidators
-        .getQueryStatus(Staking.BondStatus.Unbonding)
-        .getValidatorThumbnail(validatorAddress) ||
-      queries.cosmos.queryValidators
-        .getQueryStatus(Staking.BondStatus.Unbonded)
-        .getValidatorThumbnail(validatorAddress)
+      .getQueryStatus(Staking.BondStatus.Bonded)
+      .getValidatorThumbnail(validatorAddress) ||
+    queries.cosmos.queryValidators
+      .getQueryStatus(Staking.BondStatus.Unbonding)
+      .getValidatorThumbnail(validatorAddress) ||
+    queries.cosmos.queryValidators
+      .getQueryStatus(Staking.BondStatus.Unbonded)
+      .getValidatorThumbnail(validatorAddress)
     : undefined;
 
   const staked = queries.cosmos.queryDelegations
@@ -84,76 +87,73 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.gasConfig.error ??
     sendConfigs.feeConfig.error;
   const txStateIsValid = sendConfigError == null;
-
+  sendConfigs.feeConfig.setFeeType("average");
+  const fee = sendConfigs.feeConfig.fee?.trim(true).toString() ?? "";
   return (
     <PageWithScrollView
+      backgroundColor={style.get("color-background").color}
       style={style.flatten(["padding-x-page"])}
       contentContainerStyle={style.get("flex-grow-1")}
     >
       <View style={style.flatten(["height-page-pad"])} />
-      <Card style={style.flatten(["margin-bottom-12", "border-radius-8"])}>
-        <CardBody>
-          <View style={style.flatten(["flex-row", "items-center"])}>
-            <ValidatorThumbnail
-              style={style.flatten(["margin-right-12"])}
-              size={36}
-              url={validatorThumbnail}
-            />
-            <Text style={style.flatten(["h6", "color-text-black-high"])}>
-              {validator ? validator.description.moniker : "..."}
-            </Text>
-          </View>
-          <CardDivider
-            style={style.flatten([
-              "margin-x-0",
-              "margin-top-8",
-              "margin-bottom-15",
-            ])}
-          />
-          <View style={style.flatten(["flex-row", "items-center"])}>
-            <Text
-              style={style.flatten(["subtitle2", "color-text-black-medium"])}
-            >
-              Staked
-            </Text>
-            <View style={style.get("flex-1")} />
-            <Text style={style.flatten(["body2", "color-text-black-medium"])}>
-              {staked.trim(true).shrink(true).maxDecimals(6).toString()}
-            </Text>
-          </View>
-        </CardBody>
-      </Card>
-      {/*
-        // The recipient validator is selected by the route params, so no need to show the address input.
-        <AddressInput
-          label="Recipient"
-          recipientConfig={sendConfigs.recipientConfig}
-        />
-      */}
-      {/*
-      Undelegate tx only can be sent with just stake currency. So, it is not needed to show the currency selector because the stake currency is one.
-      <CurrencySelector
-        label="Token"
-        placeHolder="Select Token"
-        amountConfig={sendConfigs.amountConfig}
+      <AlertInline
+        type="warning"
+        content="Bạn sẽ nhận được số ASA bạn rút sau 14 ngày"
       />
-      */}
-      <AmountInput label="Amount" amountConfig={sendConfigs.amountConfig} />
-      <MemoInput label="Memo (Optional)" memoConfig={sendConfigs.memoConfig} />
+      <ValidatorItem
+        containerStyle={style.flatten(["margin-y-16"])}
+        name={validator ? validator.description.moniker : "..."}
+        thumbnail={validatorThumbnail}
+        value={staked.trim(true).shrink(true).maxDecimals(6).toString()}
+      />
+      <AmountInput label="Số tiền rút (không bao gồm lãi)" amountConfig={sendConfigs.amountConfig} />
+      <ItemRow style={{ marginHorizontal: 0, paddingHorizontal: 0, }}
+        alignItems={AlignItems.center}
+        itemSpacing={12}
+        columns={[
+          {
+            text: "Khả dụng",
+            textColor: Colors["gray-30"],
+          },
+          {
+            text: staked.trim(true).shrink(true).maxDecimals(6).toString(),
+            textColor: Colors["gray-10"],
+            textAlign: TextAlign.right,
+            flex: 1,
+          },
+        ]} />
+      <ItemRow style={{ marginHorizontal: 0, paddingHorizontal: 0, }}
+        alignItems={AlignItems.center}
+        itemSpacing={12}
+        columns={[
+          {
+            text: "Phí",
+            textColor: Colors["gray-30"],
+          },
+          {
+            text: fee,
+            textColor: Colors["gray-10"],
+            textAlign: TextAlign.right,
+            flex: 1,
+          },
+        ]} />
+      {/* <MemoInput label="Memo (Optional)" memoConfig={sendConfigs.memoConfig} />
       <FeeButtons
         label="Fee"
         gasLabel="gas"
         feeConfig={sendConfigs.feeConfig}
         gasConfig={sendConfigs.gasConfig}
-      />
+      /> */}
       <View style={style.flatten(["flex-1"])} />
       <Button
-        text="Unstake"
+        containerStyle={style.flatten(["border-radius-4", "height-44"])}
+        textStyle={style.flatten(["subtitle2"])}
+        text="Rút"
         size="large"
-        disabled={!account.isReadyToSendMsgs || !txStateIsValid}
-        loading={account.isSendingMsg === "undelegate"}
+        disabled={!account.isReadyToSendTx || !txStateIsValid}
+        loading={account.txTypeInProgress === "undelegate"}
         onPress={async () => {
-          if (account.isReadyToSendMsgs && txStateIsValid) {
+          if (account.isReadyToSendTx && txStateIsValid) {
             try {
               await account.cosmos.sendUndelegateMsg(
                 sendConfigs.amountConfig.amount,

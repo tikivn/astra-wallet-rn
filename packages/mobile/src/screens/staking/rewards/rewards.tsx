@@ -1,12 +1,12 @@
 import React, { FunctionComponent, useMemo } from "react";
 import { observer } from "mobx-react-lite";
-import { Text, View, ViewStyle, Image } from "react-native";
+import { Text, ViewStyle } from "react-native";
 import { Staking } from "@keplr-wallet/stores";
 import { Card, CardBody, CardDivider } from "../../../components/card";
-import { ValidatorThumbnail } from "../../../components/thumbnail";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { DelegationsEmptyItem } from "../dashboard/delegate";
+import { ValidatorItem } from "../../../components/input";
 
 export const RewardDetails: FunctionComponent<{
     containerStyle?: ViewStyle;
@@ -87,48 +87,14 @@ export const RewardDetails: FunctionComponent<{
                         const rewards = queryRewards.getStakableRewardOf(val.operator_address);
 
                         return (
-                            <View style={style.flatten(["border-radius-16",
-                                "border-width-1",
-                                "border-color-gray-60",
-                                "margin-x-16",
-                                "margin-bottom-8",
-                                "padding-x-16",
-                                "height-56",
-                                "background-color-gray-90",
-                                "flex-row",
-                                "items-center",
-                                "justify-between"])}>
-                                <View style={style.flatten(["flex-row", "justify-start"])}>
-                                    <ValidatorThumbnail
-                                        style={style.flatten(["margin-right-16"])}
-                                        size={24}
-                                        url={thumbnail}
-                                    />
-                                    <Text
-                                        style={style.flatten([
-                                            "subtitle3",
-                                            "color-gray-10",
-                                            "max-width-160",
-                                        ])}
-                                        numberOfLines={1}
-                                        ellipsizeMode="tail"
-                                    >
-                                        {val.description.moniker}
-                                    </Text>
-                                </View>
-
-                                <Text
-                                    style={style.flatten([
-                                        "text-caption2",
-                                        "color-gray-10",
-                                    ])}
-                                    numberOfLines={1}
-                                    ellipsizeMode="tail"
-                                >
-                                    {rewards.maxDecimals(6).trim(true).shrink(true).toString()}
-                                </Text>
-
-                            </View>
+                            <ValidatorItem
+                                thumbnail={thumbnail}
+                                name={val.description.moniker}
+                                value={rewards.maxDecimals(6).trim(true).shrink(true).toString()}
+                                containerStyle={style.flatten([
+                                    "margin-x-16",
+                                    "margin-bottom-8"])}
+                            />
                         );
                     })}
                 </CardBody>

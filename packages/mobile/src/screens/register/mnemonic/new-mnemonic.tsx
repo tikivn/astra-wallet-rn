@@ -113,7 +113,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
       </View>
       <View style={style.flatten(["height-24"])} />
       <Button
-        containerStyle={style.flatten(["border-radius-4", "background-color-primary", "height-44"])}
+        containerStyle={style.flatten(["border-radius-4", "height-44"])}
         textStyle={style.flatten(["subtitle2"])}
         text="Tiếp tục"
         size="large"

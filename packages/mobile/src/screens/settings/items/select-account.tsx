@@ -2,17 +2,14 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { Text } from "react-native";
 import { useSmartNavigation } from "../../../navigation";
-import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { AddressCopyableItem } from "../../../components/address-copyable-new";
 import { RectButton } from "../../../components/rect-button";
 
 export const SettingsAccountItem: FunctionComponent = observer(() => {
-    const { accountStore, chainStore } = useStore();
 
     const style = useStyle();
     const smartNavigation = useSmartNavigation();
-    const account = accountStore.getAccount(chainStore.current.chainId);
 
     return (
         <React.Fragment>

@@ -35,7 +35,7 @@ export const AmountInput: FunctionComponent<{
 
     labelStyle = {
       ...style.flatten([
-        "text-medium-medium", 
+        "subtitle2", 
         "color-gray-30", 
         "margin-bottom-4"
       ]),

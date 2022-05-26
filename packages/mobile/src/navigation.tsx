@@ -763,7 +763,7 @@ export const OtherNavigation: FunctionComponent = () => {
         name="Validator.List"
         component={ValidatorListScreen}
       />
-      
+
       <Stack.Screen
         options={{
           gestureEnabled: false,
@@ -872,7 +872,7 @@ export const WalletNavigation: FunctionComponent = () => {
         }}
         name="Staking.Rewards"
         component={StakingRewardScreen} />
-<Stack.Screen
+      <Stack.Screen
         options={{
           title: "Nhập tiền đầu tư",
         }}
@@ -881,14 +881,14 @@ export const WalletNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          title: "Unstake",
+          title: "Rút tiền đầu tư",
         }}
         name="Undelegate"
         component={UndelegateScreen}
       />
       <Stack.Screen
         options={{
-          title: "Switch Validator",
+          title: "Chuyển đổi quỹ",
         }}
         name="Redelegate"
         component={RedelegateScreen}

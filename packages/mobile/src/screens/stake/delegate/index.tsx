@@ -144,8 +144,8 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       <Button
         text="Đầu tư"
         size="large"
-        disabled={!account.isReadyToSendMsgs || !txStateIsValid}
-        loading={account.isSendingMsg === "delegate"}
+        disabled={!account.isReadyToSendTx || !txStateIsValid}
+        loading={account.txTypeInProgress === "delegate"}
         onPress={async () => {
           if (account.isReadyToSendMsgs && txStateIsValid) {
             try {
