@@ -13,9 +13,9 @@ import { useSmartNavigation } from "../../../navigation";
 import { Staking } from "@keplr-wallet/stores";
 import { ValidatorInfo } from "./components/validator-info";
 import { AlertInline } from "../../../components/alert-inline";
-import { AlignItems, ItemRow } from "../../../components/foundation-view/item-row";
-import { TextAlign } from "../../../components/foundation-view/text-style";
+import { buildLeftColumn, buildRightColumn } from "../../../components/foundation-view/item-row";
 import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
+import { IRow, ListRowView } from "../../../components/foundation-view/list-row-view";
 
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -92,29 +92,21 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   const fee = sendConfigs.feeConfig.fee?.trim(true).toString() ?? "";
   // console.log("__DEBUG__ sendConfigs:", sendConfigs.feeConfig.fee);
 
-  function item(label: string, value: string): React.ReactNode {
-    return <ItemRow
-      style={{ marginHorizontal: 0, paddingHorizontal: 0, }}
-      alignItems={AlignItems.center}
-      itemSpacing={12}
-      columns={[
-        {
-          text: label,
-          textColor: Colors["gray-30"],
-        },
-        {
-          text: value,
-          textColor: Colors["gray-10"],
-          textAlign: TextAlign.right,
-          flex: 1,
-        },
-      ]}
-    />;
-  }
-
-  const items = [
-    item("Khả dụng", balance),
-    item("Phí", fee),
+  const rows: IRow[] = [
+    {
+      type: "items",
+      cols: [
+        buildLeftColumn({ text: "Khả dụng" }),
+        buildRightColumn({ text: balance }),
+      ]
+    },
+    {
+      type: "items",
+      cols: [
+        buildLeftColumn({ text: "Phí" }),
+        buildRightColumn({ text: fee }),
+      ]
+    },
   ];
 
   return (
@@ -138,7 +130,12 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         amountConfig={sendConfigs.amountConfig}
       />
 
-      {items}
+      <ListRowView
+        rows={rows}
+        style={{ paddingHorizontal: 0, }}
+        hideBorder
+        clearBackground
+      />
 
       <View style={style.flatten(["flex-1"])} />
       <Button

@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { StyleSheet, Text, TextStyle, View, ViewStyle } from "react-native";
-import { useStyle } from "../../styles";
+import { Colors, useStyle } from "../../styles";
 import { Typos } from "../../styles/typos";
 import { TextAlign } from "./text-style";
 
@@ -11,7 +11,7 @@ export enum AlignItems {
   bottom = "items-end"
 }
 
-interface ITextColumn {
+export interface ITextColumn {
   text: string;
   textStyle?: ViewStyle | TextStyle;
   textAlign?: TextAlign;
@@ -19,7 +19,7 @@ interface ITextColumn {
   flex?: number;
 }
 
-type IColumn = ITextColumn | React.ReactNode;
+export type IColumn = ITextColumn | React.ReactNode;
 
 interface IItemRow {
   style?: ViewStyle;
@@ -27,6 +27,27 @@ interface IItemRow {
   alignItems?: AlignItems;
   itemSpacing?: number;
   columns: IColumn[];
+}
+
+
+export function buildLeftColumn(config: ITextColumn): IColumn {
+  return {
+    text: config.text,
+    textStyle: config.textStyle ?? Typos["text-base-regular"],
+    textAlign: config.textAlign,
+    textColor: config.textColor ?? Colors["gray-30"],
+    flex: config.flex,
+  };
+}
+
+export function buildRightColumn(config: ITextColumn): IColumn {
+  return {
+    text: config.text,
+    textStyle: config.textStyle ?? Typos["text-base-regular"],
+    textAlign: config.textAlign ?? TextAlign.right,
+    textColor: Colors["gray-10"],
+    flex: config.flex ?? 1,
+  };
 }
 
 export const ItemRow: FunctionComponent<IItemRow> = observer(({

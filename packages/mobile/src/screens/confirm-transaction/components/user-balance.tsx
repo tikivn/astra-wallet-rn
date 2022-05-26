@@ -1,10 +1,12 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { useStyle } from "../../../styles";
 import { useStore } from "../../../stores";
 import FastImage from "react-native-fast-image";
 import { VectorCharacter } from "../../../components/vector-character";
+import { IRow, ListRowView } from "../../../components/foundation-view/list-row-view";
+import { AlignItems } from "../../../components/foundation-view/item-row";
 
 export const UserBalance: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, userBalanceStore } = useStore();
@@ -41,24 +43,22 @@ export const UserBalance: FunctionComponent = observer(() => {
     />
   );
 
-  return (
-    <View style={styles.container}>
-      {icon}
-      <View style={style.flatten(["margin-left-8"])}>
-        <Text style={style.flatten(["text-medium-regular", "color-gray-10"])}>Tài sản của tôi</Text>
-        <Text style={style.flatten(["text-small-regular", "color-gray-30"])}>Số dư: {balance}</Text>
-      </View>
-    </View>
-  );
-});
+  const rows: IRow[] = [
+    {
+      type: "items",
+      alignItems: AlignItems.center,
+      itemSpacing: 8,
+      cols: [
+        icon,
+        <View style={style.flatten(["margin-left-8"])}>
+          <Text style={style.flatten(["text-medium-regular", "color-gray-10"])}>Tài sản của tôi</Text>
+          <Text style={style.flatten(["text-small-regular", "color-gray-30"])}>Số dư: {balance}</Text>
+        </View>
+      ],
+    }
+  ];
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 12,
-    backgroundColor: "#1A2033",
-  }
+  return (
+    <ListRowView rows={rows} hideBorder />
+  );
 });
