@@ -120,6 +120,7 @@ import { DeleteWalletScreen, EnterPincodeScreen } from "./screens/settings/scree
 import { ConfirmTransactionScreen } from "./screens/confirm-transaction";
 import { NewStakingDashboardScreen, NewValidatorDetailsScreen, NewValidatorListScreen } from "./screens/staking";
 import { StakingRewardScreen } from "./screens/staking/rewards";
+import { HistoryScreen } from "./screens/history";
 
 const {
   SmartNavigatorProvider,
@@ -506,6 +507,35 @@ export const NewMainNavigation: FunctionComponent = () => {
         options={{
           headerShown: false,
         }}
+      />
+    </Stack.Navigator>
+  );
+};
+
+export const HistoryNavigation: FunctionComponent = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerTitleAlign: "left",
+        headerStyle: {
+          backgroundColor: "transparent",
+          elevation: 0,
+          shadowOpacity: 0,
+        },
+        headerTitle: "Lịch sử giao dịch",
+        headerTitleStyle: {
+          color: "white"
+        }
+      }}
+      initialRouteName="History"
+      headerMode="screen"
+    >
+      <Stack.Screen
+        options={{
+          // headerRight: () => <HomeScreenHeaderRight />,
+        }}
+        name="History"
+        component={HistoryScreen}
       />
     </Stack.Navigator>
   );
@@ -1140,7 +1170,7 @@ export const MainTabNavigation: FunctionComponent = () => {
         }} />
       <Tab.Screen
         name="History"
-        component={MainNavigation}
+        component={HistoryNavigation}
         options={{
           unmountOnBlur: true,
           tabBarLabel: "Lịch sử",

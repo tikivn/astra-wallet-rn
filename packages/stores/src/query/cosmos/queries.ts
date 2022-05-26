@@ -35,6 +35,7 @@ import {
 } from "./supply/osmosis";
 import { ObservableQueryDistributionParams } from "./distribution";
 import { ObservableQueryRPCStatus } from "./status";
+import { ObservableQueryTxs } from "./tx";
 
 export interface CosmosQueries {
   cosmos: CosmosQueriesImpl;
@@ -81,6 +82,7 @@ export class CosmosQueriesImpl {
   public readonly queryValidators: DeepReadonly<ObservableQueryValidators>;
   public readonly queryGovernance: DeepReadonly<ObservableQueryGovernance>;
   public readonly queryProposalVote: DeepReadonly<ObservableQueryProposalVote>;
+  public readonly queryTxs: DeepReadonly<ObservableQueryTxs>;
 
   public readonly queryIBCClientState: DeepReadonly<ObservableQueryIBCClientState>;
   public readonly queryIBCChannel: DeepReadonly<ObservableQueryIBCChannel>;
@@ -192,6 +194,12 @@ export class CosmosQueriesImpl {
       this.queryPool
     );
     this.queryProposalVote = new ObservableQueryProposalVote(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+
+    this.queryTxs = new ObservableQueryTxs(
       kvStore,
       chainId,
       chainGetter
