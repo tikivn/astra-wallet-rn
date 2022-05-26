@@ -8,6 +8,7 @@ import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { Toggle } from "../../components/toggle";
+import  LottieView from "lottie-react-native"
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import WelcomeRocket from "../../assets/svg/welcome-rocket.svg";
@@ -45,30 +46,16 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
   const [isLoading, setIsLoading] = useState(false);
 
   return (
-    <PageWithView style={style.flatten(["padding-x-42"])}>
+    <View style={style.flatten(["padding-x-42","height-full", "background-color-background"])}>
       <View style={style.get("flex-1")} />
       <View style={style.flatten(["items-center"])}>
-        <WelcomeRocket width={358} height={254} />
-
-        <Text
-          style={style.flatten([
-            "h2",
-            "color-text-black-medium",
-            "margin-top-18",
-          ])}
-        >
-          You’re all set!
-        </Text>
-        <Text
-          style={style.flatten([
-            "subtitle1",
-            "color-text-black-low",
-            "text-center",
-            "margin-top-10",
-          ])}
-        >
-          Your cosmic interchain journey now begins.
-        </Text>
+      <LottieView
+            source={require("../../assets/lottie/login_success.json")}
+            autoPlay
+            loop
+            style={style.flatten(["width-300"])}
+          />
+          <Text style={style.flatten(["text-center", "text-button2", "color-gray-10"])}>Tạo tài khoản mới thành công</Text>
       </View>
       {password && keychainStore.isBiometrySupported ? (
         <View
@@ -84,8 +71,9 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
           />
         </View>
       ) : null}
+      <View style={style.get("flex-1")} />
       <Button
-        containerStyle={style.flatten(["margin-top-44"])}
+        containerStyle={style.flatten(["margin-bottom-44"])}
         size="large"
         text="Done"
         loading={isLoading}
@@ -121,7 +109,6 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
           }
         }}
       />
-      <View style={style.get("flex-1")} />
-    </PageWithView>
+    </View>
   );
 });

@@ -32,8 +32,6 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
 
   const style = useStyle();
 
-  const { analyticsStore } = useStore();
-
   const smartNavigation = useSmartNavigation();
 
   const registerConfig = route.params.registerConfig;

@@ -22,34 +22,19 @@ export const AccountCardNew: FunctionComponent<{
     ).stakable;
     const stakable = queryStakable.balance;
   
-    const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
-      account.bech32Address
-    );
-    const delegated = queryDelegated.total;
-  
-    const queryUnbonding = queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
-      account.bech32Address
-    );
-    const unbonding = queryUnbonding.total;
-  
-    const stakedSum = delegated.add(unbonding);
-  
-    const total = stakable.add(stakedSum);
-  
     const totalPrice = priceStore.calculatePrice(stakable);
-  
   
     return (
       <Card style={containerStyle}>
         <CardBody style={style.flatten(["padding-bottom-0", "justify-center", "items-center"])}>
             <View style={style.flatten(["flex-row", "padding-bottom-12"])}>
-            <Text style={style.flatten(["color-white", "title1", "margin-right-4"])}>{total.maxDecimals(6).trim(true).shrink(true).hideDenom(true).toString()}</Text>
+            <Text style={style.flatten(["color-white", "title1", "margin-right-4"])}>{stakable.maxDecimals(6).trim(true).shrink(true).hideDenom(true).toString()}</Text>
             <Text style={style.flatten(["color-white", "body3"])}>{chainStore.current.stakeCurrency.coinDenom.toUpperCase()}</Text>
             </View>
             <Text style={style.flatten(["color-white", "body3"])}>
                 ≈ {totalPrice
                   ? totalPrice.toString()
-                  : total.shrink(true).maxDecimals(6).toString()}
+                  : stakable.shrink(true).maxDecimals(6).toString()}
                   </Text>
         </CardBody>
         <CardBody style={style.flatten(["padding-bottom-0"])}>
