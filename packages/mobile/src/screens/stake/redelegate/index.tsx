@@ -6,13 +6,9 @@ import { Colors, useStyle } from "../../../styles";
 import { Staking } from "@keplr-wallet/stores";
 import { useRedelegateTxConfig } from "@keplr-wallet/hooks";
 import { PageWithScrollView } from "../../../components/page";
-import { Card, CardBody, CardDivider } from "../../../components/card";
 import { Text, View } from "react-native";
-import { ValidatorThumbnail } from "../../../components/thumbnail";
 import {
   AmountInput,
-  FeeButtons,
-  MemoInput,
   SelectorButtonWithoutModal,
   ValidatorItem,
 } from "../../../components/input";
@@ -123,7 +119,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
       />
 
       <SelectorButtonWithoutModal
-        label="Redelegate to"
+        label="Sang"
         placeHolder="Select Validator"
         selected={
           dstValidator
@@ -134,7 +130,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
             : undefined
         }
         onPress={() => {
-          smartNavigation.pushSmart("Validator.List", {
+          smartNavigation.pushSmart("Validator.List.New", {
             validatorSelector: (validatorAddress: string) => {
               setDstValidatorAddress(validatorAddress);
             },
@@ -172,13 +168,6 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
             flex: 1,
           },
         ]} />
-      {/* <MemoInput label="Memo (Optional)" memoConfig={sendConfigs.memoConfig} />
-      <FeeButtons
-        label="Fee"
-        gasLabel="gas"
-        feeConfig={sendConfigs.feeConfig}
-        gasConfig={sendConfigs.gasConfig}
-      /> */}
       <View style={style.flatten(["flex-1"])} />
       <Button
         text="Chuyển đổi quỹ"

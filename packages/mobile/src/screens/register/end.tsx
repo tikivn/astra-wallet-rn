@@ -11,7 +11,6 @@ import { Toggle } from "../../components/toggle";
 import  LottieView from "lottie-react-native"
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import WelcomeRocket from "../../assets/svg/welcome-rocket.svg";
 import delay from "delay";
 
 export const RegisterEndScreen: FunctionComponent = observer(() => {

@@ -10,7 +10,7 @@ import {
 import { useStyle } from "../../styles";
 import { registerModal } from "../../modals/base";
 import { RectButton } from "../rect-button";
-
+import DownIcon from "../../assets/svg/down.svg"
 export const SelectorModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
@@ -260,9 +260,9 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
       <Text
         style={StyleSheet.flatten([
           style.flatten([
-            "subtitle3",
-            "color-text-black-medium",
-            "margin-bottom-3",
+            "subtitle2",
+            "color-gray-30",
+            "margin-bottom-6",
           ]),
           labelStyle,
         ])}
@@ -272,12 +272,13 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
       <RectButton
         style={StyleSheet.flatten([
           style.flatten([
-            "background-color-white",
+            "background-color-gray-90",
             "padding-x-11",
             "padding-y-12",
             "border-radius-4",
             "border-width-1",
-            "border-color-border-white",
+            "border-color-gray-60",
+            "flex-row", "justify-between", "items-center"
           ]),
           selectorContainerStyle,
         ])}
@@ -286,14 +287,15 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
         <Text
           style={StyleSheet.flatten([
             style.flatten(
-              ["body2", "color-text-black-medium", "padding-0"],
-              [!selected && "color-text-black-low"]
+              ["body2", "color-gray-10", "padding-0"],
+              [!selected && "color-gray-10"]
             ),
             textStyle,
           ])}
         >
           {selected ? selected.label : placeHolder ?? ""}
         </Text>
+        <DownIcon/>
       </RectButton>
     </View>
   );

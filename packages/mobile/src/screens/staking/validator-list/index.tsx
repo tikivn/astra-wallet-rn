@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 
-import { Text, TextInput, View, Image } from "react-native";
+import { Text, View } from "react-native";
 import { Staking } from "@keplr-wallet/stores";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { RouteProp, useRoute } from "@react-navigation/native";
@@ -14,7 +14,6 @@ import { useSmartNavigation } from "../../../navigation";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { TooltipLabel } from "../component";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 type Sort = "APY" | "Voting Power" | "Name";
 
