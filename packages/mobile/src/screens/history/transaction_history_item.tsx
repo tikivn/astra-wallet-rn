@@ -9,6 +9,7 @@ import { RightArrowIcon } from "../../components/icon";
 import { useStyle } from "../../styles";
 import { CoinPretty, CoinUtils, DecUtils, Int, IntPretty } from "@keplr-wallet/unit";
 import { ChainStore } from "../../stores/chain";
+import moment from "moment";
 
 
 export const TransactionItem: FunctionComponent<{
@@ -31,9 +32,7 @@ export const TransactionItem: FunctionComponent<{
                 {item.action}
             </Text>
             <Text numberOfLines={1} style={[textStyles(style), { fontSize: 12, color: "#818DA6" }]}>
-                {/* {new Date(item.timestamp).toLocaleDateString()} */}
-                {/* {moment(item.timestamp).format("hh:mm - DD/MM/YYYY")} */}
-                {item?.timestamp}
+                {moment(item.timestamp).format("hh:mm - DD/MM/YYYY")}
             </Text>
         </View>
 
@@ -69,9 +68,10 @@ export const TransactionAmount: FunctionComponent<{
     let displayDenom = currency ? currency.coinDenom : amount.denom
     let displayAmount = currency ? new CoinPretty(currency, amount.amount)
         .shrink(true)
-        .maxDecimals(6)
+        .maxDecimals(9)
         .upperCase(true)
         .hideDenom(true)
+        .trim(true)
         .toString() : amount.amount
     return <View style={{flex: 1, alignItems:"flex-end", flexDirection: "row"}} >
         <Text numberOfLines={1} style={[textStyles, { flex: 1, textAlign: "right", alignSelf:"stretch" }]}>
