@@ -45,7 +45,7 @@ export const EnterPincodeScreen: FunctionComponent = observer(() => {
 
         if (index >= 0) {
             const privateData = await keyRingStore.showKeyRing(index, password);
-            smartNavigation.navigateSmart("Setting.ViewPrivateData", {
+            smartNavigation.replaceSmart("Setting.ViewPrivateData", {
                 privateData,
                 privateDataType: keyRingStore.keyRingType,
             });

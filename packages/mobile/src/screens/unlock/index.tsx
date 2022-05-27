@@ -299,7 +299,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
             onPress={tryUnlock}
             disabled={password.length < cellCount}
           />
-          <Button
+          {/* <Button
             textStyle={style.flatten(["subtitle2", "color-white"])}
             containerStyle={style.flatten(["margin-bottom-16"])}
             text="Quên mật khẩu"
@@ -310,7 +310,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
               //   registerConfig,
               // });
             }}
-          />
+          /> */}
 
             {keychainStore.isBiometryOn ? (
               <Button

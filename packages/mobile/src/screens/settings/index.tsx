@@ -30,14 +30,14 @@ export const SettingsScreen: FunctionComponent = observer(() => {
                 >
                     <SettingsAccountItem />
                     <View style={style.get("height-32")} />
-                    <AccountItem
+                    {/* <AccountItem
                         containerStyle={style.flatten(["margin-left-16", "margin-right-16", "border-radius-8", "overflow-hidden"])}
                         label="Đổi mật khẩu truy cập"
                         right={<AllIcon color={style.get("color-white").color} />}
                         onPress={() => {
 
                         }}
-                    />
+                    /> */}
                     <View style={style.get("height-8")} />
                     <AccountItem
                         containerStyle={style.flatten(["margin-left-16", "margin-right-16", "border-radius-8", "overflow-hidden"])}
