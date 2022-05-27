@@ -7,12 +7,14 @@ import {
 } from "./transaction_adapter"
 import { RightArrowIcon } from "../../components/icon";
 import { useStyle } from "../../styles";
-import { useStore } from "../../stores";
-import { Int, IntPretty } from "@keplr-wallet/unit";
+import { CoinPretty, CoinUtils, DecUtils, Int, IntPretty } from "@keplr-wallet/unit";
+import { ChainStore } from "../../stores/chain";
+
 
 export const TransactionItem: FunctionComponent<{
-    item?: ITransactionItem<any>;
-}> = observer(({ item }) => {
+    item?: ITransactionItem<any>,
+    chainStore: ChainStore,
+}> = observer(({ item, chainStore }) => {
     const style = useStyle()
     style.flatten
     const textStyles = (style: any) => [
@@ -39,7 +41,7 @@ export const TransactionItem: FunctionComponent<{
             flex: 4,
 
         }}>
-            <TransactionAmount amount={item.amount} textStyles={textStyles(style)}/>
+            <TransactionAmount amount={item.amount} chainStore={chainStore} textStyles={textStyles(style)}/>
             <Text numberOfLines={1} style={[textStyles(style), { textAlign: "right", fontSize: 12, color: "#4AB57C" }]}>
                 {item.status}
             </Text>
@@ -59,15 +61,24 @@ export const TransactionItem: FunctionComponent<{
 })
 
 export const TransactionAmount: FunctionComponent<{
-    amount?: Coin;
+    amount: Coin,
+    chainStore: ChainStore,
     textStyles: StyleProp<TextStyle>
-}> = observer(({ amount, textStyles }) => {
+}> = observer(({ amount, chainStore, textStyles }) => {
+    let currency = chainStore.current.currencies.find((cur) => cur.coinMinimalDenom == amount?.denom)
+    let displayDenom = currency ? currency.coinDenom : amount.denom
+    let displayAmount = currency ? new CoinPretty(currency, amount.amount)
+        .shrink(true)
+        .maxDecimals(6)
+        .upperCase(true)
+        .hideDenom(true)
+        .toString() : amount.amount
     return <View style={{flex: 1, alignItems:"flex-end", flexDirection: "row"}} >
         <Text numberOfLines={1} style={[textStyles, { flex: 1, textAlign: "right", alignSelf:"stretch" }]}>
-                {`${amount?.amount}`}
+                {`${displayAmount} `}
         </Text>
         <Text numberOfLines={1} style={[textStyles, { textAlign: "right", alignSelf:"flex-end" }]}>
-                {`${amount?.denom == "aastra" ? "ASA" : amount?.denom}`}
+                {displayDenom}
         </Text>
 
     </View>

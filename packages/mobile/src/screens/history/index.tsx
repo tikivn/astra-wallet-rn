@@ -138,6 +138,9 @@ export const HistoryScreen: FunctionComponent = observer(() => {
     ).map((txResponse) => toUiItem(bech32Address, txResponse))
         .sort((lh, rh) => rh.timestamp.localeCompare(lh.timestamp));
     console.log("hisories Size" + histories.length);
+    const appCurrencies = chainStore.current.currencies;
+    console.log("hisories currency " + appCurrencies.map((cur) => `${cur.coinDenom},${cur.coinMinimalDenom},${cur.coinDecimals}`).join());
+
     return <PageWithScrollViewInBottomTabView
         backgroundColor={style.get("color-background").color}
         contentContainerStyle={style.get("flex-grow-1")}
@@ -148,7 +151,7 @@ export const HistoryScreen: FunctionComponent = observer(() => {
         ref={scrollViewRef}
     >
         {histories.length == 0 && (
-            <Text style={style.flatten(["height-20", "color-text-black-low", "text-left", "padding-3", "body3"])} >
+            <Text style={style.flatten(["color-text-black-low", "text-left", "padding-3", "body3", "flex-1"])} >
                 Không tìm thấy giao dịch nào trong quá khứ.\n
                 Bạn hãy kéo refresh để tải lại dữ liệu hoặc thử lại sau một lúc.
             </Text>
@@ -164,7 +167,7 @@ export const HistoryScreen: FunctionComponent = observer(() => {
                         }
                     }}
                 >
-                    <TransactionItem item={item} />
+                    <TransactionItem item={item} chainStore={chainStore} />
                 </TouchableHighlight>
             })
         )}
