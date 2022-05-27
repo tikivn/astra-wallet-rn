@@ -125,7 +125,7 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
             size="large"
             text="Confirm"
             onPress={() => {
-              smartNavigation.navigateSmart("Home", {});
+              smartNavigation.navigateSmart("NewHome", {});
             }}
           />
         </View>

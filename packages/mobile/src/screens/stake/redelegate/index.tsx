@@ -101,7 +101,8 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.gasConfig.error ??
     sendConfigs.feeConfig.error;
   const txStateIsValid = sendConfigError == null;
-  sendConfigs.feeConfig.setFeeType('average');
+  sendConfigs.feeConfig.setFeeType('high');
+  sendConfigs.gasConfig.setGas(3000000);
   const fee = sendConfigs.feeConfig.fee?.trim(true).toString() ?? "";
   return (
     <PageWithScrollView
@@ -208,7 +209,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                 return;
               }
               console.log(e);
-              smartNavigation.navigateSmart("Home", {});
+              smartNavigation.navigateSmart("NewHome", {});
             }
           }
         }}

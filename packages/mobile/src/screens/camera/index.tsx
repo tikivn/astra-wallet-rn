@@ -100,7 +100,7 @@ export const CameraScreen: FunctionComponent = observer(() => {
                       recipient: data,
                     });
                   } else {
-                    smartNavigation.navigateSmart("Home", {});
+                    smartNavigation.navigateSmart("NewHome", {});
                   }
                 } else {
                   const sharedData = parseQRCodeDataForImportFromExtension(
