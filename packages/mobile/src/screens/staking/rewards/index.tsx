@@ -9,7 +9,7 @@ import { useSmartNavigation } from "../../../navigation";
 import { RewardDetails } from "./rewards";
 
 export const StakingRewardScreen: FunctionComponent = () => {
-    const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
+    const { chainStore, accountStore, queriesStore, analyticsStore, transactionStore } = useStore();
 
     const account = accountStore.getAccount(chainStore.current.chainId);
     const queries = queriesStore.get(chainStore.current.chainId);
@@ -35,9 +35,10 @@ export const StakingRewardScreen: FunctionComponent = () => {
                     chainId: chainStore.current.chainId,
                     chainName: chainStore.current.chainName,
                   });
-                  smartNavigation.pushSmart("TxPendingResult", {
-                    txHash: Buffer.from(txHash).toString("hex"),
-                  });
+                  transactionStore.updateTxHash(txHash);
+                  // smartNavigation.pushSmart("TxPendingResult", {
+                  //   txHash: Buffer.from(txHash).toString("hex"),
+                  // });
                 },
               }
             );

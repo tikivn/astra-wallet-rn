@@ -1,11 +1,7 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
-import { HairLine } from "../../../components/foundation-view/hair-line";
-import { AlignItems, buildLeftColumn, buildRightColumn } from "../../../components/foundation-view/item-row";
-import { IRow, ListRowView } from "../../../components/foundation-view/list-row-view";
-import { TextAlign } from "../../../components/foundation-view/text-style";
-import { Colors } from "../../../styles";
-import { Typos } from "../../../styles/typos";
+import { AlignItems, buildLeftColumn, buildRightColumn, HairLine, IRow, ListRowView, TextAlign } from "../../../components";
+import { Colors, Typos } from "../../../styles";
 import { ITransaction } from "../models/transaction";
 
 export const TransactionDetails: FunctionComponent<ITransaction> = observer(({

@@ -269,6 +269,7 @@ export const GovernanceVoteModal: FunctionComponent<{
       accountStore,
       queriesStore,
       analyticsStore,
+      transactionStore,
     } = useStore();
 
     const account = accountStore.getAccount(chainStore.current.chainId);
@@ -447,9 +448,10 @@ export const GovernanceVoteModal: FunctionComponent<{
                         proposalId,
                         proposalTitle: proposal?.title,
                       });
-                      smartNavigation.pushSmart("TxPendingResult", {
-                        txHash: Buffer.from(txHash).toString("hex"),
-                      });
+                      transactionStore.updateTxHash(txHash);
+                      // smartNavigation.pushSmart("TxPendingResult", {
+                      //   txHash: Buffer.from(txHash).toString("hex"),
+                      // });
                     },
                   }
                 );

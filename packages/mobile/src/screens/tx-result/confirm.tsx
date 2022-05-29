@@ -1,9 +1,5 @@
-import { TransactionDetails } from "./components/transaction-details";
-import { UserBalance } from "./components/user-balance";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { View } from "react-native";
-import { useStyle } from "../../styles";
-import { useStore } from "../../stores";
 import {
   useFeeConfig,
   useGasConfig,
@@ -11,16 +7,19 @@ import {
   useSignDocAmountConfig,
   useSignDocHelper,
 } from "@keplr-wallet/hooks";
-import { Button } from "../../components/button";
-import { observer } from "mobx-react-lite";
+import { useStore } from "../../stores";
 import { useUnmount } from "../../hooks";
-import { WCMessageRequester } from "../../stores/wallet-connect/msg-requester";
-import { WCAppLogoAndName } from "../../components/wallet-connect";
 import WalletConnect from "@walletconnect/client";
-import { PageWithScrollView } from "../../components/page";
+import { useStyle } from "../../styles";
+import { WCMessageRequester } from "../../stores/wallet-connect/msg-requester";
 import { processTransaction } from "./models/transaction";
+import { Button, PageWithScrollView } from "../../components";
+import { UserBalance } from "./components/user-balance";
+import { TransactionDetails } from "./components/transaction-details";
+import { WCAppLogoAndName } from "../../components/wallet-connect";
+import { observer } from "mobx-react-lite";
 
-export const ConfirmTransactionScreen: FunctionComponent = observer(() => {
+export const TxConfirmResultScreen: FunctionComponent = observer(() => {
   const {
     chainStore,
     accountStore,
@@ -68,6 +67,8 @@ export const ConfirmTransactionScreen: FunctionComponent = observer(() => {
   amountConfig.setSignDocHelper(signDocHelper);
 
   const [isInternal, setIsInternal] = useState(false);
+
+  console.log("__SIGNER__ signer:", signer);
 
   useEffect(() => {
     if (signInteractionStore.waitingData) {
@@ -118,40 +119,42 @@ export const ConfirmTransactionScreen: FunctionComponent = observer(() => {
       style={style.flatten(["margin-top-16", "padding-x-16"])}
       backgroundColor={style.get("color-background").color}
     >
-      <View style={style.get("background-color-background")}>
-        <UserBalance />
-        <TransactionDetails {...transactionData} />
-      </View>
-      {wcSession ? (
-        <WCAppLogoAndName
-          containerStyle={style.flatten(["margin-y-14"])}
-          peerMeta={wcSession.peerMeta}
-        />
-      ) : null}
-      <Button
-        text="Xác nhận"
-        size="large"
-        containerStyle={style.flatten(["border-radius-4", "margin-top-32"])}
-        textStyle={style.flatten(["subtitle2"])}
-        disabled={
-          signDocWapper == null ||
-          signDocHelper.signDocWrapper == null ||
-          memoConfig.error != null ||
-          feeConfig.error != null
-        }
-        loading={signInteractionStore.isLoading}
-        onPress={async () => {
-          try {
-            if (signDocHelper.signDocWrapper) {
-              await signInteractionStore.approveAndWaitEnd(
-                signDocHelper.signDocWrapper
-              );
-            }
-          } catch (error) {
-            console.log(error);
+      <View>
+        <View style={style.get("background-color-background")}>
+          <UserBalance />
+          <TransactionDetails {...transactionData} />
+        </View>
+        {wcSession ? (
+          <WCAppLogoAndName
+            containerStyle={style.flatten(["margin-y-14"])}
+            peerMeta={wcSession.peerMeta}
+          />
+        ) : null}
+        <Button
+          text="Xác nhận 1"
+          size="large"
+          containerStyle={style.flatten(["border-radius-4", "margin-top-32"])}
+          textStyle={style.flatten(["subtitle2"])}
+          disabled={
+            signDocWapper == null ||
+            signDocHelper.signDocWrapper == null ||
+            memoConfig.error != null ||
+            feeConfig.error != null
           }
-        }}
-      />
+          loading={signInteractionStore.isLoading}
+          onPress={async () => {
+            try {
+              if (signDocHelper.signDocWrapper) {
+                await signInteractionStore.approveAndWaitEnd(
+                  signDocHelper.signDocWrapper
+                );
+              }
+            } catch (error) {
+              console.log(error);
+            }
+          }}
+        />
+      </View>
     </PageWithScrollView>
   );
 });

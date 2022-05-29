@@ -19,7 +19,7 @@ import { useSmartNavigation } from "../../navigation";
 import { Buffer } from "buffer/";
 
 export const SendScreen: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
+  const { chainStore, accountStore, queriesStore, analyticsStore, transactionStore } = useStore();
 
   const route = useRoute<
     RouteProp<
@@ -129,9 +129,10 @@ export const SendScreen: FunctionComponent = observer(() => {
                       chainName: chainStore.current.chainName,
                       feeType: sendConfigs.feeConfig.feeType,
                     });
-                    smartNavigation.pushSmart("TxPendingResult", {
-                      txHash: Buffer.from(txHash).toString("hex"),
-                    });
+                    transactionStore.updateTxHash(txHash);
+                    // smartNavigation.pushSmart("TxPendingResult", {
+                    //   txHash: Buffer.from(txHash).toString("hex"),
+                    // });
                   },
                 }
               );

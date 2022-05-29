@@ -5,8 +5,10 @@ import { Colors } from "../../styles";
 import { HairLine } from "./hair-line";
 import { AlignItems, IColumn, ItemRow } from "./item-row";
 
+export type RowType = "items" | "separator";
+
 export interface IRow {
-  type: "items" | "separator";
+  type: RowType;
   alignItems?: AlignItems;
   itemSpacing?: number;
   cols?: IColumn[];

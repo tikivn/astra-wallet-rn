@@ -1,4 +1,4 @@
-import { FeeConfig, SignDocHelper } from "@keplr-wallet/hooks";
+import { FeeConfig, SignDocHelper, useFeeConfig, useGasConfig, useMemoConfig, useSignDocAmountConfig, useSignDocHelper } from "@keplr-wallet/hooks";
 import { Msg as AminoMsg } from "@cosmjs/launchpad";
 import { IAmount } from "./amount";
 import { useStore } from "../../../stores";
@@ -18,16 +18,13 @@ export function processTransaction(data: {
   const {
     chainStore,
     accountStore,
-    // queriesStore,
-    // walletConnectStore,
-    // signInteractionStore,
   } = useStore();
 
   const {
     signDocHelper,
     feeConfig,
   } = data;
-  
+
   const mode = signDocHelper.signDocWrapper
     ? signDocHelper.signDocWrapper.mode
     : "none";
@@ -37,22 +34,21 @@ export function processTransaction(data: {
       : signDocHelper.signDocWrapper.protoSignDoc.txMsgs
     : [];
 
-  // const transactionData = (() => {
-    if (mode === "amino") {
-      const msg = msgs[0] as AminoMsg;
-      const account = accountStore.getAccount(chainId);
-      const chainInfo = chainStore.getChain(chainId);
-      const { transaction } = processTransactionAmino(
-        account,
-        msg,
-        feeConfig,
-        chainInfo.currencies
-      );
+  if (mode === "amino") {
+    const msg = msgs[0] as AminoMsg;
+    const account = accountStore.getAccount(chainId);
+    const chainInfo = chainStore.getChain(chainId);
+    const { transaction } = processTransactionAmino(
+      account,
+      msg,
+      feeConfig,
+      chainInfo.currencies
+    );
 
-      return {
-        ...transaction,
-      };
-    // } else if (mode === "direct") {
+    return {
+      ...transaction,
+    };
+  } else if (mode === "direct") {
     //   return (msgs as AnyWithUnpacked[]).map((msg, i) => {
     //     const chainInfo = chainStore.getChain(chainId);
     //     const { title, content } = renderDirectMessage(
@@ -63,7 +59,6 @@ export function processTransaction(data: {
     //     return {};
 
     //   });
-    }
-    return {};
-  // });
+  }
+  return {};
 }

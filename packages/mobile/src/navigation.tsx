@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
 import React, { FunctionComponent, useEffect, useRef } from "react";
-import { Image, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import {
   BIP44HDPath,
   ExportKeyRingData,
@@ -89,6 +89,7 @@ import {
   TxFailedResultScreen,
   TxPendingResultScreen,
   TxSuccessResultScreen,
+  TxResultScreen,
 } from "./screens/tx-result";
 import { TorusSignInScreen } from "./screens/register/torus";
 import {
@@ -117,10 +118,11 @@ import { RegisterTutorialcreen } from "./screens/register/tutorial";
 import { NewPincodeScreen } from "./screens/register/pincode";
 import { VerifyPincodeScreen } from "./screens/register/pincode/verify";
 import { DeleteWalletScreen, EnterPincodeScreen } from "./screens/settings/screens";
-import { ConfirmTransactionScreen } from "./screens/confirm-transaction";
 import { NewStakingDashboardScreen, NewValidatorDetailsScreen, NewValidatorListScreen } from "./screens/staking";
 import { StakingRewardScreen } from "./screens/staking/rewards";
 import { HistoryScreen } from "./screens/history";
+import { TxConfirmResultScreen } from "./screens/tx-result/confirm";
+import { TxType } from "./stores/transaction";
 
 const {
   SmartNavigatorProvider,
@@ -671,13 +673,13 @@ export const TransactionNavigation: FunctionComponent = () => {
         headerTitleStyle: style.flatten(["title2", "color-white"]),
       }}
       headerMode="screen"
-      initialRouteName="Transaction.Confirm"
+      initialRouteName="Tx.Result"
     >
       <Stack.Screen
-        name="Transaction.Confirm"
-        component={ConfirmTransactionScreen}
+        name="Tx.Result"
+        component={TxResultScreen}
         options={{
-          title: "Gửi Astra",
+          headerShown: false,
         }}
       />
     </Stack.Navigator>
@@ -1227,14 +1229,37 @@ const BugsnagNavigationContainer = (() => {
 })();
 
 export const AppNavigation: FunctionComponent = observer(() => {
-  const { keyRingStore, analyticsStore, signInteractionStore } = useStore();
+  const { keyRingStore, analyticsStore, signInteractionStore, transactionStore } = useStore();
 
   const navigationRef = useRef<NavigationContainerRef | null>(null);
   const routeNameRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (signInteractionStore.waitingData) {
-      navigationRef.current?.navigate("Transaction");
+      console.log("__navigationRef.current__", navigationRef.current);
+      console.log("__navigationRef.current__route", navigationRef.current?.getCurrentRoute());
+
+      const routeName = navigationRef.current?.getCurrentRoute()?.name || "";
+      const txTypeMapping: Record<string, TxType> = {
+        "Wallet.Send": "send",
+        "Delegate": "delegate",
+        "Staking.Rewards": "withdraw",
+        // "Home": "withdraw",
+        // "Staking.Dashboard": "withdraw",
+        "Undelegate": "undelegate",
+        "Redelegate": "redelegate",
+      };
+
+      transactionStore.updateTxType(txTypeMapping[routeName]);
+      transactionStore.updateTxState("pending");
+
+      navigationRef.current?.navigate("Tx", {
+        screen: "Tx.Result",
+        params: {
+          txType: txTypeMapping[routeName],
+          txState: "pending"
+        },
+      });
     }
   }, [signInteractionStore.waitingData]);
 
@@ -1286,7 +1311,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
               <Stack.Screen name="Register" component={RegisterNavigation} />
               <Stack.Screen name="Others" component={OtherNavigation} />
               <Stack.Screen name="Wallet" component={WalletNavigation} />
-              <Stack.Screen name="Transaction" component={TransactionNavigation} />
+              <Stack.Screen name="Tx" component={TransactionNavigation} />
               <Stack.Screen
                 name="AddressBooks"
                 component={AddressBookStackScreen}

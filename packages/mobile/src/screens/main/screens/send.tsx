@@ -13,7 +13,7 @@ import { EthereumEndpoint } from "../../../config";
 import { RouteProp, useRoute } from "@react-navigation/native";
 
 export const SendTokenScreen: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
+  const { chainStore, accountStore, queriesStore, analyticsStore, transactionStore } = useStore();
 
   const route = useRoute<
     RouteProp<
@@ -113,9 +113,10 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
                       chainName: chainStore.current.chainName,
                       feeType: sendConfigs.feeConfig.feeType,
                     });
-                    smartNavigation.pushSmart("TxPendingResult", {
-                      txHash: Buffer.from(txHash).toString("hex"),
-                    });
+                    transactionStore.updateTxHash(txHash);
+                    // smartNavigation.pushSmart("TxPendingResult", {
+                    //   txHash: Buffer.from(txHash).toString("hex"),
+                    // });
                   },
                 }
               );

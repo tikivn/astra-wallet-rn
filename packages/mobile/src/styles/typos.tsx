@@ -53,6 +53,11 @@ const XLargeTypos = {
     lineHeight: 32,
     ...getPlatformFontWeight("500"),
   },
+  "text-x-large-semi-bold": {
+    fontSize: 20,
+    lineHeight: 32,
+    ...getPlatformFontWeight("600"),
+  },
 };
 
 const XXLargeTypos = {
@@ -60,6 +65,11 @@ const XXLargeTypos = {
     fontSize: 24,
     lineHeight: 32,
     ...getPlatformFontWeight("400"),
+  },
+  "text-2x-large-medium": {
+    fontSize: 24,
+    lineHeight: 32,
+    ...getPlatformFontWeight("500"),
   },
 };
 

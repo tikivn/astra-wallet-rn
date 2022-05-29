@@ -32,6 +32,7 @@ import { AnalyticsStore, NoopAnalyticsClient } from "@keplr-wallet/analytics";
 import { Amplitude } from "@amplitude/react-native";
 import { ChainIdHelper } from "@keplr-wallet/cosmos";
 import { UserBalanceStore } from "./user-balance";
+import { TransactionStore } from "./transaction";
 
 export class RootStore {
   public readonly chainStore: ChainStore;
@@ -79,6 +80,7 @@ export class RootStore {
   >;
 
   public readonly userBalanceStore: UserBalanceStore;
+  public readonly transactionStore: TransactionStore;
 
   constructor() {
     const router = new RNRouterUI(RNEnv.produceEnv);
@@ -358,6 +360,7 @@ export class RootStore {
     );
 
     this.userBalanceStore = new UserBalanceStore();
+    this.transactionStore = new TransactionStore();
   }
 }
 

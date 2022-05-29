@@ -3,6 +3,7 @@ import { EnumTextTransform, EnumTextDecorationLine } from "./builder/types";
 import { Platform } from "react-native";
 import { getPlatformFontWeight } from "./builder/utils";
 import { Typos } from "./typos";
+export * from "./typos";
 
 export const Colors = {
   background: "#141828",
@@ -53,6 +54,7 @@ export const Colors = {
   "blue-10": "#F0F8FF",
   "blue-30": "#C2E1FF",
   "blue-70": "#0B74E5",
+  "blue-90": "#074183",
   "gray-10": "#D5D9E0",
   "gray-30": "#818DA6",
   "gray-50": "#4C5975",

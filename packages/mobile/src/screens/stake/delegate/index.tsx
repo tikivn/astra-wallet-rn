@@ -32,7 +32,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
 
   const validatorAddress = route.params.validatorAddress;
 
-  const { chainStore, accountStore, queriesStore, analyticsStore, userBalanceStore } = useStore();
+  const { chainStore, accountStore, queriesStore, analyticsStore, userBalanceStore, transactionStore } = useStore();
 
   const style = useStyle();
   const smartNavigation = useSmartNavigation();
@@ -163,9 +163,10 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                       validatorName: validator?.description.moniker,
                       feeType: sendConfigs.feeConfig.feeType,
                     });
-                    smartNavigation.pushSmart("TxPendingResult", {
-                      txHash: Buffer.from(txHash).toString("hex"),
-                    });
+                    transactionStore.updateTxHash(txHash);
+                    // smartNavigation.pushSmart("TxPendingResult", {
+                    //   txHash: Buffer.from(txHash).toString("hex"),
+                    // });
                   },
                 }
               );

@@ -4,7 +4,7 @@ import { useStore } from "..";
 export class UserBalanceStore {
   constructor() { }
 
-  getbalance(chainId?: string): CoinPretty {
+  getBalance(chainId?: string): CoinPretty {
     const { chainStore, accountStore, queriesStore } = useStore();
     const selectedChainId = chainId ?? chainStore.current.chainId;
 
@@ -19,12 +19,34 @@ export class UserBalanceStore {
   }
 
   getBalanceString(chainId?: string): string {
-    return this.getbalance(chainId)
+    return this.getBalance(chainId)
       .trim(true)
       .shrink(true)
       .maxDecimals(6)
       .upperCase(true)
-      // .hideDenom(true)
+      .toString();
+  }
+
+  getRewards(chainId?: string): CoinPretty {
+    const { chainStore, accountStore, queriesStore } = useStore();
+    const selectedChainId = chainId ?? chainStore.current.chainId;
+
+    const account = accountStore.getAccount(selectedChainId);
+    const queries = queriesStore.get(selectedChainId);
+
+    const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
+      account.bech32Address
+    );
+
+    return queryReward.stakableReward;
+  }
+
+  getRewardsString(chainId?: string): string {
+    return this.getRewards(chainId)
+      .shrink(true)
+      .maxDecimals(6)
+      .trim(true)
+      .upperCase(true)
       .toString();
   }
 }

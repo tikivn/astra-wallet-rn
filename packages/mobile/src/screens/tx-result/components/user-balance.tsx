@@ -1,12 +1,10 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { Text, View } from "react-native";
-import { useStyle } from "../../../styles";
-import { useStore } from "../../../stores";
 import FastImage from "react-native-fast-image";
-import { VectorCharacter } from "../../../components/vector-character";
-import { IRow, ListRowView } from "../../../components/foundation-view/list-row-view";
-import { AlignItems } from "../../../components/foundation-view/item-row";
+import { AlignItems, IRow, ListRowView, VectorCharacter } from "../../../components";
+import { useStore } from "../../../stores";
+import { useStyle } from "../../../styles";
 
 export const UserBalance: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, userBalanceStore } = useStore();

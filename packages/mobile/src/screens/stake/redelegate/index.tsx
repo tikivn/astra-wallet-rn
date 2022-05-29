@@ -34,7 +34,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
 
   const smartNavigation = useSmartNavigation();
 
-  const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
+  const { chainStore, accountStore, queriesStore, analyticsStore, transactionStore } = useStore();
 
   const style = useStyle();
 
@@ -196,9 +196,10 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                       toValidatorName: dstValidator?.description.moniker,
                       feeType: sendConfigs.feeConfig.feeType,
                     });
-                    smartNavigation.pushSmart("TxPendingResult", {
-                      txHash: Buffer.from(txHash).toString("hex"),
-                    });
+                    transactionStore.updateTxHash(txHash);
+                    // smartNavigation.pushSmart("TxPendingResult", {
+                    //   txHash: Buffer.from(txHash).toString("hex"),
+                    // });
                   },
                 }
               );
