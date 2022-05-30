@@ -19,6 +19,7 @@ import { TransactionDetailsView } from "./components/transaction-details-view";
 import * as WebBrowser from "expo-web-browser";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { TxState, TxType } from "../../stores/transaction";
+import { View } from "react-native";
 
 export const TxResultScreen: FunctionComponent = observer(() => {
   const {
@@ -159,47 +160,49 @@ export const TxResultScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollView
-      style={style.flatten(["margin-top-16", "padding-x-16"])}
+      style={style.flatten(["margin-top-16"])}
       backgroundColor={style.get("color-background").color}
     >
       <TransactionStateView amount={amount} />
-      <TransactionDetailsView style={{ marginTop: 38, }} />
+      <TransactionDetailsView style={{ marginTop: 38, marginHorizontal: 16, }} />
 
-      {chainInfo.raw.txExplorer && (
+      <View style={{ marginHorizontal: 16, }}>
+        {chainInfo.raw.txExplorer && (
+          <Button
+            containerStyle={style.flatten(["margin-top-16"])}
+            size="default"
+            text="Xem chi tiết trên Astra Scan"//{`View on ${chainInfo.raw.txExplorer.name}`}
+            mode="text"
+            onPress={() => {
+              if (chainInfo.raw.txExplorer && transactionStore.txHash) {
+                const txHash = Buffer.from(transactionStore.txHash).toString("hex").toUpperCase();
+                WebBrowser.openBrowserAsync(
+                  chainInfo.raw.txExplorer.txUrl.replace(
+                    "{txHash}",
+                    txHash
+                  )
+                );
+              }
+            }}
+          />
+        )}
         <Button
-          containerStyle={style.flatten(["margin-top-16"])}
-          size="default"
-          text="Xem chi tiết trên Astra Scan"//{`View on ${chainInfo.raw.txExplorer.name}`}
-          mode="text"
-          onPress={() => {
-            if (chainInfo.raw.txExplorer && transactionStore.txHash) {
-              const txHash = Buffer.from(transactionStore.txHash).toString("hex").toUpperCase();
-              WebBrowser.openBrowserAsync(
-                chainInfo.raw.txExplorer.txUrl.replace(
-                  "{txHash}",
-                  txHash
-                )
-              );
-            }
+          text="Trang chủ"
+          size="large"
+          containerStyle={style.flatten(["border-radius-4", "margin-top-32"])}
+          textStyle={style.flatten(["subtitle2"])}
+          // disabled={
+          //   signDocWapper == null ||
+          //   signDocHelper.signDocWrapper == null ||
+          //   memoConfig.error != null ||
+          //   feeConfig.error != null
+          // }
+          // loading={signInteractionStore.isLoading}
+          onPress={async () => {
+            navigation.navigate("NewHome");
           }}
         />
-      )}
-      <Button
-        text="Trang chủ"
-        size="large"
-        containerStyle={style.flatten(["border-radius-4", "margin-top-32"])}
-        textStyle={style.flatten(["subtitle2"])}
-        // disabled={
-        //   signDocWapper == null ||
-        //   signDocHelper.signDocWrapper == null ||
-        //   memoConfig.error != null ||
-        //   feeConfig.error != null
-        // }
-        // loading={signInteractionStore.isLoading}
-        onPress={async () => {
-          navigation.navigate("NewHome");
-        }}
-      />
+      </View>
     </PageWithScrollView>
   );
 });

@@ -1,18 +1,19 @@
 import LottieView from "lottie-react-native";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { Text, View, ViewStyle } from "react-native";
 import { StepView, StepViewLineState, StepViewType } from "../../../components/foundation-view/step-view";
 import { ErrorIcon } from "../../../components/icon/error";
 import { useStore } from "../../../stores";
 import { TxState, TxType } from "../../../stores/transaction";
 import { useStyle } from "../../../styles";
 
-export const TransactionStateView: FunctionComponent<{ amount: string }> = observer(({
+export const TransactionStateView: FunctionComponent<{ style?: ViewStyle, amount: string }> = observer(({
+  style,
   amount,
 }) => {
   const { transactionStore } = useStore();
-  const style = useStyle();
+  const styleBuilder = useStyle();
 
   const [txState, setTxState] = useState(transactionStore.txState);
 
@@ -86,48 +87,51 @@ export const TransactionStateView: FunctionComponent<{ amount: string }> = obser
     <React.Fragment>
       {isFailure
         ? (
-          <View style={{ alignItems: "center", backgroundColor: "yellow" }}>
+          <View style={{ alignItems: "center", paddingHorizontal: 16, ...style }}>
             <ErrorIcon style={{ marginVertical: 24, }} />
 
-            <Text style={style.flatten(["text-x-large-semi-bold", "color-gray-10"])}>{mainText}</Text>
-            <Text style={style.flatten(["text-base-regular", "color-gray-30", "margin-top-8"])}>Hệ thông bị quá tải. Vui lòng thử lại</Text>
+            <Text style={styleBuilder.flatten(["text-x-large-semi-bold", "color-gray-10"])}>{mainText}</Text>
+            <Text style={styleBuilder.flatten(["text-base-regular", "color-gray-30", "margin-top-8"])}>Hệ thông bị quá tải. Vui lòng thử lại</Text>
           </View>
         )
         : (
-          <View style={{ alignItems: "center" }}>
+          <View style={{ alignItems: "center", ...style }}>
             <LottieView
               autoPlay
               loop={txState != "success"}
               source={
-                txState == "success"
-                  ? require("../../../assets/lottie/tx-loading-complete.json")
-                  : require("../../../assets/lottie/tx-sending.json")
+                txState != "success"
+                  ? require("../../../assets/lottie/tx-sending.json")
+                  : require("../../../assets/lottie/tx-loading-complete.json")
               }
               style={{
-                height: 160,
+                ...txState != "success"
+                  ? { width: "100%", aspectRatio: 375 / 108, }
+                  : { width: 120, height: 120, },
                 marginVertical: 16,
-                aspectRatio: txState != "success" ? 375 / 108 : 1
               }}
             />
 
-            <Text style={style.flatten(["text-base-regular", "color-gray-30", "margin-top-8"])}>{mainText}</Text>
-            <Text style={style.flatten(["text-2x-large-medium", "color-gray-10"])}>{amountText}</Text>
+            <View style={{ alignItems: "center", paddingHorizontal: 16, width: "100%" }}>
+              <Text style={styleBuilder.flatten(["text-base-regular", "color-gray-30", "margin-top-8"])}>{mainText}</Text>
+              <Text style={styleBuilder.flatten(["text-2x-large-medium", "color-gray-10"])}>{amountText}</Text>
 
-            <View style={{ flexDirection: "row", alignContent: "stretch", marginTop: 26, }}>
-              <StepView
-                text={initialStepText}
-                state="inactive"
-                position="start"
-                type="dot"
-                lineState={lineState}
-              />
-              <StepView
-                text={finalStepText}
-                state="active"
-                position="end"
-                type={type}
-                lineState={lineState}
-              />
+              <View style={{ flexDirection: "row", alignContent: "stretch", marginTop: 26, }}>
+                <StepView
+                  text={initialStepText}
+                  state="inactive"
+                  position="start"
+                  type="dot"
+                  lineState={lineState}
+                />
+                <StepView
+                  text={finalStepText}
+                  state="active"
+                  position="end"
+                  type={type}
+                  lineState={lineState}
+                />
+              </View>
             </View>
           </View>
         )
