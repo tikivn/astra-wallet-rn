@@ -33,6 +33,10 @@ import { Amplitude } from "@amplitude/react-native";
 import { ChainIdHelper } from "@keplr-wallet/cosmos";
 import { UserBalanceStore } from "./user-balance";
 import { TransactionStore } from "./transaction";
+import {
+  GravityBridgeCurrencyRegsitrar,
+  KeplrETCQueries,
+} from "@keplr-wallet/stores-etc";
 
 export class RootStore {
   public readonly chainStore: ChainStore;
@@ -295,6 +299,12 @@ export class RootStore {
       this.chainStore,
       this.accountStore,
       this.queriesStore,
+      this.queriesStore
+    );
+
+    this.gravityBridgeCurrencyRegistrar = new GravityBridgeCurrencyRegsitrar(
+      new AsyncKVStore("store_gravity_bridge_currency_registrar"),
+      this.chainStore,
       this.queriesStore
     );
 
