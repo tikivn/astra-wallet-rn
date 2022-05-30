@@ -12,10 +12,10 @@ import { Button } from "../../../components/button";
 import { useSmartNavigation } from "../../../navigation";
 import { Staking } from "@keplr-wallet/stores";
 import { ValidatorInfo } from "./components/validator-info";
-import { AlertInline } from "../../../components/alert-inline";
 import { buildLeftColumn, buildRightColumn } from "../../../components/foundation-view/item-row";
 import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
 import { IRow, ListRowView } from "../../../components/foundation-view/list-row-view";
+import { AlertInline } from "../../../components";
 
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<

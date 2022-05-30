@@ -70,15 +70,4 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
-  textContainer: {
-    marginRight: 16,
-  },
-  logo: {
-    height: 16,
-    width: 16,
-    marginRight: 8,
-  },
-  content: {
-
-  },
 });
