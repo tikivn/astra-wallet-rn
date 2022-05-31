@@ -2,6 +2,7 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { View, Text, ViewStyle } from "react-native";
 import { Button } from "../../../components/button";
+import { CardDivider } from "../../../components/card";
 import { useSmartNavigation } from "../../../navigation";
 import { useStore } from "../../../stores";
 
@@ -27,6 +28,12 @@ export const RewardsItem: FunctionComponent<{
     account.bech32Address
   );
 
+  const unbondingsQueries = queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
+    account.bech32Address
+  );
+
+  const unbondingBalances = unbondingsQueries.unbondingBalances;
+
   const delegated = queryDelegated.total;
 
   const totalDelegated = priceStore.calculatePrice(delegated);
@@ -35,10 +42,15 @@ export const RewardsItem: FunctionComponent<{
 
   const isRewardExist = rewardsQueries.rewards.length > 0;
 
+  const isPending = unbondingBalances.length > 0;
+
+  const unboding = unbondingsQueries.total;
+  const totalUnboding = priceStore.calculatePrice(unboding);
+
   return (
     <View
       style={style.flatten([
-        "height-184",
+        "height-276",
         "padding-0",
         "margin-x-16",
         "margin-y-16",
@@ -89,13 +101,7 @@ export const RewardsItem: FunctionComponent<{
           textStyle={style.flatten(["color-gray-10", "body3"])}
         />
       </View>
-      <View
-        style={style.flatten([
-          "height-1",
-          "background-color-gray-70",
-          "margin-x-16",
-        ])}
-      />
+      <CardDivider style={style.flatten(["background-color-gray-70"])} />
       <View
         style={style.flatten([
           "height-90",
@@ -140,6 +146,53 @@ export const RewardsItem: FunctionComponent<{
           disabled={!isRewardExist}
           onPress={() => {
             smartNavigation.navigateSmart("Staking.Rewards", {});
+          }}
+        />
+      </View>
+      <CardDivider style={style.flatten(["background-color-gray-70"])} />
+      <View
+        style={style.flatten([
+          "height-90",
+          "padding-y-16",
+          "margin-x-16",
+          "margin-y-1",
+          "flex-row",
+        ])}
+      >
+        <PropertyView
+          label="Tổng tiền đang rút"
+          value={unboding
+            .shrink(true)
+            .maxDecimals(6)
+            .trim(true)
+            .upperCase(true)
+            .toString()}
+          subValue={`~ ${
+            totalUnboding
+              ? totalUnboding.toString()
+              : unboding.shrink(true).maxDecimals(6).toString()
+          }`}
+        />
+
+        <Button
+          containerStyle={style.flatten(
+            [
+              "self-center",
+              "border-radius-4",
+              "border-color-gray-30",
+              "border-width-1",
+              "width-132",
+            ],
+            [!isRewardExist && "opacity-40"]
+          )}
+          text="Theo dõi"
+          mode="text"
+          size="small"
+          underlayColor={style.get("color-background").color}
+          textStyle={style.flatten(["color-gray-10", "body3"])}
+          disabled={!isPending}
+          onPress={() => {
+            smartNavigation.navigateSmart("Unbonding", {});
           }}
         />
       </View>

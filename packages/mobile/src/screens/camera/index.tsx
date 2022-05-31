@@ -75,7 +75,7 @@ export const CameraScreen: FunctionComponent = observer(() => {
               if (data.startsWith("wc:")) {
                 await walletConnectStore.initClient(data);
 
-                smartNavigation.navigateSmart("Home", {});
+                smartNavigation.navigateSmart("NewHome", {});
               } else {
                 const isBech32Address = (() => {
                   try {

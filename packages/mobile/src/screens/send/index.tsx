@@ -141,7 +141,7 @@ export const SendScreen: FunctionComponent = observer(() => {
                 return;
               }
               console.log(e);
-              smartNavigation.navigateSmart("Home", {});
+              smartNavigation.navigateSmart("NewHome", {});
             }
           }
         }}

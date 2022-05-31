@@ -116,7 +116,7 @@ export const SendConfirmScreen: FunctionComponent = observer(() => {
                                 return;
                             }
                             console.log(e);
-                            smartNavigation.navigateSmart("Home", {});
+                            smartNavigation.navigateSmart("NewHome", {});
                         }
                     }
                 }}

@@ -135,7 +135,7 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
       await keyRingStore.changeKeyRing(index);
       loadingScreen.setIsLoading(false);
 
-      smartNavigation.navigateSmart("Home", {});
+      smartNavigation.navigateSmart("NewHome", {});
     }
   };
 

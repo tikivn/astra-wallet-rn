@@ -121,8 +121,8 @@ import { DeleteWalletScreen, EnterPincodeScreen } from "./screens/settings/scree
 import { NewStakingDashboardScreen, NewValidatorDetailsScreen, NewValidatorListScreen } from "./screens/staking";
 import { StakingRewardScreen } from "./screens/staking/rewards";
 import { HistoryScreen } from "./screens/history";
-import { TxConfirmResultScreen } from "./screens/tx-result/confirm";
 import { TxType } from "./stores/transaction";
+import { UnbondingScreen } from "./screens/staking/unbonding";
 
 const {
   SmartNavigatorProvider,
@@ -290,7 +290,13 @@ const {
     },
     "Staking.Rewards": {
       upperScreenName: "Wallet",
-    }
+    },
+    Unbonding: {
+      upperScreenName: "Wallet",
+    },
+    "Wallet.History": {
+      upperScreenName: "Wallet",
+    },
   }).withParams<{
     "Register.NewMnemonic": {
       registerConfig: RegisterConfig;
@@ -924,6 +930,19 @@ export const WalletNavigation: FunctionComponent = () => {
         }}
         name="Redelegate"
         component={RedelegateScreen}
+      />
+      <Stack.Screen
+        options={{
+          title: "Tổng tiền đang rút",
+        }}
+        name="Unbonding"
+        component={UnbondingScreen}
+        />
+      <Stack.Screen
+        options={{
+        }}
+        name="Wallet.History"
+        component={HistoryScreen}
       />
     </Stack.Navigator>
   );

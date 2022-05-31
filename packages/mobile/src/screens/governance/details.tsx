@@ -461,7 +461,7 @@ export const GovernanceVoteModal: FunctionComponent<{
                   return;
                 }
                 console.log(e);
-                smartNavigation.navigateSmart("Home", {});
+                smartNavigation.navigateSmart("NewHome", {});
               }
             }
           }}

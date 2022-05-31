@@ -125,7 +125,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
                 return;
               }
               console.log(e);
-              smartNavigation.navigateSmart("Home", {});
+              smartNavigation.navigateSmart("NewHome", {});
             }
           }
         }}

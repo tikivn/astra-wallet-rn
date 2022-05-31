@@ -92,7 +92,7 @@ export const MyRewardCard: FunctionComponent<{
                   return;
                 }
                 console.log(e);
-                smartNavigation.navigateSmart("Home", {});
+                smartNavigation.navigateSmart("NewHome", {});
               }
             }}
             disabled={

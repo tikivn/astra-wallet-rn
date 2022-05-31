@@ -6,16 +6,13 @@ import { PageWithScrollView } from "../../../components/page";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 
-import { UnbondingCard } from "../../stake/validator-details/unbonding-card";
-import { ValidatorDetailsCard } from "../../stake/validator-details/validator-details-card";
 import { CommissionsCard } from "./commission-card";
 import { ValidatorNameCard } from "./name-card";
 import { DelegatedCard } from "./delegated-card";
-import { ImageBackground, SafeAreaView, View } from "react-native";
+import { ImageBackground, View } from "react-native";
 import { LeftArrowIcon } from "../../../components/icon";
 import { RectButton } from "../../../components/rect-button";
 import { useSmartNavigation } from "../../../navigation";
-import { Button } from "../../../components/button";
 
 export const NewValidatorDetailsScreen: FunctionComponent = observer(() => {
     const route = useRoute<
@@ -58,7 +55,6 @@ export const NewValidatorDetailsScreen: FunctionComponent = observer(() => {
                 style={style.flatten(["width-full", "height-full"])}
                 source={require("../../../assets/logo/main_background.png")}
                 resizeMode="contain">
-                {/* <SafeAreaView></SafeAreaView> */}
                 <PageWithScrollView backgroundColor={style.get("color-transparent").color} stickyHeaderIndices={[0]}>
                     <RectButton
                         style={style.flatten([
