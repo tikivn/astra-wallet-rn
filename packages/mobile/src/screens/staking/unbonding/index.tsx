@@ -88,9 +88,10 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
         </Text>
       </Text>
       </View>
-      <View style={style.flatten(["margin-top-32", "background-color-background"])}>
+      <View style={style.flatten(["margin-top-16", "background-color-background"])}>
         <View
           style={style.flatten([
+            "margin-top-16",
             "flex-row",
             "justify-between",
             "items-center",

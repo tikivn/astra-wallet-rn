@@ -196,6 +196,7 @@ export const DelegationsItem: FunctionComponent<{
         </CardBody>
       ) : (
         <DelegationsEmptyItem
+          label="Bạn chưa có quỹ đầu tư nào"
           containerStyle={style.flatten([
             "background-color-background",
             "margin-y-32",
@@ -208,7 +209,8 @@ export const DelegationsItem: FunctionComponent<{
 
 export const DelegationsEmptyItem: FunctionComponent<{
   containerStyle?: ViewStyle;
-}> = observer(({ containerStyle }) => {
+  label: string;
+}> = observer(({ containerStyle, label }) => {
   const style = useStyle();
   return (
     <Card style={containerStyle}>
@@ -226,7 +228,7 @@ export const DelegationsEmptyItem: FunctionComponent<{
             "margin-top-12",
           ])}
         >
-          Bạn chưa có quỹ đầu tư nào
+          {label}
         </Text>
       </CardBody>
     </Card>

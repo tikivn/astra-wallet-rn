@@ -1,8 +1,4 @@
 PODS:
-  - Amplitude (8.7.1)
-  - amplitude-react-native (2.7.0):
-    - Amplitude (= 8.7.1)
-    - React-Core
   - appcenter-analytics (4.1.0):
     - AppCenter/Analytics (~> 4.0)
     - AppCenterReactNativeShared (~> 4.0)
@@ -268,6 +264,8 @@ PODS:
     - React-Core
   - react-native-netinfo (7.1.9):
     - React-Core
+  - react-native-pager-view (5.4.24):
+    - React-Core
   - react-native-safe-area-context (3.2.0):
     - React-Core
   - react-native-webview (11.14.2):
@@ -376,7 +374,6 @@ PODS:
   - Yoga (1.14.0)
 
 DEPENDENCIES:
-  - "amplitude-react-native (from `../node_modules/@amplitude/react-native`)"
   - appcenter-analytics (from `../../../node_modules/appcenter-analytics/ios`)
   - appcenter-core (from `../../../node_modules/appcenter/ios`)
   - "BugsnagReactNative (from `../node_modules/@bugsnag/react-native`)"
@@ -412,6 +409,7 @@ DEPENDENCIES:
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
   - react-native-camera (from `../node_modules/react-native-camera`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
+  - react-native-pager-view (from `../node_modules/react-native-pager-view`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-webview (from `../node_modules/react-native-webview`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -444,7 +442,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - Amplitude
     - AppCenter
     - AppCenterReactNativeShared
     - Base64
@@ -457,8 +454,6 @@ SPEC REPOS:
     - SSZipArchive
 
 EXTERNAL SOURCES:
-  amplitude-react-native:
-    :path: "../node_modules/@amplitude/react-native"
   appcenter-analytics:
     :path: "../../../node_modules/appcenter-analytics/ios"
   appcenter-core:
@@ -525,6 +520,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-camera"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
+  react-native-pager-view:
+    :path: "../node_modules/react-native-pager-view"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-webview:
@@ -585,8 +582,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  Amplitude: 834c7332dfb9640a751e21c13efb22a07c0c12d4
-  amplitude-react-native: 0ed8cab759aafaa94961b82122bf56297da607ad
   AppCenter: cd53e3ed3563cc720bcb806c9731a12389b40d44
   appcenter-analytics: aa074250b2cb182d6f7d67d9c236dd4606673ab5
   appcenter-core: c97920e79eba2321a262d3733cb2a6f1097db539
@@ -627,6 +622,7 @@ SPEC CHECKSUMS:
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-camera: 11166fe7e3a673493c152f52966e8ab1c5cdcacc
   react-native-netinfo: 87e5bfaf21ea5c6c110941290aa481dd8e849f98
+  react-native-pager-view: 95d0418c3c74279840abec6926653d32447bafb6
   react-native-safe-area-context: f0906bf8bc9835ac9a9d3f97e8bde2a997d8da79
   react-native-webview: cc4ac8f021a832dce2979e1f48c5595341dd2fb5
   React-RCTActionSheet: 89a0ca9f4a06c1f93c26067af074ccdce0f40336
