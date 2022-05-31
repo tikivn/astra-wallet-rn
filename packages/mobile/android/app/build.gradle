@@ -167,7 +167,7 @@ android {
             def keyFile = getProp("ASTRA_WALLET_ANDROID_KEY_FILE")
             def keyPassFile = getProp("ASTRA_WALLET_ANDROID_KEY_PASS_FILE")
             def isCI = getProp("CI")
-            if (isCI == '1') {
+            if ((keyFile == "" || keyPassFile == "") && isCI == '1') {
                 keyFile = "$theRootDir/keys/debug/debug.keystore"
                 keyPassFile = "$theRootDir/keys/debug/keys-pass"
             } else if (keyFile == "" || keyPassFile == "") {
