@@ -16,8 +16,6 @@ export const ValidatorThumbnail: FunctionComponent<{
       style={StyleSheet.flatten([
         style.flatten([
           "overflow-hidden",
-          "border-width-1",
-          "border-color-border-white",
           "items-center",
           "justify-center",
         ]),
