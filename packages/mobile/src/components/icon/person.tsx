@@ -4,7 +4,7 @@ import Svg, { Path } from "react-native-svg";
 export const PersonIcon: FunctionComponent<{
   color: string;
   size: number;
-}> = ({ color, size }) => {
+}> = ({  size }) => {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path

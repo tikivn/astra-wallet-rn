@@ -40,8 +40,8 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
   return (
     <PageWithScrollView
       backgroundColor={Colors["background"]}
-      style={style.flatten(["padding-16"])}
-      stickyHeaderIndices={[3]}
+      style={style.flatten(["padding-x-16"])}
+      stickyHeaderIndices={[2]}
     >
       <View style={style.flatten(["padding-16", "items-center"])}>
         <Text style={style.flatten(["color-gray-30", "body3", "margin-top-0"])}>
@@ -64,7 +64,7 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
             : balance.shrink(true).maxDecimals(6).toString()}
         </Text>
       </View>
-
+      <View style={style.flatten(["background-color-background"])}>
       <AlertInline
         type="info"
         content="Sau khi rút ASA, bạn sẽ nhận được số tiền đó sau 14 ngày"
@@ -87,7 +87,8 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
           lịch sử
         </Text>
       </Text>
-      <View style={style.flatten(["margin-top-16", "background-color-background"])}>
+      </View>
+      <View style={style.flatten(["margin-top-32", "background-color-background"])}>
         <View
           style={style.flatten([
             "flex-row",
