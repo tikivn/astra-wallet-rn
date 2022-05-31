@@ -180,7 +180,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
               </View>
             }
             onPress={() => {
-              smartNavigation.navigateSmart("Home", {});
+              smartNavigation.navigateSmart("NewHome", {});
             }}
           />
         </View>

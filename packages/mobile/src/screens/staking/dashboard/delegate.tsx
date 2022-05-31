@@ -7,7 +7,6 @@ import { useStyle } from "../../../styles";
 import { Staking } from "@keplr-wallet/stores";
 import { RightArrowIcon } from "../../../components/icon";
 import { useSmartNavigation } from "../../../navigation";
-import { ValidatorThumbnail } from "../../../components/thumbnail";
 import { RectButton } from "../../../components/rect-button";
 import { Dec, IntPretty } from "@keplr-wallet/unit";
 import { PropertyView } from "../component/property";
@@ -132,6 +131,21 @@ export const DelegationsItem: FunctionComponent<{
                       .maxDecimals(2)
                       .trim(true)
                       .toString() + "%"
+                  }
+                  right={
+                    <View
+                      style={style.flatten([
+                        "width-16",
+                        "height-16",
+                        "items-center",
+                        "justify-center",
+                      ])}
+                    >
+                      <RightArrowIcon
+                        height={10}
+                        color={style.get("color-gray-10").color}
+                      />
+                    </View>
                   }
                 />
                 <CardDivider

@@ -68,6 +68,7 @@ export const TxResultScreen: FunctionComponent = observer(() => {
       txTracer
         .traceTx(Buffer.from(txHash, "hex"))
         .then((tx) => {
+          console.log("__GOT TX__ ",tx);
           if (tx.code == null || tx.code === 0) {
             transactionStore.updateTxState("success");
             console.log("__TRANS__success", chainId, txHash);
