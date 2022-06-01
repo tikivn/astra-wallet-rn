@@ -20,7 +20,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     rpc: "https://rpc.astranaut.network",
     rest: "https://api.astranaut.network",
     chainId: "astra_11112-1",
-    chainName: "Astranaut",
+    chainName: "Testnet",
     stakeCurrency: {
       coinDenom: "ASA",
       coinMinimalDenom: "aastra",
@@ -74,7 +74,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     rpc: "https://rpc.astra.bar",
     rest: "https://api.astra.bar",
     chainId: "astra-devnet-001",
-    chainName: "Astra",
+    chainName: "Testnet (deprecated)",
     stakeCurrency: {
       coinDenom: "ASA",
       coinMinimalDenom: "astra",

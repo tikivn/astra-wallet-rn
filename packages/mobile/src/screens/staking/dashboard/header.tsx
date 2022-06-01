@@ -3,6 +3,7 @@ import React, { FunctionComponent } from "react";
 import { View, Image, Text, ViewStyle } from "react-native";
 import { Button } from "../../../components/button";
 import { useStyle } from "../../../styles";
+import * as WebBrowser from "expo-web-browser";
 
 export const DashboardHeader: FunctionComponent<{
     containerStyle?: ViewStyle;
@@ -19,7 +20,11 @@ export const DashboardHeader: FunctionComponent<{
                     text="Tìm hiểu thêm Staking"
                     mode="text" size="default"
                     underlayColor={style.get("color-background").color}
-                    textStyle={style.flatten(["text-underline", "body3"])} />
+                    textStyle={style.flatten(["text-underline", "body3"])} 
+                    onPress={() => {
+                        WebBrowser.openBrowserAsync("https://tiki.vn/sep/home");
+                    }
+                    }/>
             </View>
             <Image
                 source={require("../../../assets/image/saving.png")}

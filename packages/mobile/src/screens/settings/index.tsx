@@ -10,6 +10,8 @@ import { SettingsAccountItem } from "./items/select-account";
 import { AccountItem } from "./components";
 import { AccountNetworkItem } from "./items/select-network";
 import { AccountVersionItem } from "./items/version-item";
+import * as WebBrowser from "expo-web-browser";
+
 export const SettingsScreen: FunctionComponent = observer(() => {
     const { keychainStore, keyRingStore } = useStore();
 
@@ -55,7 +57,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
                         containerStyle={style.flatten(["margin-left-16", "margin-right-16", "border-radius-8", "overflow-hidden"])}
                         right={<AllIcon color={style.get("color-white").color} />}
                         onPress={() => {
-
+                            WebBrowser.openBrowserAsync("https://tiki.vn/sep/home");
                         }}
                     />
                     <View style={style.get("height-8")} />
@@ -64,7 +66,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
                         label="Cộng đồng hỗ trợ"
                         right={<AllIcon color={style.get("color-white").color} />}
                         onPress={() => {
-
+                            WebBrowser.openBrowserAsync("https://tiki.vn/sep/home");
                         }}
                     />
                     <View style={style.get("height-32")} />

@@ -91,7 +91,7 @@ export const NewValidatorDetailsScreen: FunctionComponent = observer(() => {
         resizeMode="contain"
       >
         <PageWithScrollView
-          contentContainerStyle={style.flatten(["flex-1"])}
+          contentContainerStyle={style.flatten(["flex-grow-1"])}
           backgroundColor={style.get("color-transparent").color}
           stickyHeaderIndices={[0]}
         >
@@ -135,10 +135,11 @@ export const NewValidatorDetailsScreen: FunctionComponent = observer(() => {
                 containerStyle={style.flatten([
                   "background-color-background",
                   "margin-y-32",
+                  "flex-1",
                 ])}
               />
             )}
-            style={style.flatten(["margin-top-16"])}
+            style={style.flatten(["margin-top-16", "height-600"])}
             navigationState={{ index, routes }}
             renderScene={renderScene}
             onIndexChange={setIndex}
