@@ -284,6 +284,9 @@ export function renderMsgBeginRedelegate(
   const validatorSrc = transactionStore.getValidator({ validatorAddress: validatorSrcAddress })
   const validatorDst = transactionStore.getValidator({ validatorAddress: validatorDstAddress })
 
+  const date = new Date();
+  const dateString = date.toLocaleTimeString("vi-VN") + ", " + date.toLocaleDateString("vi-VN");
+
   const rows: IRow[] = join([
     {
       ...common,
@@ -303,13 +306,13 @@ export function renderMsgBeginRedelegate(
       ...common,
       cols: [
         buildLeftColumn({ text: "Thời gian thực hiện" }),
-        buildRightColumn({ text: "Chưa có thông tin" })
+        buildRightColumn({ text: dateString })
       ],
     },
     {
       ...common,
       cols: [
-        buildLeftColumn({ text: "Phí rút" }),
+        buildLeftColumn({ text: "Phí giao dịch" }),
         buildRightColumn({ text: fee })
       ],
     },
@@ -325,6 +328,9 @@ export function renderMsgUndelegate(
   const { transactionStore } = useStore();
   const validator = transactionStore.getValidator({ validatorAddress })
 
+  const date = new Date();
+  const dateString = date.toLocaleTimeString("vi-VN") + ", " + date.toLocaleDateString("vi-VN");
+
   const rows: IRow[] = join([
     {
       ...common,
@@ -337,7 +343,7 @@ export function renderMsgUndelegate(
       ...common,
       cols: [
         buildLeftColumn({ text: "Thời gian thực hiện" }),
-        buildRightColumn({ text: "Chưa có thông tin" })
+        buildRightColumn({ text: dateString })
       ],
     },
     {
@@ -377,6 +383,9 @@ export function renderMsgDelegate(
     denom: parsed.denom,
   };
 
+  const date = new Date();
+  const dateString = date.toLocaleTimeString("vi-VN") + ", " + date.toLocaleDateString("vi-VN");
+
   const rows: IRow[] = join([
     {
       ...common,
@@ -398,7 +407,7 @@ export function renderMsgDelegate(
       ...common,
       cols: [
         buildLeftColumn({ text: "Thời gian thực hiện" }),
-        buildRightColumn({ text: "Chưa có thông tin" })
+        buildRightColumn({ text: dateString })
       ],
     },
     {
@@ -491,6 +500,9 @@ export function renderMsgWithdrawDelegatorReward(
   //   },
   // ], { type: "separator" });
 
+  const date = new Date();
+  const dateString = date.toLocaleTimeString("vi-VN") + ", " + date.toLocaleDateString("vi-VN");
+
   rows = [
     ...rows,
     { type: "separator" },
@@ -498,7 +510,7 @@ export function renderMsgWithdrawDelegatorReward(
       ...common,
       cols: [
         buildLeftColumn({ text: "Thời gian thực hiện" }),
-        buildRightColumn({ text: "Chưa có thông tin" })
+        buildRightColumn({ text: dateString })
       ],
     },
     { type: "separator" },

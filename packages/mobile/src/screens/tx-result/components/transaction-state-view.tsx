@@ -8,18 +8,26 @@ import { useStore } from "../../../stores";
 import { TxState, TxType } from "../../../stores/transaction";
 import { useStyle } from "../../../styles";
 
-export const TransactionStateView: FunctionComponent<{ style?: ViewStyle, amount: string }> = observer(({
+export const TransactionStateView: FunctionComponent<{
+  style?: ViewStyle
+}> = observer(({
   style,
-  amount,
 }) => {
   const { transactionStore } = useStore();
   const styleBuilder = useStyle();
 
   const [txState, setTxState] = useState(transactionStore.txState);
+  const [amountText, setAmountText] = useState("");
 
   useEffect(() => {
     setTxState(transactionStore.txState);
   }, [transactionStore.txState]);
+
+  useEffect(() => {
+    setAmountText(
+      transactionStore.txAmount?.toString() ?? ""
+    );
+  }, [transactionStore.txAmount]);
 
   const isFailure = txState == "failure";
 
@@ -70,7 +78,6 @@ export const TransactionStateView: FunctionComponent<{ style?: ViewStyle, amount
   }
 
   const mainText = getMainText(transactionStore.txType, txState);
-  const amountText = amount;
 
   var initialStepText = "Đã ghi nhận";
   var finalStepText = "Đang xử lý";

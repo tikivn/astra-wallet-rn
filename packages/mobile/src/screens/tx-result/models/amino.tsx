@@ -1,7 +1,7 @@
 import { FeeConfig } from "@keplr-wallet/hooks";
 import { CoinPrimitive, CosmosMsgOpts, CosmwasmMsgOpts, SecretMsgOpts } from "@keplr-wallet/stores";
 import { AppCurrency, Currency } from "@keplr-wallet/types";
-import { Coin, CoinPretty, CoinUtils } from "@keplr-wallet/unit";
+import { Coin, CoinPretty, CoinUtils, Dec } from "@keplr-wallet/unit";
 import { Msg as AminoMsg } from "@cosmjs/launchpad";
 import { IRow } from "../../../components";
 import { useStore } from "../../../stores";
@@ -222,12 +222,19 @@ export function processTransactionAmino(
 }
 
 export function renderAminoMessages(
-  chainId: string,
-  msgs: readonly AminoMsg[],
-  feeConfig: FeeConfig,
+  // chainId: string,
+  // msgs: readonly AminoMsg[],
+  // feeConfig: FeeConfig,
+  // fee?: Coin,
 ): IRow[] {
-  const { accountStore, chainStore } = useStore();
+  const { accountStore, chainStore, transactionStore } = useStore();
 
+  const msgs = transactionStore.txMsgs as readonly AminoMsg[];
+  if (msgs.length == 0) {
+    return [];
+  }
+
+  const chainId = transactionStore.signDocHelper?.signDocWrapper?.chainId ?? chainStore.current.chainId;
   const currencies = chainStore.getChain(chainId).currencies;
   const msgOpts: {
     readonly cosmos: {
@@ -241,7 +248,25 @@ export function renderAminoMessages(
     };
   } = accountStore.getAccount(chainId);
 
-  const feeString = feeConfig.fee?.trim(true).toString() ?? "";
+  var feeString = transactionStore.txFee?.toString() ?? "";
+
+  const fees = transactionStore.signDocHelper?.signDocWrapper?.fees;
+  if (feeString.length == 0 && fees && fees.length != 0) {
+    const fee = fees[0];
+
+    const appCurrencies = currencies.filter((currency) => {
+      return fee.denom == currency.coinGeckoId;
+    });
+
+    console.log("__FEE__", transactionStore.signDocHelper?.signDocWrapper?.fees, appCurrencies);
+    
+    if (appCurrencies.length != 0) {
+      feeString = new CoinPretty(
+        appCurrencies[0],
+        new Dec(fee.amount)
+      ).trim(true).upperCase(true).toString();
+    }
+  }
 
   const msg: MessageObj = msgs[0];
 
@@ -263,9 +288,9 @@ export function renderAminoMessages(
       return renderMsgBeginRedelegate(
         currencies,
         value.amount,
-        feeString,
         value.validator_src_address,
-        value.validator_dst_address
+        value.validator_dst_address,
+        feeString,
       );
     }
 

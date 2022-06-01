@@ -434,6 +434,9 @@ export const GovernanceVoteModal: FunctionComponent<{
           onPress={async () => {
             if (vote !== "Unspecified" && account.isReadyToSendMsgs) {
               try {
+                transactionStore.updateTxData({
+                  chainInfo: chainStore.current,
+                });
                 await account.cosmos.sendGovVoteMsg(
                   proposalId,
                   vote,
@@ -449,9 +452,6 @@ export const GovernanceVoteModal: FunctionComponent<{
                         proposalTitle: proposal?.title,
                       });
                       transactionStore.updateTxHash(txHash);
-                      // smartNavigation.pushSmart("TxPendingResult", {
-                      //   txHash: Buffer.from(txHash).toString("hex"),
-                      // });
                     },
                   }
                 );
@@ -460,6 +460,7 @@ export const GovernanceVoteModal: FunctionComponent<{
                 if (e?.message === "Request rejected") {
                   return;
                 }
+                transactionStore.rejectTransaction();
                 console.log(e);
                 smartNavigation.navigateSmart("NewHome", {});
               }

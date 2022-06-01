@@ -112,6 +112,12 @@ export const SendScreen: FunctionComponent = observer(() => {
         onPress={async () => {
           if (account.isReadyToSendMsgs && txStateIsValid) {
             try {
+              transactionStore.updateTxData({
+                chainInfo: chainStore.current,
+                amount: sendConfigs.amountConfig,
+                fee: sendConfigs.feeConfig,
+                memo: sendConfigs.memoConfig,
+              });
               await account.sendToken(
                 sendConfigs.amountConfig.amount,
                 sendConfigs.amountConfig.sendCurrency,
@@ -130,9 +136,6 @@ export const SendScreen: FunctionComponent = observer(() => {
                       feeType: sendConfigs.feeConfig.feeType,
                     });
                     transactionStore.updateTxHash(txHash);
-                    // smartNavigation.pushSmart("TxPendingResult", {
-                    //   txHash: Buffer.from(txHash).toString("hex"),
-                    // });
                   },
                 }
               );
@@ -140,6 +143,7 @@ export const SendScreen: FunctionComponent = observer(() => {
               if (e?.message === "Request rejected") {
                 return;
               }
+              transactionStore.rejectTransaction();
               console.log(e);
               smartNavigation.navigateSmart("NewHome", {});
             }

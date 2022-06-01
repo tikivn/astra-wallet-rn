@@ -33,22 +33,23 @@ export const AlertInline: FunctionComponent<IAlertInline> = observer(({
       color: allStyles[type].logo.color
     };
 
-    var icon = <AlertInfoIcon {...props} />;
+    var Icon = AlertInfoIcon;
 
     switch (type) {
       case "success":
-        icon = <AlertSuccessIcon {...props} />;
+        Icon = AlertSuccessIcon;
         break;
       case "warning":
-        icon = <AlertWarningIcon {...props} />;
+        Icon = AlertWarningIcon;
         break;
       case "error":
-        icon = <AlertErrorIcon {...props} />;
+        Icon = AlertErrorIcon;
         break;
       default:
         break;
     }
-    return icon;
+
+    return <Icon {...props} />
   }
 
   return (

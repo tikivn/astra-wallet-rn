@@ -178,6 +178,12 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
         onPress={async () => {
           if (account.isReadyToSendTx && txStateIsValid) {
             try {
+              transactionStore.updateTxData({
+                chainInfo: chainStore.current,
+                amount: sendConfigs.amountConfig,
+                fee: sendConfigs.feeConfig,
+                memo: sendConfigs.memoConfig,
+              });
               await account.cosmos.sendBeginRedelegateMsg(
                 sendConfigs.amountConfig.amount,
                 sendConfigs.srcValidatorAddress,
@@ -198,9 +204,6 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                       feeType: sendConfigs.feeConfig.feeType,
                     });
                     transactionStore.updateTxHash(txHash);
-                    // smartNavigation.pushSmart("TxPendingResult", {
-                    //   txHash: Buffer.from(txHash).toString("hex"),
-                    // });
                   },
                 }
               );
@@ -208,6 +211,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
               if (e?.message === "Request rejected") {
                 return;
               }
+              transactionStore.rejectTransaction();
               console.log(e);
               smartNavigation.navigateSmart("NewHome", {});
             }

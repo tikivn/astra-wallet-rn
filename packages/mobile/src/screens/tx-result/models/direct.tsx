@@ -104,15 +104,22 @@ import { useStore } from "../../../stores";
 // }
 
 export function renderDirectMessages(
-  chainId: string,
-  msgs: AnyWithUnpacked[],
-  feeConfig: FeeConfig,
+  // chainId: string,
+  // msgs: AnyWithUnpacked[],
+  // feeConfig: FeeConfig,
 ) {
-  const { chainStore } = useStore();
+  const { chainStore, transactionStore } = useStore();
 
+  const msgs = transactionStore.txMsgs as AnyWithUnpacked[]
+
+  if (msgs.length == 0) {
+    return;
+  }
+
+  const chainId = transactionStore.signDocHelper?.signDocWrapper?.chainId ?? chainStore.current.chainId;
   const currencies = chainStore.getChain(chainId).currencies;
 
-  const feeString = feeConfig.fee?.trim(true).toString() ?? "";
+  const feeString = "TODO:Phí";//feeConfig.fee?.trim(true).toString() ?? "";
 
   const msg = msgs[0];
 

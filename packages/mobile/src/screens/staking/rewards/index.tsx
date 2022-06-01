@@ -24,6 +24,9 @@ export const StakingRewardScreen: FunctionComponent = () => {
 
     const withdrawAllRewards = async () => {
         try {
+          transactionStore.updateTxData({
+            chainInfo: chainStore.current,
+          });
             await account.cosmos.sendWithdrawDelegationRewardMsgs(
               queryReward.getDescendingPendingRewardValidatorAddresses(8),
               "",
@@ -36,9 +39,6 @@ export const StakingRewardScreen: FunctionComponent = () => {
                     chainName: chainStore.current.chainName,
                   });
                   transactionStore.updateTxHash(txHash);
-                  // smartNavigation.pushSmart("TxPendingResult", {
-                  //   txHash: Buffer.from(txHash).toString("hex"),
-                  // });
                 },
               }
             );
@@ -46,6 +46,7 @@ export const StakingRewardScreen: FunctionComponent = () => {
             if (e?.message === "Request rejected") {
               return;
             }
+            transactionStore.rejectTransaction();
             console.log(e);
             smartNavigation.navigateSmart("NewHome", {});
           }

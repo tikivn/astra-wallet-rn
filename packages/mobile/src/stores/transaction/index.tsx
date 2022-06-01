@@ -1,9 +1,20 @@
+import { Msg } from "@cosmjs/launchpad";
+import { AnyWithUnpacked, SignDocWrapper } from "@keplr-wallet/cosmos";
+import { IAmountConfig, IFeeConfig, IMemoConfig, SignDocAmountConfig, SignDocHelper } from "@keplr-wallet/hooks";
 import { Staking } from "@keplr-wallet/stores";
+import { ChainInfo } from "@keplr-wallet/types";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { computed, makeObservable, observable } from "mobx";
 import { useStore } from "..";
 
 export type TxType = "send" | "withdraw" | "delegate" | "undelegate" | "redelegate" | "swap" | undefined;
 export type TxState = "pending" | "success" | "failure" | undefined;
+export type TxData = {
+  chainInfo?: ChainInfo,
+  amount?: IAmountConfig,
+  fee?: IFeeConfig,
+  memo?: IMemoConfig,
+};
 
 export class TransactionStore {
   constructor() {
@@ -14,6 +25,12 @@ export class TransactionStore {
 
   @observable protected _txState: TxState = undefined;
   @observable protected _txHash?: Uint8Array = undefined;
+  @observable protected _txData?: TxData = undefined;
+
+  @observable protected _txAmount?: CoinPretty = undefined;
+  @observable protected _txFee?: CoinPretty = undefined;
+
+  @observable protected _signDocHelper?: SignDocHelper = undefined;
 
   @computed
   get txType(): TxType {
@@ -30,6 +47,114 @@ export class TransactionStore {
     return this._txHash;
   }
 
+  @computed
+  get txMsgs(): readonly Msg[] | AnyWithUnpacked[] | undefined {
+    const wrapper = this._signDocHelper?.signDocWrapper;
+    if (!wrapper) {
+      return undefined;
+    }
+
+    return wrapper?.mode === "amino"
+      ? wrapper?.aminoSignDoc.msgs
+      : wrapper?.protoSignDoc.txMsgs;
+  }
+
+  @computed
+  get txMsgsMode(): SignDocWrapper["mode"] | undefined {
+    return this._signDocHelper?.signDocWrapper?.mode;
+  }
+
+  @computed
+  get txData(): TxData | undefined {
+    return this._txData;
+  }
+
+  @computed
+  get signDocHelper(): SignDocHelper | undefined {
+    return this._signDocHelper;
+  }
+
+  @computed
+  get txAmount(): CoinPretty | undefined {
+    const amount = this._txData?.amount;
+    if (amount) {
+      return new CoinPretty(
+        amount.sendCurrency,
+        new Dec(amount.getAmountPrimitive().amount)
+      )
+        .trim(true)
+        .maxDecimals(6)
+        .upperCase(true);
+    }
+    return undefined;
+    // return this._txAmount;
+  }
+
+  @computed
+  get txFee(): CoinPretty | undefined {
+    const fee = this._txData?.fee;
+    if (fee && fee.fee) {
+      return fee.fee
+        .trim(true)
+        .maxDecimals(6)
+        .upperCase(true);
+    }
+    return undefined;
+    // return this._txFee;
+  }
+
+  protected setAmount() {
+    // const { chainStore } = useStore();
+
+    // var txAmount: CoinPretty;
+    const amount = this._txData?.amount;
+    if (amount) {
+      this._txAmount = new CoinPretty(
+        amount.sendCurrency,
+        new Dec(amount.getAmountPrimitive().amount)
+      )
+        .trim(true)
+        .maxDecimals(6)
+        .upperCase(true);
+    }
+    // else {
+    //   txAmount = new CoinPretty(
+    //     chainStore.current.currencies[0],
+    //     new Dec(0)
+    //   );
+    // }
+
+    // this._txAmount = txAmount
+    //   .trim(true)
+    //   .maxDecimals(6)
+    //   .upperCase(true);
+  }
+
+  protected setFee() {
+    // const { chainStore } = useStore();
+
+    // var txFee: CoinPretty;
+    const fee = this._txData?.fee;
+    if (fee && fee.fee) {
+      this._txFee = fee.fee
+        .trim(true)
+        .maxDecimals(6)
+        .upperCase(true);
+    }
+    // else {
+    //   txFee = new CoinPretty(
+    //     chainStore.current.currencies[0],
+    //     new Dec(0)
+    //   );
+    // }
+
+    // this._txFee = txFee
+    //   .trim(true)
+    //   .maxDecimals(6)
+    //   .upperCase(true);
+    // ;
+  }
+
   updateTxType(txType: TxType) {
     if (this._txType != txType) {
       this._txType = txType;
@@ -42,9 +167,38 @@ export class TransactionStore {
     }
   }
 
+  updateTxData(txData: TxData) {
+    this._txData = txData;
+    this.setAmount();
+    this.setFee();
+  }
+
   updateTxHash(txHash: Uint8Array | undefined) {
     if (this._txHash != txHash) {
       this._txHash = txHash;
+    }
+  }
+
+  // updateTxAmount(amountConfig: SignDocAmountConfig) {
+  //   this._txAmount = new CoinPretty(
+  //     amountConfig.sendCurrency,
+  //     new Dec(amountConfig.getAmountPrimitive().amount)
+  //   );
+  // }
+
+  updateSignDocHelper(signDocHelper: SignDocHelper | undefined) {
+    this._signDocHelper = signDocHelper;
+  }
+
+  async startTransaction() {
+    const { signInteractionStore } = useStore();
+    try {
+      const wrapper = this._signDocHelper?.signDocWrapper;
+      if (wrapper) {
+        await signInteractionStore.approveAndWaitEnd(wrapper);
+      }
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -52,6 +206,9 @@ export class TransactionStore {
     this._txType = undefined;
     this._txState = undefined;
     this._txHash = undefined;
+    this._txAmount = undefined;
+    this._txFee = undefined;
+    this._signDocHelper = undefined;
   }
 
   getDelegations(params: {
@@ -63,7 +220,7 @@ export class TransactionStore {
 
     const account = accountStore.getAccount(chainId);
     const queries = queriesStore.get(chainId);
-  
+
     const queryDelegations = queries.cosmos.queryDelegations.getQueryBech32Address(
       account.bech32Address
     );

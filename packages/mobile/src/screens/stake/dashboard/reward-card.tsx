@@ -69,6 +69,9 @@ export const MyRewardCard: FunctionComponent<{
             containerStyle={style.flatten(["min-width-72"])}
             onPress={async () => {
               try {
+                transactionStore.updateTxData({
+                  chainInfo: chainStore.current,
+                });
                 await account.cosmos.sendWithdrawDelegationRewardMsgs(
                   queryReward.getDescendingPendingRewardValidatorAddresses(8),
                   "",
@@ -81,9 +84,6 @@ export const MyRewardCard: FunctionComponent<{
                         chainName: chainStore.current.chainName,
                       });
                       transactionStore.updateTxHash(txHash);
-                      // smartNavigation.pushSmart("TxPendingResult", {
-                      //   txHash: Buffer.from(txHash).toString("hex"),
-                      // });
                     },
                   }
                 );
@@ -91,6 +91,7 @@ export const MyRewardCard: FunctionComponent<{
                 if (e?.message === "Request rejected") {
                   return;
                 }
+                transactionStore.rejectTransaction();
                 console.log(e);
                 smartNavigation.navigateSmart("NewHome", {});
               }
