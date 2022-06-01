@@ -11,6 +11,7 @@ import { useStore } from "../../../stores";
 import { Colors, useStyle } from "../../../styles";
 
 export const UnbondingScreen: FunctionComponent = observer(() => {
+  const smartNavigation = useSmartNavigation();
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -81,7 +82,7 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
         <Text
           style={style.flatten(["text-underline", "color-primary"])}
           onPress={() => {
-            // smartNavigation.navigateSmart("Wallet.History", {});
+            smartNavigation.navigateSmart("Wallet.History", {});
           }}
         >
           lịch sử

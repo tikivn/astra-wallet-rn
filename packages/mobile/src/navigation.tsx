@@ -62,7 +62,14 @@ import {
   ValidatorDetailsScreen,
   ValidatorListScreen,
 } from "./screens/stake";
-import { HistoryTabbarIcon, HomeTabbarIcon, OpenDrawerIcon, ScanIcon, SettingTabbarIcon, StakeTabbarIcon } from "./components/icon";
+import {
+  HistoryTabbarIcon,
+  HomeTabbarIcon,
+  OpenDrawerIcon,
+  ScanIcon,
+  SettingTabbarIcon,
+  StakeTabbarIcon,
+} from "./components/icon";
 import {
   AddAddressBookScreen,
   AddressBookScreen,
@@ -113,12 +120,24 @@ import {
 import { WebpageScreenScreenOptionsPreset } from "./screens/web/components/webpage-screen";
 import Bugsnag from "@bugsnag/react-native";
 import { MainScreen } from "./screens/main";
-import { ReceiveScreen, SendConfirmScreen, SendTokenScreen, SwapScreen } from "./screens/main/screens";
+import {
+  ReceiveScreen,
+  SendConfirmScreen,
+  SendTokenScreen,
+  SwapScreen,
+} from "./screens/main/screens";
 import { RegisterTutorialcreen } from "./screens/register/tutorial";
 import { NewPincodeScreen } from "./screens/register/pincode";
 import { VerifyPincodeScreen } from "./screens/register/pincode/verify";
-import { DeleteWalletScreen, EnterPincodeScreen } from "./screens/settings/screens";
-import { NewStakingDashboardScreen, NewValidatorDetailsScreen, NewValidatorListScreen } from "./screens/staking";
+import {
+  DeleteWalletScreen,
+  EnterPincodeScreen,
+} from "./screens/settings/screens";
+import {
+  NewStakingDashboardScreen,
+  NewValidatorDetailsScreen,
+  NewValidatorListScreen,
+} from "./screens/staking";
 import { StakingRewardScreen } from "./screens/staking/rewards";
 import { HistoryScreen } from "./screens/history";
 import { TxType } from "./stores/transaction";
@@ -525,20 +544,20 @@ export const HistoryNavigation: FunctionComponent = () => {
   return (
     <Stack.Navigator
       screenOptions={{
-        headerTitleAlign: "left",
+        ...WalletHeaderScreenOptionsPreset,
         headerStyle: style.get("background-color-background"),
+        headerTitleStyle: style.flatten(["title2", "color-white"]),
         headerTitle: "Lịch sử giao dịch",
-        headerTitleStyle: {
-          color: "white"
-        }
       }}
       initialRouteName="History"
       headerMode="screen"
     >
       <Stack.Screen
-        options={{
-          // headerRight: () => <HomeScreenHeaderRight />,
-        }}
+        options={
+          {
+            // headerRight: () => <HomeScreenHeaderRight />,
+          }
+        }
         name="History"
         component={HistoryScreen}
       />
@@ -687,7 +706,7 @@ export const TransactionNavigation: FunctionComponent = () => {
       />
     </Stack.Navigator>
   );
-}
+};
 
 export const StakingNavigation: FunctionComponent = () => {
   const style = useStyle();
@@ -708,7 +727,7 @@ export const StakingNavigation: FunctionComponent = () => {
       />
     </Stack.Navigator>
   );
-}
+};
 
 export const OtherNavigation: FunctionComponent = () => {
   const style = useStyle();
@@ -838,7 +857,6 @@ export const WalletNavigation: FunctionComponent = () => {
         headerTitleStyle: style.flatten(["title2", "color-white"]),
       }}
       headerMode="screen"
-
     >
       <Stack.Screen
         options={{
@@ -881,32 +899,37 @@ export const WalletNavigation: FunctionComponent = () => {
           title: "",
         }}
         name="Settings.EnterPincode"
-        component={EnterPincodeScreen} />
+        component={EnterPincodeScreen}
+      />
       <Stack.Screen
         options={{
           title: "",
         }}
         name="Settings.DeleteWallet"
-        component={DeleteWalletScreen} />
+        component={DeleteWalletScreen}
+      />
       <Stack.Screen
         options={{
           title: "Quỹ đầu tư",
-          headerShown: false
+          headerShown: false,
         }}
         name="Validator.Details.New"
-        component={NewValidatorDetailsScreen} />
+        component={NewValidatorDetailsScreen}
+      />
       <Stack.Screen
         options={{
           title: "Chọn quỹ đầu tư",
         }}
         name="Validator.List.New"
-        component={NewValidatorListScreen} />
+        component={NewValidatorListScreen}
+      />
       <Stack.Screen
         options={{
           title: "Nhận tiền lãi",
         }}
         name="Staking.Rewards"
-        component={StakingRewardScreen} />
+        component={StakingRewardScreen}
+      />
       <Stack.Screen
         options={{
           title: "Nhập tiền đầu tư",
@@ -934,9 +957,10 @@ export const WalletNavigation: FunctionComponent = () => {
         }}
         name="Unbonding"
         component={UnbondingScreen}
-        />
+      />
       <Stack.Screen
         options={{
+          title: "Lịch sử giao dịch",
         }}
         name="Wallet.History"
         component={HistoryScreen}
@@ -1121,15 +1145,15 @@ export const MainTabNavigation: FunctionComponent = () => {
           const size = 24;
           switch (route.name) {
             case "NewMain":
-              return <HomeTabbarIcon size={size} color={color} />
+              return <HomeTabbarIcon size={size} color={color} />;
             case "Main":
-              return <HomeTabbarIcon size={size} color={color} />
+              return <HomeTabbarIcon size={size} color={color} />;
             case "History":
-              return <HistoryTabbarIcon size={size} color={color} />
+              return <HistoryTabbarIcon size={size} color={color} />;
             case "Setting":
-              return <SettingTabbarIcon size={size} color={color} />
+              return <SettingTabbarIcon size={size} color={color} />;
             case "Stake":
-              return <StakeTabbarIcon size={size} color={color} />
+              return <StakeTabbarIcon size={size} color={color} />;
           }
         },
         tabBarButton: (props) => (
@@ -1160,7 +1184,7 @@ export const MainTabNavigation: FunctionComponent = () => {
         inactiveTintColor: style.get("color-text-black-very-very-low").color,
         style: {
           borderTopWidth: 0.5,
-          borderTopColor: '#303341',//style.get("border-color-border-white").borderColor,
+          borderTopColor: "#303341", //style.get("border-color-border-white").borderColor,
           shadowColor: style.get("color-transparent").color,
           elevation: 0,
           paddingLeft: 30,
@@ -1172,7 +1196,6 @@ export const MainTabNavigation: FunctionComponent = () => {
         <BlurredBottomTabBar {...props} enabledScreens={["Home"]} />
       )}
     >
-
       <Tab.Screen
         name="NewMain"
         component={NewMainNavigation}
@@ -1185,7 +1208,8 @@ export const MainTabNavigation: FunctionComponent = () => {
         component={StakingNavigation}
         options={{
           tabBarLabel: "Tiết kiệm",
-        }} />
+        }}
+      />
       <Tab.Screen
         name="History"
         component={HistoryNavigation}
@@ -1245,7 +1269,12 @@ const BugsnagNavigationContainer = (() => {
 })();
 
 export const AppNavigation: FunctionComponent = observer(() => {
-  const { keyRingStore, analyticsStore, signInteractionStore, transactionStore } = useStore();
+  const {
+    keyRingStore,
+    analyticsStore,
+    signInteractionStore,
+    transactionStore,
+  } = useStore();
 
   const navigationRef = useRef<NavigationContainerRef | null>(null);
   const routeNameRef = useRef<string | null>(null);
@@ -1253,17 +1282,20 @@ export const AppNavigation: FunctionComponent = observer(() => {
   useEffect(() => {
     if (signInteractionStore.waitingData) {
       console.log("__navigationRef.current__", navigationRef.current);
-      console.log("__navigationRef.current__route", navigationRef.current?.getCurrentRoute());
+      console.log(
+        "__navigationRef.current__route",
+        navigationRef.current?.getCurrentRoute()
+      );
 
       const routeName = navigationRef.current?.getCurrentRoute()?.name || "";
       const txTypeMapping: Record<string, TxType> = {
         "Wallet.Send": "send",
-        "Delegate": "delegate",
+        Delegate: "delegate",
         "Staking.Rewards": "withdraw",
         // "Home": "withdraw",
         // "Staking.Dashboard": "withdraw",
-        "Undelegate": "undelegate",
-        "Redelegate": "redelegate",
+        Undelegate: "undelegate",
+        Redelegate: "redelegate",
       };
 
       transactionStore.updateTxType(txTypeMapping[routeName]);
@@ -1273,7 +1305,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
         screen: "Tx.Result",
         params: {
           txType: txTypeMapping[routeName],
-          txState: "pending"
+          txState: "pending",
         },
       });
     }

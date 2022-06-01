@@ -39,22 +39,22 @@ export const PageWithSectionList: FunctionComponent<
         <GradientBackground />
       </View>
       {/* <SafeAreaView style={style.get("flex-1")}> */}
-        <AnimatedKeyboardAwareSectionList
-          style={StyleSheet.flatten([
-            style.flatten(["flex-1", "padding-0", "overflow-visible"]),
-            propStyle,
-          ])}
-          keyboardOpeningTime={0}
-          onScroll={Animated.event(
-            [
-              {
-                nativeEvent: { contentOffset: { y: scrollY } },
-              },
-            ],
-            { useNativeDriver: true, listener: onScroll }
-          )}
-          {...restProps}
-        />
+      <AnimatedKeyboardAwareSectionList
+        style={StyleSheet.flatten([
+          style.flatten(["flex-1", "padding-0", "overflow-visible"]),
+          propStyle,
+        ])}
+        keyboardOpeningTime={0}
+        onScroll={Animated.event(
+          [
+            {
+              nativeEvent: { contentOffset: { y: scrollY } },
+            },
+          ],
+          { useNativeDriver: true, listener: onScroll }
+        )}
+        {...restProps}
+      />
       {/* </SafeAreaView> */}
     </React.Fragment>
   );

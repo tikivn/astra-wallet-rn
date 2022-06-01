@@ -8,11 +8,14 @@ import { useStyle } from "../../../styles";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
 import { Staking } from "@keplr-wallet/stores";
 import { DelegationsEmptyItem } from "../dashboard/delegate";
+import { useSmartNavigation } from "../../../navigation";
 
 export const UnbondingCard: FunctionComponent<{
   containerStyle?: ViewStyle;
   validatorAddress: string;
 }> = observer(({ containerStyle, validatorAddress }) => {
+  
+  const smartNavigation = useSmartNavigation();
   const { chainStore, accountStore, queriesStore } = useStore();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -69,7 +72,7 @@ export const UnbondingCard: FunctionComponent<{
             <Text
               style={style.flatten(["text-underline", "color-primary"])}
               onPress={() => {
-                // smartNavigation.navigateSmart("Wallet.History", {});
+                smartNavigation.navigateSmart("Wallet.History", {});
               }}
             >
               lịch sử
