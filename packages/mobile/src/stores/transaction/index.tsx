@@ -1,6 +1,6 @@
 import { Msg } from "@cosmjs/launchpad";
 import { AnyWithUnpacked, SignDocWrapper } from "@keplr-wallet/cosmos";
-import { IAmountConfig, IFeeConfig, IMemoConfig, SignDocAmountConfig, SignDocHelper } from "@keplr-wallet/hooks";
+import { IAmountConfig, IFeeConfig, IMemoConfig, SignDocHelper } from "@keplr-wallet/hooks";
 import { Staking } from "@keplr-wallet/stores";
 import { ChainInfo } from "@keplr-wallet/types";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
@@ -22,6 +22,7 @@ export class TransactionStore {
   }
 
   protected _txType?: TxType = undefined;
+  protected _txTime?: Date = undefined;
 
   @observable protected _txState: TxState = undefined;
   @observable protected _txHash?: Uint8Array = undefined;
@@ -87,7 +88,6 @@ export class TransactionStore {
         .upperCase(true);
     }
     return undefined;
-    // return this._txAmount;
   }
 
   @computed
@@ -100,13 +100,14 @@ export class TransactionStore {
         .upperCase(true);
     }
     return undefined;
-    // return this._txFee;
+  }
+
+  @computed
+  get txTime(): string | undefined {
+    return this._txTime?.toLocaleTimeString() + ", " + this._txTime?.toLocaleDateString();
   }
 
   protected setAmount() {
-    // const { chainStore } = useStore();
-
-    // var txAmount: CoinPretty;
     const amount = this._txData?.amount;
     if (amount) {
       this._txAmount = new CoinPretty(
@@ -117,23 +118,9 @@ export class TransactionStore {
         .maxDecimals(6)
         .upperCase(true);
     }
-    // else {
-    //   txAmount = new CoinPretty(
-    //     chainStore.current.currencies[0],
-    //     new Dec(0)
-    //   );
-    // }
-
-    // this._txAmount = txAmount
-    //   .trim(true)
-    //   .maxDecimals(6)
-    //   .upperCase(true);
   }
 
   protected setFee() {
-    // const { chainStore } = useStore();
-
-    // var txFee: CoinPretty;
     const fee = this._txData?.fee;
     if (fee && fee.fee) {
       this._txFee = fee.fee
@@ -141,18 +128,6 @@ export class TransactionStore {
         .maxDecimals(6)
         .upperCase(true);
     }
-    // else {
-    //   txFee = new CoinPretty(
-    //     chainStore.current.currencies[0],
-    //     new Dec(0)
-    //   );
-    // }
-
-    // this._txFee = txFee
-    //   .trim(true)
-    //   .maxDecimals(6)
-    //   .upperCase(true);
-    // ;
   }
 
   updateTxType(txType: TxType) {
@@ -169,6 +144,7 @@ export class TransactionStore {
 
   updateTxData(txData: TxData) {
     this._txData = txData;
+    this._txTime = new Date();
     this.setAmount();
     this.setFee();
   }
@@ -178,13 +154,6 @@ export class TransactionStore {
       this._txHash = txHash;
     }
   }
-
-  // updateTxAmount(amountConfig: SignDocAmountConfig) {
-  //   this._txAmount = new CoinPretty(
-  //     amountConfig.sendCurrency,
-  //     new Dec(amountConfig.getAmountPrimitive().amount)
-  //   );
-  // }
 
   updateSignDocHelper(signDocHelper: SignDocHelper | undefined) {
     this._signDocHelper = signDocHelper;

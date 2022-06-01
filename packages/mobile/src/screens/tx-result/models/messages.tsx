@@ -250,27 +250,42 @@ export function renderMsgTransfer(
     denom: parsed.denom,
   };
 
-  return {
-    title: "IBC Transfer",
-    content: (
-      <Text>
-        <Text>{"Send "}</Text>
-        <Text
-          style={{
-            fontWeight: "bold",
-          }}
-        >
-          {hyphen(`${amount.amount} ${amount.denom}`)}
-        </Text>
-        <Text>{" to "}</Text>
-        <Text style={{ fontWeight: "bold" }}>
-          {hyphen(Bech32Address.shortenAddress(receiver, 20))}
-        </Text>
-        <Text>{" on "}</Text>
-        <Text style={{ fontWeight: "bold" }}>{channelId}</Text>
-      </Text>
-    ),
-  };
+  const separatorRow: IRow = { type: "separator" };
+  const rows: IRow[] = join([
+    {
+      ...common,
+      alignItems: AlignItems.top,
+      cols: [
+        buildLeftColumn({ text: "IBC Transfer", flex: 3, }),
+        buildRightColumn({ text: "", flex: 7, })
+      ],
+    },
+    {
+      ...common,
+      alignItems: AlignItems.top,
+      cols: [
+        buildLeftColumn({ text: "Send", flex: 3, }),
+        buildRightColumn({ text: hyphen(`${amount.amount} ${amount.denom}`), flex: 7, })
+      ],
+    },
+    {
+      ...common,
+      alignItems: AlignItems.top,
+      cols: [
+        buildLeftColumn({ text: "To", flex: 3, }),
+        buildRightColumn({ text: hyphen(Bech32Address.shortenAddress(receiver, 20)), flex: 7, })
+      ],
+    },
+    {
+      ...common,
+      cols: [
+        buildLeftColumn({ text: "On", flex: 3, }),
+        buildRightColumn({ text: channelId, flex: 7, })
+      ],
+    },
+  ], separatorRow);
+
+  return rows;
 }
 
 export function renderMsgBeginRedelegate(
@@ -467,38 +482,6 @@ export function renderMsgWithdrawDelegatorReward(
       }
     });
   });
-  // const validator = transactionStore.getValidator({ validatorAddress });
-
-  // const rows: IRow[] = join([
-  //   {
-  //     ...common,
-  //     cols: [
-  //       buildLeftColumn({ text: "Nhận tiền lãi từ quỹ" }),
-  //       buildRightColumn({ text: validator?.description.moniker ?? "" })
-  //     ],
-  //   },
-  //   {
-  //     ...common,
-  //     cols: [
-  //       buildLeftColumn({ text: validator?.description.moniker ?? "" }),
-  //       buildRightColumn({ text: JSON.stringify(validator) ?? "" })
-  //     ],
-  //   },
-  //   {
-  //     ...common,
-  //     cols: [
-  //       buildLeftColumn({ text: "Thời gian thực hiện" }),
-  //       buildRightColumn({ text: "Chưa có thông tin" })
-  //     ],
-  //   },
-  //   {
-  //     ...common,
-  //     cols: [
-  //       buildLeftColumn({ text: "Phí giao dịch" }),
-  //       buildRightColumn({ text: fee })
-  //     ],
-  //   },
-  // ], { type: "separator" });
 
   const date = new Date();
   const dateString = date.toLocaleTimeString("vi-VN") + ", " + date.toLocaleDateString("vi-VN");
@@ -526,7 +509,7 @@ export function renderMsgWithdrawDelegatorReward(
   return rows;
 }
 
-export function renderMsgVote(proposalId: string, option: string | number) {
+export function renderMsgVote(proposalId: string, option: string | number): IRow[] {
   const textualOption = (() => {
     if (typeof option === "string") {
       return option;
@@ -548,19 +531,26 @@ export function renderMsgVote(proposalId: string, option: string | number) {
     }
   })();
 
-  // Vote <b>{option}</b> on <b>Proposal {id}</b>
+  const separatorRow: IRow = { type: "separator" };
+  const rows: IRow[] = join([
+    {
+      ...common,
+      alignItems: AlignItems.top,
+      cols: [
+        buildLeftColumn({ text: "Vote", flex: 3, }),
+        buildRightColumn({ text: textualOption, flex: 7, })
+      ],
+    },
+    {
+      ...common,
+      cols: [
+        buildLeftColumn({ text: "On", flex: 3, }),
+        buildRightColumn({ text: `Proposal ${proposalId}`, flex: 7, })
+      ],
+    },
+  ], separatorRow);
 
-  return {
-    title: "Vote",
-    content: (
-      <Text>
-        <Text>{"Vote "}</Text>
-        <Text style={{ fontWeight: "bold" }}>{textualOption}</Text>
-        <Text>{" on "}</Text>
-        <Text style={{ fontWeight: "bold" }}>{`Proposal ${proposalId}`}</Text>
-      </Text>
-    ),
-  };
+  return rows;
 }
 
 export function renderMsgExecuteContract(

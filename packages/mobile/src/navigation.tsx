@@ -93,9 +93,6 @@ import {
   useFocusedScreen,
 } from "./providers/focused-screen";
 import {
-  TxFailedResultScreen,
-  TxPendingResultScreen,
-  TxSuccessResultScreen,
   TxResultScreen,
 } from "./screens/tx-result";
 import { TorusSignInScreen } from "./screens/register/torus";
@@ -271,15 +268,6 @@ const {
     Result: {
       upperScreenName: "Others",
     },
-    TxPendingResult: {
-      upperScreenName: "Others",
-    },
-    TxSuccessResult: {
-      upperScreenName: "Others",
-    },
-    TxFailedResult: {
-      upperScreenName: "Others",
-    },
     "Web.Intro": {
       upperScreenName: "Web",
     },
@@ -402,18 +390,6 @@ const {
     AddAddressBook: {
       chainId: string;
       addressBookConfig: AddressBookConfig;
-    };
-    TxPendingResult: {
-      chainId?: string;
-      txHash: string;
-    };
-    TxSuccessResult: {
-      chainId?: string;
-      txHash: string;
-    };
-    TxFailedResult: {
-      chainId?: string;
-      txHash: string;
     };
     "Wallet.Send": {
       chainId?: string;
@@ -816,31 +792,6 @@ export const OtherNavigation: FunctionComponent = () => {
         }}
         name="Validator.List"
         component={ValidatorListScreen}
-      />
-
-      <Stack.Screen
-        options={{
-          gestureEnabled: false,
-          headerShown: false,
-        }}
-        name="TxPendingResult"
-        component={TxPendingResultScreen}
-      />
-      <Stack.Screen
-        options={{
-          gestureEnabled: false,
-          headerShown: false,
-        }}
-        name="TxSuccessResult"
-        component={TxSuccessResultScreen}
-      />
-      <Stack.Screen
-        options={{
-          gestureEnabled: false,
-          headerShown: false,
-        }}
-        name="TxFailedResult"
-        component={TxFailedResultScreen}
       />
     </Stack.Navigator>
   );
