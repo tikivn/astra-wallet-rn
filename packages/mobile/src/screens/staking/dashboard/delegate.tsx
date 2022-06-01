@@ -104,7 +104,7 @@ export const DelegationsItem: FunctionComponent<{
               <RectButton
                 key={del.delegation.validator_address}
                 style={style.flatten([
-                  "flex-1",
+                  "flex",
                   "margin-x-16",
                   "margin-y-8",
                   "height-148",
@@ -194,7 +194,7 @@ export const DelegationsItem: FunctionComponent<{
             );
           })}
         </CardBody>
-      ) : (
+      ) : ( 
         <DelegationsEmptyItem
           label="Bạn chưa có quỹ đầu tư nào"
           containerStyle={style.flatten([

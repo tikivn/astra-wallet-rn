@@ -20,7 +20,7 @@ export const Colors = {
   "primary-700": "#0320B4",
   "primary-800": "#001A9A",
   "primary-900": "#00157D",
-  secondary: "#FF63B4",
+  secondary: "#222940",
   "secondary-50": "#FCD1F4",
   "secondary-100": "#F3B1E1",
   "secondary-200": "#FA9DD9",

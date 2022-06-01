@@ -8,7 +8,7 @@ import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { Toggle } from "../../components/toggle";
-import  LottieView from "lottie-react-native"
+import LottieView from "lottie-react-native";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import delay from "delay";
@@ -45,22 +45,37 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
   const [isLoading, setIsLoading] = useState(false);
 
   return (
-    <View style={style.flatten(["padding-x-42","height-full", "background-color-background"])}>
+    <View
+      style={style.flatten([
+        "padding-x-42",
+        "height-full",
+        "background-color-background",
+      ])}
+    >
       <View style={style.get("flex-1")} />
       <View style={style.flatten(["items-center"])}>
-      <LottieView
-            source={require("../../assets/lottie/login_success.json")}
-            autoPlay
-            loop
-            style={style.flatten(["width-300"])}
-          />
-          <Text style={style.flatten(["text-center", "text-button2", "color-gray-10"])}>Tạo tài khoản mới thành công</Text>
+        <LottieView
+          source={require("../../assets/lottie/login_success.json")}
+          autoPlay
+          loop
+          style={style.flatten(["width-300", "flex-grow-1"])}
+          resizeMode="cover"
+        />
+        <Text
+          style={style.flatten([
+            "text-center",
+            "text-button2",
+            "color-gray-10",
+          ])}
+        >
+          Tạo tài khoản mới thành công
+        </Text>
       </View>
       {password && keychainStore.isBiometrySupported ? (
         <View
           style={style.flatten(["flex-row", "margin-top-58", "items-center"])}
         >
-          <Text style={style.flatten(["subtitle1", "color-text-black-medium"])}>
+          <Text style={style.flatten(["subtitle1", "color-gray-10"])}>
             Enable Biometric
           </Text>
           <View style={style.get("flex-1")} />

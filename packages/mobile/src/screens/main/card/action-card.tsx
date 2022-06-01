@@ -19,6 +19,7 @@ export const ActionsCard: FunctionComponent<{
             <CardBody>
                 <View style={style.flatten(["flex-row", "justify-center"])}>
                     <Button
+                        color="secondary"
                         containerStyle={style.flatten([
                             "border-radius-52",
                             "border-width-0",
@@ -34,15 +35,15 @@ export const ActionsCard: FunctionComponent<{
                         rightIcon={
                             <View style={style.flatten(["margin-right-12"])} />
                         }
-                        style={style.flatten(["background-color-background-secondary"])}
                         textStyle={style.flatten(["color-white", "subtitle3"])}
                         underlayColor="#00000020"
                         size="default"
-                        mode="outline"
+                        mode="fill"
                         onPress={() => {
                             smartNavigation.navigateSmart("Receive", {});
                         }} />
                     <Button
+                        color="secondary"
                         containerStyle={style.flatten([
                             "border-radius-52",
                             "border-width-0",
@@ -58,17 +59,17 @@ export const ActionsCard: FunctionComponent<{
                         rightIcon={
                             <View style={style.flatten(["margin-right-12"])} />
                         }
-                        style={style.flatten(["background-color-background-secondary"])}
                         textStyle={style.flatten(["color-white", "subtitle3"])}
                         underlayColor="#00000020"
                         size="default"
-                        mode="outline"
+                        mode="fill"
                         onPress={() => {
                             smartNavigation.navigateSmart("Wallet.Send", {
                                 currency: chainStore.current.stakeCurrency.coinMinimalDenom,
                             });
                         }} />
                     <Button
+                        color="secondary"
                         containerStyle={style.flatten([
                             "border-radius-52",
                             "border-width-0",
@@ -83,11 +84,10 @@ export const ActionsCard: FunctionComponent<{
                         rightIcon={
                             <View style={style.flatten(["margin-right-12"])} />
                         }
-                        style={style.flatten(["background-color-background-secondary"])}
                         textStyle={style.flatten(["color-white", "subtitle3"])}
                         underlayColor="#00000020"
                         size="default"
-                        mode="outline"
+                        mode="fill"
                         onPress={() => {
                             smartNavigation.navigateSmart("Swap", {});
                         }} />

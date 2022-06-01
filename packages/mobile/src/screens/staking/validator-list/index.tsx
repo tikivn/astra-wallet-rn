@@ -79,7 +79,6 @@ export const NewValidatorListScreen: FunctionComponent = observer(() => {
         <React.Fragment>
             
             <PageWithSectionList style={style.get("background-color-background")}
-                // contentContainerStyle={style.flatten(["min-height-full"])}
                 sections={[
                     {
                         data,
@@ -106,7 +105,7 @@ export const NewValidatorListScreen: FunctionComponent = observer(() => {
                 ItemSeparatorComponent={() => <CardDivider style={style.flatten(["background-color-gray-70"])} />}
                 renderSectionHeader={() => {
                     return (
-                        <View style={style.flatten(["flex-1", "height-40", "padding-top-12"])}>
+                        <View style={style.flatten(["flex", "height-40", "padding-top-12"])}>
                             <View style={style.flatten(["flex-row", "justify-between", "padding-x-16", "margin-bottom-8"])}>
                                 <Text style={style.flatten(["color-gray-30", "text-caption2"])}>Tên</Text>
                                 <TooltipLabel text="Tổng số cổ phần"/>
