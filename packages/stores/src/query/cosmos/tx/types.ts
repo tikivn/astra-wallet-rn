@@ -7,8 +7,12 @@ export interface Pagination {
 }
 
 export type Txs = {
-    txs: Tx[];
-    tx_responses: TxResponse[]
+    txs: Tx[],
+    tx_responses: TxResponse[],
+    pagination: {
+        next_key: string,
+        total: number
+    }
 };
 
 export type TxResponse = {

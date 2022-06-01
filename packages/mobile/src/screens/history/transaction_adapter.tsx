@@ -21,8 +21,8 @@ export function fromCoin(coin: any & Coin): Coin {
 }
 
 export function toUiItem(bech32Address: string, txResponse: TxResponse): TransactionItem<TxResponse> {
-    let msgs = txResponse.tx.body?.messages || [];
-    let mode = firstOrNull(txResponse.tx.auth_info.signer_infos || [])?.mode_info?.single?.mode
+    let msgs = txResponse?.tx?.body?.messages || [];
+    let mode = firstOrNull(txResponse?.tx?.auth_info?.signer_infos || [])?.mode_info?.single?.mode
     let isAmino = mode == "SIGN_MODE_LEGACY_AMINO_JSON";
     let msgRaw = firstOrNull(msgs)
     

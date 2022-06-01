@@ -7,7 +7,7 @@ import {
 } from "./transaction_adapter"
 import { RightArrowIcon } from "../../components/icon";
 import { useStyle } from "../../styles";
-import { CoinPretty, CoinUtils, DecUtils, Int, IntPretty } from "@keplr-wallet/unit";
+import { CoinPretty } from "@keplr-wallet/unit";
 import { ChainStore } from "../../stores/chain";
 import moment from "moment";
 
@@ -23,40 +23,39 @@ export const TransactionItem: FunctionComponent<{
         { height: 20, textAlignVertical: "center", fontSize: 14, color: "#D5D9E0" }
     ]
 
-    return <View style={{ height: 73, paddingTop: 16 }}>
-    <View style={{ flexDirection: "row" }}>
-        <View style={{
-            flex: 4,
-        }}>
-            <Text numberOfLines={1} style={[textStyles(style)]}>
-                {item.action}
-            </Text>
-            <Text numberOfLines={1} style={[textStyles(style), { fontSize: 12, color: "#818DA6" }]}>
-                {moment(item.timestamp).format("hh:mm - DD/MM/YYYY")}
-            </Text>
-        </View>
+    return <View style={{ height: 45 }}>
+        <View style={{ flexDirection: "row" }}>
+            <View style={{
+                flex: 4,
+            }}>
+                <Text numberOfLines={1} style={[textStyles(style)]}>
+                    {item.action}
+                </Text>
+                <Text numberOfLines={1} style={[textStyles(style), { fontSize: 12, color: "#818DA6" }]}>
+                    {moment(item.timestamp).format("hh:mm - DD/MM/YYYY")}
+                </Text>
+            </View>
 
-        <View style={{
-            flex: 4,
+            <View style={{
+                flex: 4,
 
-        }}>
-            <TransactionAmount amount={item.amount} chainStore={chainStore} textStyles={textStyles(style)}/>
-            <Text numberOfLines={1} style={[textStyles(style), { textAlign: "right", fontSize: 12, color: "#4AB57C" }]}>
-                {item.status}
-            </Text>
-        </View>
+            }}>
+                <TransactionAmount amount={item.amount} chainStore={chainStore} textStyles={textStyles(style)} />
+                <Text numberOfLines={1} style={[textStyles(style), { textAlign: "right", fontSize: 12, color: "#4AB57C" }]}>
+                    {item.status}
+                </Text>
+            </View>
 
-        <View
-            style={{ marginEnd: 8, marginStart: 16, marginTop: 5 }}
-        >
-            <RightArrowIcon
-                height={6.25}
-                color={style.get("color-text-black-low").color}
-            />
+            <View
+                style={{ marginEnd: 8, marginStart: 16, marginTop: 5 }}
+            >
+                <RightArrowIcon
+                    height={6.25}
+                    color={style.get("color-text-black-low").color}
+                />
+            </View>
         </View>
     </View>
-    <View style={{ flex: 0, height: 1, backgroundColor: '#2C364F', marginTop: 16 }} />
-</View>
 })
 
 export const TransactionAmount: FunctionComponent<{
@@ -73,12 +72,12 @@ export const TransactionAmount: FunctionComponent<{
         .hideDenom(true)
         .trim(true)
         .toString() : amount.amount
-    return <View style={{flex: 1, alignItems:"flex-end", flexDirection: "row"}} >
-        <Text numberOfLines={1} style={[textStyles, { flex: 1, textAlign: "right", alignSelf:"stretch" }]}>
-                {`${displayAmount} `}
+    return <View style={{ flex: 1, alignItems: "flex-end", flexDirection: "row" }} >
+        <Text numberOfLines={1} style={[textStyles, { flex: 1, textAlign: "right", alignSelf: "stretch" }]}>
+            {`${displayAmount} `}
         </Text>
-        <Text numberOfLines={1} style={[textStyles, { textAlign: "right", alignSelf:"flex-end" }]}>
-                {displayDenom}
+        <Text numberOfLines={1} style={[textStyles, { textAlign: "right", alignSelf: "flex-end" }]}>
+            {displayDenom}
         </Text>
 
     </View>

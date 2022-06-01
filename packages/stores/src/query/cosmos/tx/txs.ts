@@ -2,10 +2,10 @@ import {
   ObservableChainQuery,
   ObservableChainQueryMap,
 } from "../../chain-query";
-import { Pagination, Txs } from "./types";
+import { Pagination, TxResponse, Txs } from "./types";
 import { KVStore } from "@keplr-wallet/common";
 import { ChainGetter } from "../../../common";
-import { makeObservable } from "mobx";
+import { computed, makeObservable } from "mobx";
 
 
 export class ObservableQueryTxsInner extends ObservableChainQuery<Txs> {
@@ -48,80 +48,15 @@ export class ObservableQueryTxsInner extends ObservableChainQuery<Txs> {
     return this.queryParams.length > 0;
   }
 
-  // @computed
-  // get total(): CoinPretty {
-  //   const stakeCurrency = this.chainGetter.getChain(this.chainId).stakeCurrency;
-
-  //   if (!this.response) {
-  //     return new CoinPretty(stakeCurrency, new Int(0)).ready(false);
-  //   }
-
-  //   let totalBalance = new Int(0);
-  //   for (const delegation of this.response.data.delegation_responses) {
-  //     totalBalance = totalBalance.add(new Int(delegation.balance.amount));
-  //   }
-
-  //   return new CoinPretty(stakeCurrency, totalBalance);
-  // }
-
-  // @computed
-  // get delegationBalances(): {
-  //   validatorAddress: string;
-  //   balance: CoinPretty;
-  // }[] {
-  //   if (!this.response) {
-  //     return [];
-  //   }
-
-  //   const stakeCurrency = this.chainGetter.getChain(this.chainId).stakeCurrency;
-
-  //   const result = [];
-
-  //   for (const delegation of this.response.data.delegation_responses) {
-  //     result.push({
-  //       validatorAddress: delegation.delegation.validator_address,
-  //       balance: new CoinPretty(
-  //         stakeCurrency,
-  //         new Int(delegation.balance.amount)
-  //       ),
-  //     });
-  //   }
-
-  //   return result;
-  // }
-
-  // @computed
-  // get delegations(): Delegation[] {
-  //   if (!this.response) {
-  //     return [];
-  //   }
-
-  //   return this.response.data.delegation_responses;
-  // }
-
-  // readonly getDelegationTo = computedFn(
-  //   (validatorAddress: string): CoinPretty => {
-  //     const delegations = this.delegations;
-
-  //     const stakeCurrency = this.chainGetter.getChain(this.chainId)
-  //       .stakeCurrency;
-
-  //     if (!this.response) {
-  //       return new CoinPretty(stakeCurrency, new Int(0)).ready(false);
-  //     }
-
-  //     for (const delegation of delegations) {
-  //       if (delegation.delegation.validator_address === validatorAddress) {
-  //         return new CoinPretty(
-  //           stakeCurrency,
-  //           new Int(delegation.balance.amount)
-  //         );
-  //       }
-  //     }
-
-  //     return new CoinPretty(stakeCurrency, new Int(0));
-  //   }
-  // );
+  @computed
+  get txResponses(): TxResponse[] {
+    return !this.response ? [] : this.response.data.tx_responses
+  }
+  
+  @computed
+  get total(): number {
+    return !this.response ? 0 : this.response.data.pagination.total || 0
+  }
 }
 
 export class ObservableQueryTxs extends ObservableChainQueryMap<Txs> {

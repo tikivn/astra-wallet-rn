@@ -521,15 +521,12 @@ export const NewMainNavigation: FunctionComponent = () => {
 };
 
 export const HistoryNavigation: FunctionComponent = () => {
+  const style = useStyle();
   return (
     <Stack.Navigator
       screenOptions={{
         headerTitleAlign: "left",
-        headerStyle: {
-          backgroundColor: "transparent",
-          elevation: 0,
-          shadowOpacity: 0,
-        },
+        headerStyle: style.get("background-color-background"),
         headerTitle: "Lịch sử giao dịch",
         headerTitleStyle: {
           color: "white"
