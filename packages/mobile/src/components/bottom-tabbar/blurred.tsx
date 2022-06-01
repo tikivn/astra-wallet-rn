@@ -3,6 +3,7 @@ import { BottomTabBar, BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { Platform, StyleSheet, View } from "react-native";
 import { BlurView } from "@react-native-community/blur";
 import { useFocusedScreen } from "../../providers/focused-screen";
+import { useStyle } from "../../styles";
 
 export const BlurredBottomTabBar: FunctionComponent<
   BottomTabBarProps & {
@@ -71,6 +72,7 @@ export const BlurredBottomTabBar: FunctionComponent<
 const AndroidAlternativeBlurredBottomTabBar: FunctionComponent<BottomTabBarProps> = (
   props
 ) => {
+  const style = useStyle()
   return (
     <View
       style={{
@@ -79,7 +81,7 @@ const AndroidAlternativeBlurredBottomTabBar: FunctionComponent<BottomTabBarProps
         bottom: 0,
       }}
     >
-      <BottomTabBar {...props} />
+      <BottomTabBar {...props} style={style.get("background-color-background")}/>
     </View>
   );
 };
