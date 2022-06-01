@@ -197,12 +197,7 @@ export const HistoryScreen: FunctionComponent = observer(() => {
 
     const histories = txResponses
       .sort((lh, rh) => rh.timestamp.localeCompare(lh.timestamp))
-      .map((txResponse, index) => {
-        let item = toUiItem(bech32Address, txResponse);
-        // TODO for test
-        item.action = `${index}.${item.action}`;
-        return item;
-      });
+      .map((txResponse) => toUiItem(bech32Address, txResponse));
     console.log(
       `hisories Size + ${histories.length} page =${pageInfo.currentPage} max=${pageInfo.maxPage}`
     );
