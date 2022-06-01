@@ -50,7 +50,7 @@ export const RewardsItem: FunctionComponent<{
   return (
     <View
       style={style.flatten([
-        "height-276",
+        "height-184",
         "padding-0",
         "margin-x-16",
         "margin-y-16",
@@ -58,7 +58,7 @@ export const RewardsItem: FunctionComponent<{
         "border-radius-16",
         "border-color-gray-60",
         "border-width-1",
-      ])}
+      ],[isPending && "height-276"])}
     >
       <View
         style={style.flatten([
@@ -149,6 +149,7 @@ export const RewardsItem: FunctionComponent<{
           }}
         />
       </View>
+      {isPending ? (<React.Fragment>
       <CardDivider style={style.flatten(["background-color-gray-70"])} />
       <View
         style={style.flatten([
@@ -195,7 +196,7 @@ export const RewardsItem: FunctionComponent<{
             smartNavigation.navigateSmart("Unbonding", {});
           }}
         />
-      </View>
+      </View></React.Fragment>) : null}
     </View>
   );
 });
