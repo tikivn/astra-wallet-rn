@@ -2,11 +2,10 @@ import LottieView from "lottie-react-native";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { Text, View, ViewStyle } from "react-native";
-import { StepView, StepViewLineState, StepViewType } from "../../../components/foundation-view/step-view";
-import { ErrorIcon } from "../../../components/icon/error";
+import { StepView, StepViewState, StepViewStateColors, StepViewStateColorsBlue, StepViewStateColorsGreen, StepViewType } from "../../../components/foundation-view/step-view";
 import { useStore } from "../../../stores";
 import { TxState, TxType } from "../../../stores/transaction";
-import { useStyle } from "../../../styles";
+import { Typos, Colors } from "../../../styles";
 
 export const TransactionStateView: FunctionComponent<{
   style?: ViewStyle
@@ -14,7 +13,6 @@ export const TransactionStateView: FunctionComponent<{
   style,
 }) => {
   const { transactionStore } = useStore();
-  const styleBuilder = useStyle();
 
   const [txState, setTxState] = useState(transactionStore.txState);
   const [amountText, setAmountText] = useState("");
@@ -78,71 +76,88 @@ export const TransactionStateView: FunctionComponent<{
   }
 
   const mainText = getMainText(transactionStore.txType, txState);
+  const errorText = "Hệ thông bị quá tải. Vui lòng thử lại";
+  const subText = isFailure ? errorText : amountText;
+
+  const mainTextStyle = {
+    ...isFailure ? Typos["text-x-large-semi-bold"] : Typos["text-base-regular"],
+    color: isFailure ? Colors["gray-10"] : Colors["gray-30"],
+    marginTop: 8,
+  };
+
+  const subTextStyle = {
+    ...isFailure ? Typos["text-base-regular"] : Typos["text-2x-large-medium"],
+    color: isFailure ? Colors["gray-30"] : Colors["gray-10"],
+    marginTop: isFailure ? 8 : 4,
+  };
 
   var initialStepText = "Đã ghi nhận";
   var finalStepText = "Đang xử lý";
-  var lineState: StepViewLineState = "inactive";
+  var lineState: StepViewState = "inactive";
   var type: StepViewType = "dot";
+  var stateColors: StepViewStateColors = StepViewStateColorsBlue;
 
   if (txState == "success") {
     finalStepText = "Giao dịch thành công";
     lineState = "active";
     type = "tick";
+    stateColors = StepViewStateColorsGreen;
+  }
+
+  function animationSource() {
+    var anim = require("../../../assets/lottie/tx-loading.json");
+    switch (txState) {
+      case "success":
+        anim = require("../../../assets/lottie/tx-loading-complete.json");
+        break;
+      case "failure":
+        anim = require("../../../assets/lottie/tx-loading-error.json");
+        break;
+      default:
+        break;
+    }
+    return anim;
+  }
+
+  function animationLoop() {
+    return txState != "success" && txState != "failure";
   }
 
   return (
-    <React.Fragment>
-      {isFailure
-        ? (
-          <View style={{ alignItems: "center", paddingHorizontal: 16, ...style }}>
-            <ErrorIcon style={{ marginVertical: 24, }} />
+    <View style={{ alignItems: "center", marginTop: 60, ...style }}>
+      <LottieView
+        autoPlay
+        loop={animationLoop()}
+        source={animationSource()}
+        style={{
+          width: 120,
+          height: 120,
+        }}
+      />
 
-            <Text style={styleBuilder.flatten(["text-x-large-semi-bold", "color-gray-10"])}>{mainText}</Text>
-            <Text style={styleBuilder.flatten(["text-base-regular", "color-gray-30", "margin-top-8"])}>Hệ thông bị quá tải. Vui lòng thử lại</Text>
-          </View>
-        )
-        : (
-          <View style={{ alignItems: "center", ...style }}>
-            <LottieView
-              autoPlay
-              loop={txState != "success"}
-              source={
-                txState != "success"
-                  ? require("../../../assets/lottie/tx-sending.json")
-                  : require("../../../assets/lottie/tx-loading-complete.json")
-              }
-              style={{
-                ...txState != "success"
-                  ? { width: "100%", aspectRatio: 375 / 108, }
-                  : { width: 120, height: 120, },
-                marginVertical: 16,
-              }}
-            />
+      <View style={{ alignItems: "center", paddingHorizontal: 16, width: "100%" }}>
+        <Text style={mainTextStyle}>{mainText}</Text>
+        <Text style={subTextStyle}>{subText}</Text>
 
-            <View style={{ alignItems: "center", paddingHorizontal: 16, width: "100%" }}>
-              <Text style={styleBuilder.flatten(["text-base-regular", "color-gray-30", "margin-top-8"])}>{mainText}</Text>
-              <Text style={styleBuilder.flatten(["text-2x-large-medium", "color-gray-10"])}>{amountText}</Text>
-
-              <View style={{ flexDirection: "row", alignContent: "stretch", marginTop: 26, }}>
-                <StepView
-                  text={initialStepText}
-                  state="inactive"
-                  position="start"
-                  type="dot"
-                  lineState={lineState}
-                />
-                <StepView
-                  text={finalStepText}
-                  state="active"
-                  position="end"
-                  type={type}
-                  lineState={lineState}
-                />
-              </View>
-            </View>
-          </View>
-        )
-      }
-    </React.Fragment>
+        <View style={{ flexDirection: "row", alignContent: "stretch", marginTop: 26, }}>
+          <StepView
+            text={initialStepText}
+            state="inactive"
+            stateColors={stateColors}
+            position="start"
+            type="dot"
+            lineState={lineState}
+          />
+          <StepView
+            text={finalStepText}
+            state="active"
+            stateColors={stateColors}
+            position="end"
+            type={type}
+            lineState={lineState}
+          />
+        </View>
+      </View>
+    </View>
   );
 });

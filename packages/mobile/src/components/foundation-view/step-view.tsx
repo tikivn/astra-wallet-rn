@@ -5,32 +5,70 @@ import Svg, { Circle, Line } from "react-native-svg";
 import { Colors, Typos } from "../../styles";
 import { FilledActionIcon } from "../icon/filled-action-success";
 
-export type StepViewState = "inactive" | "active" | undefined;
-export type StepViewLineState = "inactive" | "active" | undefined;
-export type StepViewType = "dot" | "tick" | undefined;
-export type StepViewPosition = "start" | "center" | "end" | undefined;
+export type StepViewState = "inactive" | "active";
+export type StepViewStateColors = Record<StepViewState, { 
+  text: string, 
+  dot: string, 
+  tick: string,
+  line: string,
+}>;
+export type StepViewType = "dot" | "tick";
+export type StepViewPosition = "start" | "center" | "end";
+
+export const StepViewStateColorsBlue = {
+  "active": {
+    text: Colors["gray-10"],
+    dot: Colors["blue-70"],
+    tick: Colors["blue-70"],
+    line: Colors["blue-90"],
+  },
+  "inactive": {
+    text: Colors["gray-50"],
+    dot: Colors["blue-90"],
+    tick: Colors["blue-90"],
+    line: Colors["gray-90"],
+  },
+};
+
+export const StepViewStateColorsGreen = {
+  "active": {
+    text: Colors["gray-10"],
+    dot: Colors["green-50"],
+    tick: Colors["green-50"],
+    line: Colors["green-2"],
+  },
+  "inactive": {
+    text: Colors["gray-50"],
+    dot: Colors["green-2"],
+    tick: Colors["green-2"],
+    line: Colors["gray-90"],
+  },
+};
 
 export const StepView: FunctionComponent<{
   text?: string,
   state?: StepViewState,
-  lineState?: StepViewLineState,
+  stateColors?: StepViewStateColors,
+  lineState?: StepViewState,
   type?: StepViewType,
   position?: StepViewPosition,
 }> = observer(({
   text,
-  state,
-  lineState = "active",
+  state = "inactive",
+  stateColors = StepViewStateColorsBlue,
+  lineState = "inactive",
   type = "dot",
-  position,
+  position = "start",
 }) => {
   const textStyle = {
     marginTop: 4,
-    color: Colors[state == "active" ? "gray-10" : "gray-50"],
+    color: stateColors[state].text,
     ...Typos["text-base-regular"],
   };
 
-  const circleColor = Colors[state == "active" ? "blue-70" : "blue-90"];
-  const lineColor = Colors[lineState == "active" ? "blue-90" : "gray-90"];
+  const dotColor = stateColors[state].dot;
+  const tickColor = stateColors[state].tick;
+  const lineColor = stateColors[lineState].line;
 
   return (
     <View style={{ flex: 1, alignItems: "center", }}>
@@ -55,14 +93,14 @@ export const StepView: FunctionComponent<{
         </View>
         {
           type == "tick"
-            ? <FilledActionIcon style={{ marginHorizontal: 8, }} />
+            ? <FilledActionIcon color={tickColor} style={{ marginHorizontal: 8, }} />
             : <View style={{ marginHorizontal: 12, height: 24, width: 8, }}>
               <Svg height="24" width="100%">
                 <Circle
                   cx="50%"
                   cy="50%"
                   r="4"
-                  fill={circleColor}
+                  fill={dotColor}
                 />
               </Svg>
             </View>

@@ -66,6 +66,7 @@ export const Colors = {
   "orange-10" : "#FFF5EB",
   "orange-30" : "#FFD1A4",
   "orange-60" : "#FC820A",
+  "green-2": "#00AB5626",//RGBA - 15%
   "green-10": "#EFFFF4",
   "green-30": "#B7EFC3",
   "green-50": "#4AB57C",
