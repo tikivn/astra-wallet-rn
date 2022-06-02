@@ -45,7 +45,7 @@ export const AmountInput: FunctionComponent<{
     inputContainerStyle = {
       ...style.flatten([
         "height-44",
-        "padding-y-2",
+        "padding-y-0",
         "border-radius-4", 
         "border-width-1", 
         "border-color-gray-60", 
@@ -61,10 +61,10 @@ export const AmountInput: FunctionComponent<{
       ]),
       ...Platform.select({
         android: {
-          height: 20,
+          height: 19,
         }
       }),
-      lineHeight: 20,
+      lineHeight: 19,
     };
 
     const error = amountConfig.error;
@@ -110,7 +110,9 @@ export const AmountInput: FunctionComponent<{
               "justify-center",
             ])}
           >
-            <Text style={style.flatten(["text-base-regular", "color-gray-50", "margin-right-16"])}>ASA</Text>
+            <Text style={style.flatten(["text-base-regular", "color-gray-50", "margin-right-16"])}>
+              {amountConfig.sendCurrency.coinDenom}
+            </Text>
             <Button
               text="Tối đa"
               mode="text"
