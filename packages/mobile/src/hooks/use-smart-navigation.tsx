@@ -30,7 +30,7 @@ export class SmartNavigator<
     params: Params[ScreenName] extends void ? undefined : Params[ScreenName]
   ): void {
     const currentScreenName = route.name as string;
-
+    console.log("--DEBUG--",this.config);
     if (!(currentScreenName in this.config)) {
       throw new Error(
         `Can't get the current screen info: ${currentScreenName}`

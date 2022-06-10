@@ -4,11 +4,13 @@ import { View, Image, Text, ViewStyle } from "react-native";
 import { Button } from "../../../components/button";
 import { useStyle } from "../../../styles";
 import * as WebBrowser from "expo-web-browser";
+import { useSmartNavigation } from "../../../navigation";
 
 export const DashboardHeader: FunctionComponent<{
     containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
     const style = useStyle();
+    const smartNavigation = useSmartNavigation();
     return (
         <View style={style.flatten(["flex-row", "padding-16", "margin-x-0", "margin-y-16", "justify-between"])}>
             <View style={style.flatten(["flex-1", "margin-left-0", "items-start"])}>
@@ -22,7 +24,7 @@ export const DashboardHeader: FunctionComponent<{
                     underlayColor={style.get("color-background").color}
                     textStyle={style.flatten(["text-underline", "body3"])} 
                     onPress={() => {
-                        WebBrowser.openBrowserAsync("https://tiki.vn/sep/home");
+                        smartNavigation.navigateSmart("WebView", {url:"https://tiki.vn/sep/home" });
                     }
                     }/>
             </View>

@@ -14,13 +14,14 @@ import { useStyle } from "../../styles";
 import { observer } from "mobx-react-lite";
 
 import { usePrevious } from "../../hooks";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { ChainUpdaterService } from "@keplr-wallet/background";
 import { toUiItem } from "./transaction_adapter";
 import { TransactionItem } from "./transaction_history_item";
 import { TxResponse } from "@keplr-wallet/stores/build/query/cosmos/tx/types";
 import * as WebBrowser from "expo-web-browser";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useSmartNavigation } from "../../navigation";
 
 export type PageRequestInfo = {
   currentPage: number;
@@ -50,6 +51,7 @@ export const HistoryScreen: FunctionComponent = observer(() => {
     true
   );
 
+  const smartNavigation = useSmartNavigation();
   const checkAndUpdateChainInfo = useCallback(() => {
     if (!chainStoreIsInitializing) {
       (async () => {
@@ -283,7 +285,9 @@ export const HistoryScreen: FunctionComponent = observer(() => {
                 txHash.toUpperCase()
               );
               // Linking.openURL(url);
-              WebBrowser.openBrowserAsync(url);
+              smartNavigation.navigateSmart("WebView", {
+                url: url
+              });
             }
           }}
         >

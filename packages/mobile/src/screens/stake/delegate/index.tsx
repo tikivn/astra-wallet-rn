@@ -76,7 +76,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   const commission = new IntPretty(
     new Dec(validator?.commission.commission_rates.rate || 0)
   )
-    .decreasePrecision(2)
+    .moveDecimalPointRight(2)
     .maxDecimals(2)
     .trim(true)
     .toString() + "%";

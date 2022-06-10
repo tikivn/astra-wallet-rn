@@ -92,9 +92,7 @@ import {
   FocusedScreenProvider,
   useFocusedScreen,
 } from "./providers/focused-screen";
-import {
-  TxResultScreen,
-} from "./screens/tx-result";
+import { TxResultScreen } from "./screens/tx-result";
 import { TorusSignInScreen } from "./screens/register/torus";
 import {
   HeaderAddIcon,
@@ -139,6 +137,7 @@ import { StakingRewardScreen } from "./screens/staking/rewards";
 import { HistoryScreen } from "./screens/history";
 import { TxType } from "./stores/transaction";
 import { UnbondingScreen } from "./screens/staking/unbonding";
+import { WebViewScreen } from "./screens/web/default";
 
 const {
   SmartNavigatorProvider,
@@ -304,6 +303,15 @@ const {
     "Wallet.History": {
       upperScreenName: "Wallet",
     },
+    "History": {
+      upperScreenName: "History",
+    },
+    "WebView": {
+      upperScreenName: "Wallet",
+    },
+    "Tx.Result": {
+      upperScreenName: "Tx",
+    }
   }).withParams<{
     "Register.NewMnemonic": {
       registerConfig: RegisterConfig;
@@ -395,6 +403,9 @@ const {
       chainId?: string;
       currency?: string;
       recipient?: string;
+    };
+    "WebView": {
+      url?: string;
     };
   }>()
 );
@@ -915,6 +926,10 @@ export const WalletNavigation: FunctionComponent = () => {
         }}
         name="Wallet.History"
         component={HistoryScreen}
+      />
+      <Stack.Screen 
+        name="WebView"
+        component={WebViewScreen}
       />
     </Stack.Navigator>
   );
