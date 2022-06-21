@@ -102,7 +102,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.feeConfig.error;
   const txStateIsValid = sendConfigError == null;
   sendConfigs.feeConfig.setFeeType('high');
-  sendConfigs.gasConfig.setGas(3000000);
+  sendConfigs.gasConfig.setGas(200000);
   const fee = sendConfigs.feeConfig.fee?.trim(true).toString() ?? "";
   return (
     <PageWithScrollView

@@ -7,7 +7,8 @@ import { View, Text } from "react-native";
 import { Button } from "../../../components/button";
 import { useSmartNavigation } from "../../../navigation";
 import { RewardDetails } from "./rewards";
-
+import { useSendTxConfig } from "@keplr-wallet/hooks";
+import { EthereumEndpoint } from "../../../config";
 export const StakingRewardScreen: FunctionComponent = () => {
     const { chainStore, accountStore, queriesStore, analyticsStore, transactionStore } = useStore();
 
@@ -21,6 +22,17 @@ export const StakingRewardScreen: FunctionComponent = () => {
       account.bech32Address
     );
     const stakingReward = queryReward.stakableReward;
+    const sendConfigs = useSendTxConfig(
+      chainStore,
+      queriesStore,
+      accountStore,
+      chainStore.current.chainId,
+      account.bech32Address,
+      EthereumEndpoint
+    );
+    const validatorAddresses = queryReward.getDescendingPendingRewardValidatorAddresses(8);
+    const gas = Math.max(100000*validatorAddresses.length, 200000);
+    sendConfigs.gasConfig.setGas(gas);
 
     const withdrawAllRewards = async () => {
         try {
@@ -28,9 +40,9 @@ export const StakingRewardScreen: FunctionComponent = () => {
             chainInfo: chainStore.current,
           });
             await account.cosmos.sendWithdrawDelegationRewardMsgs(
-              queryReward.getDescendingPendingRewardValidatorAddresses(8),
+              validatorAddresses,
               "",
-              {},
+              sendConfigs.feeConfig.toStdFee(),
               {},
               {
                 onBroadcasted: (txHash) => {
@@ -47,7 +59,7 @@ export const StakingRewardScreen: FunctionComponent = () => {
               return;
             }
             transactionStore.rejectTransaction();
-            console.log(e);
+            console.log("got e", e);
             smartNavigation.navigateSmart("NewHome", {});
           }
     };
