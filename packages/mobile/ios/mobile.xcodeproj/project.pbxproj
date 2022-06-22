@@ -714,6 +714,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "vn.tiki.sample.astra-wallet";
 				PRODUCT_NAME = mobile;
+				PROVISIONING_PROFILE_SPECIFIER = "dev wallet";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";

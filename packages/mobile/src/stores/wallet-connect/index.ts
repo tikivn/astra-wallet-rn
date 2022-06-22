@@ -81,7 +81,7 @@ export abstract class WalletConnectManager {
   async restoreClient(session: WalletConnect["session"]) {
     const client = new WalletConnect({
       clientMeta: {
-        name: "Keplr",
+        name: "Astra Hub",
         description: "Wallet for interchain",
         url: "#",
         icons: ["https://dhj8dql1kzq2v.cloudfront.net/keplr-256x256.png"],
@@ -150,20 +150,23 @@ export abstract class WalletConnectManager {
   }
 
   async initClient(uri: string): Promise<WalletConnect> {
+    console.log("--WC-- init with: ",uri)
     await this.waitInitStores();
 
     if (this.clientMap.has(uri)) {
+      console.log("--WC-- Client already initialized")
       throw new Error("Client already initialized");
     }
 
     if (this.pendingClientMap.has(uri)) {
+      console.log("--WC-- Client is waiting session")
       throw new Error("Client is waiting session");
     }
 
     const client = new WalletConnect({
       uri,
       clientMeta: {
-        name: "Keplr",
+        name: "Astra Hub",
         description: "Wallet for interchain",
         url: "#",
         icons: ["https://dhj8dql1kzq2v.cloudfront.net/keplr-256x256.png"],

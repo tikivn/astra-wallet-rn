@@ -5,7 +5,7 @@ import { BottomSheet } from "../../../components/input";
 import { AccountItem } from "../components";
 import { Text } from "react-native";
 import { useStyle } from "../../../styles";
-import { AllIcon } from "../../../components/icon";
+import { AllIcon, NetworkIcon } from "../../../components/icon";
 export const AccountNetworkItem: FunctionComponent<{
   }> = observer(({ }) => {
     const { chainStore } = useStore();
@@ -34,6 +34,8 @@ export const AccountNetworkItem: FunctionComponent<{
         <AccountItem
             containerStyle={style.flatten(["margin-left-16", "margin-right-16", "border-radius-8", "overflow-hidden"])}
             label="Network"
+            labelStyle={style.flatten(["margin-left-12"])}
+            left={<NetworkIcon/>}
             right={
                 <RightView paragraph={chainStore.current.chainName.toUpperCase()} />
             }

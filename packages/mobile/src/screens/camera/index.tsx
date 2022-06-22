@@ -23,6 +23,7 @@ import {
 import { AddressBookConfigMap, useRegisterConfig } from "@keplr-wallet/hooks";
 import { AsyncKVStore } from "../../common";
 import { useFocusEffect } from "@react-navigation/native";
+import { TextInput } from "../../components/input";
 
 export const CameraScreen: FunctionComponent = observer(() => {
   const { chainStore, walletConnectStore, keyRingStore } = useStore();
@@ -32,6 +33,7 @@ export const CameraScreen: FunctionComponent = observer(() => {
   const smartNavigation = useSmartNavigation();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [tempURI, setTempURI] = useState("");
   // To prevent the reading while changing to other screen after processing the result.
   // Expectedly, screen should be moved to other after processing the result.
   const [isCompleted, setIsCompleted] = useState(false);
@@ -59,7 +61,9 @@ export const CameraScreen: FunctionComponent = observer(() => {
   const [addressBookConfigMap] = useState(
     () => new AddressBookConfigMap(new AsyncKVStore("address_book"), chainStore)
   );
-
+  const onWalletConnection = async () => {
+    await walletConnectStore.initClient(tempURI);
+  };
   return (
     <PageWithView disableSafeArea={true}>
       <FullScreenCameraView
@@ -151,20 +155,36 @@ export const CameraScreen: FunctionComponent = observer(() => {
           }
         }}
         containerBottom={
-          <Button
-            text="Show my QR code"
-            mode="light"
-            size="large"
-            containerStyle={style.flatten([
-              "margin-top-64",
-              "border-radius-64",
-              "opacity-90",
-            ])}
-            style={style.flatten(["padding-x-52"])}
-            onPress={() => {
-              setIsSelectChainModalOpen(true);
-            }}
-          />
+          <View style={style.flatten(["flex-1", "width-full", "margin-top-18"])}>
+            <TextInput
+              value={tempURI}
+              onChangeText={(text) => {
+                setTempURI(text);
+              }}
+              numberOfLines={1}
+              style={style.flatten([
+                "width-full",
+                "margin-top-4",
+                // "color-white",
+                "body2",
+              ])}
+            />
+            <Button text="Connect" onPress={onWalletConnection}></Button>
+          </View>
+          // <Button
+          //   text="Show my QR code"
+          //   mode="light"
+          //   size="large"
+          //   containerStyle={style.flatten([
+          //     "margin-top-64",
+          //     "border-radius-64",
+          //     "opacity-90",
+          //   ])}
+          //   style={style.flatten(["padding-x-52"])}
+          //   onPress={() => {
+          //     setIsSelectChainModalOpen(true);
+          //   }}
+          // />
         }
       />
       <ChainSelectorModal

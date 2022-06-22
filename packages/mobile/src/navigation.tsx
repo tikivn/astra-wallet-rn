@@ -303,15 +303,15 @@ const {
     "Wallet.History": {
       upperScreenName: "Wallet",
     },
-    "History": {
+    History: {
       upperScreenName: "History",
     },
-    "WebView": {
+    WebView: {
       upperScreenName: "Wallet",
     },
     "Tx.Result": {
       upperScreenName: "Tx",
-    }
+    },
   }).withParams<{
     "Register.NewMnemonic": {
       registerConfig: RegisterConfig;
@@ -404,7 +404,7 @@ const {
       currency?: string;
       recipient?: string;
     };
-    "WebView": {
+    WebView: {
       url?: string;
     };
   }>()
@@ -722,8 +722,9 @@ export const OtherNavigation: FunctionComponent = () => {
   return (
     <Stack.Navigator
       screenOptions={{
-        ...BlurredHeaderScreenOptionsPreset,
-        headerTitleStyle: style.flatten(["h5", "color-text-black-high"]),
+        ...WalletHeaderScreenOptionsPreset,
+        headerStyle: style.get("background-color-background"),
+        headerTitleStyle: style.flatten(["title2", "color-white"]),
       }}
       headerMode="screen"
     >
@@ -750,7 +751,7 @@ export const OtherNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          title: "WalletConnect",
+          title: "Ứng dụng liên kết",
         }}
         name="ManageWalletConnect"
         component={ManageWalletConnectScreen}
@@ -927,10 +928,7 @@ export const WalletNavigation: FunctionComponent = () => {
         name="Wallet.History"
         component={HistoryScreen}
       />
-      <Stack.Screen 
-        name="WebView"
-        component={WebViewScreen}
-      />
+      <Stack.Screen name="WebView" component={WebViewScreen} />
     </Stack.Navigator>
   );
 };

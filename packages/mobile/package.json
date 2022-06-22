@@ -61,7 +61,7 @@
     "@react-navigation/stack": "^5.14.3",
     "@toruslabs/fetch-node-details": "^5.0.0",
     "@toruslabs/torus.js": "^5.0.1",
-    "@walletconnect/client": "^1.6.4",
+    "@walletconnect/client": "^1.7.8",
     "aes-js": "^3.1.2",
     "appcenter": "^4.1.0",
     "appcenter-analytics": "^4.1.0",

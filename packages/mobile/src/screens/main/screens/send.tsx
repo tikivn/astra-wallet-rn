@@ -91,10 +91,10 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
         size="large"
         containerStyle={style.flatten(["border-radius-4"])}
         textStyle={style.flatten(["subtitle2"])}
-        disabled={!account.isReadyToSendMsgs || !txStateIsValid}
-        loading={account.isSendingMsg === "send"}
+        disabled={!account.isReadyToSendTx || !txStateIsValid}
+        loading={account.txTypeInProgress === "send"}
         onPress={async () => {
-          if (account.isReadyToSendMsgs && txStateIsValid) {
+          if (account.isReadyToSendTx && txStateIsValid) {
             try {
               transactionStore.updateTxData({
                 chainInfo: chainStore.current,
