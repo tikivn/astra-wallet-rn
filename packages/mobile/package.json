@@ -62,6 +62,8 @@
     "@toruslabs/fetch-node-details": "^5.0.0",
     "@toruslabs/torus.js": "^5.0.1",
     "@walletconnect/client": "^1.7.8",
+    "@walletconnect/sign-client": "2.0.0-beta.101",
+    "@walletconnect/utils": "2.0.0-beta.101",
     "aes-js": "^3.1.2",
     "appcenter": "^4.1.0",
     "appcenter-analytics": "^4.1.0",
@@ -122,6 +124,7 @@
     "react-native-pager-view": "^5.4.24"
   },
   "devDependencies": {
+    "@walletconnect/types": "2.0.0-beta.101",
     "@babel/core": "^7.8.4",
     "@babel/plugin-proposal-class-properties": "^7.13.0",
     "@babel/plugin-proposal-decorators": "^7.13.5",
