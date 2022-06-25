@@ -19,6 +19,7 @@
       "**/native-base",
       "**/@react-native-async-storage/async-storage",
       "**/@ledgerhq/react-native-hw-transport-ble",
+      "**/@walletconnect/*",
       "**/jetifier",
       "**/@bugsnag/**"
     ]
