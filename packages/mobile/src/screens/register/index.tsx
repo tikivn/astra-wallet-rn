@@ -1,7 +1,6 @@
 import React, { FunctionComponent } from "react";
 import { useHeaderHeight } from "@react-navigation/stack";
 import { PageWithScrollView } from "../../components/page";
-import { KeplrLogo } from "../../components/svg";
 import { useStyle } from "../../styles";
 import { View, Dimensions, ImageBackground, Image,Text } from "react-native";
 import { Button } from "../../components/button";
@@ -10,6 +9,7 @@ import { useRegisterConfig } from "@keplr-wallet/hooks";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SignClient as SignClientV2 } from "@walletconnect/sign-client";
 
 export const RegisterIntroScreen: FunctionComponent = observer(() => {
   const { keyRingStore } = useStore();
@@ -48,6 +48,18 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
               <Text style={style.flatten(["color-white", "title3", "text-center"])}>Astra Wallet</Text>
               <Text style={style.flatten(["color-white", "text-caption", "padding-top-4", "text-center"])}>Nơi an toàn để lưu giữ Astra của bạn</Text>
           </View>
+
+          <Button
+            textStyle={style.flatten(["subtitle2", "color-background"])}
+            containerStyle={style.flatten(["margin-bottom-16", "border-radius-52"])}
+            text="Init sign client"
+            size="large"
+            mode="light"
+            onPress={() => { 
+              initWalletSignClient(); 
+            }}
+          />
+
           <Button
             textStyle={style.flatten(["subtitle2", "color-background"])}
             containerStyle={style.flatten(["margin-bottom-16", "border-radius-52"])}
@@ -75,3 +87,23 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
     </View>
   );
 });
+
+const initWalletSignClient = (): Promise<any> => {
+  console.log(`initWalletSignClient clicked`);
+  return SignClientV2.init({
+    projectId: "fcdca68497e7ccee9cccb18fcf2e38f7",
+  })
+  .then((client) => {
+    console.log(`initWalletSignClient got client ${client}.`);
+    if (client == undefined) return;
+    let {
+      protocol, version, name, metadata,
+      core, engine, events, pairing, session, proposal, history, expirer
+     } = client ;
+    console.log(`initWalletSignClient got protocol=${protocol}. version=${version}. name=${name}.`);
+    console.log(`initWalletSignClient got METADATA=${Object.entries(metadata)}.`);
+    console.log(`initWalletSignClient got CORE=${Object.entries(core)}.`);
+  }).catch((e) => {
+    console.log(`initWalletSignClient got err ${e}`);
+  });
+};
