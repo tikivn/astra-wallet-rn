@@ -99,7 +99,9 @@ export const DeleteWalletScreen: FunctionComponent = observer(() => {
                             keyboardType="number-pad"
                             textContentType="oneTimeCode"
                             renderCell={({ index, symbol, isFocused }) => (
-                                <View style={style.flatten(["items-center", "overflow-hidden", "background-color-gray-80", "width-42", "height-42", "border-width-1", "border-color-gray-80", "border-radius-6"], [isFocused && "border-color-white", isInvalidPassword && "border-color-danger"])}>
+                                <View style={style.flatten(["items-center", "overflow-hidden", "background-color-gray-80", "width-42", "height-42", "border-width-1", "border-color-gray-80", "border-radius-6"], [isFocused && "border-color-white", isInvalidPassword && "border-color-danger"])}
+                                    key={`code-field.cell_${index}`}
+                                >
                                     <Text
                                         key={index}
                                         style={style.flatten(["text-center", "h2", "color-white"])}
