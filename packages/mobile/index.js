@@ -10,7 +10,7 @@ Bugsnag.start({
   plugins: [new BugsnagPluginReactNavigation()],
   codeBundleId,
 });
-
+import "fast-text-encoding";
 import "./shim";
 
 import "text-encoding";

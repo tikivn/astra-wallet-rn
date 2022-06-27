@@ -33,10 +33,6 @@ import { AnalyticsStore, NoopAnalyticsClient } from "@keplr-wallet/analytics";
 import { ChainIdHelper } from "@keplr-wallet/cosmos";
 import { UserBalanceStore } from "./user-balance";
 import { TransactionStore } from "./transaction";
-import {
-  GravityBridgeCurrencyRegsitrar,
-  KeplrETCQueries,
-} from "@keplr-wallet/stores-etc";
 
 export class RootStore {
   public readonly chainStore: ChainStore;
@@ -60,7 +56,7 @@ export class RootStore {
 
   public readonly keychainStore: KeychainStore;
   public readonly walletConnectStore: WalletConnectStore;
-
+  public readonly signClientStore: SignClientStore;
   public readonly analyticsStore: AnalyticsStore<
     {
       chainId?: string;
@@ -302,11 +298,11 @@ export class RootStore {
       this.queriesStore
     );
 
-    this.gravityBridgeCurrencyRegistrar = new GravityBridgeCurrencyRegsitrar(
-      new AsyncKVStore("store_gravity_bridge_currency_registrar"),
-      this.chainStore,
-      this.queriesStore
-    );
+    // this.gravityBridgeCurrencyRegistrar = new GravityBridgeCurrencyRegsitrar(
+    //   new AsyncKVStore("store_gravity_bridge_currency_registrar"),
+    //   this.chainStore,
+    //   this.queriesStore
+    // );
 
     router.listen(APP_PORT);
 

@@ -24,9 +24,10 @@ import { AddressBookConfigMap, useRegisterConfig } from "@keplr-wallet/hooks";
 import { AsyncKVStore } from "../../common";
 import { useFocusEffect } from "@react-navigation/native";
 import { TextInput } from "../../components/input";
+import { SignClient } from "@walletconnect/sign-client";
 
 export const CameraScreen: FunctionComponent = observer(() => {
-  const { chainStore, walletConnectStore, keyRingStore } = useStore();
+  const { chainStore, walletConnectStore, keyRingStore, signClientStore} = useStore();
 
   const style = useStyle();
 
@@ -61,8 +62,22 @@ export const CameraScreen: FunctionComponent = observer(() => {
   const [addressBookConfigMap] = useState(
     () => new AddressBookConfigMap(new AsyncKVStore("address_book"), chainStore)
   );
-  const onWalletConnection = async () => {
-    await walletConnectStore.initClient(tempURI);
+  const onWalletConnection = async (uri: string) => {
+    const signClient = await SignClient.init({
+      projectId: "b9223ca4e8eb35ddb23003a0a4e73b83",
+      relayUrl: "wss://relay.walletconnect.com",
+      metadata: {
+        name: "Astra Hub",
+        description: "Everything for Astra",
+        url: "https://astranaut.io",
+        icons: ["https://avatars.githubusercontent.com/u/37784886"],
+      },
+    })
+    signClient.on("session_proposal", data => {
+      console.log("On session proposal with data: ",data);
+    })
+    
+    await signClient.pair({ uri });
   };
   return (
     <PageWithView disableSafeArea={true}>
@@ -77,7 +92,8 @@ export const CameraScreen: FunctionComponent = observer(() => {
 
             try {
               if (data.startsWith("wc:")) {
-                await walletConnectStore.initClient(data);
+                // await signClientStore.onWalletConnect(data);
+                // await walletConnectStore.initClient(data);
 
                 smartNavigation.navigateSmart("NewHome", {});
               } else {
@@ -169,7 +185,7 @@ export const CameraScreen: FunctionComponent = observer(() => {
                 "body2",
               ])}
             />
-            <Button text="Connect" onPress={onWalletConnection}></Button>
+            <Button text="Connect" onPress={onWalletConnection(tempURI)}></Button>
           </View>
           // <Button
           //   text="Show my QR code"
