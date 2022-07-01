@@ -27,7 +27,7 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
     >
   >();
 
-  const { accountStore, chainStore } = useStore();
+  const { accountStore, chainStore, signClientStore } = useStore();
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
 
   const style = useStyle();
@@ -35,33 +35,39 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
   const smartNavigation = useSmartNavigation();
 
   const proposal = route.params.proposal;
-  const {id, params } = proposal;
-  const {relays, proposer, requiredNamespaces } = params;
+  const { id, params } = proposal;
+  const { relays, proposer, requiredNamespaces } = params;
   const icons = proposer.metadata.icons;
 
-  console.log("Got proposer: ", proposer);
+  const onRejectSession = async () => {
+    await signClientStore.rejectProposal();
+    smartNavigation.goBack();
+  };
 
   const onApproveSession = async () => {
     const address = accountInfo.bech32Address;
-    const namespaces: SessionTypes.Namespaces = {}
-    Object.keys(requiredNamespaces).forEach(key => {
-        const accounts: string[] = []
-        requiredNamespaces[key].chains.map(chain => {
-            accounts.push(`${chain}:${address}`)
-        })
-        namespaces[key] = {
-          accounts,
-          methods: requiredNamespaces[key].methods,
-          events: requiredNamespaces[key].events
-        }
-      })
+    const namespaces: SessionTypes.Namespaces = {};
+    Object.keys(requiredNamespaces).forEach((key) => {
+      const accounts: string[] = [];
+      requiredNamespaces[key].chains.map((chain) => {
+        accounts.push(`${chain}:${address}`);
+      });
+      namespaces[key] = {
+        accounts,
+        methods: requiredNamespaces[key].methods,
+        events: requiredNamespaces[key].events,
+      };
+    });
 
     const approvePayload = {
-        id,
-        relayProtocol: relays[0].protocol,
-        namespaces
-      };
-  }
+      id,
+      relayProtocol: relays[0].protocol,
+      namespaces,
+    };
+
+    await signClientStore.approveProposal(approvePayload);
+    smartNavigation.goBack();
+  };
 
   return (
     <PageWithScrollView
@@ -122,7 +128,7 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
               source={require("../../assets/image/icon_connect.png")}
               resizeMode="contain"
               style={style.flatten(["width-18", "height-18"])}
-            ></Image>
+            />
           </View>
           <View
             style={style.flatten([
@@ -216,19 +222,21 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
         >
           <Button
             size="small"
-            containerStyle={style.flatten(["margin-right-12", "flex-1", "background-color-gray-70"])}
+            containerStyle={style.flatten([
+              "margin-right-12",
+              "flex-1",
+              "background-color-gray-70",
+            ])}
             text="Từ chối"
             mode="fill"
-            onPress={() => 
-                smartNavigation.goBack()
-            }
-          ></Button>
+            onPress={onRejectSession}
+          />
           <Button
             size="small"
             text="Liên kết"
+            onPress={onApproveSession}
             containerStyle={style.flatten(["flex-1"])}
-
-          ></Button>
+          />
         </View>
       </View>
     </PageWithScrollView>

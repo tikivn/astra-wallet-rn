@@ -3,7 +3,6 @@ import { registerModal } from "../../modals/base";
 import { useStyle } from "../../styles";
 import { Text, View } from "react-native";
 import { Button } from "../../components/button";
-
 export const ConfirmModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
@@ -34,38 +33,50 @@ export const ConfirmModal: FunctionComponent<{
           style={style.flatten([
             "border-radius-8",
             "overflow-hidden",
-            "background-color-white",
-            "padding-x-20",
-            "padding-y-28",
-            "items-center",
+            "background-color-gray-90",
+            // "padding-x-16",
+            "padding-y-12",
+            "border-width-1",
+            "border-color-gray-60",
           ])}
         >
-          <Text
-            style={style.flatten([
-              "h3",
-              "color-text-black-medium",
-              "margin-bottom-8",
-            ])}
-          >
-            {title}
-          </Text>
+          {title.length > 0 ? (
+            <Text
+              style={style.flatten([
+                "h3",
+                "color-text-black-medium",
+                "margin-bottom-8",
+              ])}
+            >
+              {title}
+            </Text>
+          ) : null}
           {paragraph ? (
             <Text
               style={style.flatten([
-                "body2",
-                "color-text-black-low",
-                "margin-bottom-16",
-                "text-center",
+                "subtitle2",
+                "color-gray-10",
+                "margin-left-16",
               ])}
             >
               {paragraph}
             </Text>
           ) : null}
-          <View style={style.flatten(["flex-row"])}>
+          <View
+            style={style.flatten([
+              "background-color-gray-60",
+              "margin-y-12",
+              "margin-x-0",
+              "height-1",
+            ])}
+          />
+          <View style={style.flatten(["flex-row", "padding-x-16"])}>
             <Button
-              containerStyle={style.flatten(["flex-1"])}
+              containerStyle={style.flatten([
+                "flex-1",
+                "background-color-gray-70",
+              ])}
               text={noButtonText}
-              mode="outline"
               onPress={() => {
                 onSelectNo();
                 close();
@@ -73,6 +84,7 @@ export const ConfirmModal: FunctionComponent<{
             />
             <View style={style.flatten(["width-12"])} />
             <Button
+              color="danger"
               containerStyle={style.flatten(["flex-1"])}
               text={yesButtonText}
               onPress={() => {

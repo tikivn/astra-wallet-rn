@@ -68,9 +68,9 @@ export const CameraScreen: FunctionComponent = observer(() => {
   );
 
   useEffect(() => {
-    console.log("useEffect: ", signClientStore.pendingProposal);
     if (signClientStore.pendingProposal) {
-      smartNavigation.navigateSmart("SessionProposal", {
+      console.log("useEffect: ", signClientStore.pendingProposal);
+      smartNavigation.replaceSmart("SessionProposal", {
         proposal: signClientStore.pendingProposal,
       });
     }

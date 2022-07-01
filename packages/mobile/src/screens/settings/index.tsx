@@ -18,7 +18,7 @@ import { AccountNetworkItem, RightView } from "./items/select-network";
 import { AccountVersionItem } from "./items/version-item";
 
 export const SettingsScreen: FunctionComponent = observer(() => {
-  const { keyRingStore } = useStore();
+  const { keyRingStore, signClientStore } = useStore();
 
   const style = useStyle();
 
@@ -31,7 +31,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
         source={require("../../assets/logo/main_background.png")}
         resizeMode="contain"
       >
-        <SafeAreaView></SafeAreaView>
+        <SafeAreaView />
         <View style={style.get("height-64")} />
         <PageWithScrollViewInBottomTabView
           backgroundColor={style.get("color-transparent").color}
@@ -112,12 +112,20 @@ export const SettingsScreen: FunctionComponent = observer(() => {
             label="Ứng dụng liên kết"
             labelStyle={style.flatten(["margin-left-12"])}
             left={<ConnectIcon />}
-            right={<RightView paragraph={"0"} />}
+            right={
+              <RightView
+                paragraph={
+                  signClientStore.sessions
+                    ? signClientStore.sessions.length.toString()
+                    : "0"
+                }
+              />
+            }
             onPress={() => {
-                smartNavigation.navigate("Others", {
-                  screen: "ManageWalletConnect",
-                });
-              }}
+              smartNavigation.navigate("Others", {
+                screen: "ManageWalletConnect",
+              });
+            }}
           />
           <View style={style.get("height-32")} />
           <AccountItem

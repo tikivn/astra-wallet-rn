@@ -14,7 +14,11 @@ import { KVStore } from "@keplr-wallet/common";
 import { KeyRingStatus } from "@keplr-wallet/background";
 import { computedFn } from "mobx-utils";
 import { AppState } from "react-native";
-import { SignClientTypes } from "@walletconnect/types";
+import {
+  EngineTypes,
+  SessionTypes,
+  SignClientTypes,
+} from "@walletconnect/types";
 
 export abstract class SignClientManager {
   @observable
@@ -116,10 +120,10 @@ export class SignClientStore extends SignClientManager {
    Save the clients that was connected by the deep link.
    */
   // protected deepLinkClientKeyMap: Record<string, true | undefined> = {};
-
-  pendingProposal:
+  @observable protected _pendingProposal:
     | SignClientTypes.EventArguments["session_proposal"]
-    | undefined;
+    | undefined = undefined;
+  @observable protected _isChange = false;
 
   constructor(
     protected readonly kvStore: KVStore,
@@ -143,17 +147,26 @@ export class SignClientStore extends SignClientManager {
   async disconnect(topic: string): Promise<void> {
     if (this.client) {
       await this.client.disconnect({ topic, reason: ERROR.DELETED.format() });
+      runInAction(() => {
+        this._isChange = true;
+      });
     }
   }
 
   protected async onSessionConnected(_client: SignClient): Promise<void> {
     runInAction(() => {
       this.client = _client;
-      // this.client.on("session_proposal", onSessionProposal);
       this.client.on("session_proposal", (proposal) => {
-        console.log("session_proposal: ", proposal);
-        this.pendingProposal = proposal;
+        this.onSessionProposal(proposal);
       });
+    });
+  }
+
+  protected async onSessionProposal(
+    proposal: SignClientTypes.EventArguments["session_proposal"]
+  ): Promise<void> {
+    runInAction(() => {
+      this._pendingProposal = proposal;
     });
   }
 
@@ -162,5 +175,40 @@ export class SignClientStore extends SignClientManager {
     if (this.client) {
       await this.client.pair({ uri });
     }
+  }
+
+  @computed
+  get pendingProposal():
+    | SignClientTypes.EventArguments["session_proposal"]
+    | undefined {
+    return this._pendingProposal;
+  }
+
+  async approveProposal(payload: EngineTypes.ApproveParams) {
+    if (this.client) {
+      this.client.approve(payload);
+      runInAction(() => {
+        this._pendingProposal = undefined;
+        this._isChange = true;
+      });
+    }
+  }
+
+  async rejectProposal() {
+    if (this.client) {
+      runInAction(() => {
+        this._pendingProposal = undefined;
+      });
+    }
+  }
+  
+  @computed
+  get sessions(): SessionTypes.Struct[] | undefined {
+    return this.client?.session.values;
+  }
+
+  @computed
+  get isChange(): boolean {
+    return this._isChange;
   }
 }
