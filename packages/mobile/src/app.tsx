@@ -7,7 +7,7 @@ import { ModalsProvider } from "./modals/base";
 import { Platform, StatusBar } from "react-native";
 
 import codePush from "react-native-code-push";
-import { InteractionModalsProivder } from "./providers/interaction-modals-provider";
+import { InteractionModalsProvider } from "./providers/interaction-modals-provider";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { LoadingScreenProvider } from "./providers/loading-screen";
 import * as SplashScreen from "expo-splash-screen";
@@ -95,9 +95,9 @@ const AppBody: FunctionComponent = () => {
             <ModalsProvider>
               <LoadingScreenProvider>
                 <ConfirmModalProvider>
-                  <InteractionModalsProivder>
+                  <InteractionModalsProvider>
                     <AppNavigation />
-                  </InteractionModalsProivder>
+                  </InteractionModalsProvider>
                 </ConfirmModalProvider>
               </LoadingScreenProvider>
             </ModalsProvider>

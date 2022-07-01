@@ -1,4 +1,9 @@
-import React, { FunctionComponent, useCallback, useState } from "react";
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { RNCamera } from "react-native-camera";
 import { useStyle } from "../../styles";
 import { PageWithView } from "../../components/page";
@@ -24,10 +29,9 @@ import { AddressBookConfigMap, useRegisterConfig } from "@keplr-wallet/hooks";
 import { AsyncKVStore } from "../../common";
 import { useFocusEffect } from "@react-navigation/native";
 import { TextInput } from "../../components/input";
-import { SignClient } from "@walletconnect/sign-client";
 
 export const CameraScreen: FunctionComponent = observer(() => {
-  const { chainStore, walletConnectStore, keyRingStore, signClientStore} = useStore();
+  const { chainStore, keyRingStore, signClientStore } = useStore();
 
   const style = useStyle();
 
@@ -62,23 +66,20 @@ export const CameraScreen: FunctionComponent = observer(() => {
   const [addressBookConfigMap] = useState(
     () => new AddressBookConfigMap(new AsyncKVStore("address_book"), chainStore)
   );
-  const onWalletConnection = async (uri: string) => {
-    const signClient = await SignClient.init({
-      projectId: "b9223ca4e8eb35ddb23003a0a4e73b83",
-      relayUrl: "wss://relay.walletconnect.com",
-      metadata: {
-        name: "Astra Hub",
-        description: "Everything for Astra",
-        url: "https://astranaut.io",
-        icons: ["https://avatars.githubusercontent.com/u/37784886"],
-      },
-    })
-    signClient.on("session_proposal", data => {
-      console.log("On session proposal with data: ",data);
-    })
-    
-    await signClient.pair({ uri });
+
+  useEffect(() => {
+    console.log("useEffect: ", signClientStore.pendingProposal);
+    if (signClientStore.pendingProposal) {
+      smartNavigation.navigateSmart("SessionProposal", {
+        proposal: signClientStore.pendingProposal,
+      });
+    }
+  }, [smartNavigation, signClientStore.pendingProposal]);
+
+  const onWalletConnection = async () => {
+    await signClientStore.pair(tempURI);
   };
+
   return (
     <PageWithView disableSafeArea={true}>
       <FullScreenCameraView
@@ -92,10 +93,11 @@ export const CameraScreen: FunctionComponent = observer(() => {
 
             try {
               if (data.startsWith("wc:")) {
-                // await signClientStore.onWalletConnect(data);
+                setTempURI(data);
+                onWalletConnection;
                 // await walletConnectStore.initClient(data);
 
-                smartNavigation.navigateSmart("NewHome", {});
+                // smartNavigation.navigateSmart("NewHome", {});
               } else {
                 const isBech32Address = (() => {
                   try {
@@ -171,7 +173,9 @@ export const CameraScreen: FunctionComponent = observer(() => {
           }
         }}
         containerBottom={
-          <View style={style.flatten(["flex-1", "width-full", "margin-top-18"])}>
+          <View
+            style={style.flatten(["flex-1", "width-full", "margin-top-18"])}
+          >
             <TextInput
               value={tempURI}
               onChangeText={(text) => {
@@ -185,7 +189,7 @@ export const CameraScreen: FunctionComponent = observer(() => {
                 "body2",
               ])}
             />
-            <Button text="Connect" onPress={onWalletConnection(tempURI)}></Button>
+            <Button text="Connect" onPress={onWalletConnection} />
           </View>
           // <Button
           //   text="Show my QR code"

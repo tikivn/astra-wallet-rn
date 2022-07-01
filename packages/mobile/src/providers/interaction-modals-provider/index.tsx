@@ -9,13 +9,12 @@ import { BackHandler, Platform } from "react-native";
 import { LoadingScreenModal } from "../loading-screen/modal";
 import { KeyRingStatus } from "@keplr-wallet/background";
 
-export const InteractionModalsProivder: FunctionComponent = observer(
+export const InteractionModalsProvider: FunctionComponent = observer(
   ({ children }) => {
     const {
       keyRingStore,
       ledgerInitStore,
       permissionStore,
-      signInteractionStore,
       walletConnectStore,
     } = useStore();
 

@@ -33,7 +33,7 @@ import { AnalyticsStore, NoopAnalyticsClient } from "@keplr-wallet/analytics";
 import { ChainIdHelper } from "@keplr-wallet/cosmos";
 import { UserBalanceStore } from "./user-balance";
 import { TransactionStore } from "./transaction";
-
+import { SignClientStore } from "./wallet-connect-v2";
 export class RootStore {
   public readonly chainStore: ChainStore;
   public readonly keyRingStore: KeyRingStore;
@@ -326,9 +326,24 @@ export class RootStore {
       this.permissionStore
     );
 
+    this.signClientStore = new SignClientStore(
+      new AsyncKVStore("store_wallet_connect"),
+      {
+        addEventListener: (type: string, fn: () => void) => {
+          eventEmitter.addListener(type, fn);
+        },
+        removeEventListener: (type: string, fn: () => void) => {
+          eventEmitter.removeListener(type, fn);
+        },
+      },
+      this.chainStore,
+      this.keyRingStore,
+      this.permissionStore
+    );
+
     this.analyticsStore = new AnalyticsStore(
       (() => {
-          return new NoopAnalyticsClient();
+        return new NoopAnalyticsClient();
       })(),
       {
         logEvent: (eventName, eventProperties) => {
@@ -357,7 +372,6 @@ export class RootStore {
         },
       }
     );
-
     this.userBalanceStore = new UserBalanceStore();
     this.transactionStore = new TransactionStore();
   }

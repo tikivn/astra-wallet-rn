@@ -133,7 +133,7 @@ export const BottomSheet: FunctionComponent<{
             </View>
             {items.map((item, index) => {
               return (
-                <View>
+                <View key={index}>
                 <View style={style.flatten([
                 "height-1",
                 "margin-x-0",

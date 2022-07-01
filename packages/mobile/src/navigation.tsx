@@ -138,6 +138,8 @@ import { HistoryScreen } from "./screens/history";
 import { TxType } from "./stores/transaction";
 import { UnbondingScreen } from "./screens/staking/unbonding";
 import { WebViewScreen } from "./screens/web/default";
+import { SessionProposalScreen } from "./screens/wallet-connect";
+import { SignClientTypes } from "@walletconnect/types";
 
 const {
   SmartNavigatorProvider,
@@ -213,9 +215,7 @@ const {
     Tokens: {
       upperScreenName: "Others",
     },
-    Camera: {
-      upperScreenName: "Others",
-    },
+
     ManageWalletConnect: {
       upperScreenName: "Others",
     },
@@ -312,6 +312,12 @@ const {
     "Tx.Result": {
       upperScreenName: "Tx",
     },
+    Camera: {
+      upperScreenName: "Wallet",
+    },
+    SessionProposal: {
+      upperScreenName: "Wallet",
+    },
   }).withParams<{
     "Register.NewMnemonic": {
       registerConfig: RegisterConfig;
@@ -406,6 +412,9 @@ const {
     };
     WebView: {
       url?: string;
+    };
+    SessionProosal: {
+      proposal: SignClientTypes.EventArguments['session_proposal'];
     };
   }>()
 );
@@ -744,13 +753,6 @@ export const OtherNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          headerShown: false,
-        }}
-        name="Camera"
-        component={CameraScreen}
-      />
-      <Stack.Screen
-        options={{
           title: "Ứng dụng liên kết",
         }}
         name="ManageWalletConnect"
@@ -929,6 +931,20 @@ export const WalletNavigation: FunctionComponent = () => {
         component={HistoryScreen}
       />
       <Stack.Screen name="WebView" component={WebViewScreen} />
+      <Stack.Screen
+        name="Camera"
+        options={{
+          title: "Liên kết ứng dụng",
+        }}
+        component={CameraScreen}
+      />
+      <Stack.Screen
+        name="SessionProposal"
+        options={{
+          title: "",
+        }}
+        component={SessionProposalScreen}
+      />
     </Stack.Navigator>
   );
 };
