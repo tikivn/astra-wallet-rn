@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FunctionComponent, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { PageWithScrollView } from "../../components/page";
@@ -11,6 +11,7 @@ import { CardDivider } from "../../components/card";
 import { useSmartNavigation } from "../../navigation";
 import { DelegationsEmptyItem } from "../staking/dashboard/delegate";
 import FastImage from "react-native-fast-image";
+import { useToastModal } from "../../providers/toast-modal";
 
 export const ManageWalletConnectScreen: FunctionComponent = observer(() => {
   const { signClientStore } = useStore();
@@ -18,13 +19,20 @@ export const ManageWalletConnectScreen: FunctionComponent = observer(() => {
   const style = useStyle();
 
   const confirmModal = useConfirmModal();
-  const [sessions, setSessions] = useState(signClientStore.sessions);
+  const sessions = signClientStore.sessions;
+  const toastModal = useToastModal();
 
   useEffect(() => {
-    if (signClientStore.isChange) {
-      setSessions(signClientStore.sessions);
-    }
-  }, [signClientStore, signClientStore.isChange]);
+    signClientStore.onSessionChange((infor) => {
+      toastModal.makeToast({
+        title: infor.isConnect
+          ? `Ứng dụng ${infor.name} đã được liên kết`
+          : `Đã huỷ liên kết với ứng dụng ${infor.name}`,
+        type: infor.isConnect ? "success" : "infor",
+        displayTime: 2000,
+      });
+    });
+  }, []);
 
   return (
     <PageWithScrollView backgroundColor={style.get("color-background").color}>
@@ -134,7 +142,7 @@ export const ManageWalletConnectScreen: FunctionComponent = observer(() => {
                               noButtonText: "Không huỷ",
                             })
                           ) {
-                            await signClientStore.disconnect(session.topic);
+                            await signClientStore.disconnect(session);
                           }
                         }}
                       >

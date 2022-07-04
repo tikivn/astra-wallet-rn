@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import SignClient from "@walletconnect/sign-client";
 import { ERROR } from "@walletconnect/utils";
 import { KeyRingStore, PermissionStore } from "@keplr-wallet/stores";
@@ -19,6 +20,12 @@ import {
   SessionTypes,
   SignClientTypes,
 } from "@walletconnect/types";
+import { type } from "os";
+
+export type SessionConnectInfor = {
+  name: string;
+  isConnect: boolean;
+};
 
 export abstract class SignClientManager {
   @observable
@@ -82,6 +89,9 @@ export abstract class SignClientManager {
 }
 
 export class SignClientStore extends SignClientManager {
+  @observable
+  protected _s: number = 0;
+
   /*
    Indicate that there is a pending client that was requested from the deep link.
    Creating session take some time, but this store can't show the indicator.
@@ -106,13 +116,6 @@ export class SignClientStore extends SignClientManager {
    */
   protected _isAndroidActivityKilled = false;
   /*
-   This means that how many wc call request is processing.
-   When the call requested, should increase this.
-   And when the requested call is completed, should decrease this.
-   This field is only needed on the handler side, so don't need to be observable.
-   */
-  protected wcCallCount: number = 0;
-  /*
    Check that there is a wallet connect call from the client that was connected by deep link.
    */
   protected isPendingWcCallFromDeepLinkClient = false;
@@ -123,7 +126,10 @@ export class SignClientStore extends SignClientManager {
   @observable protected _pendingProposal:
     | SignClientTypes.EventArguments["session_proposal"]
     | undefined = undefined;
-  @observable protected _isChange = false;
+
+  @observable protected _changedConnection:
+    | SessionConnectInfor
+    | undefined = undefined;
 
   constructor(
     protected readonly kvStore: KVStore,
@@ -144,11 +150,18 @@ export class SignClientStore extends SignClientManager {
     this._isAndroidActivityKilled = true;
   }
 
-  async disconnect(topic: string): Promise<void> {
+  async disconnect(session: SessionTypes.Struct): Promise<void> {
     if (this.client) {
-      await this.client.disconnect({ topic, reason: ERROR.DELETED.format() });
+      await this.client.disconnect({
+        topic: session.topic,
+        reason: ERROR.DELETED.format(),
+      });
       runInAction(() => {
-        this._isChange = true;
+        this._s = Math.random();
+        this._onSessionChange({
+          name: session.peer.metadata.name,
+          isConnect: false,
+        });
       });
     }
   }
@@ -159,6 +172,16 @@ export class SignClientStore extends SignClientManager {
       this.client.on("session_proposal", (proposal) => {
         this.onSessionProposal(proposal);
       });
+      this.client.on("session_request", (request) => {
+        this.onSessionRequest(request);
+      });
+      this.client.on("session_delete", (data) => {
+        console.log("session_delete", data);
+        this.onSessionDelete(data);
+      });
+      this.client.on("session_ping", (data) => console.log("ping", data));
+      this.client.on("session_event", (data) => console.log("event", data));
+      this.client.on("session_update", (data) => console.log("update", data));
     });
   }
 
@@ -167,6 +190,22 @@ export class SignClientStore extends SignClientManager {
   ): Promise<void> {
     runInAction(() => {
       this._pendingProposal = proposal;
+    });
+  }
+
+  protected async onSessionRequest(
+    request: SignClientTypes.EventArguments["session_request"]
+  ): Promise<void> {
+    runInAction(() => {
+      console.log("onSessionRequest: ", request);
+    });
+  }
+
+  protected async onSessionDelete(
+    data: SignClientTypes.EventArguments["session_delete"]
+  ): Promise<void> {
+    runInAction(() => {
+      this._s = Math.random();
     });
   }
 
@@ -186,10 +225,16 @@ export class SignClientStore extends SignClientManager {
 
   async approveProposal(payload: EngineTypes.ApproveParams) {
     if (this.client) {
-      this.client.approve(payload);
+      console.log("approveProposal", payload);
+      const { acknowledged } = await this.client.approve(payload);
+      await acknowledged();
       runInAction(() => {
+        this._s = Math.random();
+        this._onSessionChange({
+          name: this._pendingProposal?.params.proposer.metadata.name ?? "",
+          isConnect: true,
+        });
         this._pendingProposal = undefined;
-        this._isChange = true;
       });
     }
   }
@@ -201,14 +246,17 @@ export class SignClientStore extends SignClientManager {
       });
     }
   }
-  
-  @computed
-  get sessions(): SessionTypes.Struct[] | undefined {
-    return this.client?.session.values;
-  }
 
   @computed
-  get isChange(): boolean {
-    return this._isChange;
+  get sessions(): SessionTypes.Struct[] {
+    const key = this._s.toString();
+    const tmp = { key: key, value: this.client?.session.values || [] };
+    return tmp.value;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _onSessionChange = (_infor: SessionConnectInfor) => {};
+  // eslint-disable-next-line @typescript-eslint/adjacent-overload-signatures
+  onSessionChange(callback: { (infor: SessionConnectInfor): void }) {
+    this._onSessionChange = callback;
   }
 }

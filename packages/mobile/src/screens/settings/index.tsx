@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useState } from "react";
 import { PageWithScrollViewInBottomTabView } from "../../components/page";
 import { useSmartNavigation } from "../../navigation";
 import { observer } from "mobx-react-lite";
@@ -19,6 +19,8 @@ import { AccountVersionItem } from "./items/version-item";
 
 export const SettingsScreen: FunctionComponent = observer(() => {
   const { keyRingStore, signClientStore } = useStore();
+
+  const connect = signClientStore.sessions.length;
 
   const style = useStyle();
 
@@ -112,15 +114,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
             label="Ứng dụng liên kết"
             labelStyle={style.flatten(["margin-left-12"])}
             left={<ConnectIcon />}
-            right={
-              <RightView
-                paragraph={
-                  signClientStore.sessions
-                    ? signClientStore.sessions.length.toString()
-                    : "0"
-                }
-              />
-            }
+            right={<RightView paragraph={connect.toString()} />}
             onPress={() => {
               smartNavigation.navigate("Others", {
                 screen: "ManageWalletConnect",

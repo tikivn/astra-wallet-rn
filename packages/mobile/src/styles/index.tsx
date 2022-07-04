@@ -7,7 +7,7 @@ export * from "./typos";
 
 export const Colors = {
   background: "#141828",
-  "background-secondary" : "#222940",
+  "background-secondary": "#222940",
   primary: "#0B74E5",
   "primary-10": "#F1F3FC",
   "primary-50": "#E2E8FF",
@@ -52,7 +52,9 @@ export const Colors = {
   "profile-orange": "#FEC078",
   "profile-yellow": "#F2ED64",
   "blue-10": "#F0F8FF",
+  "blue-20": "#DBEEFF",
   "blue-30": "#C2E1FF",
+  "blue-40": "#F0F8FF",
   "blue-70": "#0B74E5",
   "blue-90": "#074183",
   "gray-10": "#D5D9E0",
@@ -63,10 +65,10 @@ export const Colors = {
   "gray-80": "#818DA6",
   "gray-90": "#1A2033",
   "gray-100": "#141828",
-  "orange-10" : "#FFF5EB",
-  "orange-30" : "#FFD1A4",
-  "orange-60" : "#FC820A",
-  "green-2": "#00AB5626",//RGBA - 15%
+  "orange-10": "#FFF5EB",
+  "orange-30": "#FFD1A4",
+  "orange-60": "#FC820A",
+  "green-2": "#00AB5626", //RGBA - 15%
   "green-10": "#EFFFF4",
   "green-30": "#B7EFC3",
   "green-50": "#4AB57C",
@@ -80,7 +82,7 @@ export const Colors = {
   error: "#F5365C",
   "text-green": "#4AB57C",
   "text-red": "#D44E67",
-  "text-yellow": "#FFD530",  
+  "text-yellow": "#FFD530",
   "text-black-very-high": "#030C1D",
   "text-black-high": "#132340",
   "text-black-medium": "#2C4163",
@@ -88,7 +90,7 @@ export const Colors = {
   "text-black-very-low": "#899BB6",
   "text-black-very-very-low": "#808089",
   "text-black-very-very-very-low": "#DCDCE3",
-  "text-gray" : "#d5d9e0",
+  "text-gray": "#d5d9e0",
   "border-gray": "#C6C6CD",
   "border-white": "#F5F5F5",
   white: "#fff",
@@ -107,19 +109,19 @@ export const Colors = {
 
 export const { StyleProvider, useStyle } = createStyleProvider({
   custom: {
-    title1 :{
+    title1: {
       fontSize: 32,
       lineHeight: 40,
       letterSpacing: 0.3,
       ...getPlatformFontWeight("600"),
     },
-    title2 :{
+    title2: {
       fontSize: 16,
       lineHeight: 24,
       letterSpacing: 0.3,
       ...getPlatformFontWeight("700"),
     },
-    title3 :{
+    title3: {
       fontSize: 28,
       lineHeight: 40,
       letterSpacing: 0.3,

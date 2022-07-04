@@ -12,6 +12,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { LoadingScreenProvider } from "./providers/loading-screen";
 import * as SplashScreen from "expo-splash-screen";
 import { ConfirmModalProvider } from "./providers/confirm-modal";
+import { ToastModalProvider } from "./providers/toast-modal";
 import Bugsnag from "@bugsnag/react-native";
 
 if (Platform.OS === "android") {
@@ -95,9 +96,11 @@ const AppBody: FunctionComponent = () => {
             <ModalsProvider>
               <LoadingScreenProvider>
                 <ConfirmModalProvider>
-                  <InteractionModalsProvider>
-                    <AppNavigation />
-                  </InteractionModalsProvider>
+                  <ToastModalProvider>
+                    <InteractionModalsProvider>
+                      <AppNavigation />
+                    </InteractionModalsProvider>
+                  </ToastModalProvider>
                 </ConfirmModalProvider>
               </LoadingScreenProvider>
             </ModalsProvider>

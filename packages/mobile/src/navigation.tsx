@@ -1254,10 +1254,17 @@ export const AppNavigation: FunctionComponent = observer(() => {
     analyticsStore,
     signInteractionStore,
     transactionStore,
+    signClientStore
   } = useStore();
 
   const navigationRef = useRef<NavigationContainerRef | null>(null);
   const routeNameRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (signClientStore.pendingProposal) {
+      console.log("ahihi: ", signClientStore.pendingProposal);
+    }
+  }, [signClientStore.pendingProposal]);
 
   useEffect(() => {
     if (signInteractionStore.waitingData) {

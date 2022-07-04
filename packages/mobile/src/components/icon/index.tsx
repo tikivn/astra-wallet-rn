@@ -29,3 +29,4 @@ export * from "./alert-success";
 export * from "./alert-warning";
 export * from "./setting";
 export * from "./verified";
+export * from "./toast-icon";
