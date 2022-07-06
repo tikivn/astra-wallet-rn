@@ -276,6 +276,7 @@ export abstract class WalletConnectManager {
 
     try {
       this.onCallBeforeRequested(client);
+      console.log("__DEBUG__ payload.method :", payload.method);
 
       switch (payload.method) {
         case "keplr_enable_wallet_connect_v1": {
@@ -321,13 +322,18 @@ export abstract class WalletConnectManager {
           if (payload.params.length !== 3 && payload.params.length !== 4) {
             throw new Error("Invalid parmas");
           }
-
+          console.log("__WC__ payload: ", payload.params);
+          console.log("__WC__ payload 0: ", payload.params[0]);
+          console.log("__WC__ payload 1: ", payload.params[1]);
+          console.log("__WC__ payload 2: ", payload.params[2]);
+          console.log("__WC__ payload 3: ", payload.params[3]);
           const result = await keplr.signAmino(
             payload.params[0],
             payload.params[1],
             payload.params[2],
             payload.params[3]
           );
+          console.log("__WC__ result: ", result);
           client.approveRequest({
             id,
             result: [result],

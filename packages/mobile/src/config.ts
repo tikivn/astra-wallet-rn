@@ -26,7 +26,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinMinimalDenom: "aastra",
       coinDecimals: 18,
       coinGeckoId: "aastra",
-      coinImageUrl: "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
+      coinImageUrl:
+        "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
     },
     bip44: {
       coinType: 60,
@@ -38,7 +39,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinMinimalDenom: "aastra",
         coinDecimals: 18,
         coinGeckoId: "aastra",
-        coinImageUrl: "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
+        coinImageUrl:
+          "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
       },
       // {
       //   coinDenom: "UST",
@@ -54,7 +56,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinMinimalDenom: "aastra",
         coinDecimals: 18,
         coinGeckoId: "aastra",
-        coinImageUrl: "https://salt.tikicdn.com/ts/upload/2a/74/6d/1000f0249fd530a9313a07fc3e13c1b2.png",
+        coinImageUrl:
+          "https://salt.tikicdn.com/ts/upload/2a/74/6d/1000f0249fd530a9313a07fc3e13c1b2.png",
       },
     ],
     coinType: 60,
@@ -64,7 +67,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
       high: 2000000000000,
     },
     features: ["ibc-transfer", "ibc-go"],
-    chainSymbolImageUrl: "https://salt.tikicdn.com/ts/upload/2a/74/6d/1000f0249fd530a9313a07fc3e13c1b2.png",
+    chainSymbolImageUrl:
+      "https://salt.tikicdn.com/ts/upload/2a/74/6d/1000f0249fd530a9313a07fc3e13c1b2.png",
     txExplorer: {
       name: "Astra Scan",
       txUrl: "https://scan.astranaut.network/transaction/{txHash}",
@@ -80,7 +84,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinMinimalDenom: "astra",
       coinDecimals: 6,
       coinGeckoId: "astra",
-      coinImageUrl: "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
+      coinImageUrl:
+        "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
     },
     bip44: {
       coinType: 118,
@@ -92,7 +97,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinMinimalDenom: "astra",
         coinDecimals: 6,
         coinGeckoId: "astra",
-        coinImageUrl: "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
+        coinImageUrl:
+          "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
       },
     ],
     feeCurrencies: [
@@ -101,18 +107,74 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinMinimalDenom: "astra",
         coinDecimals: 6,
         coinGeckoId: "astra",
-        coinImageUrl: "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
+        coinImageUrl:
+          "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
       },
     ],
     coinType: 118,
     features: ["ibc-transfer", "ibc-go"],
-    chainSymbolImageUrl: "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
+    chainSymbolImageUrl:
+      "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
     txExplorer: {
       name: "Mintscan",
       txUrl: "https://www.mintscan.io/cosmos/txs/{txHash}",
     },
   },
-  
+  {
+    rpc: "https://rpc-test.osmosis.zone",
+    rest: "https://lcd-test.osmosis.zone",
+    chainId: "osmo-test-4",
+    chainName: "Osmosis Testnet",
+    stakeCurrency: {
+      coinDenom: "OSMO",
+      coinMinimalDenom: "uosmo",
+      coinDecimals: 6,
+      coinGeckoId: "osmosis",
+      coinImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png",
+    },
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("osmo"),
+    currencies: [
+      {
+        coinDenom: "OSMO",
+        coinMinimalDenom: "uosmo",
+        coinDecimals: 6,
+        coinGeckoId: "osmosis",
+        coinImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png",
+      },
+      {
+        coinDenom: "ION",
+        coinMinimalDenom: "uion",
+        coinDecimals: 6,
+        coinGeckoId: "ion",
+        coinImageUrl:
+          "https://dhj8dql1kzq2v.cloudfront.net/white/osmosis-ion.png",
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "OSMO",
+        coinMinimalDenom: "uosmo",
+        coinDecimals: 6,
+        coinGeckoId: "osmosis",
+        coinImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png",
+      },
+    ],
+    coinType: 118,
+    gasPriceStep: {
+      low: 0,
+      average: 0.025,
+      high: 0.04,
+    },
+    features: ["ibc-transfer", "ibc-go", "cosmwasm"],
+    chainSymbolImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png",
+    txExplorer: {
+      name: "Mintscan",
+      txUrl: "https://www.mintscan.io/osmosis/txs/{txHash}",
+    },
+  },
 ];
 
 // export const AmplitudeApiKey = "dbcaf47e30aae5b712bda7f892b2f0c4";

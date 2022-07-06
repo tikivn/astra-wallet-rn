@@ -1,9 +1,30 @@
-import { CosmosMsgOpts, CosmwasmMsgOpts, SecretMsgOpts } from "@keplr-wallet/stores";
+import {
+  CosmosMsgOpts,
+  CosmwasmMsgOpts,
+  SecretMsgOpts,
+} from "@keplr-wallet/stores";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { Msg as AminoMsg } from "@cosmjs/launchpad";
 import { IRow } from "../../../components";
 import { useStore } from "../../../stores";
-import { MessageObj, MsgBeginRedelegate, MsgDelegate, MsgExecuteContract, MsgSend, MsgTransfer, MsgUndelegate, MsgVote, MsgWithdrawDelegatorReward, renderMsgBeginRedelegate, renderMsgDelegate, renderMsgSend, renderMsgTransfer, renderMsgUndelegate, renderMsgVote, renderMsgWithdrawDelegatorReward } from "./messages";
+import {
+  MessageObj,
+  MsgBeginRedelegate,
+  MsgDelegate,
+  MsgExecuteContract,
+  MsgSend,
+  MsgTransfer,
+  MsgUndelegate,
+  MsgVote,
+  MsgWithdrawDelegatorReward,
+  renderMsgBeginRedelegate,
+  renderMsgDelegate,
+  renderMsgSend,
+  renderMsgTransfer,
+  renderMsgUndelegate,
+  renderMsgVote,
+  renderMsgWithdrawDelegatorReward,
+} from "./messages";
 
 export function renderAminoMessages(): IRow[] {
   const { accountStore, chainStore, transactionStore } = useStore();
@@ -13,7 +34,9 @@ export function renderAminoMessages(): IRow[] {
     return [];
   }
 
-  const chainId = transactionStore.signDocHelper?.signDocWrapper?.chainId ?? chainStore.current.chainId;
+  const chainId =
+    transactionStore.signDocHelper?.signDocWrapper?.chainId ??
+    chainStore.current.chainId;
   const currencies = chainStore.getChain(chainId).currencies;
   const msgOpts: {
     readonly cosmos: {
@@ -37,13 +60,17 @@ export function renderAminoMessages(): IRow[] {
       return fee.denom == currency.coinGeckoId;
     });
 
-    console.log("__FEE__", transactionStore.signDocHelper?.signDocWrapper?.fees, appCurrencies);
+    console.log(
+      "__FEE__",
+      transactionStore.signDocHelper?.signDocWrapper?.fees,
+      appCurrencies
+    );
 
     if (appCurrencies.length != 0) {
-      feeString = new CoinPretty(
-        appCurrencies[0],
-        new Dec(fee.amount)
-      ).trim(true).upperCase(true).toString();
+      feeString = new CoinPretty(appCurrencies[0], new Dec(fee.amount))
+        .trim(true)
+        .upperCase(true)
+        .toString();
     }
   }
 
@@ -58,7 +85,7 @@ export function renderAminoMessages(): IRow[] {
           return { amount: coin.amount, denom: coin.denom };
         }),
         feeString,
-        value.to_address,
+        value.to_address
       );
     }
 
@@ -69,16 +96,13 @@ export function renderAminoMessages(): IRow[] {
         value.amount,
         value.validator_src_address,
         value.validator_dst_address,
-        feeString,
+        feeString
       );
     }
 
     if (msg.type === msgOpts.cosmos.msgOpts.undelegate.type) {
       const value = msg.value as MsgUndelegate["value"];
-      return renderMsgUndelegate(
-        value.validator_address,
-        feeString,
-      );
+      return renderMsgUndelegate(value.validator_address, feeString);
     }
 
     if (msg.type === msgOpts.cosmos.msgOpts.delegate.type) {
@@ -92,16 +116,15 @@ export function renderAminoMessages(): IRow[] {
     }
 
     if (msg.type === msgOpts.cosmos.msgOpts.withdrawRewards.type) {
-      const addresses = msgs.filter((msg) => {
-        return msg.type === msgOpts.cosmos.msgOpts.withdrawRewards.type
-      }).map((msg) => {
-        return msg.value as MsgWithdrawDelegatorReward["value"];
-      });
+      const addresses = msgs
+        .filter((msg) => {
+          return msg.type === msgOpts.cosmos.msgOpts.withdrawRewards.type;
+        })
+        .map((msg) => {
+          return msg.value as MsgWithdrawDelegatorReward["value"];
+        });
 
-      return renderMsgWithdrawDelegatorReward(
-        addresses,
-        feeString
-      );
+      return renderMsgWithdrawDelegatorReward(addresses, feeString);
     }
 
     if (msg.type === msgOpts.cosmos.msgOpts.ibcTransfer.type) {

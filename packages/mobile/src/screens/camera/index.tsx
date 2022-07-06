@@ -31,7 +31,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { TextInput } from "../../components/input";
 
 export const CameraScreen: FunctionComponent = observer(() => {
-  const { chainStore, keyRingStore, signClientStore } = useStore();
+  const { chainStore, keyRingStore, signClientStore, walletConnectStore } = useStore();
 
   const style = useStyle();
 
@@ -96,7 +96,6 @@ export const CameraScreen: FunctionComponent = observer(() => {
                 setTempURI(data);
                 onWalletConnection;
                 // await walletConnectStore.initClient(data);
-
                 // smartNavigation.navigateSmart("NewHome", {});
               } else {
                 const isBech32Address = (() => {

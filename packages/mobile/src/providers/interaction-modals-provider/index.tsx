@@ -15,6 +15,7 @@ export const InteractionModalsProvider: FunctionComponent = observer(
       keyRingStore,
       ledgerInitStore,
       permissionStore,
+      signInteractionStore,
       walletConnectStore,
     } = useStore();
 
@@ -33,6 +34,7 @@ export const InteractionModalsProvider: FunctionComponent = observer(
           data.data.origins.length !== 1 ||
           !WCMessageRequester.isVirtualSessionURL(data.data.origins[0])
         ) {
+          console.log("__DEBUG__ permissionStore.reject: ", data.id);
           permissionStore.reject(data.id);
         }
       }

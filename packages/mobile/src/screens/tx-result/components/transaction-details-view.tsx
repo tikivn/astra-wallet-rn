@@ -8,23 +8,23 @@ import { renderDirectMessages } from "../models/direct";
 import * as WebBrowser from "expo-web-browser";
 
 export const TransactionDetailsView: FunctionComponent<{
-  style?: ViewStyle
-}> = observer(({
-  style,
-}) => {
-  const {
-    chainStore,
-    transactionStore,
-  } = useStore();
+  style?: ViewStyle;
+}> = observer(({ style }) => {
+  const { chainStore, transactionStore } = useStore();
 
   const [hasData, setHasData] = useState(false);
   const mode = transactionStore.txMsgsMode;
-  const chainId = transactionStore.txData?.chainInfo?.chainId ?? chainStore.current.chainId;
+  const chainId =
+    transactionStore.txData?.chainInfo?.chainId ?? chainStore.current.chainId;
   const chainInfo = chainStore.getChain(chainId);
 
   useEffect(() => {
     setHasData(true);
-    console.log("__MODE__", transactionStore.txMsgsMode, transactionStore.txMsgs);
+    console.log(
+      "__MODE__",
+      transactionStore.txMsgsMode,
+      transactionStore.txMsgs
+    );
   }, [transactionStore.txMsgs]);
 
   var rows: IRow[] = [];
@@ -45,15 +45,14 @@ export const TransactionDetailsView: FunctionComponent<{
           size="default"
           text="Xem chi tiết trên Astra Scan"
           mode="text"
-          containerStyle={{ marginTop: 16, }}
+          containerStyle={{ marginTop: 16 }}
           onPress={() => {
             if (chainInfo.raw.txExplorer && transactionStore.txHash) {
-              const txHash = Buffer.from(transactionStore.txHash).toString("hex").toUpperCase();
+              const txHash = Buffer.from(transactionStore.txHash)
+                .toString("hex")
+                .toUpperCase();
               WebBrowser.openBrowserAsync(
-                chainInfo.raw.txExplorer.txUrl.replace(
-                  "{txHash}",
-                  txHash
-                )
+                chainInfo.raw.txExplorer.txUrl.replace("{txHash}", txHash)
               );
             }
           }}

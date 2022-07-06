@@ -12,15 +12,17 @@ import {
 } from "mobx";
 import { ChainStore } from "../chain";
 import { KVStore } from "@keplr-wallet/common";
-import { KeyRingStatus } from "@keplr-wallet/background";
-import { computedFn } from "mobx-utils";
-import { AppState } from "react-native";
+import { getBasicAccessPermissionType, KeyRingStatus } from "@keplr-wallet/background";
 import {
   EngineTypes,
   SessionTypes,
   SignClientTypes,
 } from "@walletconnect/types";
-import { type } from "os";
+import { Keplr } from "@keplr-wallet/provider";
+import { RNRouterBackground } from "../../router";
+import { makeSignDoc } from "@cosmjs/launchpad";
+import { ClientMessageRequester } from "./client-requester";
+import { WCMessageRequester } from "../wallet-connect/msg-requester";
 
 export type SessionConnectInfor = {
   name: string;
@@ -85,6 +87,14 @@ export abstract class SignClientManager {
     }
   }
 
+  protected createKeplrAPI(sessionId: string) {
+    return new Keplr(
+      "1.0",
+      "core",
+      new WCMessageRequester(RNRouterBackground.EventEmitter, sessionId)
+    );
+  }
+
   protected abstract onSessionConnected(_client: SignClient): Promise<void>;
 }
 
@@ -125,6 +135,10 @@ export class SignClientStore extends SignClientManager {
   // protected deepLinkClientKeyMap: Record<string, true | undefined> = {};
   @observable protected _pendingProposal:
     | SignClientTypes.EventArguments["session_proposal"]
+    | undefined = undefined;
+
+  @observable protected _pendingRequest:
+    | SignClientTypes.EventArguments["session_request"]
     | undefined = undefined;
 
   @observable protected _changedConnection:
@@ -196,9 +210,51 @@ export class SignClientStore extends SignClientManager {
   protected async onSessionRequest(
     request: SignClientTypes.EventArguments["session_request"]
   ): Promise<void> {
-    runInAction(() => {
-      console.log("onSessionRequest: ", request);
-    });
+    console.log("onSessionRequest: ", request);
+    const params = request.params;
+    if (params.request.method === "sign") {
+      const requestParams = params.request.params;
+      console.log("__WC V2__ requestParams: ", requestParams);
+      const messages = requestParams.messages;
+      console.log("__WC V2__ messsage: ", messages);
+      const fee = requestParams.fee;
+      console.log("__WC V2__ fee: ", fee);
+      const signerData = requestParams.signerData;
+      console.log("__WC V2__ signerData: ", signerData);
+      await this.waitInitStores();
+      const keplr = this.createKeplrAPI(request.topic);
+      const permittedChains = await this.permissionStore.getOriginPermittedChains(
+        WCMessageRequester.getVirtualSessionURL(request.topic),
+        getBasicAccessPermissionType()
+      );      
+      const key = await keplr.getKey(signerData.chainId);
+      console.log("__DEBUG__ key", key);
+      if (messages && fee && signerData) {
+        const signDoc = makeSignDoc(
+          messages,
+          fee,
+          signerData.chainId,
+          requestParams?.memo,
+          signerData.accountNumber,
+          signerData.sequence
+        );
+        console.log("__WC V2__ onSessionRequest with signDoc: ", signDoc);
+
+        const result = await keplr.signAmino(
+          signerData.chainId,
+          key.bech32Address,
+          signDoc,
+          { preferNoSetFee: true }
+        );
+        console.log("__WC V2_ result: ", result);
+      } else {
+        console.log("Missing data");
+      }
+
+      runInAction(() => {
+        this._pendingRequest = request;
+      });
+    }
   }
 
   protected async onSessionDelete(
@@ -221,6 +277,13 @@ export class SignClientStore extends SignClientManager {
     | SignClientTypes.EventArguments["session_proposal"]
     | undefined {
     return this._pendingProposal;
+  }
+
+  @computed
+  get pendingRequest():
+    | SignClientTypes.EventArguments["session_request"]
+    | undefined {
+    return this._pendingRequest;
   }
 
   async approveProposal(payload: EngineTypes.ApproveParams) {

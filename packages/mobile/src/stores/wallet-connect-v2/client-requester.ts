@@ -7,26 +7,26 @@ import {
 } from "@keplr-wallet/router";
 import EventEmitter from "eventemitter3";
 
-export class WCMessageRequester implements MessageRequester {
+export class ClientMessageRequester implements MessageRequester {
   constructor(
     protected readonly eventEmitter: EventEmitter,
     protected readonly sessionId: string
   ) {}
 
   static getVirtualSessionURL = (sessionId: string): string => {
-    return `https://keplr_wc_virtual.${sessionId}`;
+    return `https://keplr_client_virtual.${sessionId}`;
   };
 
   static isVirtualSessionURL = (url: string): boolean => {
-    return url.startsWith("https://keplr_wc_virtual.");
+    return url.startsWith("https://keplr_client_virtual.");
   };
 
   static getSessionIdFromVirtualURL = (url: string): string => {
-    if (!WCMessageRequester.isVirtualSessionURL(url)) {
+    if (!ClientMessageRequester.isVirtualSessionURL(url)) {
       throw new Error("URL is not for wallet connect");
     }
 
-    return url.replace("https://keplr_wc_virtual.", "").replace("/", "");
+    return url.replace("https://keplr_client_virtual.", "").replace("/", "");
   };
 
   async sendMessage<M extends Message<unknown>>(
@@ -39,7 +39,7 @@ export class WCMessageRequester implements MessageRequester {
     // In the router and background, the origin should be formed as proper URL.
     // But, actually there is no expilicit and reliable URL in the wallet connect system.
     // Rather than handling the wallet connect with different logic, just set the URL as virtually formed URL with session id.
-    const url = WCMessageRequester.getVirtualSessionURL(this.sessionId);
+    const url = ClientMessageRequester.getVirtualSessionURL(this.sessionId);
     console.log("__DEBUG__ url ", url);
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
