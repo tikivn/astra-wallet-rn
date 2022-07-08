@@ -1,4 +1,5 @@
 import { TxResponse } from "@keplr-wallet/stores/build/query/cosmos/tx/types";
+import { IntlShape } from "react-intl";
 
 export interface Coin {
     denom: string,
@@ -20,15 +21,12 @@ export function fromCoin(coin: any & Coin): Coin {
     }
 }
 
-export function toUiItem(bech32Address: string, txResponse: TxResponse): TransactionItem<TxResponse> {
+export function toUiItem(intl: IntlShape, bech32Address: string, txResponse: TxResponse): TransactionItem<TxResponse> {
     let msgs = txResponse?.tx?.body?.messages || [];
-    let mode = firstOrNull(txResponse?.tx?.auth_info?.signer_infos || [])?.mode_info?.single?.mode
-    let isAmino = mode == "SIGN_MODE_LEGACY_AMINO_JSON";
     let msgRaw = firstOrNull(msgs)
     
     let type: string = msgRaw ? msgRaw["@type"] || msgRaw["typeUrl"] || null : null;
     
-    console.log(`from: ${type} isAmino=${isAmino} mode=${mode}`);
     let action = type || "";
     let amount = fromCoin(null);
     let status = "";
@@ -36,59 +34,61 @@ export function toUiItem(bech32Address: string, txResponse: TxResponse): Transac
         case undefined: 
         case null: break;
         case "/cosmos.bank.v1beta1.MsgSend": {
-            action = msgRaw.from_address === bech32Address ? "Gửi" : "Nhận";
+            action = msgRaw.from_address === bech32Address ? "sender" : "receiver"
+            action = intl.formatMessage({ id: `history.action.MsgSend.${action}` })
             let coin = firstOrNull(msgRaw.amount);
             amount = fromCoin(coin)
             // TODO check status 
-            status = 'Thành công'
+            status = intl.formatMessage({ id: "history.status.success" })
             break;
         }
         case "/cosmos.bank.v1beta1.MsgMultiSend": {
             let input = firstOrNull(msgRaw.inputs);
             let output = firstOrNull(msgRaw.outputs);
-            console.log(`from: ${input?.address} ben=${bech32Address} ${bech32Address === input.address}`)
             let isSender = input ? bech32Address === input.address : bech32Address != output.address;
-            action = isSender ? "Gửi theo nhóm" : "Nhận theo nhóm";
-            
+            action = isSender ? "sender" : "receiver"
+            action = intl.formatMessage({ id: `history.action.MsgMultiSend.${action}` })
             let coin = firstOrNull(input ? input.coins : output.coins);
             amount = fromCoin(coin)
             // TODO check status 
-            status = 'Thành công'
+            status = intl.formatMessage({ id: "history.status.success" })
             break;
         } 
         case "/cosmos.staking.v1beta1.MsgDelegate": {
-            action = msgRaw.delegator_address === bech32Address ? "Đầu tư" : "Nhận đầu tư";
+            action = msgRaw.delegator_address === bech32Address ? "sender" : "receiver"
+            action = intl.formatMessage({ id: `history.action.MsgDelegate.${action}` })
             amount = fromCoin(msgRaw.amount)
             // TODO check status 
-            status = 'Thành công'
+            status = intl.formatMessage({ id: "history.status.success" })
             break;
         }
         case "/cosmos.staking.v1beta1.MsgBeginRedelegate": {
-            action = msgRaw.delegator_address === bech32Address ? "Chuyển quỹ đầu tư" : "Nhận đầu tư";
-            console.log(`from: ${msgRaw.amount?.amount} ben=${bech32Address} ${bech32Address === msgRaw.amount?.amount}`)
+            action = msgRaw.delegator_address === bech32Address ? "sender" : "receiver"
+            action = intl.formatMessage({ id: `history.action.MsgBeginRedelegate.${action}` })
             amount = fromCoin(msgRaw.amount)
             // TODO check status 
-            status = 'Thành công'
+            status = intl.formatMessage({ id: "history.status.success" })
             break;
         }
         case "/cosmos.staking.v1beta1.MsgUndelegate": {
-            action = msgRaw.delegator_address === bech32Address ? "Rút khỏi quỹ đầu tư" : "Bị rút đầu tư";
+            action = msgRaw.delegator_address === bech32Address ? "sender" : "receiver"
+            action = intl.formatMessage({ id: `history.action.MsgUndelegate.${action}` })
             amount = fromCoin(msgRaw.amount)
             // TODO check status 
-            status = 'Thành công'
+            status = intl.formatMessage({ id: "history.status.success" })
             break;
         }
         case "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward": {
-            action = msgRaw.delegator_address === bech32Address ? "Rút thưởng về ví" : "Nhà đầu tư rút thưởng";
+            action = msgRaw.delegator_address === bech32Address ? "sender" : "receiver"
+            action = intl.formatMessage({ id: `history.action.MsgWithdrawDelegatorReward.${action}` })
             // TODO check status 
-            status = 'Thành công'
+            status = intl.formatMessage({ id: "history.status.success" })
             break;
         }
         default: { 
-            console.log(`type: ${type} not suppport yet`);
-            action = "Chưa hỗ trợ"
+            action = intl.formatMessage({ id: "history.action.notsupport" })
             // TODO check status 
-            status = 'Không xác định'
+            status = intl.formatMessage({ id: "history.status.unknown" })
             break;
         }
     }

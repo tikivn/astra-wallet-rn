@@ -181,7 +181,7 @@ export const HistoryScreen: FunctionComponent = observer(() => {
 
     const histories = txResponses
       .sort((lh, rh) => rh.timestamp.localeCompare(lh.timestamp))
-      .map((txResponse) => toUiItem(bech32Address, txResponse));
+      .map((txResponse) => toUiItem(intl, bech32Address, txResponse));
     return histories;
   })();
 
