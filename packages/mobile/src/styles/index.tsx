@@ -75,6 +75,7 @@ export const Colors = {
   "green-60": "#00AB56",
   "red-10": "#FFF0F1",
   "red-30": "#FFB8BC",
+  "red-50": "#D44E67",
   "red-60": "#FF424E",
   icon: "#2C4163",
   card: "rgba(255,255,255,0.95)",

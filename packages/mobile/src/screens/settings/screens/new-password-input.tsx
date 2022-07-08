@@ -1,83 +1,83 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
-import { Image, View } from "react-native";
-import { useStyle } from "../../../styles";
-import { Button } from "../../../components/button";
-import { RouteProp, useRoute } from "@react-navigation/native";
-import { useSmartNavigation } from "../../../navigation";
-import { NewMnemonicConfig } from "../mnemonic";
-import { RegisterConfig } from "@keplr-wallet/hooks";
 import { observer } from "mobx-react-lite";
-import { BIP44HDPath } from "@keplr-wallet/background";
+import React, { FunctionComponent, useEffect, useState } from "react";
+import { View } from "react-native";
+import { useStyle } from "../../../styles";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { NormalInput } from "../../../components/input/normal-input";
+import { Button } from "../../../components";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { useStore } from "../../../stores";
+import { useSmartNavigation } from "../../../navigation";
 import { useIntl } from "react-intl";
 
-export const NewPincodeScreen: FunctionComponent = observer(() => {
-  const route = useRoute<
-    RouteProp<
-      Record<
-        string,
-        {
-          registerConfig: RegisterConfig;
-          newMnemonicConfig: NewMnemonicConfig;
-          bip44HDPath: BIP44HDPath;
-          type: "new" | "restore";
-        }
-      >,
-      string
-    >
-  >();
-
+export const NewPasswordInputScreen: FunctionComponent = observer(() => {
   const MIN_LENGTH_PASSWORD = 8;
+
+  const route = useRoute<RouteProp<Record<string, {
+    currentPassword: string;
+  }>, string>>();
 
   const style = useStyle();
   const intl = useIntl();
-
+  const { keyRingStore } = useStore();
   const smartNavigation = useSmartNavigation();
+  const navigation = useNavigation();
 
-  const registerConfig = route.params.registerConfig;
-  const newMnemonicConfig = route.params.newMnemonicConfig;
-
-  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [confirmPasswordErrorText, setConfirmPasswordErrorText] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [inputDataValid, setInputDataValid] = useState(false);
-
   const [isCreating, setIsCreating] = useState(false);
-  const [confirmPasswordErrorText, setConfirmPasswordErrorText] = useState("");
 
   const onCreate = async () => {
     setIsCreating(true);
-
-    await registerConfig.createMnemonic(
-      name,
-      newMnemonicConfig.mnemonic,
-      password,
-      route.params.bip44HDPath
-    );
-
-    smartNavigation.reset({
-      index: 0,
-      routes: [
-        {
-          name: "Register.End",
-          params: {
-            password: confirmPassword,
-          },
-        },
-      ],
+    const index = keyRingStore.multiKeyStoreInfo.findIndex((keyStore) => {
+      return keyStore.selected;
     });
+
+    const currentPassword = route.params.currentPassword;
+
+    const keyRingDatas = await keyRingStore.exportKeyRingDatas(currentPassword);
+    if (index < keyRingDatas.length) {
+      const data = keyRingDatas[index];
+      await keyRingStore.deleteKeyRing(index, currentPassword);
+
+      await keyRingStore.createMnemonicKey(
+        data.key,
+        password,
+        data.meta,
+        data.bip44HDPath
+      );
+
+      await keyRingStore.unlock(password);
+
+      setIsCreating(false);
+
+      navigation.navigate("Setting", {
+        screen: "Setting",
+        params: {
+          floatAlert: {
+            type: "success",
+            content: intl.formatMessage({ id: "common.text.changePasswordSuccess" }),
+          }
+        }
+      });
+      console.log("navigation", navigation);
+      // console.log("smartNavigation", smartNavigation);
+      return;
+    }
+
+    setIsCreating(false);
   };
 
   useEffect(() => {
     validateInputData();
-  }, [name, password, confirmPassword]);
+  }, [password, confirmPassword]);
 
   function validateInputData() {
     if (password.length >= MIN_LENGTH_PASSWORD
-      && password === confirmPassword
-      && name.length != 0) {
+      && password === confirmPassword) {
       setConfirmPasswordErrorText("");
       setInputDataValid(true);
       return;
@@ -105,20 +105,9 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
         <KeyboardAwareScrollView
           contentContainerStyle={style.flatten(["flex-grow-1", "padding-x-page"])}
         >
-          <View style={style.flatten(["margin-y-32", "items-center"])}>
-            {(route.params.type === 'new') ?
-              <Image style={style.flatten(["height-16"])} source={require('../../../assets/image/step-3.png')} resizeMode='contain' /> : null}
-          </View>
-
-          <NormalInput
-            value={name}
-            label={intl.formatMessage({ id: "common.text.accountHolder" })}
-            onChangeText={setName}
-          />
-
           <NormalInput
             value={password}
-            label={intl.formatMessage({ id: "common.text.password" })}
+            label={intl.formatMessage({ id: "common.text.newPassword" })}
             info={intl.formatMessage({
               id: "common.text.minimumCharacters"
             }).replace("{number}", `${MIN_LENGTH_PASSWORD}`)}
@@ -127,12 +116,18 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
             onShowPasswordChanged={setShowPassword}
             onChangeText={setPassword}
             onBlur={validateInputData}
-            style={{ marginBottom: 24, }}
+            validations={[{
+              minLength: MIN_LENGTH_PASSWORD,
+              error: intl.formatMessage({
+                id: "common.text.minimumCharacters"
+              }).replace("{number}", `${MIN_LENGTH_PASSWORD}`)
+            }]}
+            style={{ marginTop: 32, marginBottom: 24, }}
           />
 
           <NormalInput
             value={confirmPassword}
-            label={intl.formatMessage({ id: "common.text.inputVerifyPassword" })}
+            label={intl.formatMessage({ id: "common.text.inputVerifyNewPassword" })}
             error={confirmPasswordErrorText}
             secureTextEntry={true}
             showPassword={showPassword}
@@ -145,13 +140,13 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
               },
               error: intl.formatMessage({ id: "common.text.passwordNotMatching" })
             }]}
+            style={{ marginBottom: 24, }}
           />
 
-          <View style={style.get("flex-1")} />
           <Button
             containerStyle={style.flatten(["border-radius-4", "height-44"])}
             textStyle={style.flatten(["subtitle2"])}
-            text={intl.formatMessage({ id: "register.button.createAccount" })}
+            text={intl.formatMessage({ id: "common.text.changePassword" })}
             size="large"
             loading={isCreating}
             onPress={onCreate}

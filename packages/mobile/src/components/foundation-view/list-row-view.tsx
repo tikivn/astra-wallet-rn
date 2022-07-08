@@ -25,16 +25,24 @@ export const ListRowView: FunctionComponent<{
   clearBackground,
   hideBorder,
 }) => {
-  const items = rows.map((row) => {
-    return buildItem(row);
+  const items = rows.map((row, index) => {
+    return buildItem(row, index);
   });
 
-  function buildItem(row: IRow): React.ReactNode {
+  function buildItem(row: IRow, index: number): React.ReactNode {
+    const key = "row_" + index;
     if (row.type == "separator") {
-      return <HairLine style={{ backgroundColor: Colors["gray-70"], marginHorizontal: 0, }} />;
+      return <HairLine
+        key={key}
+        style={{
+          backgroundColor: Colors["gray-70"],
+          marginHorizontal: 0,
+        }}
+      />;
     }
 
     return <ItemRow
+      key={key}
       style={{ marginHorizontal: 0, paddingHorizontal: 0, }}
       alignItems={row.alignItems}
       itemSpacing={row.itemSpacing}

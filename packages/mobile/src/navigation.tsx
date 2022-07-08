@@ -128,6 +128,8 @@ import { VerifyPincodeScreen } from "./screens/register/pincode/verify";
 import {
   DeleteWalletScreen,
   EnterPincodeScreen,
+  PasswordInputScreen,
+  NewPasswordInputScreen,
 } from "./screens/settings/screens";
 import {
   NewStakingDashboardScreen,
@@ -244,7 +246,7 @@ const {
     "Governance Details": {
       upperScreenName: "Others",
     },
-    Setting: {
+    "Setting": {
       upperScreenName: "Settings",
     },
     SettingSelectAccount: {
@@ -287,6 +289,12 @@ const {
       upperScreenName: "Web",
     },
     "Settings.EnterPincode": {
+      upperScreenName: "Wallet",
+    },
+    "Settings.PasswordInput": {
+      upperScreenName: "Wallet",
+    },
+    "Settings.NewPasswordInput": {
       upperScreenName: "Wallet",
     },
     "Settings.DeleteWallet": {
@@ -404,6 +412,19 @@ const {
       privateData: string;
       privateDataType: string;
     };
+    "Settings.PasswordInput": {
+      nextScreen: string;
+      forwardPassword: boolean;
+    };
+    "Settings.NewPasswordInput": {
+      currentPassword: string;
+    };
+    "Setting": {
+      floatAlert?: {
+        type: "info" | "success" | "warning" | "error";
+        content: string;
+      }
+    },
     AddressBook: {
       recipientConfig?: IRecipientConfig;
       memoConfig?: IMemoConfig;
@@ -857,14 +878,28 @@ export const WalletNavigation: FunctionComponent = () => {
 
       <Stack.Screen
         options={{
-          title: "",
+          title: intl.formatMessage({ id: "viewPassphase.title" }),
         }}
         name="Settings.EnterPincode"
         component={EnterPincodeScreen}
       />
       <Stack.Screen
         options={{
-          title: "",
+          title: intl.formatMessage({ id: "changePassword.title" }),
+        }}
+        name="Settings.PasswordInput"
+        component={PasswordInputScreen}
+      />
+      <Stack.Screen
+        options={{
+          title: intl.formatMessage({ id: "changePassword.title" }),
+        }}
+        name="Settings.NewPasswordInput"
+        component={NewPasswordInputScreen}
+      />
+      <Stack.Screen
+        options={{
+          title: intl.formatMessage({ id: "deleteAccount.title" }),
         }}
         name="Settings.DeleteWallet"
         component={DeleteWalletScreen}

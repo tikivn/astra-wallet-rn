@@ -1,9 +1,9 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { PageWithScrollViewInBottomTabView } from "../../components/page";
 import { useSmartNavigation } from "../../navigation";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-import { useStyle } from "../../styles";
+import { Colors, useStyle } from "../../styles";
 import { View, SafeAreaView, ImageBackground } from "react-native";
 import {
   AllIcon,
@@ -11,6 +11,7 @@ import {
   FaqIcon,
   SocialIcon,
   ConnectIcon,
+  LockIcon,
 } from "../../components/icon";
 import { SettingsAccountItem } from "./items/select-account";
 import { AccountItem } from "./components";
@@ -18,6 +19,8 @@ import { AccountNetworkItem, RightView } from "./items/select-network";
 import { AccountVersionItem } from "./items/version-item";
 import { AccountLanguageItem } from "./items/select-language";
 import { useIntl } from "react-intl";
+import { AlertInline } from "../../components";
+import { RouteProp, useRoute } from "@react-navigation/native";
 
 export const SettingsScreen: FunctionComponent = observer(() => {
   const { keyRingStore, signClientStore } = useStore();
@@ -33,6 +36,25 @@ export const SettingsScreen: FunctionComponent = observer(() => {
     containerStyle: style.flatten(["margin-left-16", "margin-right-16", "border-radius-8", "overflow-hidden",]),
     labelStyle: style.flatten(["margin-left-12"])
   }
+  const route = useRoute<RouteProp<Record<string, {
+    floatAlert?: {
+      type: "info" | "success" | "warning" | "error";
+      content: string;
+    }
+  }>, string>>();
+
+  const floatAlert = route.params && route.params.floatAlert ? route.params.floatAlert : null;
+  const [displayFloatAlert, setDisplayFloatAlert] = useState(floatAlert);
+
+  useEffect(() => {
+    const floatAlert = route.params && route.params.floatAlert ? route.params.floatAlert : null;
+    setDisplayFloatAlert(floatAlert);
+
+    const timeoutId = setTimeout(() => {
+      setDisplayFloatAlert(null);
+    }, 3000);
+    return () => clearTimeout(timeoutId);
+  }, [route.params]);
 
   return (
     <View style={style.flatten(["background-color-background", "flex-grow-1"])}>
@@ -49,14 +71,18 @@ export const SettingsScreen: FunctionComponent = observer(() => {
         >
           <SettingsAccountItem />
           <View style={style.get("height-32")} />
-          {/* <AccountItem
-                        containerStyle={style.flatten(["margin-left-16", "margin-right-16", "border-radius-8", "overflow-hidden"])}
-                        label="Đổi mật khẩu truy cập"
-                        right={<AllIcon color={style.get("color-white").color} />}
-                        onPress={() => {
-
-                        }}
-                    /> */}
+          <AccountItem
+            {...accountItemProps}
+            label={intl.formatMessage({ id: "settings.changePassword" })}
+            left={<LockIcon size={24} color={Colors["gray-30"]} />}
+            right={<AllIcon color={style.get("color-white").color} />}
+            onPress={() => {
+              smartNavigation.navigateSmart("Settings.PasswordInput", {
+                nextScreen: "Settings.NewPasswordInput",
+                forwardPassword: true
+              });
+            }}
+          />
           <View style={style.get("height-8")} />
           <AccountItem
             {...accountItemProps}
@@ -136,6 +162,19 @@ export const SettingsScreen: FunctionComponent = observer(() => {
           <View style={style.get("height-32")} />
           <AccountVersionItem />
         </PageWithScrollViewInBottomTabView>
+        {displayFloatAlert && (
+          <View style={{ paddingHorizontal: 16 }}>
+            <AlertInline
+              type={displayFloatAlert.type}
+              content={displayFloatAlert.content}
+              actionButton="close"
+              onActionButtonTap={() => {
+                setDisplayFloatAlert(null);
+              }} />
+            <View style={{ height: 44, marginTop: 16, }} />
+            <SafeAreaView></SafeAreaView>
+          </View>
+        )}
       </ImageBackground>
     </View>
   );

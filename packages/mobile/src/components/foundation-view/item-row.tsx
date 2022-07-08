@@ -68,21 +68,29 @@ export const ItemRow: FunctionComponent<IItemRow> = observer(({
       flex,
     } = column as ITextColumn;
 
-    if (text == undefined) {
-      return column;
-    }
+    const key = "row_item_" + index;
 
     const marginRight = index < columns.length - 1 ? itemSpacing : 0;
 
-    return <Text style={{
-      ...textStyle,
-      ...{
-        flex: flex,
-        marginRight: marginRight,
-        textAlign: textAlign,
-        color: textColor,
-      },
-    }}>{text}</Text>;
+    if (text == undefined) {
+      return <View
+        key={key}
+        style={{
+          marginRight
+        }}>{column}</View>
+    }
+
+    return <Text
+      key={key}
+      style={{
+        ...textStyle,
+        ...{
+          flex: flex,
+          marginRight: marginRight,
+          textAlign: textAlign,
+          color: textColor,
+        },
+      }}>{text}</Text>;
   });
 
   return (

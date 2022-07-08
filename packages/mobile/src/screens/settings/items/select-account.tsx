@@ -5,11 +5,16 @@ import { useSmartNavigation } from "../../../navigation";
 import { useStyle } from "../../../styles";
 import { AddressCopyableItem } from "../../../components/address-copyable-new";
 import { RectButton } from "../../../components/rect-button";
+import { useStore } from "../../../stores";
+import { useIntl } from "react-intl";
 
 export const SettingsAccountItem: FunctionComponent = observer(() => {
 
     const style = useStyle();
+    const intl = useIntl();
+
     const smartNavigation = useSmartNavigation();
+    const { keyRingStore } = useStore();
 
     return (
         <React.Fragment>
@@ -31,7 +36,11 @@ export const SettingsAccountItem: FunctionComponent = observer(() => {
                 activeOpacity={1}
             >
                 <Text style={style.flatten(["title1", "color-white", "text-center", "padding-right-10"])}>
-                    Ví của tôi
+                    {keyRingStore.multiKeyStoreInfo.filter((keyStore) => {
+                      return keyStore.type === "mnemonic"
+                    }).map((keyStore) => {
+                      return keyStore.meta?.name
+                    }) || intl.formatMessage({ id: "settings.text.myWallet" })}
                 </Text>
                 {/* <Svg width="18" height="18" viewBox="0 0 18 18" fill="none">
                     <Path
