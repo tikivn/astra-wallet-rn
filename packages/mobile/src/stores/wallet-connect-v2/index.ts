@@ -234,14 +234,14 @@ export class SignClientStore extends SignClientManager {
           key.bech32Address,
           signDoc
         );
-        // await this.client?.respond({
-        //   topic: request.topic,
-        //   response: {
-        //     id: request.id,
-        //     jsonrpc: "2.0",
-        //     result,
-        //   },
-        // });
+        await this.client?.respond({
+          topic: request.topic,
+          response: {
+            id: request.id,
+            jsonrpc: "2.0",
+            result,
+          },
+        });
         console.log("__DEBUG__ result: ", result);
       } else {
         console.log("Missing data");
@@ -337,9 +337,12 @@ export class SignClientStore extends SignClientManager {
       await this.client.respond({
         topic: this.pendingRequest.topic,
         response: {
-          id: this.pendingRequest.id,
           jsonrpc: "2.0",
-          result: ERROR.JSONRPC_REQUEST_METHOD_REJECTED.format().message,
+          id: this.pendingRequest.id,
+          error: {
+            code: 0,
+            message: ERROR.JSONRPC_REQUEST_METHOD_REJECTED.format().message,
+          },
         },
       });
       runInAction(() => {
