@@ -30,3 +30,4 @@ export * from "./alert-warning";
 export * from "./setting";
 export * from "./verified";
 export * from "./toast-icon";
+export * from "./expand";

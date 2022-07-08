@@ -1,15 +1,32 @@
+import {
+  AccountStore,
+  CosmosAccount,
+  CosmosQueries,
+  CosmwasmAccount,
+  CosmwasmQueries,
+  QueriesStore,
+  SecretAccount,
+  SecretQueries,
+} from "@keplr-wallet/stores";
 import { CoinPretty } from "@keplr-wallet/unit";
-import { useStore } from "..";
+import { ChainStore } from "../chain";
 
 export class UserBalanceStore {
-  constructor() { }
+  constructor(
+    protected readonly chainStore: ChainStore,
+    protected readonly accountStore: AccountStore<
+      [CosmosAccount, CosmwasmAccount, SecretAccount]
+    >,
+    protected readonly queriesStore: QueriesStore<
+      [CosmosQueries, CosmwasmQueries, SecretQueries]
+    >
+  ) {}
 
   getBalance(chainId?: string): CoinPretty {
-    const { chainStore, accountStore, queriesStore } = useStore();
-    const selectedChainId = chainId ?? chainStore.current.chainId;
+    const selectedChainId = chainId ?? this.chainStore.current.chainId;
 
-    const account = accountStore.getAccount(selectedChainId);
-    const queries = queriesStore.get(selectedChainId);
+    const account = this.accountStore.getAccount(selectedChainId);
+    const queries = this.queriesStore.get(selectedChainId);
 
     const queryStakable = queries.queryBalances.getQueryBech32Address(
       account.bech32Address
@@ -28,11 +45,10 @@ export class UserBalanceStore {
   }
 
   getRewards(chainId?: string): CoinPretty {
-    const { chainStore, accountStore, queriesStore } = useStore();
-    const selectedChainId = chainId ?? chainStore.current.chainId;
+    const selectedChainId = chainId ?? this.chainStore.current.chainId;
 
-    const account = accountStore.getAccount(selectedChainId);
-    const queries = queriesStore.get(selectedChainId);
+    const account = this.accountStore.getAccount(selectedChainId);
+    const queries = this.queriesStore.get(selectedChainId);
 
     const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
       account.bech32Address

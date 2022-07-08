@@ -1,4 +1,9 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { useStyle } from "../../styles";
 import { useStore } from "../../stores";
 import {
@@ -16,8 +21,9 @@ import { TransactionStateView } from "./components/transaction-state-view";
 import { TransactionDetailsView } from "./components/transaction-details-view";
 import { TxState, TxType } from "../../stores/transaction";
 import { TransactionActionView } from "./components/transaction-action-view";
-import { SafeAreaView } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import { PageWithScrollView } from "../../components";
+import { TransactionRequestView } from "./components/transaction-request";
+import { useSmartNavigation } from "../../navigation";
 
 export const TxResultScreen: FunctionComponent = observer(() => {
   const {
@@ -26,6 +32,7 @@ export const TxResultScreen: FunctionComponent = observer(() => {
     queriesStore,
     signInteractionStore,
     transactionStore,
+    signClientStore,
   } = useStore();
 
   useUnmount(() => {
@@ -38,7 +45,6 @@ export const TxResultScreen: FunctionComponent = observer(() => {
       Record<
         string,
         {
-          txType: TxType,
           txState: TxState;
         }
       >,
@@ -49,11 +55,34 @@ export const TxResultScreen: FunctionComponent = observer(() => {
   console.log("__PARAMS__", route.params);
 
   const style = useStyle();
-
+  const smartNavigation = useSmartNavigation();
   const [signer, setSigner] = useState("");
   const [chainId, setChainId] = useState(chainStore.current.chainId);
 
   const chainInfo = chainStore.getChain(chainId);
+
+  const [waitApprove, setWaitApprove] = useState(false);
+
+  useEffect(() => {
+    const pendingRequest = signClientStore.pendingRequest;
+    const requestSession = signClientStore.requestSession(
+      pendingRequest?.topic
+    );
+    if (pendingRequest && requestSession) {
+      setWaitApprove(true);
+    }
+  }, [signClientStore]);
+
+  const onRejectRequest = useCallback(async () => {
+    await signClientStore.rejectRequest();
+    // signInteractionStore.rejectAll();
+    smartNavigation.navigateSmart("NewHome", {});
+  }, [signClientStore, smartNavigation]);
+
+  const onApproveRequest = useCallback(async () => {
+    await transactionStore.startTransaction();
+    setWaitApprove(false);
+  }, [transactionStore]);
 
   useEffect(() => {
     let txTracer: TendermintTxTracer | undefined;
@@ -134,40 +163,37 @@ export const TxResultScreen: FunctionComponent = observer(() => {
     signInteractionStore.waitingData,
   ]);
 
-  // const mode = signDocHelper.signDocWrapper
-  //   ? signDocHelper.signDocWrapper.mode
-  //   : "none";
-  // const msgs = signDocHelper.signDocWrapper
-  //   ? signDocHelper.signDocWrapper.mode === "amino"
-  //     ? signDocHelper.signDocWrapper.aminoSignDoc.msgs
-  //     : signDocHelper.signDocWrapper.protoSignDoc.txMsgs
-  //   : [];
-
-  // async function sendTransaction() {
-  //   try {
-  //     if (signDocHelper.signDocWrapper) {
-  //       await signInteractionStore.approveAndWaitEnd(
-  //         signDocHelper.signDocWrapper
-  //       );
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
-
-  // sendTransaction();
-  transactionStore.startTransaction();
-
+  if (!waitApprove) {
+    transactionStore.startTransaction();
+  }
   return (
-    <SafeAreaView style={{
-      backgroundColor: style.get("color-background").color,
-      flex: 1,
-    }}>
-      <ScrollView >
-        <TransactionStateView />
-        <TransactionDetailsView style={{ marginTop: 38, marginBottom: 16, marginHorizontal: 16, flex: 1, }} />
-      </ScrollView>
-      <TransactionActionView />
-    </SafeAreaView>
+    <PageWithScrollView
+      backgroundColor={style.get("color-background").color}
+      contentContainerStyle={style.flatten([
+        "padding-y-16",
+        "flex-1",
+        "justify-between",
+      ])}
+    >
+      {waitApprove ? (
+        <TransactionRequestView
+          onApprove={onApproveRequest}
+          onReject={onRejectRequest}
+        />
+      ) : (
+        <React.Fragment>
+          <TransactionStateView />
+          <TransactionDetailsView
+            style={{
+              marginTop: 38,
+              marginBottom: 16,
+              marginHorizontal: 16,
+              flex: 1,
+            }}
+          />
+          <TransactionActionView />
+        </React.Fragment>
+      )}
+    </PageWithScrollView>
   );
 });

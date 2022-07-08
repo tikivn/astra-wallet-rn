@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect } from "react";
-import { View, ImageBackground, SafeAreaView, Text } from "react-native";
+import { View, Text } from "react-native";
 import { PageWithScrollView } from "../../../components/page";
 import { useStyle } from "../../../styles";
 import { AddressInput, AmountInput } from "../components";
@@ -13,7 +13,13 @@ import { EthereumEndpoint } from "../../../config";
 import { RouteProp, useRoute } from "@react-navigation/native";
 
 export const SendTokenScreen: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore, analyticsStore, transactionStore } = useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    analyticsStore,
+    transactionStore,
+  } = useStore();
 
   const route = useRoute<
     RouteProp<
@@ -28,7 +34,6 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
       string
     >
   >();
-
 
   const chainId = route.params.chainId
     ? route.params.chainId
@@ -79,10 +84,22 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
       style={style.flatten(["margin-top-16", "padding-x-16"])}
       backgroundColor={style.get("color-background").color}
     >
-      <Text style={style.flatten(["color-text-black-low", "margin-top-16", "text-left", "body3"])}>Bạn có thể sao chép địa chỉ này và dán vào ô địa chỉ khi gửi Astra từ nguồn khác vào đây.</Text>
+      <Text
+        style={style.flatten([
+          "color-text-black-low",
+          "margin-top-16",
+          "text-left",
+          "body3",
+        ])}
+      >
+        Bạn có thể sao chép địa chỉ này và dán vào ô địa chỉ khi gửi Astra từ
+        nguồn khác vào đây.
+      </Text>
       <View style={style.get("height-12")} />
-      <AddressInput recipientConfig={sendConfigs.recipientConfig}
-        memoConfig={sendConfigs.memoConfig}></AddressInput>
+      <AddressInput
+        recipientConfig={sendConfigs.recipientConfig}
+        memoConfig={sendConfigs.memoConfig}
+      ></AddressInput>
       <View style={style.get("height-12")} />
       <AmountInput amountConfig={sendConfigs.amountConfig} />
       <View style={style.get("height-12")} />

@@ -94,10 +94,7 @@ import {
 } from "./providers/focused-screen";
 import { TxResultScreen } from "./screens/tx-result";
 import { TorusSignInScreen } from "./screens/register/torus";
-import {
-  HeaderAddIcon,
-  HeaderWalletConnectIcon,
-} from "./components/header/icon";
+import { HeaderAddIcon } from "./components/header/icon";
 import { BlurredBottomTabBar } from "./components/bottom-tabbar";
 import { UnlockScreen } from "./screens/unlock";
 import { KeplrVersionScreen } from "./screens/setting/screens/version";
@@ -139,7 +136,6 @@ import {
 } from "./screens/staking";
 import { StakingRewardScreen } from "./screens/staking/rewards";
 import { HistoryScreen } from "./screens/history";
-import { TxType } from "./stores/transaction";
 import { UnbondingScreen } from "./screens/staking/unbonding";
 import { WebViewScreen } from "./screens/web/default";
 import { SessionProposalScreen } from "./screens/wallet-connect";
@@ -424,7 +420,7 @@ const {
       url?: string;
     };
     SessionProosal: {
-      proposal: SignClientTypes.EventArguments['session_proposal'];
+      proposal: SignClientTypes.EventArguments["session_proposal"];
     };
   }>()
 );
@@ -465,8 +461,6 @@ const HomeScreenHeaderLeft: FunctionComponent = observer(() => {
 });
 
 const HomeScreenHeaderRight: FunctionComponent = observer(() => {
-  const { walletConnectStore } = useStore();
-
   const style = useStyle();
 
   const navigation = useNavigation();
@@ -482,20 +476,6 @@ const HomeScreenHeaderRight: FunctionComponent = observer(() => {
       >
         <ScanIcon size={28} color={style.get("color-primary").color} />
       </HeaderRightButton>
-      {walletConnectStore.sessions.length > 0 ? (
-        <HeaderRightButton
-          style={{
-            right: 42,
-          }}
-          onPress={() => {
-            navigation.navigate("Others", {
-              screen: "ManageWalletConnect",
-            });
-          }}
-        >
-          <HeaderWalletConnectIcon />
-        </HeaderRightButton>
-      ) : null}
     </React.Fragment>
   );
 });
@@ -825,7 +805,7 @@ export const OtherNavigation: FunctionComponent = () => {
 
 export const WalletNavigation: FunctionComponent = () => {
   const style = useStyle();
-
+  const navigation = useNavigation();
   return (
     <Stack.Navigator
       screenOptions={{
@@ -1139,20 +1119,6 @@ export const WebNavigation: FunctionComponent = () => {
 
 export const MainTabNavigation: FunctionComponent = () => {
   const style = useStyle();
-
-  // const navigation = useNavigation();
-
-  // const focusedScreen = useFocusedScreen();
-  // const isDrawerOpen = useIsDrawerOpen();
-
-  // useEffect(() => {
-  //   // When the focused screen is not "Home" screen and the drawer is open,
-  //   // try to close the drawer forcely.
-  //   if (focusedScreen.name !== "Home" && isDrawerOpen) {
-  //     navigation.dispatch(DrawerActions.toggleDrawer());
-  //   }
-  // }, [focusedScreen.name, isDrawerOpen, navigation]);
-
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -1289,49 +1255,28 @@ export const AppNavigation: FunctionComponent = observer(() => {
     analyticsStore,
     signInteractionStore,
     transactionStore,
-    signClientStore
   } = useStore();
 
   const navigationRef = useRef<NavigationContainerRef | null>(null);
   const routeNameRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    if (signClientStore.pendingProposal) {
-      console.log("ahihi: ", signClientStore.pendingProposal);
-    }
-  }, [signClientStore.pendingProposal]);
-
   useEffect(() => {
     if (signInteractionStore.waitingData) {
+      console.log("__DEBUG__ waitingdata :", signInteractionStore.waitingData);
       console.log("__navigationRef.current__", navigationRef.current);
       console.log(
         "__navigationRef.current__route",
         navigationRef.current?.getCurrentRoute()
       );
-
-      const routeName = navigationRef.current?.getCurrentRoute()?.name || "";
-      const txTypeMapping: Record<string, TxType> = {
-        "Wallet.Send": "send",
-        Delegate: "delegate",
-        "Staking.Rewards": "withdraw",
-        // "Home": "withdraw",
-        // "Staking.Dashboard": "withdraw",
-        Undelegate: "undelegate",
-        Redelegate: "redelegate",
-      };
-
-      transactionStore.updateTxType(txTypeMapping[routeName]);
       transactionStore.updateTxState("pending");
 
       navigationRef.current?.navigate("Tx", {
         screen: "Tx.Result",
         params: {
-          txType: txTypeMapping[routeName],
           txState: "pending",
         },
       });
     }
-  }, [signInteractionStore.waitingData]);
+  }, [signInteractionStore.waitingData, transactionStore]);
 
   return (
     <PageScrollPositionProvider>

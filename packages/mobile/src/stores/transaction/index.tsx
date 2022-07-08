@@ -1,23 +1,35 @@
 import { Msg } from "@cosmjs/launchpad";
 import { AnyWithUnpacked, SignDocWrapper } from "@keplr-wallet/cosmos";
-import { IAmountConfig, IFeeConfig, IMemoConfig, SignDocHelper } from "@keplr-wallet/hooks";
-import { Staking } from "@keplr-wallet/stores";
+import {
+  IAmountConfig,
+  IFeeConfig,
+  IMemoConfig,
+  SignDocHelper,
+} from "@keplr-wallet/hooks";
+import { SignInteractionStore, Staking } from "@keplr-wallet/stores";
 import { ChainInfo } from "@keplr-wallet/types";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { computed, makeObservable, observable } from "mobx";
 import { useStore } from "..";
 
-export type TxType = "send" | "withdraw" | "delegate" | "undelegate" | "redelegate" | "swap" | undefined;
+export type TxType =
+  | "send"
+  | "withdraw"
+  | "delegate"
+  | "undelegate"
+  | "redelegate"
+  | "swap"
+  | undefined;
 export type TxState = "pending" | "success" | "failure" | undefined;
 export type TxData = {
-  chainInfo?: ChainInfo,
-  amount?: IAmountConfig,
-  fee?: IFeeConfig,
-  memo?: IMemoConfig,
+  chainInfo?: ChainInfo;
+  amount?: IAmountConfig;
+  fee?: IFeeConfig;
+  memo?: IMemoConfig;
 };
 
 export class TransactionStore {
-  constructor() {
+  constructor(protected readonly signInteractionStore: SignInteractionStore) {
     makeObservable(this);
   }
 
@@ -94,17 +106,18 @@ export class TransactionStore {
   get txFee(): CoinPretty | undefined {
     const fee = this._txData?.fee;
     if (fee && fee.fee) {
-      return fee.fee
-        .trim(true)
-        .maxDecimals(6)
-        .upperCase(true);
+      return fee.fee.trim(true).maxDecimals(6).upperCase(true);
     }
     return undefined;
   }
 
   @computed
   get txTime(): string | undefined {
-    return this._txTime?.toLocaleTimeString() + ", " + this._txTime?.toLocaleDateString();
+    return (
+      this._txTime?.toLocaleTimeString() +
+      ", " +
+      this._txTime?.toLocaleDateString()
+    );
   }
 
   protected setAmount() {
@@ -123,10 +136,7 @@ export class TransactionStore {
   protected setFee() {
     const fee = this._txData?.fee;
     if (fee && fee.fee) {
-      this._txFee = fee.fee
-        .trim(true)
-        .maxDecimals(6)
-        .upperCase(true);
+      this._txFee = fee.fee.trim(true).maxDecimals(6).upperCase(true);
     }
   }
 
@@ -160,11 +170,10 @@ export class TransactionStore {
   }
 
   async startTransaction() {
-    const { signInteractionStore } = useStore();
     try {
       const wrapper = this._signDocHelper?.signDocWrapper;
       if (wrapper) {
-        await signInteractionStore.approveAndWaitEnd(wrapper);
+        await this.signInteractionStore.approveAndWaitEnd(wrapper);
       }
     } catch (error) {
       console.log(error);
@@ -181,8 +190,8 @@ export class TransactionStore {
   }
 
   getDelegations(params: {
-    chainId?: string,
-    validatorAddress: string
+    chainId?: string;
+    validatorAddress: string;
   }): Staking.Delegation[] | undefined {
     const { chainStore, accountStore, queriesStore } = useStore();
     const { chainId = chainStore.current.chainId, validatorAddress } = params;
@@ -201,8 +210,8 @@ export class TransactionStore {
   }
 
   getValidator(params: {
-    chainId?: string,
-    validatorAddress: string
+    chainId?: string;
+    validatorAddress: string;
   }): Staking.Validator | undefined {
     const { queriesStore, chainStore } = useStore();
     const { chainId = chainStore.current.chainId, validatorAddress } = params;

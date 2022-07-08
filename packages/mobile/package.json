@@ -61,7 +61,6 @@
     "@react-navigation/stack": "^5.14.3",
     "@toruslabs/fetch-node-details": "^5.0.0",
     "@toruslabs/torus.js": "^5.0.1",
-    "@walletconnect/client": "^1.7.8",
     "@walletconnect/sign-client": "2.0.0-beta.101",
     "@walletconnect/utils": "2.0.0-beta.101",
     "@walletconnect/types": "2.0.0-beta.101",

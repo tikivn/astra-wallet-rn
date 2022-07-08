@@ -2,16 +2,21 @@ import LottieView from "lottie-react-native";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { Text, View, ViewStyle } from "react-native";
-import { StepView, StepViewState, StepViewStateColors, StepViewStateColorsBlue, StepViewStateColorsGreen, StepViewType } from "../../../components/foundation-view/step-view";
+import {
+  StepView,
+  StepViewState,
+  StepViewStateColors,
+  StepViewStateColorsBlue,
+  StepViewStateColorsGreen,
+  StepViewType,
+} from "../../../components/foundation-view/step-view";
 import { useStore } from "../../../stores";
 import { TxState, TxType } from "../../../stores/transaction";
 import { Typos, Colors } from "../../../styles";
 
 export const TransactionStateView: FunctionComponent<{
-  style?: ViewStyle
-}> = observer(({
-  style,
-}) => {
+  style?: ViewStyle;
+}> = observer(({ style }) => {
   const { transactionStore } = useStore();
 
   const [txState, setTxState] = useState(transactionStore.txState);
@@ -22,9 +27,7 @@ export const TransactionStateView: FunctionComponent<{
   }, [transactionStore.txState]);
 
   useEffect(() => {
-    setAmountText(
-      transactionStore.txAmount?.toString() ?? ""
-    );
+    setAmountText(transactionStore.txAmount?.toString() ?? "");
   }, [transactionStore.txAmount]);
 
   const isFailure = txState == "failure";
@@ -35,37 +38,37 @@ export const TransactionStateView: FunctionComponent<{
     // undelegate:  Đang rút tiền - Rút tiền thành công
     // redelegate:  Đang chuyển đổi - Chuyển đổi thành công
     // withdraw:    Đang chuyển tiền lãi - Tiền lãi đã được chuyển đến bạn
-    // swap:        
+    // swap:
     const allMainText: Record<string, Record<string, string>> = {
-      "send": {
-        "pending": "Đang gửi",
-        "success": "Đã gửi thành công",
-        "failure": "Giao dịch gửi tiền thất bại",
+      send: {
+        pending: "Đang gửi",
+        success: "Đã gửi thành công",
+        failure: "Giao dịch gửi tiền thất bại",
       },
-      "delegate": {
-        "pending": "Đang chuyển tiền",
-        "success": "Đầu tư thành công",
-        "failure": "Giao dịch đầu tư thất bại",
+      delegate: {
+        pending: "Đang chuyển tiền",
+        success: "Đầu tư thành công",
+        failure: "Giao dịch đầu tư thất bại",
       },
-      "undelegate": {
-        "pending": "Đang rút tiền",
-        "success": "Rút tiền thành công",
-        "failure": "Rút tiền thất bại",
+      undelegate: {
+        pending: "Đang rút tiền",
+        success: "Rút tiền thành công",
+        failure: "Rút tiền thất bại",
       },
-      "redelegate": {
-        "pending": "Đang chuyển đổi",
-        "success": "Chuyển đổi thành công",
-        "failure": "Chuyển đổi thất bại",
+      redelegate: {
+        pending: "Đang chuyển đổi",
+        success: "Chuyển đổi thành công",
+        failure: "Chuyển đổi thất bại",
       },
-      "withdraw": {
-        "pending": "Đang chuyển tiền lãi",
-        "success": "Tiền lãi đã được chuyển đến bạn",
-        "failure": "Chuyển tiền lãi thất bại",
+      withdraw: {
+        pending: "Đang chuyển tiền lãi",
+        success: "Tiền lãi đã được chuyển đến bạn",
+        failure: "Chuyển tiền lãi thất bại",
       },
-      "swap": {
-        "pending": "",
-        "success": "",
-        "failure": "",
+      swap: {
+        pending: "",
+        success: "",
+        failure: "",
       },
     };
 
@@ -80,13 +83,15 @@ export const TransactionStateView: FunctionComponent<{
   const subText = isFailure ? errorText : amountText;
 
   const mainTextStyle = {
-    ...isFailure ? Typos["text-x-large-semi-bold"] : Typos["text-base-regular"],
+    ...(isFailure
+      ? Typos["text-x-large-semi-bold"]
+      : Typos["text-base-regular"]),
     color: isFailure ? Colors["gray-10"] : Colors["gray-30"],
     marginTop: 8,
   };
 
   const subTextStyle = {
-    ...isFailure ? Typos["text-base-regular"] : Typos["text-2x-large-medium"],
+    ...(isFailure ? Typos["text-base-regular"] : Typos["text-2x-large-medium"]),
     color: isFailure ? Colors["gray-30"] : Colors["gray-10"],
     marginTop: isFailure ? 8 : 4,
   };
@@ -135,11 +140,19 @@ export const TransactionStateView: FunctionComponent<{
         }}
       />
 
-      <View style={{ alignItems: "center", paddingHorizontal: 16, width: "100%" }}>
+      <View
+        style={{ alignItems: "center", paddingHorizontal: 16, width: "100%" }}
+      >
         <Text style={mainTextStyle}>{mainText}</Text>
         <Text style={subTextStyle}>{subText}</Text>
 
-        <View style={{ flexDirection: "row", alignContent: "stretch", marginTop: 26, }}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignContent: "stretch",
+            marginTop: 26,
+          }}
+        >
           <StepView
             text={initialStepText}
             state="inactive"

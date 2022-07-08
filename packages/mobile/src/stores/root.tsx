@@ -25,7 +25,6 @@ import { ChainStore } from "./chain";
 import EventEmitter from "eventemitter3";
 import { Keplr } from "@keplr-wallet/provider";
 import { KeychainStore } from "./keychain";
-import { WalletConnectStore } from "./wallet-connect";
 import { FeeType } from "@keplr-wallet/hooks";
 
 import { AnalyticsStore, NoopAnalyticsClient } from "@keplr-wallet/analytics";
@@ -55,7 +54,6 @@ export class RootStore {
   protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar<ChainInfoWithEmbed>;
 
   public readonly keychainStore: KeychainStore;
-  public readonly walletConnectStore: WalletConnectStore;
   public readonly signClientStore: SignClientStore;
   public readonly analyticsStore: AnalyticsStore<
     {
@@ -313,21 +311,6 @@ export class RootStore {
       this.keyRingStore
     );
 
-    this.walletConnectStore = new WalletConnectStore(
-      new AsyncKVStore("store_wallet_connect"),
-      {
-        addEventListener: (type: string, fn: () => void) => {
-          eventEmitter.addListener(type, fn);
-        },
-        removeEventListener: (type: string, fn: () => void) => {
-          eventEmitter.removeListener(type, fn);
-        },
-      },
-      this.chainStore,
-      this.keyRingStore,
-      this.permissionStore
-    );
-
     this.signClientStore = new SignClientStore(
       new AsyncKVStore("store_wallet_connect_v2"),
       {
@@ -374,8 +357,12 @@ export class RootStore {
         },
       }
     );
-    this.userBalanceStore = new UserBalanceStore();
-    this.transactionStore = new TransactionStore();
+    this.userBalanceStore = new UserBalanceStore(
+      this.chainStore,
+      this.accountStore,
+      this.queriesStore
+    );
+    this.transactionStore = new TransactionStore(this.signInteractionStore);
   }
 }
 

@@ -27,16 +27,15 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
     >
   >();
 
-  const { accountStore, chainStore, signClientStore } = useStore();
-  const accountInfo = accountStore.getAccount(chainStore.current.chainId);
+  const { signClientStore } = useStore();
 
   const style = useStyle();
 
   const smartNavigation = useSmartNavigation();
 
   const proposal = route.params.proposal;
-  const { id, params } = proposal;
-  const { relays, proposer, requiredNamespaces } = params;
+  const { params } = proposal;
+  const { proposer } = params;
   const icons = proposer.metadata.icons;
 
   const onRejectSession = async () => {
@@ -45,27 +44,7 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
   };
 
   const onApproveSession = async () => {
-    const address = accountInfo.bech32Address;
-    const namespaces: SessionTypes.Namespaces = {};
-    Object.keys(requiredNamespaces).forEach((key) => {
-      const accounts: string[] = [];
-      requiredNamespaces[key].chains.map((chain) => {
-        accounts.push(`${chain}:${address}`);
-      });
-      namespaces[key] = {
-        accounts,
-        methods: requiredNamespaces[key].methods,
-        events: requiredNamespaces[key].events,
-      };
-    });
-
-    const approvePayload = {
-      id,
-      relayProtocol: relays[0].protocol,
-      namespaces,
-    };
-
-    await signClientStore.approveProposal(approvePayload);
+    await signClientStore.approveProposal();
     smartNavigation.goBack();
   };
 
@@ -100,8 +79,8 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
             {icons.length > 0 ? (
               <FastImage
                 style={{
-                  width: 56,
-                  height: 56,
+                  width: 64,
+                  height: 64,
                 }}
                 source={{
                   uri: icons[0],
@@ -112,7 +91,7 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
               <Image
                 source={require("../../assets/image/icon_dapps.png")}
                 resizeMode="contain"
-                style={style.flatten(["width-56", "height-56"])}
+                style={style.flatten(["width-64", "height-64"])}
               />
             )}
           </View>
@@ -143,7 +122,7 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
             <Image
               source={require("../../assets/image/icon_astra_hub.png")}
               resizeMode="contain"
-              style={style.flatten(["width-56", "height-56"])}
+              style={style.flatten(["width-64", "height-64"])}
             />
           </View>
         </View>

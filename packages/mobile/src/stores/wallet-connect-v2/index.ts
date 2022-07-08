@@ -12,17 +12,11 @@ import {
 } from "mobx";
 import { ChainStore } from "../chain";
 import { KVStore } from "@keplr-wallet/common";
-import { getBasicAccessPermissionType, KeyRingStatus } from "@keplr-wallet/background";
-import {
-  EngineTypes,
-  SessionTypes,
-  SignClientTypes,
-} from "@walletconnect/types";
+import { KeyRingStatus } from "@keplr-wallet/background";
+import { SessionTypes, SignClientTypes } from "@walletconnect/types";
 import { Keplr } from "@keplr-wallet/provider";
-import { RNRouterBackground } from "../../router";
+import { RNMessageRequesterInternal } from "../../router";
 import { makeSignDoc } from "@cosmjs/launchpad";
-import { ClientMessageRequester } from "./client-requester";
-import { WCMessageRequester } from "../wallet-connect/msg-requester";
 
 export type SessionConnectInfor = {
   name: string;
@@ -87,12 +81,8 @@ export abstract class SignClientManager {
     }
   }
 
-  protected createKeplrAPI(sessionId: string) {
-    return new Keplr(
-      "1.0",
-      "core",
-      new WCMessageRequester(RNRouterBackground.EventEmitter, sessionId)
-    );
+  protected createKeplrAPI() {
+    return new Keplr("", "core", new RNMessageRequesterInternal());
   }
 
   protected abstract onSessionConnected(_client: SignClient): Promise<void>;
@@ -211,6 +201,9 @@ export class SignClientStore extends SignClientManager {
     request: SignClientTypes.EventArguments["session_request"]
   ): Promise<void> {
     console.log("onSessionRequest: ", request);
+    runInAction(() => {
+      this._pendingRequest = request;
+    });
     const params = request.params;
     if (params.request.method === "sign") {
       const requestParams = params.request.params;
@@ -222,12 +215,8 @@ export class SignClientStore extends SignClientManager {
       const signerData = requestParams.signerData;
       console.log("__WC V2__ signerData: ", signerData);
       await this.waitInitStores();
-      const keplr = this.createKeplrAPI(request.topic);
-      const permittedChains = await this.permissionStore.getOriginPermittedChains(
-        WCMessageRequester.getVirtualSessionURL(request.topic),
-        getBasicAccessPermissionType()
-      );      
-      const key = await keplr.getKey(signerData.chainId);
+      const keplr = this.createKeplrAPI();
+      const key = await keplr.getKey(this.chainStore.current.chainId);
       console.log("__DEBUG__ key", key);
       if (messages && fee && signerData) {
         const signDoc = makeSignDoc(
@@ -243,17 +232,20 @@ export class SignClientStore extends SignClientManager {
         const result = await keplr.signAmino(
           signerData.chainId,
           key.bech32Address,
-          signDoc,
-          { preferNoSetFee: true }
+          signDoc
         );
-        console.log("__WC V2_ result: ", result);
+        // await this.client?.respond({
+        //   topic: request.topic,
+        //   response: {
+        //     id: request.id,
+        //     jsonrpc: "2.0",
+        //     result,
+        //   },
+        // });
+        console.log("__DEBUG__ result: ", result);
       } else {
         console.log("Missing data");
       }
-
-      runInAction(() => {
-        this._pendingRequest = request;
-      });
     }
   }
 
@@ -286,10 +278,40 @@ export class SignClientStore extends SignClientManager {
     return this._pendingRequest;
   }
 
-  async approveProposal(payload: EngineTypes.ApproveParams) {
-    if (this.client) {
-      console.log("approveProposal", payload);
-      const { acknowledged } = await this.client.approve(payload);
+  requestSession(topic: string | undefined): SessionTypes.Struct | undefined {
+    if (topic && this.client) {
+      return this.client?.session.get(topic);
+    }
+  }
+
+  async approveProposal() {
+    if (this.client && this.pendingProposal) {
+      await this.waitInitStores();
+      const keplr = this.createKeplrAPI();
+      const key = await keplr.getKey(this.chainStore.current.chainId);
+      const { id, params } = this.pendingProposal;
+      const { relays, requiredNamespaces } = params;
+
+      const address = key.bech32Address;
+      const namespaces: SessionTypes.Namespaces = {};
+      Object.keys(requiredNamespaces).forEach((key) => {
+        const accounts: string[] = [];
+        requiredNamespaces[key].chains.map((chain) => {
+          accounts.push(`${chain}:${address}`);
+        });
+        namespaces[key] = {
+          accounts,
+          methods: requiredNamespaces[key].methods,
+          events: requiredNamespaces[key].events,
+        };
+      });
+
+      const approvePayload = {
+        id,
+        relayProtocol: relays[0].protocol,
+        namespaces,
+      };
+      const { acknowledged } = await this.client.approve(approvePayload);
       await acknowledged();
       runInAction(() => {
         this._s = Math.random();
@@ -306,6 +328,31 @@ export class SignClientStore extends SignClientManager {
     if (this.client) {
       runInAction(() => {
         this._pendingProposal = undefined;
+      });
+    }
+  }
+
+  async rejectRequest() {
+    if (this.client && this.pendingRequest) {
+      await this.client.respond({
+        topic: this.pendingRequest.topic,
+        response: {
+          id: this.pendingRequest.id,
+          jsonrpc: "2.0",
+          result: ERROR.JSONRPC_REQUEST_METHOD_REJECTED.format().message,
+        },
+      });
+      runInAction(() => {
+        console.log("__DEBUG__ rejectRequest");
+        this._pendingRequest = undefined;
+      });
+    }
+  }
+
+  async approveRequest() {
+    if (this.client) {
+      runInAction(() => {
+        this._pendingRequest = undefined;
       });
     }
   }

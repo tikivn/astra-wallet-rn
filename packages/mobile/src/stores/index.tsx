@@ -22,14 +22,6 @@ export const StoreProvider: FunctionComponent = ({ children }) => {
     return rootStore;
   });
 
-  useEffect(() => {
-    return () => {
-      // Check the comment of `_isAndroidActivityKilled` field on `WalletConnectStore`
-      stores.walletConnectStore.onAndroidActivityKilled();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
     <storeContext.Provider value={stores}>{children}</storeContext.Provider>
   );

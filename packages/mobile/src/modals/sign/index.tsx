@@ -18,9 +18,7 @@ import { Msg } from "./msg";
 import { observer } from "mobx-react-lite";
 import { useUnmount } from "../../hooks";
 import { FeeInSign } from "./fee";
-import { WCMessageRequester } from "../../stores/wallet-connect/msg-requester";
-import { WCAppLogoAndName } from "../../components/wallet-connect";
-import WalletConnect from "@walletconnect/client";
+
 import { renderAminoMessage } from "./amino";
 import { renderDirectMessage } from "./direct";
 import { AnyWithUnpacked } from "@keplr-wallet/cosmos";
@@ -34,7 +32,6 @@ export const SignModal: FunctionComponent<{
       chainStore,
       accountStore,
       queriesStore,
-      walletConnectStore,
       signInteractionStore,
     } = useStore();
     useUnmount(() => {
@@ -42,10 +39,6 @@ export const SignModal: FunctionComponent<{
     });
 
     // Check that the request is from the wallet connect.
-    // If this is undefiend, the request is not from the wallet connect.
-    const [wcSession, setWCSession] = useState<
-      WalletConnect["session"] | undefined
-    >();
 
     const style = useStyle();
 
@@ -95,18 +88,6 @@ export const SignModal: FunctionComponent<{
           feeConfig.setFeeType("average");
         }
         setSigner(data.data.signer);
-
-        if (
-          data.data.msgOrigin &&
-          WCMessageRequester.isVirtualSessionURL(data.data.msgOrigin)
-        ) {
-          const sessionId = WCMessageRequester.getSessionIdFromVirtualURL(
-            data.data.msgOrigin
-          );
-          setWCSession(walletConnectStore.getSession(sessionId));
-        } else {
-          setWCSession(undefined);
-        }
       }
     }, [
       feeConfig,
@@ -114,7 +95,6 @@ export const SignModal: FunctionComponent<{
       memoConfig,
       signDocHelper,
       signInteractionStore.waitingData,
-      walletConnectStore,
     ]);
 
     const mode = signDocHelper.signDocWrapper
@@ -202,12 +182,6 @@ export const SignModal: FunctionComponent<{
 
     return (
       <CardModal title="Confirm Transaction">
-        {wcSession ? (
-          <WCAppLogoAndName
-            containerStyle={style.flatten(["margin-y-14"])}
-            peerMeta={wcSession.peerMeta}
-          />
-        ) : null}
         <View style={style.flatten(["margin-bottom-16"])}>
           <Text style={style.flatten(["margin-bottom-3"])}>
             <Text style={style.flatten(["subtitle3", "color-primary"])}>

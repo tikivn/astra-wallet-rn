@@ -20,7 +20,6 @@ import QRCode from "react-native-qrcode-svg";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { FullScreenCameraView } from "../../components/camera";
 import {
-  importFromExtension,
   parseQRCodeDataForImportFromExtension,
   registerExportedAddressBooks,
   registerExportedKeyRingDatas,
@@ -31,7 +30,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { TextInput } from "../../components/input";
 
 export const CameraScreen: FunctionComponent = observer(() => {
-  const { chainStore, keyRingStore, signClientStore, walletConnectStore } = useStore();
+  const { chainStore, keyRingStore, signClientStore } = useStore();
 
   const style = useStyle();
 
@@ -95,8 +94,6 @@ export const CameraScreen: FunctionComponent = observer(() => {
               if (data.startsWith("wc:")) {
                 setTempURI(data);
                 onWalletConnection;
-                // await walletConnectStore.initClient(data);
-                // smartNavigation.navigateSmart("NewHome", {});
               } else {
                 const isBech32Address = (() => {
                   try {
@@ -123,43 +120,6 @@ export const CameraScreen: FunctionComponent = observer(() => {
                   } else {
                     smartNavigation.navigateSmart("NewHome", {});
                   }
-                } else {
-                  const sharedData = parseQRCodeDataForImportFromExtension(
-                    data
-                  );
-
-                  const improted = await importFromExtension(
-                    sharedData,
-                    chainStore.chainInfosInUI.map(
-                      (chainInfo) => chainInfo.chainId
-                    )
-                  );
-
-                  // In this case, there are other accounts definitely.
-                  // So, there is no need to consider the password.
-                  await registerExportedKeyRingDatas(
-                    keyRingStore,
-                    registerConfig,
-                    improted.KeyRingDatas,
-                    ""
-                  );
-
-                  await registerExportedAddressBooks(
-                    addressBookConfigMap,
-                    improted.addressBooks
-                  );
-
-                  smartNavigation.reset({
-                    index: 0,
-                    routes: [
-                      {
-                        name: "Register",
-                        params: {
-                          screen: "Register.End",
-                        },
-                      },
-                    ],
-                  });
                 }
               }
 
