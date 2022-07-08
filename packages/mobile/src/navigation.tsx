@@ -140,6 +140,7 @@ import { UnbondingScreen } from "./screens/staking/unbonding";
 import { WebViewScreen } from "./screens/web/default";
 import { SessionProposalScreen } from "./screens/wallet-connect";
 import { SignClientTypes } from "@walletconnect/types";
+import { useIntl } from "react-intl";
 
 const {
   SmartNavigatorProvider,
@@ -527,13 +528,14 @@ export const NewMainNavigation: FunctionComponent = () => {
 
 export const HistoryNavigation: FunctionComponent = () => {
   const style = useStyle();
+  const intl = useIntl();
   return (
     <Stack.Navigator
       screenOptions={{
         ...WalletHeaderScreenOptionsPreset,
         headerStyle: style.get("background-color-background"),
         headerTitleStyle: style.flatten(["title2", "color-white"]),
-        headerTitle: "Lịch sử giao dịch",
+        headerTitle: intl.formatMessage({ id: "history.headerTitle" }),
       }}
       initialRouteName="History"
       headerMode="screen"
@@ -553,6 +555,7 @@ export const HistoryNavigation: FunctionComponent = () => {
 
 export const RegisterNavigation: FunctionComponent = () => {
   const style = useStyle();
+  const intl = useIntl();
 
   return (
     <Stack.Navigator
@@ -574,7 +577,7 @@ export const RegisterNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          title: "Tạo tài khoản mới",
+          title: intl.formatMessage({ id: "register.tutorial.title" }),
         }}
         name="Register.Tutorial"
         component={RegisterTutorialcreen}
@@ -582,7 +585,7 @@ export const RegisterNavigation: FunctionComponent = () => {
 
       <Stack.Screen
         options={{
-          title: "Create a New Wallet",
+          title: intl.formatMessage({ id: "register.newUser.title" }),
         }}
         name="Register.NewUser"
         component={RegisterNewUserScreen}
@@ -596,21 +599,21 @@ export const RegisterNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          title: "Tạo tài khoản mới",
+          title: intl.formatMessage({ id: "register.newMnemonic.title" }),
         }}
         name="Register.NewMnemonic"
         component={NewMnemonicScreen}
       />
       <Stack.Screen
         options={{
-          title: "Tạo tài khoản mới",
+          title: intl.formatMessage({ id: "register.verifyMnemonic.title" }),
         }}
         name="Register.VerifyMnemonic"
         component={VerifyMnemonicScreen}
       />
       <Stack.Screen
         options={{
-          title: "Khôi phục tài khoản đã có",
+          title: intl.formatMessage({ id: "register.recoverMnemonic.title" }),
         }}
         name="Register.RecoverMnemonic"
         component={RecoverMnemonicScreen}
@@ -654,14 +657,14 @@ export const RegisterNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          title: "Tạo tài khoản mới",
+          title: intl.formatMessage({ id: "register.setPincode.title" }),
         }}
         name="Register.SetPincode"
         component={NewPincodeScreen}
       />
       <Stack.Screen
         options={{
-          title: "Tạo tài khoản mới",
+          title: intl.formatMessage({ id: "register.verifyPincode.title" }),
         }}
         name="Register.VerifyPincode"
         component={VerifyPincodeScreen}
@@ -696,13 +699,14 @@ export const TransactionNavigation: FunctionComponent = () => {
 
 export const StakingNavigation: FunctionComponent = () => {
   const style = useStyle();
+  const intl = useIntl();
   return (
     <Stack.Navigator
       screenOptions={{
         ...WalletHeaderScreenOptionsPreset,
         headerStyle: style.get("background-color-background"),
         headerTitleStyle: style.flatten(["title2", "color-white"]),
-        headerTitle: "Staking",
+        headerTitle: intl.formatMessage({ id: "staking.headerTitle" }),
       }}
       initialRouteName="Staking.Dashboard.New"
       headerMode="screen"
@@ -717,8 +721,7 @@ export const StakingNavigation: FunctionComponent = () => {
 
 export const OtherNavigation: FunctionComponent = () => {
   const style = useStyle();
-
-  const navigation = useNavigation();
+  const intl = useIntl();
 
   return (
     <Stack.Navigator
@@ -745,7 +748,7 @@ export const OtherNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          title: "Ứng dụng liên kết",
+          title: intl.formatMessage({ id: "connectedApps.title" }),
         }}
         name="ManageWalletConnect"
         component={ManageWalletConnectScreen}
@@ -806,6 +809,7 @@ export const OtherNavigation: FunctionComponent = () => {
 export const WalletNavigation: FunctionComponent = () => {
   const style = useStyle();
   const navigation = useNavigation();
+  const intl = useIntl();
   return (
     <Stack.Navigator
       screenOptions={{
@@ -817,28 +821,28 @@ export const WalletNavigation: FunctionComponent = () => {
     >
       <Stack.Screen
         options={{
-          title: "Mã nhận Astra",
+          title: intl.formatMessage({ id: "wallet.receive.title" }),
         }}
         name="Receive"
         component={ReceiveScreen}
       />
       <Stack.Screen
         options={{
-          title: "Gửi Astra",
+          title: intl.formatMessage({ id: "wallet.send.title" }),
         }}
         name="Wallet.Send"
         component={SendTokenScreen}
       />
       <Stack.Screen
         options={{
-          title: "Gửi Astra",
+          title: intl.formatMessage({ id: "wallet.sendConfirm.title" }),
         }}
         name="Wallet.SendConfirm"
         component={SendConfirmScreen}
       />
       <Stack.Screen
         options={{
-          title: "Swap Astra",
+          title: intl.formatMessage({ id: "wallet.swap.title" }),
         }}
         name="Swap"
         component={SwapScreen}
@@ -867,7 +871,7 @@ export const WalletNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          title: "Quỹ đầu tư",
+          title: intl.formatMessage({ id: "validator.details.new.title" }),
           headerShown: false,
         }}
         name="Validator.Details.New"
@@ -875,49 +879,49 @@ export const WalletNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          title: "Chọn quỹ đầu tư",
+          title: intl.formatMessage({ id: "validator.list.new.title" }),
         }}
         name="Validator.List.New"
         component={NewValidatorListScreen}
       />
       <Stack.Screen
         options={{
-          title: "Nhận tiền lãi",
+          title: intl.formatMessage({ id: "staking.reward.title" }),
         }}
         name="Staking.Rewards"
         component={StakingRewardScreen}
       />
       <Stack.Screen
         options={{
-          title: "Nhập tiền đầu tư",
+          title: intl.formatMessage({ id: "delegate.title" }),
         }}
         name="Delegate"
         component={DelegateScreen}
       />
       <Stack.Screen
         options={{
-          title: "Rút tiền đầu tư",
+          title: intl.formatMessage({ id: "undelegate.title" }),
         }}
         name="Undelegate"
         component={UndelegateScreen}
       />
       <Stack.Screen
         options={{
-          title: "Chuyển đổi quỹ",
+          title: intl.formatMessage({ id: "redelegate.title" }),
         }}
         name="Redelegate"
         component={RedelegateScreen}
       />
       <Stack.Screen
         options={{
-          title: "Tổng tiền đang rút",
+          title: intl.formatMessage({ id: "unbonding.title" }),
         }}
         name="Unbonding"
         component={UnbondingScreen}
       />
       <Stack.Screen
         options={{
-          title: "Lịch sử giao dịch",
+          title: intl.formatMessage({ id: "wallet.history.title" }),
         }}
         name="Wallet.History"
         component={HistoryScreen}
@@ -926,7 +930,7 @@ export const WalletNavigation: FunctionComponent = () => {
       <Stack.Screen
         name="Camera"
         options={{
-          title: "Liên kết ứng dụng",
+          title: intl.formatMessage({ id: "camera.title" }),
         }}
         component={CameraScreen}
       />
@@ -1119,6 +1123,7 @@ export const WebNavigation: FunctionComponent = () => {
 
 export const MainTabNavigation: FunctionComponent = () => {
   const style = useStyle();
+  const intl = useIntl();
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -1181,14 +1186,14 @@ export const MainTabNavigation: FunctionComponent = () => {
         name="NewMain"
         component={NewMainNavigation}
         options={{
-          tabBarLabel: "Tài sản",
+          tabBarLabel: intl.formatMessage({ id: "tabs.main" }),
         }}
       />
       <Tab.Screen
         name="Stake"
         component={StakingNavigation}
         options={{
-          tabBarLabel: "Tiết kiệm",
+          tabBarLabel: intl.formatMessage({ id: "tabs.stake" }),
         }}
       />
       <Tab.Screen
@@ -1196,14 +1201,14 @@ export const MainTabNavigation: FunctionComponent = () => {
         component={HistoryNavigation}
         options={{
           unmountOnBlur: true,
-          tabBarLabel: "Lịch sử",
+          tabBarLabel: intl.formatMessage({ id: "tabs.history" }),
         }}
       />
       <Tab.Screen
         name="Setting"
         component={SettingsStackScreen}
         options={{
-          tabBarLabel: "Cài đặt",
+          tabBarLabel: intl.formatMessage({ id: "tabs.setting" }),
         }}
       />
     </Tab.Navigator>

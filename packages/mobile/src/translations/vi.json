@@ -1,0 +1,54 @@
+{
+    "tabs.main": "Tài sản",
+    "tabs.stake": "Tiết kiệm",
+    "tabs.history": "Lịch sử",
+    "tabs.setting": "Cài đặt",
+
+    "common.loading": "Loading...",
+
+    "register.tutorial.title": "Tạo tài khoản mới",
+    "register.newUser.title": "Create a New Wallet",
+    "register.newMnemonic.title": "Tạo tài khoản mới",
+    "register.verifyMnemonic.title": "Tạo tài khoản mới",
+    "register.recoverMnemonic.title": "Khôi phục tài khoản đã có",
+    "register.setPincode.title": "Tạo tài khoản mới",
+    "register.verifyPincode.title": "Tạo tài khoản mới",
+
+    "main.receive": "Nhận",
+    "main.send": "Gửi",
+    "main.swap": "Chuyển đổi",
+
+    "staking.headerTitle": "Staking",
+    
+    "history.headerTitle": "Lịch sử giao dịch",
+    "history.emptyHistory": "Không tìm thấy giao dịch nào trong quá khứ. Bạn hãy kéo refresh để tải lại dữ liệu hoặc thử lại sau một lúc.",
+
+    "settings.viewPassphase": "Xem cụm từ bí mật",
+    "settings.faq": "FAQ",
+    "settings.community": "Cộng đồng hỗ trợ",
+    "settings.language": "Ngôn ngữ",
+    "settings.languages.vi": "Tiếng Việt",
+    "settings.languages.en": "English",
+    "settings.network": "Network",
+    "settings.connectedApps": "Ứng dụng liên kết",
+    "settings.lockScreen": "Màn hình khoá",
+    "settings.deleteAccount": "Xoá ví",
+
+    "connectedApps.title": "Ứng dụng liên kết",
+
+    "wallet.receive.title": "Mã nhận Astra",
+    "wallet.send.title": "Gửi Astra",
+    "wallet.sendConfirm.title": "Gửi Astra",
+    "wallet.swap.title": "Swap Astra",
+    "validator.details.new.title": "Quỹ đầu tư",
+    "validator.list.new.title": "Chọn quỹ đầu tư",
+    "staking.reward.title": "Nhận tiền lãi",
+    "delegate.title": "Nhập tiền đầu tư",
+    "undelegate.title": "Rút tiền đầu tư",
+    "redelegate.title": "Chuyển đổi quỹ",
+    "unbonding.title": "Tổng tiền đang rút",
+    "wallet.history.title": "Lịch sử giao dịch",
+    "camera.title": "Liên kết ứng dụng",
+
+    "default": ""
+}

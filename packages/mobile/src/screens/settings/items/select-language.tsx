@@ -1,44 +1,46 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useState } from "react";
-import { useStore } from "../../../stores";
 import { BottomSheet } from "../../../components/input";
 import { AccountItem } from "../components";
 import { Text } from "react-native";
 import { useStyle } from "../../../styles";
-import { AllIcon, NetworkIcon } from "../../../components/icon";
+import { AllIcon, LanguageIcon } from "../../../components/icon";
 import { useIntl } from "react-intl";
-export const AccountNetworkItem: FunctionComponent<{
+import { useLanguage } from "../../../translations";
+
+export const AccountLanguageItem: FunctionComponent<{
   accountItemProps?: object
 }> = observer(({ accountItemProps }) => {
-    const { chainStore } = useStore();
-  
+    const language = useLanguage()
     const intl = useIntl();
     const [isOpenModal, setIsOpenModal] = useState(false);
-    const chainIds =  chainStore.chainInfosInUI.map(
-        (chainInfo) => {
-            return {
-                key: chainInfo.chainId,
-                label: chainInfo.chainName,
-              };
+    const languages =  ["vi", "en"].map( 
+      (code) => {
+        return {
+          key: `${code}`,
+          code: `${code}`,
+          label: intl.formatMessage({ id: `settings.languages.${code}` } ),
         }
-      )
+      }
+    )
+    const selectedLang = languages.find( ({code}) => code == intl.locale ) || languages[0]
     return (
       <React.Fragment>
         <BottomSheet
-          label={intl.formatMessage({ id: "settings.network" })}
+          label={intl.formatMessage({ id: "settings.language" } )}
           isOpen={isOpenModal}
           close={() => setIsOpenModal(false)}
           maxItemsToShow={4}
-          selectedKey={chainStore.current.chainId}
-          setSelectedKey={(key) => key && chainStore.selectChain(key)}
-          items={chainIds}
+          selectedKey={selectedLang.code}
+          setSelectedKey={(code) => code && language.setLanguage(code)}
+          items={languages}
         />
         <AccountItem
             {...accountItemProps}
-            label={intl.formatMessage({ id: "settings.network" })}
-            left={<NetworkIcon/>}
+            label={intl.formatMessage({ id: "settings.language" })}
+            left={<LanguageIcon />}
             right={
-                <RightView paragraph={chainStore.current.chainName.toUpperCase()} />
+                <RightView paragraph={selectedLang.label} />
             }
             onPress={() => {
                 setIsOpenModal(true);

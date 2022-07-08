@@ -2,7 +2,6 @@ import React, { FunctionComponent } from "react";
 import { StoreProvider } from "./stores";
 import { StyleProvider } from "./styles";
 import { AppNavigation } from "./navigation";
-import { IntlProvider } from "react-intl";
 import { ModalsProvider } from "./modals/base";
 import { Platform, StatusBar } from "react-native";
 
@@ -14,6 +13,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { ConfirmModalProvider } from "./providers/confirm-modal";
 import { ToastModalProvider } from "./providers/toast-modal";
 import Bugsnag from "@bugsnag/react-native";
+import { AppIntlProvider } from "./translations";
 
 if (Platform.OS === "android") {
   // https://github.com/web-ridge/react-native-paper-dates/releases/tag/v0.2.15
@@ -65,11 +65,12 @@ SplashScreen.preventAutoHideAsync()
   .catch(console.warn);
 
 const AppBody: FunctionComponent = () => {
+  const additionalMessages = {}
   return (
     <StyleProvider>
       <StoreProvider>
-        <IntlProvider
-          locale="en"
+        <AppIntlProvider
+          additionalMessages={additionalMessages}
           formats={{
             date: {
               en: {
@@ -105,7 +106,7 @@ const AppBody: FunctionComponent = () => {
               </LoadingScreenProvider>
             </ModalsProvider>
           </SafeAreaProvider>
-        </IntlProvider>
+        </AppIntlProvider>
       </StoreProvider>
     </StyleProvider>
   );

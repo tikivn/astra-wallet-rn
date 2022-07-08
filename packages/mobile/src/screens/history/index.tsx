@@ -14,14 +14,13 @@ import { useStyle } from "../../styles";
 import { observer } from "mobx-react-lite";
 
 import { usePrevious } from "../../hooks";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
 import { ChainUpdaterService } from "@keplr-wallet/background";
 import { toUiItem } from "./transaction_adapter";
 import { TransactionItem } from "./transaction_history_item";
 import { TxResponse } from "@keplr-wallet/stores/build/query/cosmos/tx/types";
-import * as WebBrowser from "expo-web-browser";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useSmartNavigation } from "../../navigation";
+import { useIntl } from "react-intl";
 
 export type PageRequestInfo = {
   currentPage: number;
@@ -41,6 +40,7 @@ export const HistoryScreen: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
   const style = useStyle();
+  const intl = useIntl();
 
   const currentChain = chainStore.current;
   const currentChainId = currentChain.chainId;
@@ -97,20 +97,14 @@ export const HistoryScreen: FunctionComponent = observer(() => {
     ])
   );
 
-  // useEffect(() => {
-  //     if (scrollViewRef.current) {
-  //         scrollViewRef.current.scrollTo({ y: 0 });
-  //     }
-  // }, [chainStore.current.chainId]);
-
   const queriesForPage = (queries, bech32Address, page): any[] => {
-    let limit = pageInfo.limit;
-    let sent = queries.cosmos.queryTxs.getQueryBech32Address(
+    const limit = pageInfo.limit;
+    const sent = queries.cosmos.queryTxs.getQueryBech32Address(
       bech32Address,
       true,
       { offset: `${page * limit}`, limit: limit.toString() }
     );
-    let received = queries.cosmos.queryTxs.getQueryBech32Address(
+    const received = queries.cosmos.queryTxs.getQueryBech32Address(
       bech32Address,
       false,
       { offset: `${page * limit}`, limit: limit.toString() }
@@ -120,11 +114,9 @@ export const HistoryScreen: FunctionComponent = observer(() => {
 
   const fetchPageData = (pageQueries): Promise => {
     return Promise.all(pageQueries.map((query) => query.waitFreshResponse()))
-      .catch((reason) => {
-        console.log(`call failed due ${reason}`);
+      .catch(() => {
       })
-      .then((value) => {
-        console.log(`call done ${value}`);
+      .then(() => {
       });
   };
 
@@ -141,33 +133,27 @@ export const HistoryScreen: FunctionComponent = observer(() => {
     );
 
     await fetchPageData(pageQueries);
-    let max: number = pageQueries
+    const max: number = pageQueries
       .map((query) => query.total)
       .reduce((max, current): number => {
-        let queryTotal = Number.parseInt(current) || 0;
-        console.log(`max of ${max} ${queryTotal} ${typeof queryTotal}`);
+        const queryTotal = Number.parseInt(current) || 0;
         return Math.max(max, queryTotal);
       }, 0);
     pageInfo.currentPage = 0;
     pageInfo.maxPage = Math.floor(max / pageInfo.limit);
     setPageInfo(pageInfo);
-    console.log(`setTotal ${max} ${pageInfo.maxPage}`);
 
     setRefreshing(false);
   }, [accountStore, chainStore, priceStore, queriesStore]);
 
   const handleLoadMore = React.useCallback(async () => {
-    console.log(
-      `onLoadMore ${loading} cu=${pageInfo.currentPage} max=${pageInfo.maxPage}`
-    );
     if (loading || pageInfo.currentPage >= pageInfo.maxPage) return;
     setLoading(true);
-    console.log(`onLoadMore setLoading true`);
     const chainId = chainStore.current.chainId;
     const account = accountStore.getAccount(chainId);
     const bech32Address = account.bech32Address;
-    let nextPage = pageInfo.currentPage + 1;
-    let pageQueries = queriesForPage(
+    const nextPage = pageInfo.currentPage + 1;
+    const pageQueries = queriesForPage(
       queriesStore.get(chainId),
       bech32Address,
       nextPage
@@ -175,11 +161,9 @@ export const HistoryScreen: FunctionComponent = observer(() => {
 
     await fetchPageData(pageQueries).then(() => {
       pageInfo.currentPage = nextPage;
-      console.log(`handleLoadMore set nextPage ${nextPage}`);
     });
     setPageInfo(pageInfo);
     setLoading(false);
-    console.log(`onLoadMore setLoading false`);
   }, [accountStore, chainStore, priceStore, queriesStore, pageInfo]);
 
   const chainId = chainStore.current.chainId;
@@ -187,11 +171,9 @@ export const HistoryScreen: FunctionComponent = observer(() => {
   const bech32Address = account.bech32Address;
   const queries = queriesStore.get(chainId);
 
-  console.log(`chainId=${chainId} add=${bech32Address}`);
-
   const histories = (() => {
-    let pageQueries = [];
-    let txResponses: TxResponse[] = [];
+    const pageQueries = [];
+    const txResponses: TxResponse[] = [];
     for (let p = 0; p <= pageInfo.currentPage; p++) {
       pageQueries.push(...queriesForPage(queries, bech32Address, p));
     }
@@ -200,19 +182,6 @@ export const HistoryScreen: FunctionComponent = observer(() => {
     const histories = txResponses
       .sort((lh, rh) => rh.timestamp.localeCompare(lh.timestamp))
       .map((txResponse) => toUiItem(bech32Address, txResponse));
-    console.log(
-      `hisories Size + ${histories.length} page =${pageInfo.currentPage} max=${pageInfo.maxPage}`
-    );
-    const appCurrencies = chainStore.current.currencies;
-    console.log(
-      "hisories currency " +
-        appCurrencies
-          .map(
-            (cur) =>
-              `${cur.coinDenom},${cur.coinMinimalDenom},${cur.coinDecimals}`
-          )
-          .join()
-    );
     return histories;
   })();
 
@@ -241,8 +210,7 @@ export const HistoryScreen: FunctionComponent = observer(() => {
             "flex-1",
           ])}
         >
-          Không tìm thấy giao dịch nào trong quá khứ.\n Bạn hãy kéo refresh để
-          tải lại dữ liệu hoặc thử lại sau một lúc.
+          {intl.formatMessage({ id: "history.emptyHistory" })}
         </Text>
       }
       ItemSeparatorComponent={() => (
@@ -267,7 +235,7 @@ export const HistoryScreen: FunctionComponent = observer(() => {
                 "flex-1",
               ])}
             >
-              Loading...
+            {intl.formatMessage({ id: "common.loading" })}
             </Text>
           )}
         </View>
@@ -284,7 +252,6 @@ export const HistoryScreen: FunctionComponent = observer(() => {
                 "{txHash}",
                 txHash.toUpperCase()
               );
-              // Linking.openURL(url);
               smartNavigation.navigateSmart("WebView", {
                 url: url
               });

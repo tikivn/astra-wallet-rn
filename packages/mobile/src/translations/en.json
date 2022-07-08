@@ -1,0 +1,27 @@
+{
+    "tabs.main": "Assets",
+    "tabs.stake": "Staking",
+    "tabs.history": "History",
+    "tabs.setting": "Settings",
+
+    "main.receive": "Receive",
+    "main.send": "Semd",
+    "main.swap": "Swap",
+    
+    "settings.viewPassphase": "View Passphase",
+    "settings.community": "Support Community",
+    "settings.language": "Language",
+    "settings.connectedApps": "Connected App",
+    "settings.lockScreen": "Logout",
+    "settings.deleteAccount": "Delete Account on device",
+
+    "connectedApps.title": "Connected Apps",
+
+    "wallet.receive.title": "Receive Astra",
+    "wallet.send.title": "Send Astra",
+    "wallet.sendConfirm.title": "Send Confirm Astra",
+    "wallet.swap.title": "Swap Astra",
+    
+
+    "default": ""
+}

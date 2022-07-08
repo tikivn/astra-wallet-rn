@@ -7,6 +7,7 @@ import { useStyle } from "../../../styles";
 import { Button } from "../../../components/button";
 import { SwapIcon, SendIcon, ReceiveIcon } from "../../../components/icon";
 import { useSmartNavigation } from "../../../navigation";
+import { useIntl } from "react-intl";
 
 export const ActionsCard: FunctionComponent<{
     containerStyle?: ViewStyle;
@@ -14,6 +15,7 @@ export const ActionsCard: FunctionComponent<{
     const style = useStyle();
     const smartNavigation = useSmartNavigation();
     const { chainStore } = useStore();
+    const intl = useIntl();
     return (
         <Card style={containerStyle}>
             <CardBody>
@@ -26,7 +28,7 @@ export const ActionsCard: FunctionComponent<{
                             "height-44",
                             "margin-right-12",
                         ])}
-                        text="Nhận"
+                        text={intl.formatMessage({id: "main.receive"})}
                         leftIcon={
                             <View style={style.flatten(["margin-right-6", "margin-left-6"])}>
                                 <ReceiveIcon color={style.get("color-white").color} size={20} />
@@ -50,7 +52,7 @@ export const ActionsCard: FunctionComponent<{
                             "height-44",
                             "margin-right-12",
                         ])}
-                        text="Gửi"
+                        text={intl.formatMessage({id: "main.send"})}
                         leftIcon={
                             <View style={style.flatten(["margin-right-6", "margin-left-6"])}>
                                 <SendIcon color={style.get("color-white").color} size={20} />
@@ -75,7 +77,7 @@ export const ActionsCard: FunctionComponent<{
                             "border-width-0",
                             "height-44",
                         ])}
-                        text="Chuyển đổi"
+                        text={intl.formatMessage({id: "main.swap"})}
                         leftIcon={
                             <View style={style.flatten(["margin-right-6", "margin-left-6"])}>
                                 <SwapIcon color={style.get("color-white").color} size={20} />

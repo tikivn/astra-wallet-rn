@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent } from "react";
 import { PageWithScrollViewInBottomTabView } from "../../components/page";
 import { useSmartNavigation } from "../../navigation";
 import { observer } from "mobx-react-lite";
@@ -16,6 +16,8 @@ import { SettingsAccountItem } from "./items/select-account";
 import { AccountItem } from "./components";
 import { AccountNetworkItem, RightView } from "./items/select-network";
 import { AccountVersionItem } from "./items/version-item";
+import { AccountLanguageItem } from "./items/select-language";
+import { useIntl } from "react-intl";
 
 export const SettingsScreen: FunctionComponent = observer(() => {
   const { keyRingStore, signClientStore } = useStore();
@@ -23,11 +25,17 @@ export const SettingsScreen: FunctionComponent = observer(() => {
   const connect = signClientStore.sessions.length;
 
   const style = useStyle();
+  const intl = useIntl();
 
   const smartNavigation = useSmartNavigation();
 
+  const accountItemProps = {
+    containerStyle: style.flatten(["margin-left-16", "margin-right-16", "border-radius-8", "overflow-hidden",]),
+    labelStyle: style.flatten(["margin-left-12"])
+  }
+
   return (
-    <View style={style.get("background-color-background")}>
+    <View style={style.flatten(["background-color-background", "flex-grow-1"])}>
       <ImageBackground
         style={style.flatten(["width-full", "height-full"])}
         source={require("../../assets/logo/main_background.png")}
@@ -36,6 +44,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
         <SafeAreaView />
         <View style={style.get("height-64")} />
         <PageWithScrollViewInBottomTabView
+          style={style.flatten(["flex-grow-1"])}
           backgroundColor={style.get("color-transparent").color}
         >
           <SettingsAccountItem />
@@ -50,15 +59,9 @@ export const SettingsScreen: FunctionComponent = observer(() => {
                     /> */}
           <View style={style.get("height-8")} />
           <AccountItem
-            containerStyle={style.flatten([
-              "margin-left-16",
-              "margin-right-16",
-              "border-radius-8",
-              "overflow-hidden",
-            ])}
-            label="Xem cụm từ bí mật"
+            {...accountItemProps}
+            label={intl.formatMessage({ id: "settings.viewPassphase" })}
             right={<AllIcon color={style.get("color-white").color} />}
-            labelStyle={style.flatten(["margin-left-12"])}
             left={<KeyIcon />}
             onPress={() => {
               smartNavigation.navigateSmart("Settings.EnterPincode", {});
@@ -67,15 +70,9 @@ export const SettingsScreen: FunctionComponent = observer(() => {
 
           <View style={style.get("height-32")} />
           <AccountItem
-            label="FAQ"
-            containerStyle={style.flatten([
-              "margin-left-16",
-              "margin-right-16",
-              "border-radius-8",
-              "overflow-hidden",
-            ])}
+            {...accountItemProps}
+            label={intl.formatMessage({ id: "settings.faq" })}
             right={<AllIcon color={style.get("color-white").color} />}
-            labelStyle={style.flatten(["margin-left-12"])}
             left={<FaqIcon />}
             onPress={() => {
               smartNavigation.navigateSmart("WebView", {
@@ -85,15 +82,9 @@ export const SettingsScreen: FunctionComponent = observer(() => {
           />
           <View style={style.get("height-8")} />
           <AccountItem
-            containerStyle={style.flatten([
-              "margin-left-16",
-              "margin-right-16",
-              "border-radius-8",
-              "overflow-hidden",
-            ])}
-            label="Cộng đồng hỗ trợ"
+            {...accountItemProps}
+            label={intl.formatMessage({ id: "settings.community" })}
             right={<AllIcon color={style.get("color-white").color} />}
-            labelStyle={style.flatten(["margin-left-12"])}
             left={<SocialIcon />}
             onPress={() => {
               smartNavigation.navigateSmart("WebView", {
@@ -102,17 +93,13 @@ export const SettingsScreen: FunctionComponent = observer(() => {
             }}
           />
           <View style={style.get("height-32")} />
-          <AccountNetworkItem />
+          <AccountLanguageItem accountItemProps={accountItemProps} />
+          <View style={style.get("height-32")} />
+          <AccountNetworkItem accountItemProps={accountItemProps} />
           <View style={style.get("height-8")} />
           <AccountItem
-            containerStyle={style.flatten([
-              "margin-left-16",
-              "margin-right-16",
-              "border-radius-8",
-              "overflow-hidden",
-            ])}
-            label="Ứng dụng liên kết"
-            labelStyle={style.flatten(["margin-left-12"])}
+            {...accountItemProps}
+            label={intl.formatMessage({ id: "settings.connectedApps" })}
             left={<ConnectIcon />}
             right={<RightView paragraph={connect.toString()} />}
             onPress={() => {
@@ -123,13 +110,8 @@ export const SettingsScreen: FunctionComponent = observer(() => {
           />
           <View style={style.get("height-32")} />
           <AccountItem
-            containerStyle={style.flatten([
-              "margin-left-16",
-              "margin-right-16",
-              "border-radius-8",
-              "overflow-hidden",
-            ])}
-            label="Màn hình khoá"
+            containerStyle={accountItemProps.containerStyle}
+            label={intl.formatMessage({ id: "settings.lockScreen" })}
             onPress={async () => {
               keyRingStore.lock();
               smartNavigation.reset({
@@ -144,16 +126,11 @@ export const SettingsScreen: FunctionComponent = observer(() => {
           />
           <View style={style.get("height-8")} />
           <AccountItem
-            label="Xoá ví"
+            {...accountItemProps}
+            label={intl.formatMessage({ id: "settings.deleteAccount" })}
             onPress={() => {
               smartNavigation.navigateSmart("Settings.DeleteWallet", {});
             }}
-            containerStyle={style.flatten([
-              "margin-left-16",
-              "margin-right-16",
-              "border-radius-8",
-              "overflow-hidden",
-            ])}
             labelStyle={style.flatten(["body3", "color-danger"])}
           />
           <View style={style.get("height-32")} />

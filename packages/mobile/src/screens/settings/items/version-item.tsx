@@ -10,7 +10,7 @@ export const AccountVersionItem: FunctionComponent = observer(() => {
     const [appVersion] = useState(() => DeviceInfo.getVersion());
     const [buildNumber] = useState(() => DeviceInfo.getBuildNumber());
     return (
-        <View style={style.flatten(["height-16", "items-center"])}>
+        <View style={style.flatten(["height-48", "items-center"])}>
             <Text style={style.flatten(["body3", "color-text-black-low"])}>Version {appVersion}({buildNumber})</Text>
         </View>
         );
