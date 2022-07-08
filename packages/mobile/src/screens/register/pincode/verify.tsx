@@ -99,7 +99,7 @@ export const VerifyPincodeScreen: FunctionComponent = observer(() => {
                     <Text style={style.flatten(["color-white", "h4", "text-center", "margin-bottom-12"])}>Xác nhận lại mật khẩu truy cập</Text>
                     
                     <View>
-                    <Text style={style.flatten(["color-gray-30", "text-caption"])}>Đây là mật khẩu để truy cập vào Astra Wallet, khác với mật khẩu đăng nhập vào Tiki.</Text>
+                    <Text style={style.flatten(["color-gray-30", "text-caption"])}>Đây là mật khẩu để truy cập vào Astra Hub, khác với mật khẩu đăng nhập vào Tiki.</Text>
                         <CodeField
                             ref={ref}
                             {...props}

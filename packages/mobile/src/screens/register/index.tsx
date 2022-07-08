@@ -45,7 +45,7 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
             <Image 
               resizeMode='contain'
               source={require("../../assets/logo/Astra.png")} />
-              <Text style={style.flatten(["color-white", "title3", "text-center"])}>Astra Wallet</Text>
+              <Text style={style.flatten(["color-white", "title3", "text-center"])}>Astra Hub</Text>
               <Text style={style.flatten(["color-white", "text-caption", "padding-top-4", "text-center"])}>Nơi an toàn để lưu giữ Astra của bạn</Text>
           </View>
           <Button
