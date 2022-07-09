@@ -61,6 +61,12 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(({
     ...borderColor(),
   };
 
+  const containerStyle = {
+    ...styleBuilder.flatten([
+      "padding-bottom-0"
+    ]),
+  };
+
   const textInputStyle = {
     ...styleBuilder.flatten([
       "text-medium-regular",
@@ -135,6 +141,7 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(({
       error={errorText || info}
       errorLabelStyle={errorLabelStyle}
       inputContainerStyle={inputContainerStyle}
+      containerStyle={containerStyle}
       style={textInputStyle}
       secureTextEntry={secureTextEntry && !showPassword}
       inputRight={inputRightView()}

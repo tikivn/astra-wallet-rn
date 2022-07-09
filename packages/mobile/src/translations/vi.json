@@ -79,6 +79,9 @@
 
     "common.alert.content.notShareMnemonic": "Không chia sẻ cụm từ bí mật cho người khác. Nếu ai đó biết chuỗi mật mã, họ sẽ kiểm soát được ví của bạn.",
 
+    "common.text.save": "Lưu",
+    "common.text.cancel": "Hủy bỏ",
+    "common.text.updateWalletName": "Đổi tên ví",
     "common.text.backupNow": "Sao lưu ngay",
     "common.text.continue": "Tiếp tục",
     "common.text.accountHolder": "Tên tài khoản",

@@ -3,7 +3,7 @@ import { PageWithScrollViewInBottomTabView } from "../../components/page";
 import { useSmartNavigation } from "../../navigation";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-import { Colors, useStyle } from "../../styles";
+import { useStyle } from "../../styles";
 import { View, SafeAreaView, ImageBackground } from "react-native";
 import {
   AllIcon,
@@ -74,7 +74,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
           <AccountItem
             {...accountItemProps}
             label={intl.formatMessage({ id: "settings.changePassword" })}
-            left={<LockIcon size={24} color={Colors["gray-30"]} />}
+            left={<LockIcon />}
             right={<AllIcon color={style.get("color-white").color} />}
             onPress={() => {
               smartNavigation.navigateSmart("Settings.PasswordInput", {

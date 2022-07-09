@@ -89,7 +89,7 @@ export const EnterPincodeScreen: FunctionComponent = observer(() => {
             onShowPasswordChanged={setShowPassword}
             onChangeText={setPassword}
             onBlur={validateInputData}
-            style={{ marginTop: 32, marginBottom: 24, }}
+            style={{ marginTop: 32, marginBottom: 24, paddingBottom: 24, }}
           />
 
           <Button

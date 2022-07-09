@@ -261,6 +261,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
               showPassword={showPassword}
               onShowPasswordChanged={setShowPassword}
               onChangeText={setPassword}
+              style={{ marginBottom: 24, paddingBottom: 24, }}
             />
 
             <Button

@@ -99,7 +99,7 @@ export const DeleteWalletScreen: FunctionComponent = observer(() => {
               onShowPasswordChanged={setShowPassword}
               onChangeText={setPassword}
               onBlur={validateInputData}
-              style={{ marginBottom: 24, }}
+              style={{ marginBottom: 24, paddingBottom: 24, }}
             />
           </View>
           <Button

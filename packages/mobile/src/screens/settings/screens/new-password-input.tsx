@@ -122,7 +122,7 @@ export const NewPasswordInputScreen: FunctionComponent = observer(() => {
                 id: "common.text.minimumCharacters"
               }).replace("{number}", `${MIN_LENGTH_PASSWORD}`)
             }]}
-            style={{ marginTop: 32, marginBottom: 24, }}
+            style={{ marginTop: 32, marginBottom: 24, paddingBottom: 24, }}
           />
 
           <NormalInput
@@ -140,7 +140,7 @@ export const NewPasswordInputScreen: FunctionComponent = observer(() => {
               },
               error: intl.formatMessage({ id: "common.text.passwordNotMatching" })
             }]}
-            style={{ marginBottom: 24, }}
+            style={{ marginBottom: 24, paddingBottom: 24, }}
           />
 
           <Button

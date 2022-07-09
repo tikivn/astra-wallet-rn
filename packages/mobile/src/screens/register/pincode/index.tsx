@@ -114,6 +114,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
             value={name}
             label={intl.formatMessage({ id: "common.text.accountHolder" })}
             onChangeText={setName}
+            style={{ marginBottom: 24, }}
           />
 
           <NormalInput
@@ -127,7 +128,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
             onShowPasswordChanged={setShowPassword}
             onChangeText={setPassword}
             onBlur={validateInputData}
-            style={{ marginBottom: 24, }}
+            style={{ marginBottom: 24, paddingBottom: 24, }}
           />
 
           <NormalInput
@@ -145,9 +146,9 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
               },
               error: intl.formatMessage({ id: "common.text.passwordNotMatching" })
             }]}
+            style={{ marginBottom: 24, paddingBottom: 24, }}
           />
 
-          <View style={style.get("flex-1")} />
           <Button
             containerStyle={style.flatten(["border-radius-4", "height-44"])}
             textStyle={style.flatten(["subtitle2"])}
