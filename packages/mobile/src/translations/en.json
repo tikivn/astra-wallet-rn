@@ -4,16 +4,29 @@
     "tabs.history": "History",
     "tabs.setting": "Settings",
 
+    "register.text.backupMnemonic": "Sao lưu bằng cụm từ bí mật",
+    "register.text.backupMnemonicDescription": "Vui lòng ghi hoặc sao chép chuỗi 12 từ bên dưới và lưu trữ lại ở một nơi an toàn.",
+    "register.button.createAccount": "Tạo tài khoản",
+
     "main.receive": "Receive",
     "main.send": "Semd",
     "main.swap": "Swap",
     
+    "settings.changePassword": "Change Password",
     "settings.viewPassphase": "View Passphase",
     "settings.community": "Support Community",
     "settings.language": "Language",
     "settings.connectedApps": "Connected App",
     "settings.lockScreen": "Logout",
     "settings.deleteAccount": "Delete Account on device",
+    "settings.text.myWallet": "Ví của tôi",
+
+    "deleteAccount.title": "Xóa ví",
+    "deleteAccount.button.delete": "Xóa ví",
+
+    "changePassword.title": "Đổi mật khẩu",
+
+    "viewPassphase.title": "Xem cụm từ bí mật",
 
     "connectedApps.title": "Connected Apps",
 
@@ -22,6 +35,25 @@
     "wallet.sendConfirm.title": "Send Confirm Astra",
     "wallet.swap.title": "Swap Astra",
     
+    "common.alert.content.notShareMnemonic": "Không chia sẻ cụm từ bí mật cho người khác. Nếu ai đó biết chuỗi mật mã, họ sẽ kiểm soát được ví của bạn.",
+
+    "common.text.save": "Lưu",
+    "common.text.cancel": "Hủy bỏ",
+    "common.text.updateWalletName": "Đổi tên ví",
+    "common.text.backupNow": "Sao lưu ngay",
+    "common.text.continue": "Tiếp tục",
+    "common.text.accountHolder": "Tên tài khoản",
+    "common.text.password": "Mật khẩu",
+    "common.text.changePassword": "Đổi mật khẩu",
+    "common.text.newPassword": "Mật khẩu mới",
+    "common.text.securePassword": "Mật khẩu bảo mật",
+    "common.text.currentPassword": "Mật khẩu hiện tại",
+    "common.text.wrongPassword": "Mật khẩu sai",
+    "common.text.minimumCharacters": "Ít nhất {number} ký tự",
+    "common.text.changePasswordSuccess": "Thay đổi mật khẩu thành công",
+    "common.text.passwordNotMatching": "Mật khẩu không giống nhau",
+    "common.text.inputVerifyPassword": "Nhập lại mật khẩu",
+    "common.text.inputVerifyNewPassword": "Nhập lại mật khẩu mới",
 
     "default": ""
 }

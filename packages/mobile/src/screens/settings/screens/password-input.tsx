@@ -1,55 +1,44 @@
+import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { View } from "react-native";
 import { useStyle } from "../../../styles";
-import { Button } from "../../../components/button";
-
-import { useSmartNavigation } from "../../../navigation";
-
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../../stores";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { NormalInput } from "../../../components/input/normal-input";
+import { Button } from "../../../components";
+import { useSmartNavigation } from "../../../navigation";
+import { RouteProp, useRoute } from "@react-navigation/native";
+import { useStore } from "../../../stores";
 import { useIntl } from "react-intl";
 
-export const EnterPincodeScreen: FunctionComponent = observer(() => {
+export const PasswordInputScreen: FunctionComponent = observer(() => {
   const MIN_LENGTH_PASSWORD = 8;
+
+  const route = useRoute<RouteProp<Record<string, {
+    nextScreen: string;
+    forwardPassword: boolean;
+  }>, string>>();
 
   const style = useStyle();
   const intl = useIntl();
-
   const { keyRingStore } = useStore();
   const smartNavigation = useSmartNavigation();
 
   const [password, setPassword] = useState("");
-  const [passwordErrorText, setPasswordErrorText] = useState("");
+  const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [inputDataValid, setInputDataValid] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
-  const submitPassword = async () => {
-    setIsLoading(true);
-    try {
-      await onEnterPassword();
-      setPasswordErrorText("");
-    } catch (e) {
-      console.log(e);
-      setPasswordErrorText(intl.formatMessage({ id: "common.text.wrongPassword" }));
-    } finally {
-      setIsLoading(false);
+  const onCreate = async () => {
+    const isCorrected = await keyRingStore.checkPassword(password);
+    if (isCorrected) {
+      smartNavigation.navigate(
+        route.params.nextScreen,
+        route.params.forwardPassword ? { currentPassword: password } : {}
+      );
     }
-  };
-
-  const onEnterPassword = async () => {
-    const index = keyRingStore.multiKeyStoreInfo.findIndex(
-      (keyStore) => keyStore.selected
-    );
-
-    if (index >= 0) {
-      const privateData = await keyRingStore.showKeyRing(index, password);
-      smartNavigation.replaceSmart("Setting.ViewPrivateData", {
-        privateData,
-        privateDataType: keyRingStore.keyRingType,
-      });
+    else {
+      setError(intl.formatMessage({ id: "common.text.wrongPassword" }));
+      setInputDataValid(false);
     }
   };
 
@@ -82,8 +71,8 @@ export const EnterPincodeScreen: FunctionComponent = observer(() => {
         >
           <NormalInput
             value={password}
-            label={intl.formatMessage({ id: "common.text.securePassword" })}
-            error={passwordErrorText}
+            label={intl.formatMessage({ id: "common.text.currentPassword" })}
+            error={error}
             secureTextEntry={true}
             showPassword={showPassword}
             onShowPasswordChanged={setShowPassword}
@@ -95,10 +84,9 @@ export const EnterPincodeScreen: FunctionComponent = observer(() => {
           <Button
             containerStyle={style.flatten(["border-radius-4", "height-44"])}
             textStyle={style.flatten(["subtitle2"])}
-            text="Xem"
+            text={intl.formatMessage({ id: "common.text.continue" })}
             size="large"
-            loading={isLoading}
-            onPress={submitPassword}
+            onPress={onCreate}
             disabled={!inputDataValid}
           />
           <View style={style.get("flex-5")} />
@@ -107,4 +95,3 @@ export const EnterPincodeScreen: FunctionComponent = observer(() => {
     </React.Fragment>
   );
 });
-

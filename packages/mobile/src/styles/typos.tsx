@@ -71,6 +71,11 @@ const XXLargeTypos = {
     lineHeight: 32,
     ...getPlatformFontWeight("500"),
   },
+  "text-2x-large-semi-bold": {
+    fontSize: 24,
+    lineHeight: 32,
+    ...getPlatformFontWeight("600"),
+  },
 };
 
 export const Typos = {

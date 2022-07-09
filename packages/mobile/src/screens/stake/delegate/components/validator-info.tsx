@@ -37,6 +37,7 @@ export const ValidatorInfo: FunctionComponent<{
   const rows: IRow[] = [
     {
       type: "items",
+      itemSpacing: 12,
       cols: [
         thumbnailIcon(thumbnailUrl),
         buildLeftColumn({

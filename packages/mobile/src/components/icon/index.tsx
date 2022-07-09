@@ -31,3 +31,5 @@ export * from "./setting";
 export * from "./verified";
 export * from "./toast-icon";
 export * from "./expand";
+export * from "./eye-close";
+export * from "./eye-open";

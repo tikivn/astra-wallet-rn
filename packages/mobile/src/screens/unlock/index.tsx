@@ -19,12 +19,8 @@ import { KeyRingStatus } from "@keplr-wallet/background";
 import { KeychainStore } from "../../stores/keychain";
 import { IAccountStore } from "@keplr-wallet/stores";
 import { autorun } from "mobx";
-import {
-  CodeField,
-  useBlurOnFulfill,
-  useClearByFocusCell,
-} from 'react-native-confirmation-code-field';
-import { useRegisterConfig } from "@keplr-wallet/hooks";
+import { NormalInput } from "../../components/input/normal-input";
+import { useIntl } from "react-intl";
 
 let splashScreenHided = false;
 async function hideSplashScreen() {
@@ -107,6 +103,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   const { keyRingStore, keychainStore, accountStore, chainStore } = useStore();
 
   const style = useStyle();
+  const intl = useIntl();
 
   const navigation = useNavigation();
 
@@ -115,8 +112,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   const [animatedContinuityEffectOpacity] = useState(
     () => new Animated.Value(1)
   );
-  const registerConfig = useRegisterConfig(keyRingStore, []);
-  
+
   const navigateToHomeOnce = useRef(false);
   const navigateToHome = useCallback(async () => {
     if (!navigateToHomeOnce.current) {
@@ -163,6 +159,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   ]);
 
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isBiometricLoading, setIsBiometricLoading] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
@@ -229,14 +226,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       })();
     }
   }, [keyRingStore.status, navigateToHome]);
-  const cellCount = 6;
-  
-  const [value, setValue] = useState('');
-  const ref = useBlurOnFulfill({ value, cellCount: cellCount });
-  const [props, getCellOnLayoutHandler] = useClearByFocusCell({
-    value,
-    setValue,
-  });
+  const cellCount = 8;
 
   return (
     <React.Fragment>
@@ -258,61 +248,32 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         <KeyboardAwareScrollView
           contentContainerStyle={style.flatten(["flex-grow-1"])}
         >
-          
+
           <View style={style.get("flex-3")} />
 
           <View style={style.flatten(["padding-x-page"])}>
-          <Text style={style.flatten(["color-white", "h4", "text-center", "margin-bottom-64"])}>Nhập mật khẩu</Text>
-          
-          <CodeField
-            ref={ref}
-            {...props}
-            // Use `caretHidden={false}` when users can't paste a text value, because context menu doesn't appear
-            value={password}
-            onChangeText={(text) => {
-              setPassword(text);
-              setIsFailed(false);
-            }}
-            cellCount={cellCount}
-            rootStyle={style.flatten(["flex-1", "padding-y-10"])}
-            keyboardType="number-pad"
-            textContentType="oneTimeCode"
-            renderCell={({ index, symbol, isFocused }) => (
-              <View style={style.flatten(["items-center", "overflow-hidden", "background-color-gray-80", "width-42", "height-42", "border-width-1", "border-color-gray-80", "border-radius-6"], [isFocused && "border-color-white", isFailed && "border-color-danger"])}
-                key={`code-field.cell_${index}`}
-              >
-                <Text
-                key={index}
-                style={style.flatten(["text-center", "h2", "color-white"])}
-                onLayout={getCellOnLayoutHandler(index)}>
-                {symbol ? '•' : null}
-              </Text>
-              </View>
-            )}
-          />
-          <Text style={style.flatten(["color-danger", "text-caption2"])}>{isFailed ? "Mật khẩu không đúng, vui lòng nhập lại" : null}</Text>
-          <Button
-            textStyle={style.flatten(["subtitle2", "color-background"])}
-            containerStyle={style.flatten(["margin-bottom-16", "border-radius-52", "margin-top-16"])}
-            text="Đăng nhập"
-            size="large"
-            mode="light"
-            loading={isLoading}
-            onPress={tryUnlock}
-            disabled={password.length < cellCount}
-          />
-          {/* <Button
-            textStyle={style.flatten(["subtitle2", "color-white"])}
-            containerStyle={style.flatten(["margin-bottom-16"])}
-            text="Quên mật khẩu"
-            size="large"
-            mode="text"
-            onPress={() => {
-              // navigation.navigate("Register.RecoverMnemonic", {
-              //   registerConfig,
-              // });
-            }}
-          /> */}
+            <Text style={style.flatten(["color-white", "h4", "text-center", "margin-bottom-64"])}>Nhập mật khẩu</Text>
+
+            <NormalInput
+              value={password}
+              error={isFailed ? intl.formatMessage({ id: "common.text.wrongPassword" }) : ""}
+              secureTextEntry={true}
+              showPassword={showPassword}
+              onShowPasswordChanged={setShowPassword}
+              onChangeText={setPassword}
+              style={{ marginBottom: 24, paddingBottom: 24, }}
+            />
+
+            <Button
+              textStyle={style.flatten(["subtitle2", "color-background"])}
+              containerStyle={style.flatten(["margin-bottom-16", "border-radius-52", "margin-top-16"])}
+              text="Đăng nhập"
+              size="large"
+              mode="light"
+              loading={isLoading}
+              onPress={tryUnlock}
+              disabled={password.length < cellCount}
+            />
 
             {keychainStore.isBiometryOn ? (
               <Button

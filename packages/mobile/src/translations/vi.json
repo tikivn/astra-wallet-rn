@@ -13,6 +13,9 @@
     "register.recoverMnemonic.title": "Khôi phục tài khoản đã có",
     "register.setPincode.title": "Tạo tài khoản mới",
     "register.verifyPincode.title": "Tạo tài khoản mới",
+    "register.text.backupMnemonic": "Sao lưu bằng cụm từ bí mật",
+    "register.text.backupMnemonicDescription": "Vui lòng ghi hoặc sao chép chuỗi 12 từ bên dưới và lưu trữ lại ở một nơi an toàn.",
+    "register.button.createAccount": "Tạo tài khoản",
 
     "main.receive": "Nhận",
     "main.send": "Gửi",
@@ -38,6 +41,7 @@
     "history.action.MsgWithdrawDelegatorReward.sender": "Rút thưởng về ví",
     "history.action.MsgWithdrawDelegatorReward.receiver": "Nhà đầu tư rút thưởng",
 
+    "settings.changePassword": "Đổi mật khẩu truy cập",
     "settings.viewPassphase": "Xem cụm từ bí mật",
     "settings.faq": "FAQ",
     "settings.community": "Cộng đồng hỗ trợ",
@@ -48,6 +52,14 @@
     "settings.connectedApps": "Ứng dụng liên kết",
     "settings.lockScreen": "Màn hình khoá",
     "settings.deleteAccount": "Xoá ví",
+    "settings.text.myWallet": "Ví của tôi",
+
+    "deleteAccount.title": "Xóa ví",
+    "deleteAccount.button.delete": "Xóa ví",
+
+    "changePassword.title": "Đổi mật khẩu",
+
+    "viewPassphase.title": "Xem cụm từ bí mật",
 
     "connectedApps.title": "Ứng dụng liên kết",
 
@@ -64,6 +76,26 @@
     "unbonding.title": "Tổng tiền đang rút",
     "wallet.history.title": "Lịch sử giao dịch",
     "camera.title": "Liên kết ứng dụng",
+
+    "common.alert.content.notShareMnemonic": "Không chia sẻ cụm từ bí mật cho người khác. Nếu ai đó biết chuỗi mật mã, họ sẽ kiểm soát được ví của bạn.",
+
+    "common.text.save": "Lưu",
+    "common.text.cancel": "Hủy bỏ",
+    "common.text.updateWalletName": "Đổi tên ví",
+    "common.text.backupNow": "Sao lưu ngay",
+    "common.text.continue": "Tiếp tục",
+    "common.text.accountHolder": "Tên tài khoản",
+    "common.text.password": "Mật khẩu",
+    "common.text.changePassword": "Đổi mật khẩu",
+    "common.text.newPassword": "Mật khẩu mới",
+    "common.text.securePassword": "Mật khẩu bảo mật",
+    "common.text.currentPassword": "Mật khẩu hiện tại",
+    "common.text.wrongPassword": "Mật khẩu sai",
+    "common.text.minimumCharacters": "Ít nhất {number} ký tự",
+    "common.text.changePasswordSuccess": "Thay đổi mật khẩu thành công",
+    "common.text.passwordNotMatching": "Mật khẩu không giống nhau",
+    "common.text.inputVerifyPassword": "Nhập lại mật khẩu",
+    "common.text.inputVerifyNewPassword": "Nhập lại mật khẩu mới",
 
     "default": ""
 }
