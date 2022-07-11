@@ -19,15 +19,17 @@ export const TransactionDetailsView: FunctionComponent<{
   const chainInfo = chainStore.getChain(chainId);
 
   useEffect(() => {
-    setHasData(true);
+    if (transactionStore.txMsgsMode && transactionStore.txMsgs) {
+      setHasData(true);
+    }
     console.log(
       "__MODE__",
       transactionStore.txMsgsMode,
       transactionStore.txMsgs
     );
-  }, [transactionStore.txMsgs]);
+  }, [transactionStore.txMsgs, transactionStore.txMsgsMode]);
 
-  var rows: IRow[] = [];
+  let rows: IRow[] = [];
 
   if (hasData) {
     if (mode === "amino") {

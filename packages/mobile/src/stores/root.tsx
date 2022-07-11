@@ -357,7 +357,12 @@ export class RootStore {
       this.accountStore,
       this.queriesStore
     );
-    this.transactionStore = new TransactionStore(this.signInteractionStore);
+    this.transactionStore = new TransactionStore(
+      this.signInteractionStore,
+      this.chainStore,
+      this.accountStore,
+      this.queriesStore
+    );
   }
 }
 

@@ -6,11 +6,22 @@ import {
   IMemoConfig,
   SignDocHelper,
 } from "@keplr-wallet/hooks";
-import { SignInteractionStore, Staking } from "@keplr-wallet/stores";
+import {
+  AccountStore,
+  CosmosAccount,
+  CosmosQueries,
+  CosmwasmAccount,
+  CosmwasmQueries,
+  QueriesStore,
+  SecretAccount,
+  SecretQueries,
+  SignInteractionStore,
+  Staking,
+} from "@keplr-wallet/stores";
+import { ChainStore } from "../chain";
 import { ChainInfo } from "@keplr-wallet/types";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { computed, makeObservable, observable } from "mobx";
-import { useStore } from "..";
 
 export type TxType =
   | "send"
@@ -29,7 +40,16 @@ export type TxData = {
 };
 
 export class TransactionStore {
-  constructor(protected readonly signInteractionStore: SignInteractionStore) {
+  constructor(
+    protected readonly signInteractionStore: SignInteractionStore,
+    protected readonly chainStore: ChainStore,
+    protected readonly accountStore: AccountStore<
+      [CosmosAccount, CosmwasmAccount, SecretAccount]
+    >,
+    protected readonly queriesStore: QueriesStore<
+      [CosmosQueries, CosmwasmQueries, SecretQueries]
+    >
+  ) {
     makeObservable(this);
   }
 
@@ -193,11 +213,13 @@ export class TransactionStore {
     chainId?: string;
     validatorAddress: string;
   }): Staking.Delegation[] | undefined {
-    const { chainStore, accountStore, queriesStore } = useStore();
-    const { chainId = chainStore.current.chainId, validatorAddress } = params;
+    const {
+      chainId = this.chainStore.current.chainId,
+      validatorAddress,
+    } = params;
 
-    const account = accountStore.getAccount(chainId);
-    const queries = queriesStore.get(chainId);
+    const account = this.accountStore.getAccount(chainId);
+    const queries = this.queriesStore.get(chainId);
 
     const queryDelegations = queries.cosmos.queryDelegations.getQueryBech32Address(
       account.bech32Address
@@ -213,10 +235,12 @@ export class TransactionStore {
     chainId?: string;
     validatorAddress: string;
   }): Staking.Validator | undefined {
-    const { queriesStore, chainStore } = useStore();
-    const { chainId = chainStore.current.chainId, validatorAddress } = params;
+    const {
+      chainId = this.chainStore.current.chainId,
+      validatorAddress,
+    } = params;
 
-    const queries = queriesStore.get(chainId);
+    const queries = this.queriesStore.get(chainId);
     const validator =
       queries.cosmos.queryValidators
         .getQueryStatus(Staking.BondStatus.Bonded)
