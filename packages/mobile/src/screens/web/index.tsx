@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Text,
   View,
+  ViewStyle,
 } from "react-native";
 import { useStyle } from "../../styles";
 import { useSmartNavigation } from "../../navigation";
@@ -60,7 +61,37 @@ export const WebScreen: FunctionComponent = () => {
         onPress={() => {
           smartNavigation.pushSmart("Web.Astranaut", {});
         }}
-      />    
+      />
+      <WebpageImageButton
+        name="Junoswap"
+        source={require("../../assets/image/webpage/junoswap.png")}
+        nameContainerStyle={style.flatten(["flex-row"])}
+        onPress={() => {
+          smartNavigation.pushSmart("Web.Junoswap", {});
+        }}
+      />
+      <WebpageImageButton
+        name="Osmosis"
+        source={require("../../assets/image/webpage/osmosis-frontier.png")}
+        nameContainerStyle={style.flatten(["flex-row"])}
+        nameAppend={
+          <View style={style.flatten(["justify-end"])}>
+            <Image
+              source={require("../../assets/image/webpage/osmosis-frontier-text.png")}
+              style={{
+                width: 70,
+                height: 14,
+                marginLeft: 4,
+                marginBottom: 7,
+              }}
+              fadeDuration={0}
+            />
+          </View>
+        }
+        onPress={() => {
+          smartNavigation.pushSmart("Web.OsmosisFrontier", {});
+        }}
+      />
       <WebpageImageButton
         overrideInner={
           <View style={style.flatten(["flex-1", "items-center"])}>
@@ -81,8 +112,17 @@ export const WebpageImageButton: FunctionComponent<{
   source?: ImageSourcePropType;
   onPress?: () => void;
 
+  nameContainerStyle?: ViewStyle;
+  nameAppend?: React.ReactElement;
   overrideInner?: React.ReactElement;
-}> = ({ name, source, onPress, overrideInner }) => {
+}> = ({
+  name,
+  source,
+  onPress,
+  nameContainerStyle,
+  nameAppend,
+  overrideInner,
+}) => {
   const style = useStyle();
 
   const height = 104;
@@ -172,7 +212,10 @@ export const WebpageImageButton: FunctionComponent<{
             overrideInner
           ) : (
             <React.Fragment>
-              <Text style={style.flatten(["h2", "color-white"])}>{name}</Text>
+              <View style={nameContainerStyle}>
+                <Text style={style.flatten(["h2", "color-white"])}>{name}</Text>
+                {nameAppend}
+              </View>
               <View style={style.get("flex-1")} />
               <GoIcon
                 width={34.7}

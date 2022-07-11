@@ -39,7 +39,7 @@ export abstract class SignClientManager {
     const _client = await SignClient.init({
       logger: "debug",
       projectId: "dd47fbeda006ccb670152d74136f846a",
-      relayUrl: "wss://relay.astranaut.dev",
+      relayUrl: "wss://relay.astranaut.network",
       metadata: {
         name: "Astra Hub",
         description: "Everything for Astra",

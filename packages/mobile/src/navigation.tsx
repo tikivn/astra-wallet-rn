@@ -110,8 +110,11 @@ import {
 } from "./screens/register/import-from-extension";
 import {
   OsmosisWebpageScreen,
+  OsmosisFrontierWebpageScreen,
   StargazeWebpageScreen,
   AstranautWebpageScreen,
+  UmeeWebpageScreen,
+  JunoswapWebpageScreen,
 } from "./screens/web/webpages";
 import { WebpageScreenScreenOptionsPreset } from "./screens/web/components/webpage-screen";
 import Bugsnag from "@bugsnag/react-native";
@@ -246,7 +249,7 @@ const {
     "Governance Details": {
       upperScreenName: "Others",
     },
-    "Setting": {
+    Setting: {
       upperScreenName: "Settings",
     },
     SettingSelectAccount: {
@@ -280,6 +283,9 @@ const {
       upperScreenName: "Web",
     },
     "Web.Osmosis": {
+      upperScreenName: "Web",
+    },
+    "Web.OsmosisFrontier": {
       upperScreenName: "Web",
     },
     "Web.Stargaze": {
@@ -332,6 +338,12 @@ const {
     },
     SessionProposal: {
       upperScreenName: "Wallet",
+    },
+    "Web.Umee": {
+      upperScreenName: "Web",
+    },
+    "Web.Junoswap": {
+      upperScreenName: "Web",
     },
   }).withParams<{
     "Register.NewMnemonic": {
@@ -419,12 +431,12 @@ const {
     "Settings.NewPasswordInput": {
       currentPassword: string;
     };
-    "Setting": {
+    Setting: {
       floatAlert?: {
         type: "info" | "success" | "warning" | "error";
         content: string;
-      }
-    },
+      };
+    };
     AddressBook: {
       recipientConfig?: IRecipientConfig;
       memoConfig?: IMemoConfig;
@@ -1150,8 +1162,14 @@ export const WebNavigation: FunctionComponent = () => {
         component={WebScreen}
       />
       <Stack.Screen name="Web.Osmosis" component={OsmosisWebpageScreen} />
+      <Stack.Screen
+        name="Web.OsmosisFrontier"
+        component={OsmosisFrontierWebpageScreen}
+      />
       <Stack.Screen name="Web.Stargaze" component={StargazeWebpageScreen} />
       <Stack.Screen name="Web.Astranaut" component={AstranautWebpageScreen} />
+      <Stack.Screen name="Web.Umee" component={UmeeWebpageScreen} />
+      <Stack.Screen name="Web.Junoswap" component={JunoswapWebpageScreen} />
     </Stack.Navigator>
   );
 };

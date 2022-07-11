@@ -66,7 +66,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       average: 1000000000000,
       high: 2000000000000,
     },
-    features: ["ibc-transfer", "ibc-go"],
+    features: ["ibc-transfer", "ibc-go", "eth-key-sign", "eth-address-gen"],
     chainSymbolImageUrl:
       "https://salt.tikicdn.com/ts/upload/2a/74/6d/1000f0249fd530a9313a07fc3e13c1b2.png",
     txExplorer: {
