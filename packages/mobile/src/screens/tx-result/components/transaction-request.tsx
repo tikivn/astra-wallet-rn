@@ -9,8 +9,8 @@ import { useStyle } from "../../../styles";
 import { Button } from "../../../components";
 
 export const TransactionRequestView: FunctionComponent<{
-  onApprove: () => void;
-  onReject: () => void;
+  onApprove: (name?: string) => void;
+  onReject: (name?: string) => void;
 }> = ({ onApprove, onReject }) => {
   const { signClientStore } = useStore();
   const request = signClientStore.pendingRequest;
@@ -139,12 +139,16 @@ export const TransactionRequestView: FunctionComponent<{
             ])}
             text="Từ chối"
             mode="fill"
-            onPress={onReject}
+            onPress={async () => {
+              onReject(metadata?.name);
+            }}
           />
           <Button
             size="small"
             text="Xác nhận"
-            onPress={onApprove}
+            onPress={async () => {
+              onApprove(metadata?.name);
+            }}
             containerStyle={style.flatten(["flex-1"])}
           />
         </View>

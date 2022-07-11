@@ -16,7 +16,7 @@ import { KeyRingStatus } from "@keplr-wallet/background";
 import { SessionTypes, SignClientTypes } from "@walletconnect/types";
 import { Keplr } from "@keplr-wallet/provider";
 import { RNMessageRequesterInternal } from "../../router";
-import { makeSignDoc } from "@cosmjs/launchpad";
+import { AminoSignResponse, makeSignDoc } from "@cosmjs/launchpad";
 
 export type SessionConnectInfor = {
   name: string;
@@ -234,14 +234,7 @@ export class SignClientStore extends SignClientManager {
           key.bech32Address,
           signDoc
         );
-        await this.client?.respond({
-          topic: request.topic,
-          response: {
-            id: request.id,
-            jsonrpc: "2.0",
-            result,
-          },
-        });
+        await this.approveRequest(request, result);
         console.log("__DEBUG__ result: ", result);
       } else {
         console.log("Missing data");
@@ -352,8 +345,19 @@ export class SignClientStore extends SignClientManager {
     }
   }
 
-  async approveRequest() {
+  async approveRequest(
+    request: SignClientTypes.EventArguments["session_request"],
+    result: AminoSignResponse
+  ) {
     if (this.client) {
+      await this.client?.respond({
+        topic: request.topic,
+        response: {
+          id: request.id,
+          jsonrpc: "2.0",
+          result,
+        },
+      });
       runInAction(() => {
         this._pendingRequest = undefined;
       });

@@ -24,6 +24,7 @@ import { TransactionActionView } from "./components/transaction-action-view";
 import { PageWithScrollView } from "../../components";
 import { TransactionRequestView } from "./components/transaction-request";
 import { useSmartNavigation } from "../../navigation";
+import { useToastModal } from "../../providers/toast-modal";
 
 export const TxResultScreen: FunctionComponent = observer(() => {
   const {
@@ -34,6 +35,8 @@ export const TxResultScreen: FunctionComponent = observer(() => {
     transactionStore,
     signClientStore,
   } = useStore();
+
+  const toastModal = useToastModal();
 
   useUnmount(() => {
     signInteractionStore.rejectAll();
@@ -73,16 +76,32 @@ export const TxResultScreen: FunctionComponent = observer(() => {
     }
   }, [signClientStore]);
 
-  const onRejectRequest = useCallback(async () => {
-    await signClientStore.rejectRequest();
-    // signInteractionStore.rejectAll();
-    smartNavigation.navigateSmart("NewHome", {});
-  }, [signClientStore, smartNavigation]);
+  const onRejectRequest = useCallback(
+    async (name) => {
+      await signClientStore.rejectRequest();
+      // signInteractionStore.rejectAll();
+      toastModal.makeToast({
+        title: `Đã từ chối giao dịch từ ${name}`,
+        type: "infor",
+        displayTime: 2000,
+      });
+      smartNavigation.navigateSmart("NewHome", {});
+    },
+    [signClientStore, smartNavigation, toastModal]
+  );
 
-  const onApproveRequest = useCallback(async () => {
-    await transactionStore.startTransaction();
-    setWaitApprove(false);
-  }, [transactionStore]);
+  const onApproveRequest = useCallback(
+    async (name) => {
+      await transactionStore.startTransaction();
+      toastModal.makeToast({
+        title: `Đã xác nhận giao dịch từ ${name}`,
+        type: "infor",
+        displayTime: 2000,
+      });
+      smartNavigation.navigateSmart("NewHome", {});
+    },
+    [transactionStore, toastModal, smartNavigation]
+  );
 
   useEffect(() => {
     let txTracer: TendermintTxTracer | undefined;
