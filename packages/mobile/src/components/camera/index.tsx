@@ -1,13 +1,10 @@
 import React, { FunctionComponent } from "react";
 import { RNCamera } from "react-native-camera";
-import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { useIsFocused } from "@react-navigation/native";
 import { useStyle } from "../../styles";
 import { StyleSheet, Text, View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { CloseIcon } from "../icon";
-import Svg, { Path } from "react-native-svg";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { LoadingSpinner } from "../spinner";
+import { BarcodeMask } from "@nartc/react-native-barcode-mask";
 
 export const FullScreenCameraView: FunctionComponent<
   React.ComponentProps<typeof RNCamera> & {
@@ -16,8 +13,6 @@ export const FullScreenCameraView: FunctionComponent<
   }
 > = (props) => {
   const style = useStyle();
-
-  const navigation = useNavigation();
 
   const isFocused = useIsFocused();
 
@@ -38,49 +33,28 @@ export const FullScreenCameraView: FunctionComponent<
             propStyle,
           ])}
           {...rest}
-        />
+        >
+          <BarcodeMask
+            edgeBorderWidth={4}
+            width={304}
+            height={304}
+            edgeColor={"#FFFFFF"}
+            edgeRadius={16}
+            showAnimatedLine={false}
+            backgroundColor={"#141828"}
+            maskOpacity={0.7}
+            edgeHeight={32}
+            edgeWidth={32}
+          />
+        </RNCamera>
       ) : null}
-      <SafeAreaView style={style.flatten(["absolute-fill", "items-center"])}>
+
+      <View style={style.flatten(["absolute-fill", "items-center"])}>
         <View style={style.flatten(["flex-row"])}>
           <View style={style.get("flex-1")} />
-          {navigation.canGoBack() ? (
-            <TouchableOpacity
-              onPress={() => {
-                navigation.goBack();
-              }}
-            >
-              <View
-                style={style.flatten([
-                  "width-38",
-                  "height-38",
-                  "border-radius-64",
-                  "background-color-primary-50",
-                  "opacity-90",
-                  "margin-top-8",
-                  "margin-right-16",
-                  "items-center",
-                  "justify-center",
-                ])}
-              >
-                <CloseIcon
-                  size={28}
-                  color={style.get("color-primary-300").color}
-                />
-              </View>
-            </TouchableOpacity>
-          ) : null}
         </View>
-        <View style={style.get("flex-1")} />
+        <View style={style.get("flex-5")} />
         <View>
-          <Svg width="217" height="217" fill="none" viewBox="0 0 217 217">
-            <Path
-              stroke={style.get("color-primary").color}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="6"
-              d="M34 3H3v31M3 183v31h31M183 3h31v31M214 183v31h-31"
-            />
-          </Svg>
           {isLoading ? (
             <View
               style={style.flatten([
@@ -118,7 +92,7 @@ export const FullScreenCameraView: FunctionComponent<
         </View>
         {containerBottom}
         <View style={style.get("flex-1")} />
-      </SafeAreaView>
+      </View>
       {children}
     </React.Fragment>
   );

@@ -5839,6 +5839,11 @@
     call-me-maybe "^1.0.1"
     glob-to-regexp "^0.3.0"
 
+"@nartc/react-native-barcode-mask@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@nartc/react-native-barcode-mask/-/react-native-barcode-mask-1.2.0.tgz#e01ab43f1fa848d73121c27d3675c2d6557d670f"
+  integrity sha512-QXawZlaQz+QQ6Jrg4AEgrCXxsYltLZ89sxJXyt36pDRnT122aoK0/84m2dORd29V+/22BjwceXDZePayqXDaRA==
+
 "@nodelib/fs.scandir@2.1.4":
   version "2.1.4"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.4.tgz#d4b3549a5db5de2683e0c1071ab4f140904bbf69"
@@ -6335,15 +6340,15 @@
     sudo-prompt "^9.0.0"
     wcwidth "^1.0.1"
 
-"@react-native-community/masked-view@^0.1.10":
-  version "0.1.10"
-  resolved "https://registry.yarnpkg.com/@react-native-community/masked-view/-/masked-view-0.1.10.tgz#5dda643e19e587793bc2034dd9bf7398ad43d401"
-  integrity sha512-rk4sWFsmtOw8oyx8SD3KSvawwaK7gRBSEIy2TAwURyGt+3TizssXP1r8nx3zY+R7v2vYYHXZ+k2/GULAT/bcaQ==
-
 "@react-native-community/netinfo@^7.1.9":
   version "7.1.9"
   resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-7.1.9.tgz#d3042106ce720d5cda332d4afb1292c9b6156bb5"
   integrity sha512-xxbxFherpOjQeJm3rIx6gmZNEEBqVDIcmBII5QVSN8zf3xAwmaT/RxT74ISYDkeSlZwv4eegpkD4QA1ky52CNg==
+
+"@react-native-masked-view/masked-view@0.2.6":
+  version "0.2.6"
+  resolved "https://registry.yarnpkg.com/@react-native-masked-view/masked-view/-/masked-view-0.2.6.tgz#b26c52d5db3ad0926b13deea79c69620966a9221"
+  integrity sha512-303CxmetUmgiX9NSUxatZkNh9qTYYdiM8xkGf9I3Uj20U3eGY3M78ljeNQ4UVCJA+FNGS5nC1dtS9GjIqvB4dg==
 
 "@react-native/assets@1.0.0":
   version "1.0.0"
