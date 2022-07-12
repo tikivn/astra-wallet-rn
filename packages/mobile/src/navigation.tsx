@@ -63,6 +63,7 @@ import {
   ValidatorListScreen,
 } from "./screens/stake";
 import {
+  ConnectIcon,
   HistoryTabbarIcon,
   HomeTabbarIcon,
   OpenDrawerIcon,
@@ -1184,8 +1185,8 @@ export const MainTabNavigation: FunctionComponent = () => {
           switch (route.name) {
             case "NewMain":
               return <HomeTabbarIcon size={size} color={color} />;
-            case "Main":
-              return <HomeTabbarIcon size={size} color={color} />;
+            case "D-apps":
+              return <ConnectIcon size={size} color={color} />;
             case "History":
               return <HistoryTabbarIcon size={size} color={color} />;
             case "Setting":
@@ -1246,6 +1247,13 @@ export const MainTabNavigation: FunctionComponent = () => {
         component={StakingNavigation}
         options={{
           tabBarLabel: intl.formatMessage({ id: "tabs.stake" }),
+        }}
+      />
+      <Tab.Screen
+        name="D-apps"
+        component={WebNavigation}
+        options={{
+          tabBarLabel: intl.formatMessage({ id: "tabs.d-apps" }),
         }}
       />
       <Tab.Screen

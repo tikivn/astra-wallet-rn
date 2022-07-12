@@ -3,6 +3,7 @@
     "tabs.stake": "Staking",
     "tabs.history": "History",
     "tabs.setting": "Settings",
+    "tabs.d-apps": "D-apps",
 
     "register.text.backupMnemonic": "Sao lưu bằng cụm từ bí mật",
     "register.text.backupMnemonicDescription": "Vui lòng ghi hoặc sao chép chuỗi 12 từ bên dưới và lưu trữ lại ở một nơi an toàn.",

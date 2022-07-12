@@ -17,7 +17,7 @@ import {
   TextInput,
 } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import QRCode from "react-native-qrcode-svg";
+import { ScanIcon } from "../../../components";
 import { useSmartNavigation } from "../../../navigation";
 import { useStyle } from "../../../styles";
 
@@ -66,6 +66,7 @@ export const AddressInput: FunctionComponent<{
           "overflow-hidden",
           "border-radius-12",
           "justify-between",
+          "items-center",
         ])}
       >
         <View style={style.flatten(["flex-1", "margin-right-12"])}>
@@ -87,17 +88,17 @@ export const AddressInput: FunctionComponent<{
           />
         </View>
         <TouchableOpacity
-          style={style.flatten(["width-24", "height-24", "self-center"])}
+          style={style.flatten([
+            "width-24",
+            "height-24",
+            "self-center",
+            "items-center",
+          ])}
           onPress={() => {
             smartNavigation.navigateSmart("Camera", {});
           }}
         >
-          <QRCode
-            size={24}
-            value="astra"
-            color="#818DA6"
-            backgroundColor="#1A2033"
-          />
+          <ScanIcon size={24} color={"#818DA6"} />
         </TouchableOpacity>
       </View>
       

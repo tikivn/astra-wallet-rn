@@ -9,7 +9,7 @@ export const ToastModal: FunctionComponent<{
   close: () => void;
   title: string;
   type: "success" | "error" | "infor";
-  displayTime: number;
+  displayTime?: number;
 }> = registerModal(
   ({ close, title, type = "infor", displayTime = 2000 }) => {
     useEffect(() => {

@@ -33,21 +33,36 @@ export const SettingsScreen: FunctionComponent = observer(() => {
   const smartNavigation = useSmartNavigation();
 
   const accountItemProps = {
-    containerStyle: style.flatten(["margin-left-16", "margin-right-16", "border-radius-8", "overflow-hidden",]),
-    labelStyle: style.flatten(["margin-left-12"])
-  }
-  const route = useRoute<RouteProp<Record<string, {
-    floatAlert?: {
-      type: "info" | "success" | "warning" | "error";
-      content: string;
-    }
-  }>, string>>();
+    containerStyle: style.flatten([
+      "margin-left-16",
+      "margin-right-16",
+      "border-radius-8",
+      "overflow-hidden",
+    ]),
+    labelStyle: style.flatten(["margin-left-12"]),
+  };
+  const route = useRoute<
+    RouteProp<
+      Record<
+        string,
+        {
+          floatAlert?: {
+            type: "info" | "success" | "warning" | "error";
+            content: string;
+          };
+        }
+      >,
+      string
+    >
+  >();
 
-  const floatAlert = route.params && route.params.floatAlert ? route.params.floatAlert : null;
+  const floatAlert =
+    route.params && route.params.floatAlert ? route.params.floatAlert : null;
   const [displayFloatAlert, setDisplayFloatAlert] = useState(floatAlert);
 
   useEffect(() => {
-    const floatAlert = route.params && route.params.floatAlert ? route.params.floatAlert : null;
+    const floatAlert =
+      route.params && route.params.floatAlert ? route.params.floatAlert : null;
     setDisplayFloatAlert(floatAlert);
 
     const timeoutId = setTimeout(() => {
@@ -79,7 +94,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
             onPress={() => {
               smartNavigation.navigateSmart("Settings.PasswordInput", {
                 nextScreen: "Settings.NewPasswordInput",
-                forwardPassword: true
+                forwardPassword: true,
               });
             }}
           />
@@ -170,9 +185,10 @@ export const SettingsScreen: FunctionComponent = observer(() => {
               actionButton="close"
               onActionButtonTap={() => {
                 setDisplayFloatAlert(null);
-              }} />
-            <View style={{ height: 44, marginTop: 16, }} />
-            <SafeAreaView></SafeAreaView>
+              }}
+            />
+            <View style={{ height: 44, marginTop: 16 }} />
+            <SafeAreaView />
           </View>
         )}
       </ImageBackground>
