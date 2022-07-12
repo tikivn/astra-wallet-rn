@@ -12,6 +12,7 @@ import { useSmartNavigation } from "../../navigation";
 import { DelegationsEmptyItem } from "../staking/dashboard/delegate";
 import FastImage from "react-native-fast-image";
 import { useToastModal } from "../../providers/toast-modal";
+import { useIntl } from "react-intl";
 
 export const ManageWalletConnectScreen: FunctionComponent = observer(() => {
   const { signClientStore } = useStore();
@@ -22,12 +23,18 @@ export const ManageWalletConnectScreen: FunctionComponent = observer(() => {
   const sessions = signClientStore.sessions;
   const toastModal = useToastModal();
 
+  const intl = useIntl();
+
   useEffect(() => {
     signClientStore.onSessionChange((infor) => {
       toastModal.makeToast({
         title: infor.isConnect
-          ? `Ứng dụng ${infor.name} đã được liên kết`
-          : `Đã huỷ liên kết với ứng dụng ${infor.name}`,
+          ? intl
+              .formatMessage({ id: "walletconnect.connected" })
+              .replace("${name}", `${infor.name}`)
+          : intl
+              .formatMessage({ id: "walletconnect.disconnected" })
+              .replace("${name}", `${infor.name}`),
         type: infor.isConnect ? "success" : "infor",
         displayTime: 2000,
       });
@@ -61,13 +68,12 @@ export const ManageWalletConnectScreen: FunctionComponent = observer(() => {
               "flex-1",
             ])}
           >
-            Kết nối ứng dụng DApps/DeFi với ví qua WalletConnect để thực hiện
-            giao dịch của ứng dụng
+            {intl.formatMessage({ id: "walletconnect.descriptions" })}
           </Text>
         </View>
         <Button
           containerStyle={style.flatten(["margin-x-16"])}
-          text="Liên kết ứng dụng"
+          text={intl.formatMessage({ id: "walletconnect.action.text" })}
           onPress={() => {
             smartNavigation.navigateSmart("Camera", {});
           }}
@@ -137,9 +143,17 @@ export const ManageWalletConnectScreen: FunctionComponent = observer(() => {
                           if (
                             await confirmModal.confirm({
                               title: "",
-                              paragraph: `Huỷ liên kết ứng dụng ${name}?`,
-                              yesButtonText: "Huỷ liên kiết",
-                              noButtonText: "Không huỷ",
+                              paragraph: intl
+                                .formatMessage({
+                                  id: "walletconnect.action.disconnect.title",
+                                })
+                                .replace("${name}", `${name}`),
+                              yesButtonText: intl.formatMessage({
+                                id: "common.text.disconnect",
+                              }),
+                              noButtonText: intl.formatMessage({
+                                id: "walletconnect.action.disconnect.cancel",
+                              }),
                             })
                           ) {
                             await signClientStore.disconnect(session);
@@ -152,7 +166,9 @@ export const ManageWalletConnectScreen: FunctionComponent = observer(() => {
                             "text-caption2",
                           ])}
                         >
-                          Huỷ liên kiết
+                          {intl.formatMessage({
+                            id: "common.text.disconnect",
+                          })}
                         </Text>
                       </TouchableOpacity>
                     </View>
@@ -171,7 +187,7 @@ export const ManageWalletConnectScreen: FunctionComponent = observer(() => {
       ) : (
         <DelegationsEmptyItem
           containerStyle={style.flatten(["background-color-background"])}
-          label="Bạn chưa có ứng dụng liên kết nào"
+          label={intl.formatMessage({ id: "walletconnect.empty.description" })}
         />
       )}
 

@@ -14,6 +14,7 @@ import { useStyle } from "../../styles";
 import FastImage from "react-native-fast-image";
 import { CardDivider } from "../../components/card";
 import { useStore } from "../../stores";
+import { useIntl } from "react-intl";
 export const SessionProposalScreen: FunctionComponent = observer(() => {
   const route = useRoute<
     RouteProp<
@@ -37,7 +38,7 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
   const { params } = proposal;
   const { proposer } = params;
   const icons = proposer.metadata.icons;
-
+  const intl = useIntl();
   const onRejectSession = async () => {
     await signClientStore.rejectProposal();
     smartNavigation.goBack();
@@ -127,7 +128,9 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
           </View>
         </View>
         <Text style={style.flatten(["color-gray-10", "text-center", "h5"])}>
-          Liên kết {proposer.metadata.name} với Astra Hub?
+          {intl
+            .formatMessage({ id: "walletconnect.text.connect" })
+            .replace("${name}", `${proposer.metadata.name}`)}
         </Text>
         <Text
           style={style.flatten([
@@ -206,13 +209,13 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
               "flex-1",
               "background-color-gray-70",
             ])}
-            text="Từ chối"
+            text={intl.formatMessage({ id: "common.text.reject" })}
             mode="fill"
             onPress={onRejectSession}
           />
           <Button
             size="small"
-            text="Liên kết"
+            text={intl.formatMessage({ id: "common.text.connect" })}
             onPress={onApproveSession}
             containerStyle={style.flatten(["flex-1"])}
           />

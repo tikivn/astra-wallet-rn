@@ -25,6 +25,7 @@ import { PageWithScrollView } from "../../components";
 import { TransactionRequestView } from "./components/transaction-request";
 import { useSmartNavigation } from "../../navigation";
 import { useToastModal } from "../../providers/toast-modal";
+import { useIntl } from "react-intl";
 
 export const TxResultScreen: FunctionComponent = observer(() => {
   const {
@@ -63,7 +64,7 @@ export const TxResultScreen: FunctionComponent = observer(() => {
   const [chainId, setChainId] = useState(chainStore.current.chainId);
 
   const chainInfo = chainStore.getChain(chainId);
-
+  const intl = useIntl();
   const [waitApprove, setWaitApprove] = useState(false);
 
   useEffect(() => {
@@ -81,7 +82,9 @@ export const TxResultScreen: FunctionComponent = observer(() => {
       await signClientStore.rejectRequest();
       // signInteractionStore.rejectAll();
       toastModal.makeToast({
-        title: `Đã từ chối giao dịch từ ${name}`,
+        title: intl
+          .formatMessage({ id: "walletconnect.rejected" })
+          .replace("${name}", `${name}`),
         type: "infor",
         displayTime: 2000,
       });
@@ -94,7 +97,9 @@ export const TxResultScreen: FunctionComponent = observer(() => {
     async (name) => {
       await transactionStore.startTransaction();
       toastModal.makeToast({
-        title: `Đã xác nhận giao dịch từ ${name}`,
+        title: intl
+          .formatMessage({ id: "walletconnect.verified" })
+          .replace("${name}", `${name}`),
         type: "infor",
         displayTime: 2000,
       });

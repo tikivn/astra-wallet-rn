@@ -9,7 +9,7 @@
     "register.button.createAccount": "Tạo tài khoản",
 
     "main.receive": "Receive",
-    "main.send": "Semd",
+    "main.send": "Send",
     "main.swap": "Swap",
     
     "settings.changePassword": "Change Password",
@@ -54,6 +54,30 @@
     "common.text.passwordNotMatching": "Mật khẩu không giống nhau",
     "common.text.inputVerifyPassword": "Nhập lại mật khẩu",
     "common.text.inputVerifyNewPassword": "Nhập lại mật khẩu mới",
+    "common.text.connect" : "Connect",
+    "common.text.disconnect": "Disconnect",
+    "common.text.reject": "Reject",
+    "common.text.approve": "Approve",
+    "common.text.verify": "Verify",
+    
+    "camera.text.description": "Scan QR code to send and connect to Dapps",
+    "camera.qrcode.error": "This QR code is not supported",
+
+    "disconnect": "Disconnect",
+
+    "walletconnect.action.text": "Connect to D-apps",
+    "walletconnect.action.disconnect.cancel": "Cancel",
+    "walletconnect.action.disconnect.title": "Disconnect ${name} D-app?",
+    "walletconnect.empty.description" : "You don't have any apps connected yet",
+    "walletconnect.connected" : "The D-app ${name} has been connected",
+    "walletconnect.disconnected" : "Disconnected with the ${name} D-app",
+    "walletconnect.descriptions": "Kết nối ứng dụng DApps/DeFi với ví qua WalletConnect để thực hiện giao dịch của ứng dụng",
+    "walletconnect.action.show": "Show data",
+    "walletconnect.action.hide": "Hide data",
+    "walletconnect.text.verify": "Verify transaction from ${name}",
+    "walletconnect.text.connect": "Connect ${name} to Astra Hub?",
+    "walletconnect.verified": "Verified transaction from ${name}",
+    "walletconnect.rejected": "Rejected transaction from ${name}",
 
     "default": ""
 }

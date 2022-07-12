@@ -10,10 +10,10 @@ import { TextInput } from "../../../components/input";
 import { StyleSheet, View } from "react-native";
 import { Button } from "../../../components/button";
 import Clipboard from "expo-clipboard";
-import { useStore } from "../../../stores";
 import { Buffer } from "buffer/";
 import { useBIP44Option } from "../bip44";
 import { useNewMnemonicConfig } from "./hook";
+import { useIntl } from "react-intl";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
@@ -81,7 +81,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
   } = useForm<FormData>();
 
   const [isCreating, setIsCreating] = useState(false);
-
+  const intl = useIntl();
   const submit = handleSubmit(async () => {
     setIsCreating(true);
 
@@ -171,7 +171,11 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                 </View>
               }
               style={StyleSheet.flatten([
-                style.flatten(["h6", "color-text-gray", "background-color-background-secondary"]),
+                style.flatten([
+                  "h6",
+                  "color-text-gray",
+                  "background-color-background-secondary",
+                ]),
                 {
                   minHeight: 20 * 4,
                   textAlignVertical: "top",
@@ -192,11 +196,14 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
         defaultValue=""
       />
       <View style={style.flatten(["flex-1"])} />
-      <Button 
+      <Button
         containerStyle={style.flatten(["border-radius-4", "height-44"])}
         textStyle={style.flatten(["subtitle2"])}
-        text="Xác nhận"
-        size="large" loading={isCreating} onPress={submit} />
+        text={intl.formatMessage({ id: "common.text.verify" })}
+        size="large"
+        loading={isCreating}
+        onPress={submit}
+      />
       {/* Mock element for bottom padding */}
       <View style={style.flatten(["height-page-pad"])} />
     </PageWithScrollView>

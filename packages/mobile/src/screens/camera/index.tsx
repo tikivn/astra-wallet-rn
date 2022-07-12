@@ -10,24 +10,20 @@ import { PageWithView } from "../../components/page";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { useSmartNavigation } from "../../navigation";
-import { Button } from "../../components/button";
-import { Share, StyleSheet, View } from "react-native";
-import { registerModal } from "../../modals/base";
-import { CardModal } from "../../modals/card";
-import { AddressCopyable } from "../../components/address-copyable";
-import QRCode from "react-native-qrcode-svg";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { FullScreenCameraView } from "../../components/camera";
 import { useFocusEffect } from "@react-navigation/native";
 import { useToastModal } from "../../providers/toast-modal";
+import { useIntl } from "react-intl";
+import { View, Text } from "react-native";
 
 export const CameraScreen: FunctionComponent = observer(() => {
   const { chainStore, signClientStore } = useStore();
   const toastModal = useToastModal();
   const smartNavigation = useSmartNavigation();
-
+  const style = useStyle();
   const [isLoading, setIsLoading] = useState(false);
-
+  const intl = useIntl();
   // To prevent the reading while changing to other screen after processing the result.
   // Expectedly, screen should be moved to other after processing the result.
   const [isCompleted, setIsCompleted] = useState(false);
@@ -71,7 +67,7 @@ export const CameraScreen: FunctionComponent = observer(() => {
                     Bech32Address.validate(data);
                   } catch {
                     toastModal.makeToast({
-                      title: "Mã QR hiện không được hỗ trợ",
+                      title: intl.formatMessage({ id: "camera.qrcode.error" }),
                       type: "error",
                       displayTime: 2000,
                     });
@@ -93,7 +89,7 @@ export const CameraScreen: FunctionComponent = observer(() => {
                     });
                   } else {
                     toastModal.makeToast({
-                      title: "Mã QR hiện không được hỗ trợ",
+                      title: intl.formatMessage({ id: "camera.qrcode.error" }),
                       type: "error",
                       displayTime: 2000,
                     });
@@ -103,7 +99,7 @@ export const CameraScreen: FunctionComponent = observer(() => {
               setIsCompleted(true);
             } catch (e) {
               toastModal.makeToast({
-                title: "Mã QR hiện không được hỗ trợ",
+                title: intl.formatMessage({ id: "camera.qrcode.error" }),
                 type: "error",
                 displayTime: 2000,
               });
@@ -113,63 +109,16 @@ export const CameraScreen: FunctionComponent = observer(() => {
             }
           }
         }}
+        containerBottom={
+          <View style={style.flatten(["flex-1", "width-full", "margin-top-4"])}>
+            <Text
+              style={style.flatten(["text-center", "color-white", "body3"])}
+            >
+              {intl.formatMessage({ id: "camera.text.description" })}
+            </Text>
+          </View>
+        }
       />
     </PageWithView>
   );
 });
-
-export const AddressQRCodeModal: FunctionComponent<{
-  isOpen: boolean;
-  close: () => void;
-  chainId: string;
-}> = registerModal(
-  observer(({ chainId }) => {
-    const { accountStore } = useStore();
-
-    const account = accountStore.getAccount(chainId);
-
-    const style = useStyle();
-
-    return (
-      <CardModal title="Scan QR code">
-        <View style={style.flatten(["items-center"])}>
-          <AddressCopyable address={account.bech32Address} maxCharacters={22} />
-          <View style={style.flatten(["margin-y-32"])}>
-            {account.bech32Address ? (
-              <QRCode size={200} value={account.bech32Address} />
-            ) : (
-              <View
-                style={StyleSheet.flatten([
-                  {
-                    width: 200,
-                    height: 200,
-                  },
-                  style.flatten(["background-color-disabled"]),
-                ])}
-              />
-            )}
-          </View>
-          <View style={style.flatten(["flex-row"])}>
-            <Button
-              containerStyle={style.flatten(["flex-1"])}
-              text="Share Address"
-              mode="light"
-              size="large"
-              loading={account.bech32Address === ""}
-              onPress={() => {
-                Share.share({
-                  message: account.bech32Address,
-                }).catch((e) => {
-                  console.log(e);
-                });
-              }}
-            />
-          </View>
-        </View>
-      </CardModal>
-    );
-  }),
-  {
-    disableSafeArea: true,
-  }
-);

@@ -96,6 +96,32 @@
     "common.text.passwordNotMatching": "Mật khẩu không giống nhau",
     "common.text.inputVerifyPassword": "Nhập lại mật khẩu",
     "common.text.inputVerifyNewPassword": "Nhập lại mật khẩu mới",
+    "common.text.connect" : "Liên kết",
+    "common.text.disconnect": "Hủy liên kết",
+    "common.text.reject": "Từ chối",
+    "common.text.approve": "Cho phép",
+    "common.text.verify": "Xác nhận",
+    
+    "camera.text.description": "Quét mã QR để gửi và liên kết ứng dụng",
+    "camera.qrcode.error": "Mã QR hiện không được hỗ trợ",
+    
+    
+    "walletconnect.action.text": "Liên kết ứng dụng",
+    "walletconnect.action.disconnect.cancel": "Không huỷ",
+    "walletconnect.action.disconnect.title": "Huỷ liên kết ứng dụng ${name}?",
+    "walletconnect.empty.description" : "Bạn chưa có ứng dụng liên kết nào",
+    "walletconnect.connected" : "Ứng dụng ${name} đã được liên kết",
+    "walletconnect.disconnected" : "Đã huỷ liên kết với ứng dụng ${name}",
+    "walletconnect.descriptions": "Kết nối ứng dụng DApps/DeFi với ví qua WalletConnect để thực hiện giao dịch của ứng dụng",
+    
+    "walletconnect.action.show": "Xem dữ liệu",
+    "walletconnect.action.hide": "Ẩn dữ liệu",
+    
+    "walletconnect.text.verify": "Xác nhận giao dịch từ ${name}",
+    "walletconnect.text.connect": "Liên kết ${name} với Astra Hub?",
+
+    "walletconnect.verified": "Đã xác nhận giao dịch từ ${name}",
+    "walletconnect.rejected": "Đã từ chối giao dịch từ ${name}",
 
     "default": ""
 }

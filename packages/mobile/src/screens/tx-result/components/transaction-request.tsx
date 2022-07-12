@@ -7,6 +7,7 @@ import { CardDivider } from "../../../components/card";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { Button } from "../../../components";
+import { useIntl } from "react-intl";
 
 export const TransactionRequestView: FunctionComponent<{
   onApprove: (name?: string) => void;
@@ -19,7 +20,7 @@ export const TransactionRequestView: FunctionComponent<{
   const style = useStyle();
   const metadata = session?.peer.metadata;
   const messsages = JSON.stringify(request?.params.request, null, 2);
-
+  const intl = useIntl();
   return (
     <React.Fragment>
       <View style={style.flatten(["padding-x-16", "flex", "margin-top-20"])}>
@@ -62,7 +63,9 @@ export const TransactionRequestView: FunctionComponent<{
           </View>
         </View>
         <Text style={style.flatten(["color-gray-10", "text-center", "h5"])}>
-          Xác nhận giao dịch từ {metadata?.name} ?
+          {intl
+            .formatMessage({ id: "walletconnect.text.verify" })
+            .replace("${name}", `${metadata?.name}`)}
         </Text>
         <Text
           style={style.flatten([
@@ -86,7 +89,9 @@ export const TransactionRequestView: FunctionComponent<{
           ])}
         >
           <Text style={style.flatten(["color-blue-70", "subtitle3"])}>
-            {isOpen ? `Ẩn dữ liệu` : `Xem dữ liệu`}
+            {isOpen
+              ? intl.formatMessage({ id: "walletconnect.action.hide" })
+              : intl.formatMessage({ id: "walletconnect.action.show" })}
           </Text>
           {isOpen ? (
             <CollapseIcon size={20} color={style.get("color-blue-70").color} />
@@ -137,7 +142,7 @@ export const TransactionRequestView: FunctionComponent<{
               "flex-1",
               "background-color-gray-70",
             ])}
-            text="Từ chối"
+            text={intl.formatMessage({ id: "common.text.reject" })}
             mode="fill"
             onPress={async () => {
               onReject(metadata?.name);
@@ -145,7 +150,7 @@ export const TransactionRequestView: FunctionComponent<{
           />
           <Button
             size="small"
-            text="Xác nhận"
+            text={intl.formatMessage({ id: "common.text.verify" })}
             onPress={async () => {
               onApprove(metadata?.name);
             }}
