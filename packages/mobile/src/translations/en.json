@@ -11,7 +11,7 @@
     "main.receive": "Receive",
     "main.send": "Send",
     "main.swap": "Swap",
-    
+
     "settings.changePassword": "Change Password",
     "settings.viewPassphase": "View Passphase",
     "settings.community": "Support Community",
@@ -59,7 +59,7 @@
     "common.text.reject": "Reject",
     "common.text.approve": "Approve",
     "common.text.verify": "Verify",
-    
+
     "camera.text.description": "Scan QR code to send and connect to Dapps",
     "camera.qrcode.error": "This QR code is not supported",
 

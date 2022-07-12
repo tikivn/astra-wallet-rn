@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { Text, ViewStyle, View } from "react-native";
-import { useIntl } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import { Card, CardBody, CardDivider } from "../../../components/card";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
@@ -66,16 +66,14 @@ export const UnbondingCard: FunctionComponent<{
               "text-caption2",
             ])}
           >
-            {
-              "Sau khi rút ASA, bạn sẽ nhận được số tiền đó sau 14 ngày. \nĐể xem số ASA đã rút thành công vui lòng xem "
-            }
+            <FormattedMessage id="validator.details.unbonding.noticeWithdrawalPeroid" values={{ coin: "ASA" }} />
             <Text
               style={style.flatten(["text-underline", "color-primary"])}
               onPress={() => {
                 smartNavigation.navigateSmart("Wallet.History", {});
               }}
             >
-              lịch sử
+              <FormattedMessage id="validator.details.unbonding.history" />
             </Text>
           </Text>
           <View
@@ -88,10 +86,10 @@ export const UnbondingCard: FunctionComponent<{
             ])}
           >
             <Text style={style.flatten(["color-gray-30", "body3"])}>
-              {"Tên quỹ & số tiền rút"}
+              <FormattedMessage id="validator.details.unbonding.nameAndAmount" />
             </Text>
             <Text style={style.flatten(["color-gray-30", "body3"])}>
-              {"Sẽ nhận được sau"}
+              <FormattedMessage id="validator.details.unbonding.receiveAfter" />
             </Text>
           </View>
           <CardDivider
@@ -115,7 +113,7 @@ export const UnbondingCard: FunctionComponent<{
                   numeric: "always",
                 })
                 .replace("in ", "")
-                .replace("days", "ngày");
+                .replace("days", intl.formatMessage({id: "validator.details.unbonding.days"}));
             } else if (relativeEndTimeHours) {
               return intl
                 .formatRelativeTime(relativeEndTimeHours, "hours", {
@@ -171,7 +169,7 @@ export const UnbondingCard: FunctionComponent<{
     </Card>
   ) : (
     <DelegationsEmptyItem
-      label="Bạn chưa có giao dịch rút tiền nào"
+      label={intl.formatMessage({id: "validator.details.unbonding.empty"})}
       containerStyle={style.flatten([
         "background-color-background",
         "margin-y-32",

@@ -1,8 +1,8 @@
 import { Staking } from "@keplr-wallet/stores";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
-import { useIntl } from "react-intl";
-import { StyleSheet, Text, View } from "react-native";
+import { FormattedMessage, useIntl } from "react-intl";
+import { Text, View } from "react-native";
 import { AlertInline, PageWithScrollView } from "../../../components";
 import { CardDivider } from "../../../components/card";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
@@ -46,7 +46,7 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
     >
       <View style={style.flatten(["padding-16", "items-center"])}>
         <Text style={style.flatten(["color-gray-30", "body3", "margin-top-0"])}>
-          Tổng số tiền đang rút
+          <FormattedMessage id="staking.unbonding.totalAmount" />
         </Text>
         <Text style={style.flatten(["color-gray-10", "title1", "margin-y-2"])}>
           {balance
@@ -56,9 +56,7 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
             .upperCase(true)
             .toString()}
         </Text>
-        <Text
-          style={style.flatten(["color-gray-30", "body3", "margin-bottom-0"])}
-        >
+        <Text style={style.flatten(["color-gray-30", "body3", "margin-bottom-0"])} >
           ~
           {totalUnboding
             ? totalUnboding.toString()
@@ -66,28 +64,28 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
         </Text>
       </View>
       <View style={style.flatten(["background-color-background"])}>
-      <AlertInline
-        type="info"
-        content="Sau khi rút ASA, bạn sẽ nhận được số tiền đó sau 14 ngày"
-      />
-      <Text
-        style={style.flatten([
-          "margin-y-8",
-          "color-gray-30",
-          "text-center",
-          "text-caption2",
-        ])}
-      >
-        {"Để xem số ASA đã rút thành công vui lòng xem "}
+        <AlertInline
+          type="info"
+          content={intl.formatMessage({ id: "staking.unbonding.noticeWithdrawalPeriod" }, { coin: "ASA" })}
+        />
         <Text
-          style={style.flatten(["text-underline", "color-primary"])}
-          onPress={() => {
-            smartNavigation.navigateSmart("Wallet.History", {});
-          }}
+          style={style.flatten([
+            "margin-y-8",
+            "color-gray-30",
+            "text-center",
+            "text-caption2",
+          ])}
         >
-          lịch sử
+          <FormattedMessage id="staking.unbonding.viewHistoryGuide" />
+          <Text
+            style={style.flatten(["text-underline", "color-primary"])}
+            onPress={() => {
+              smartNavigation.navigateSmart("Wallet.History", {});
+            }}
+          >
+            <FormattedMessage id="staking.unbonding.history" />
+          </Text>
         </Text>
-      </Text>
       </View>
       <View style={style.flatten(["margin-top-16", "background-color-background"])}>
         <View
@@ -100,15 +98,13 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
           ])}
         >
           <Text style={style.flatten(["color-gray-30", "body3"])}>
-            {"Tên quỹ & số tiền rút"}
+            <FormattedMessage id="staking.unbonding.nameAndAmount" />
           </Text>
           <Text style={style.flatten(["color-gray-30", "body3"])}>
-            {"Sẽ nhận được sau"}
+            <FormattedMessage id="staking.unbonding.receiveAfter" />
           </Text>
         </View>
-        <CardDivider
-          style={style.flatten(["background-color-gray-70", "margin-x-0"])}
-        />
+        <CardDivider style={style.flatten(["background-color-gray-70", "margin-x-0"])} />
       </View>
       {unbondings.map((unbonding, unbondingIndex) => {
         const validator = bondedValidators.validators
@@ -142,7 +138,7 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
                       .formatRelativeTime(relativeEndTimeDays, "days", {
                         numeric: "always",
                       })
-                      .replace("in ", "").replace("days", "ngày")
+                      .replace("in ", "").replace("days", intl.formatMessage({ id: "staking.unbonding.days" }))
                   );
                 } else if (relativeEndTimeHours) {
                   return (
@@ -160,12 +156,10 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
               return (
                 <View style={style.flatten(["height-72"])}>
                   <View style={style.flatten(["flex-row", "justify-between", "margin-y-16"])}>
-                    <View style={style.flatten(["flex-row", "justify-start", ])}>
+                    <View style={style.flatten(["flex-row", "justify-start",])}>
                       <ValidatorThumbnail size={24} url={thumbnail} />
                       <View style={style.flatten(["padding-x-16", "flex"])}>
-                        <Text
-                          style={style.flatten(["subtitle3", "color-gray-10"])}
-                        >
+                        <Text style={style.flatten(["subtitle3", "color-gray-10"])} >
                           {validator?.description.moniker ?? "..."}
                         </Text>
                         <Text

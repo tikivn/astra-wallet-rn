@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
+import { useIntl } from "react-intl";
 import { View, Text, ViewStyle } from "react-native";
 import { Button } from "../../../components/button";
 import { CardDivider } from "../../../components/card";
@@ -14,6 +15,7 @@ export const RewardsItem: FunctionComponent<{
 }> = observer(({ containerStyle }) => {
   const smartNavigation = useSmartNavigation();
   const style = useStyle();
+  const intl = useIntl();
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -70,7 +72,7 @@ export const RewardsItem: FunctionComponent<{
         ])}
       >
         <PropertyView
-          label="Tổng đầu tư"
+          label={intl.formatMessage({ id: "staking.dashboard.rewards.totalInvestment" })}
           value={delegated
             .shrink(true)
             .maxDecimals(6)
@@ -94,7 +96,7 @@ export const RewardsItem: FunctionComponent<{
           onPress={() => {
             smartNavigation.navigateSmart("Validator.List.New", {});
           }}
-          text="Đầu tư ngay"
+          text={intl.formatMessage({ id: "staking.dashboard.rewards.invest" })}
           mode="text"
           size="small"
           underlayColor={style.get("color-background").color}
@@ -112,7 +114,7 @@ export const RewardsItem: FunctionComponent<{
         ])}
       >
         <PropertyView
-          label="Tổng tiền lãi"
+          label={intl.formatMessage({ id: "staking.dashboard.rewards.totalProfit" })}
           value={pendingStakableReward
             .shrink(true)
             .maxDecimals(6)
@@ -138,7 +140,7 @@ export const RewardsItem: FunctionComponent<{
             ],
             [!isRewardExist && "opacity-40"]
           )}
-          text="Nhận tiền lãi"
+          text={intl.formatMessage({ id: "staking.dashboard.rewards.withdrawProfit" })}
           mode="text"
           size="small"
           underlayColor={style.get("color-background").color}
@@ -161,7 +163,7 @@ export const RewardsItem: FunctionComponent<{
         ])}
       >
         <PropertyView
-          label="Tổng tiền đang rút"
+          label={intl.formatMessage({ id: "staking.dashboard.rewards.totalWithdrawals" })}
           value={unboding
             .shrink(true)
             .maxDecimals(6)
@@ -186,7 +188,7 @@ export const RewardsItem: FunctionComponent<{
             ],
             [!isRewardExist && "opacity-40"]
           )}
-          text="Theo dõi"
+          text={intl.formatMessage({ id: "staking.dashboard.rewards.follow" })}
           mode="text"
           size="small"
           underlayColor={style.get("color-background").color}

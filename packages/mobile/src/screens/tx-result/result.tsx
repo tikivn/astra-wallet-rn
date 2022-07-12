@@ -19,7 +19,7 @@ import { RouteProp, useRoute } from "@react-navigation/native";
 import { TendermintTxTracer } from "@keplr-wallet/cosmos";
 import { TransactionStateView } from "./components/transaction-state-view";
 import { TransactionDetailsView } from "./components/transaction-details-view";
-import { TxState, TxType } from "../../stores/transaction";
+import { TxState } from "../../stores/transaction";
 import { TransactionActionView } from "./components/transaction-action-view";
 import { PageWithScrollView } from "../../components";
 import { TransactionRequestView } from "./components/transaction-request";

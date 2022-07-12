@@ -11,6 +11,7 @@ import { RectButton } from "../../../components/rect-button";
 import { Dec, IntPretty } from "@keplr-wallet/unit";
 import { PropertyView } from "../component/property";
 import { ValidatorItem } from "../../../components/input";
+import { FormattedMessage, useIntl } from "react-intl";
 
 export const DelegationsItem: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -65,6 +66,7 @@ export const DelegationsItem: FunctionComponent<{
   }, [validators]);
 
   const style = useStyle();
+  const intl = useIntl();
 
   const smartNavigation = useSmartNavigation();
 
@@ -72,7 +74,7 @@ export const DelegationsItem: FunctionComponent<{
     <Card style={containerStyle}>
       <CardBody style={style.flatten(["padding-bottom-0"])}>
         <Text style={style.flatten(["h5", "color-white", "margin-bottom-0"])}>
-          Quỹ đầu tư của tôi
+          <FormattedMessage id="staking.delegate.label" />
         </Text>
       </CardBody>
 
@@ -163,7 +165,7 @@ export const DelegationsItem: FunctionComponent<{
                   ])}
                 >
                   <PropertyView
-                    label="Đã đầu tư"
+                    label={intl.formatMessage({ id: "staking.delegate.invested" })}
                     value={amount
                       .maxDecimals(6)
                       .trim(true)
@@ -176,7 +178,7 @@ export const DelegationsItem: FunctionComponent<{
                     }`}
                   />
                   <PropertyView
-                    label="Tiền lãi"
+                    label={intl.formatMessage({ id: "staking.delegate.profit" })}
                     value={rewards
                       .maxDecimals(6)
                       .trim(true)
@@ -196,7 +198,7 @@ export const DelegationsItem: FunctionComponent<{
         </CardBody>
       ) : ( 
         <DelegationsEmptyItem
-          label="Bạn chưa có quỹ đầu tư nào"
+          label={intl.formatMessage({ id: "staking.delegate.empty" })}
           containerStyle={style.flatten([
             "background-color-background",
             "margin-y-32",

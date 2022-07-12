@@ -11,6 +11,7 @@ import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { TooltipLabel } from "../component";
 import { useSmartNavigation } from "../../../navigation";
+import { FormattedMessage, useIntl } from "react-intl";
 
 export const CommissionsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -18,6 +19,7 @@ export const CommissionsCard: FunctionComponent<{
   showStake: Boolean;
 }> = observer(({ containerStyle, validatorAddress, showStake }) => {
   const { chainStore, queriesStore } = useStore();
+  const intl = useIntl();
   const smartNavigation = useSmartNavigation();
 
   const queries = queriesStore.get(chainStore.current.chainId);
@@ -79,7 +81,7 @@ export const CommissionsCard: FunctionComponent<{
             ])}
           >
             <View style={style.flatten(["items-center"])}>
-              <TooltipLabel text="Tổng số cổ phần" />
+              <TooltipLabel text={intl.formatMessage({ id: "validator.details.totalShares" })} />
               <Text
                 style={style.flatten([
                   "color-gray-10",
@@ -94,10 +96,10 @@ export const CommissionsCard: FunctionComponent<{
                   .maxDecimals(6)
                   .toString()}
               </Text>
-              <TooltipLabel text="~6,51% quyền biểu quyết" />
+              <TooltipLabel text={intl.formatMessage({ id: "validator.details.votingPower" }, { percent: 6.51 } )} />
             </View>
             <View style={style.flatten(["items-center"])}>
-              <TooltipLabel text="Thời gian hoạt động" />
+              <TooltipLabel text={intl.formatMessage({ id: "validator.details.uptime" })} />
               <Text
                 style={style.flatten([
                   "color-gray-10",
@@ -117,7 +119,7 @@ export const CommissionsCard: FunctionComponent<{
                 "margin-bottom-12",
               ])}
               textStyle={style.flatten(["subtitle2"])}
-              text="Đầu tư ngay"
+              text={intl.formatMessage({ id: "validator.details.invest" })}
               size="large"
               onPress={() => {
                 smartNavigation.navigateSmart("Delegate", {
@@ -138,15 +140,17 @@ export const CommissionsCard: FunctionComponent<{
               "margin-y-8",
             ])}
           >
-            <TooltipLabel text="Tối đa" />
+            <TooltipLabel text={intl.formatMessage({ id: "validator.details.maxRate" })} />
             <Text style={style.flatten(["color-gray-10", "body3"])}>
-              {new IntPretty(
-                new Dec(validator.commission.commission_rates.max_rate)
-              )
-                .moveDecimalPointRight(2)
-                .maxDecimals(2)
-                .trim(true)
-                .toString() + "%"}
+              <FormattedMessage id="validator.details.percentValue"
+                values={{
+                  percent: new IntPretty(new Dec(validator.commission.commission_rates.max_rate))
+                    .moveDecimalPointRight(2)
+                    .maxDecimals(2)
+                    .trim(true)
+                    .toString()
+                }}
+              />
             </Text>
           </View>
           <View
@@ -157,15 +161,17 @@ export const CommissionsCard: FunctionComponent<{
               "margin-bottom-8",
             ])}
           >
-            <TooltipLabel text="Thay đổi tối đa mỗi ngày" />
+            <TooltipLabel text={intl.formatMessage({ id: "validator.details.maxChangeRate" })} />
             <Text style={style.flatten(["color-gray-10", "body3"])}>
-              {new IntPretty(
-                new Dec(validator.commission.commission_rates.max_change_rate)
-              )
-                .moveDecimalPointRight(2)
-                .maxDecimals(2)
-                .trim(true)
-                .toString() + "%"}
+              <FormattedMessage id="validator.details.percentValue"
+                values={{
+                  percent: new IntPretty(new Dec(validator.commission.commission_rates.max_change_rate))
+                    .moveDecimalPointRight(2)
+                    .maxDecimals(2)
+                    .trim(true)
+                    .toString()
+                }}
+              />
             </Text>
           </View>
           <View
@@ -175,7 +181,7 @@ export const CommissionsCard: FunctionComponent<{
               "justify-between",
             ])}
           >
-            <TooltipLabel text="Lần thay đổi cuối cùng" />
+            <TooltipLabel text={intl.formatMessage({ id: "validator.details.updateTime" })} />
             <Text style={style.flatten(["color-gray-10", "body3"])}>{f}</Text>
           </View>
         </CardBody>

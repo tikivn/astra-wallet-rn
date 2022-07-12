@@ -1,6 +1,6 @@
 {
     "tabs.main": "Tài sản",
-    "tabs.stake": "Tiết kiệm",
+    "tabs.stake": "Đầu tư",
     "tabs.history": "Lịch sử",
     "tabs.setting": "Cài đặt",
 
@@ -20,26 +20,15 @@
     "main.receive": "Nhận",
     "main.send": "Gửi",
     "main.swap": "Chuyển đổi",
+    "main.balance.card.title": "Tài sản của tôi",
+
+    "wallet.receive.address.guide": "Bạn có thể sao chép địa chỉ này và dán vào ô địa chỉ khi gửi Astra từ nguồn khác vào đây.",
+    "wallet.send.continue": "Tiếp tục",
+    "wallet.send.confirm": "Xác nhận",
 
     "staking.headerTitle": "Staking",
     
     "history.headerTitle": "Lịch sử giao dịch",
-    "history.emptyHistory": "Không tìm thấy giao dịch nào trong quá khứ. Bạn hãy kéo refresh để tải lại dữ liệu hoặc thử lại sau một lúc.",
-    "history.status.success": "Thành công",
-    "history.status.unknown": "Không xác định",
-    "history.action.notsupport": "Chưa hỗ trợ",
-    "history.action.MsgSend.sender": "Gửi",
-    "history.action.MsgSend.receiver": "Nhận",
-    "history.action.MsgMultiSend.sender": "Gửi theo nhóm",
-    "history.action.MsgMultiSend.receiver": "Nhận theo nhóm",
-    "history.action.MsgDelegate.sender": "Đầu tư",
-    "history.action.MsgDelegate.receiver": "Nhận đầu tư",
-    "history.action.MsgBeginRedelegate.sender": "Chuyển quỹ đầu tư",
-    "history.action.MsgBeginRedelegate.receiver": "Nhận đầu tư",
-    "history.action.MsgUndelegate.sender": "Rút khỏi quỹ đầu tư",
-    "history.action.MsgUndelegate.receiver": "Bị rút đầu tư",
-    "history.action.MsgWithdrawDelegatorReward.sender": "Rút thưởng về ví",
-    "history.action.MsgWithdrawDelegatorReward.receiver": "Nhà đầu tư rút thưởng",
 
     "settings.changePassword": "Đổi mật khẩu truy cập",
     "settings.viewPassphase": "Xem cụm từ bí mật",
@@ -104,7 +93,6 @@
     
     "camera.text.description": "Quét mã QR để gửi và liên kết ứng dụng",
     "camera.qrcode.error": "Mã QR hiện không được hỗ trợ",
-    
     
     "walletconnect.action.text": "Liên kết ứng dụng",
     "walletconnect.action.disconnect.cancel": "Không huỷ",

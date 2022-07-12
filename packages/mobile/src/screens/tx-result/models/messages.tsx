@@ -18,6 +18,7 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
 import { Colors, useStyle } from "../../../styles";
 import { AlignItems, buildLeftColumn, buildRightColumn, IRow, RowType } from "../../../components";
+import { useIntl } from "react-intl";
 
 const h = new Hypher(english);
 
@@ -194,6 +195,7 @@ export function renderMsgSend(
   fee: string,
   toAddress: string
 ): IRow[] {
+  const intl = useIntl();
   const receives: CoinPrimitive[] = [];
   for (const coinPrimitive of amount) {
     const coin = new Coin(coinPrimitive.denom, coinPrimitive.amount);
@@ -211,7 +213,7 @@ export function renderMsgSend(
       ...common,
       alignItems: AlignItems.top,
       cols: [
-        buildLeftColumn({ text: "Người nhận", flex: 3, }),
+        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgSend.reveiver" }), flex: 3, }),
         buildRightColumn({ text: toAddress, flex: 7, })
       ],
     },
@@ -219,7 +221,10 @@ export function renderMsgSend(
       return {
         ...common,
         cols: [
-          buildLeftColumn({ text: "Số Astra", flex: 3, }),
+          buildLeftColumn({ 
+            text: intl.formatMessage({ id: "tx.result.models.msgSend.amount" }, { coin: "Astra" }), 
+            flex: 3 
+          }),
           buildRightColumn({ text: `${coin.amount} ${coin.denom}`, flex: 7, })
         ],
       };
@@ -227,7 +232,7 @@ export function renderMsgSend(
     {
       ...common,
       cols: [
-        buildLeftColumn({ text: "Phí giao dịch", flex: 3, }),
+        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgSend.fee" }), flex: 3, }),
         buildRightColumn({ text: fee, flex: 7, })
       ],
     },
@@ -242,6 +247,7 @@ export function renderMsgTransfer(
   receiver: string,
   channelId: string
 ) {
+  const intl = useIntl();
   const coin = new Coin(amount.denom, amount.amount);
   const parsed = CoinUtils.parseDecAndDenomFromCoin(currencies, coin);
 
@@ -256,7 +262,7 @@ export function renderMsgTransfer(
       ...common,
       alignItems: AlignItems.top,
       cols: [
-        buildLeftColumn({ text: "IBC Transfer", flex: 3, }),
+        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgTransfer.type" }), flex: 3, }),
         buildRightColumn({ text: "", flex: 7, })
       ],
     },
@@ -264,7 +270,7 @@ export function renderMsgTransfer(
       ...common,
       alignItems: AlignItems.top,
       cols: [
-        buildLeftColumn({ text: "Send", flex: 3, }),
+        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgTransfer.from" }), flex: 3, }),
         buildRightColumn({ text: hyphen(`${amount.amount} ${amount.denom}`), flex: 7, })
       ],
     },
@@ -272,14 +278,14 @@ export function renderMsgTransfer(
       ...common,
       alignItems: AlignItems.top,
       cols: [
-        buildLeftColumn({ text: "To", flex: 3, }),
+        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgTransfer.to" }), flex: 3, }),
         buildRightColumn({ text: hyphen(Bech32Address.shortenAddress(receiver, 20)), flex: 7, })
       ],
     },
     {
       ...common,
       cols: [
-        buildLeftColumn({ text: "On", flex: 3, }),
+        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgTransfer.channelLabel" }), flex: 3, }),
         buildRightColumn({ text: channelId, flex: 7, })
       ],
     },
@@ -295,6 +301,7 @@ export function renderMsgBeginRedelegate(
   validatorDstAddress: string,
   fee: string,
 ) {
+  const intl = useIntl();
   const { transactionStore } = useStore();
   const validatorSrc = transactionStore.getValidator({ validatorAddress: validatorSrcAddress })
   const validatorDst = transactionStore.getValidator({ validatorAddress: validatorDstAddress })
@@ -306,28 +313,28 @@ export function renderMsgBeginRedelegate(
     {
       ...common,
       cols: [
-        buildLeftColumn({ text: "Chuyển từ quỹ" }),
+        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgBeginRedelegate.from" }) }),
         buildRightColumn({ text: validatorSrc?.description.moniker ?? "" })
       ],
     },
     {
       ...common,
       cols: [
-        buildLeftColumn({ text: "Đến quỹ" }),
+        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgBeginRedelegate.to" }) }),
         buildRightColumn({ text: validatorDst?.description.moniker ?? "" })
       ],
     },
     {
       ...common,
       cols: [
-        buildLeftColumn({ text: "Thời gian thực hiện" }),
+        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgBeginRedelegate.time" }) }),
         buildRightColumn({ text: dateString })
       ],
     },
     {
       ...common,
       cols: [
-        buildLeftColumn({ text: "Phí giao dịch" }),
+        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgBeginRedelegate.fee" }) }),
         buildRightColumn({ text: fee })
       ],
     },
@@ -340,6 +347,7 @@ export function renderMsgUndelegate(
   validatorAddress: string,
   fee: string,
 ): IRow[] {
+  const intl = useIntl();
   const { transactionStore } = useStore();
   const validator = transactionStore.getValidator({ validatorAddress })
 
@@ -350,21 +358,21 @@ export function renderMsgUndelegate(
     {
       ...common,
       cols: [
-        buildLeftColumn({ text: "Rút từ quỹ" }),
+        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgUndelegate.from" }) }),
         buildRightColumn({ text: validator?.description.moniker ?? "" })
       ],
     },
     {
       ...common,
       cols: [
-        buildLeftColumn({ text: "Thời gian thực hiện" }),
+        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgUndelegate.time" }) }),
         buildRightColumn({ text: dateString })
       ],
     },
     {
       ...common,
       cols: [
-        buildLeftColumn({ text: "Phí rút" }),
+        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgUndelegate.fee" }) }),
         buildRightColumn({ text: fee })
       ],
     },
@@ -379,6 +387,7 @@ export function renderMsgDelegate(
   fee: string,
   validatorAddress: string
 ) {
+  const intl = useIntl();
   const { transactionStore } = useStore();
   const validator = transactionStore.getValidator({ validatorAddress })
   const commission = new IntPretty(
@@ -405,14 +414,14 @@ export function renderMsgDelegate(
     {
       ...common,
       cols: [
-        buildLeftColumn({ text: "Quỹ đầu tư" }),
+        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgDelegate.validator" }) }),
         buildRightColumn({ text: validator?.description.moniker ?? "" })
       ],
     },
     {
       ...common,
       cols: [
-        buildLeftColumn({ text: "Hoa hồng khi mở quỹ" }),
+        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgDelegate.commission" }) }),
         buildRightColumn({
           text: commission
         })
@@ -421,14 +430,14 @@ export function renderMsgDelegate(
     {
       ...common,
       cols: [
-        buildLeftColumn({ text: "Thời gian thực hiện" }),
+        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgDelegate.time" }) }),
         buildRightColumn({ text: dateString })
       ],
     },
     {
       ...common,
       cols: [
-        buildLeftColumn({ text: "Phí giao dịch" }),
+        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgDelegate.fee" }) }),
         buildRightColumn({ text: fee })
       ],
     },
@@ -442,12 +451,13 @@ export function renderMsgWithdrawDelegatorReward(
   fee: string,
 ): IRow[] {
   const { chainStore, transactionStore } = useStore();
+  const intl = useIntl();
 
   var rows: IRow[] = [
     {
       ...common,
       cols: [
-        buildLeftColumn({ text: "Nhận tiền lãi từ quỹ" }),
+        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgWithdrawDelegatorReward.withdraw" }) }),
         buildRightColumn({ text: "" })
       ],
     },
@@ -492,7 +502,7 @@ export function renderMsgWithdrawDelegatorReward(
     {
       ...common,
       cols: [
-        buildLeftColumn({ text: "Thời gian thực hiện" }),
+        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgWithdrawDelegatorReward.time" }) }),
         buildRightColumn({ text: dateString })
       ],
     },
@@ -500,7 +510,7 @@ export function renderMsgWithdrawDelegatorReward(
     {
       ...common,
       cols: [
-        buildLeftColumn({ text: "Phí rút" }),
+        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgWithdrawDelegatorReward.fee" }) }),
         buildRightColumn({ text: fee })
       ],
     },
@@ -510,24 +520,19 @@ export function renderMsgWithdrawDelegatorReward(
 }
 
 export function renderMsgVote(proposalId: string, option: string | number): IRow[] {
+  const intl = useIntl();
   const textualOption = (() => {
     if (typeof option === "string") {
       return option;
     }
 
     switch (option) {
-      case 0:
-        return "Empty";
-      case 1:
-        return "Yes";
-      case 2:
-        return "Abstain";
-      case 3:
-        return "No";
-      case 4:
-        return "No with veto";
-      default:
-        return "Unspecified";
+      case 0: return intl.formatMessage({ id: "tx.result.models.msgVote.option.empty" });
+      case 1: return intl.formatMessage({ id: "tx.result.models.msgVote.option.yes" });
+      case 2: return intl.formatMessage({ id: "tx.result.models.msgVote.option.abstain" });
+      case 3: return intl.formatMessage({ id: "tx.result.models.msgVote.option.no" });
+      case 4: return intl.formatMessage({ id: "tx.result.models.msgVote.option.noWithVeto" });
+      default: return intl.formatMessage({ id: "tx.result.models.msgVote.option.unspecified" });
     }
   })();
 
@@ -537,15 +542,21 @@ export function renderMsgVote(proposalId: string, option: string | number): IRow
       ...common,
       alignItems: AlignItems.top,
       cols: [
-        buildLeftColumn({ text: "Vote", flex: 3, }),
+        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgVote.option.vote" }), flex: 3, }),
         buildRightColumn({ text: textualOption, flex: 7, })
       ],
     },
     {
       ...common,
       cols: [
-        buildLeftColumn({ text: "On", flex: 3, }),
-        buildRightColumn({ text: `Proposal ${proposalId}`, flex: 7, })
+        buildLeftColumn({ 
+          text: intl.formatMessage({ id: "tx.result.models.msgVote.option.proposalLabel" }), 
+          flex: 3, 
+        }),
+        buildRightColumn({ 
+          text: intl.formatMessage({ id: "tx.result.models.msgVote.option.proposalValue" }, { proposalId }), 
+          flex: 7, 
+        })
       ],
     },
   ], separatorRow);

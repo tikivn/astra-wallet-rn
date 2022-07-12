@@ -5,7 +5,8 @@ import { Button, IRow, ListRowView } from "../../../components";
 import { useStore } from "../../../stores";
 import { renderAminoMessages } from "../models/amino";
 import { renderDirectMessages } from "../models/direct";
-import * as WebBrowser from "expo-web-browser";
+import { useIntl } from "react-intl";
+import { useSmartNavigation } from "../../../navigation";
 
 export const TransactionDetailsView: FunctionComponent<{
   style?: ViewStyle;
@@ -17,6 +18,9 @@ export const TransactionDetailsView: FunctionComponent<{
   const chainId =
     transactionStore.txData?.chainInfo?.chainId ?? chainStore.current.chainId;
   const chainInfo = chainStore.getChain(chainId);
+
+  const intl = useIntl();
+  const smartNavigation = useSmartNavigation();
 
   useEffect(() => {
     if (transactionStore.txMsgsMode && transactionStore.txMsgs) {
@@ -45,7 +49,7 @@ export const TransactionDetailsView: FunctionComponent<{
       {chainInfo && chainInfo.raw.txExplorer && transactionStore.txHash && (
         <Button
           size="default"
-          text="Xem chi tiết trên Astra Scan"
+          text={intl.formatMessage({ id: "tx.result.viewDetails" }, { page: "Astra Scan" })}
           mode="text"
           containerStyle={{ marginTop: 16 }}
           onPress={() => {
@@ -53,9 +57,10 @@ export const TransactionDetailsView: FunctionComponent<{
               const txHash = Buffer.from(transactionStore.txHash)
                 .toString("hex")
                 .toUpperCase();
-              WebBrowser.openBrowserAsync(
-                chainInfo.raw.txExplorer.txUrl.replace("{txHash}", txHash)
-              );
+              const url = chainInfo.raw.txExplorer.txUrl.replace("{txHash}", txHash)
+              smartNavigation.navigateSmart("WebView", {
+                url: url
+              });  
             }
           }}
         />

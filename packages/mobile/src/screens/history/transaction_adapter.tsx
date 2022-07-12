@@ -1,5 +1,5 @@
 import { TxResponse } from "@keplr-wallet/stores/build/query/cosmos/tx/types";
-import { IntlShape } from "react-intl";
+import { useIntl } from "react-intl";
 
 export interface Coin {
     denom: string,
@@ -21,7 +21,8 @@ export function fromCoin(coin: any & Coin): Coin {
     }
 }
 
-export function toUiItem(intl: IntlShape, bech32Address: string, txResponse: TxResponse): TransactionItem<TxResponse> {
+export function toUiItem(bech32Address: string, txResponse: TxResponse): TransactionItem<TxResponse> {
+    const intl = useIntl();
     let msgs = txResponse?.tx?.body?.messages || [];
     let msgRaw = firstOrNull(msgs)
     

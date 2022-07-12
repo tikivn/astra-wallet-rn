@@ -9,14 +9,12 @@ import {
   IRecipientConfig,
 } from "@keplr-wallet/hooks";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, Fragment, useMemo } from "react";
+import React, { FunctionComponent, useMemo } from "react";
+import { FormattedMessage } from "react-intl";
 import {
-  ViewStyle,
-  StyleSheet,
   Text,
   View,
   TextInput,
-  Touchable,
 } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import QRCode from "react-native-qrcode-svg";
@@ -29,6 +27,7 @@ export const AddressInput: FunctionComponent<{
 }> = observer(({ recipientConfig, memoConfig }) => {
   const style = useStyle();
   const smartNavigation = useSmartNavigation();
+
   const isENSAddress = ObservableEnsFetcher.isValidENS(
     recipientConfig.rawRecipient
   );
@@ -70,10 +69,8 @@ export const AddressInput: FunctionComponent<{
         ])}
       >
         <View style={style.flatten(["flex-1", "margin-right-12"])}>
-          <Text
-            style={style.flatten(["color-text-black-low", "text-caption2"])}
-          >
-            Địa chỉ người nhận
+          <Text style={style.flatten(["color-text-black-low", "text-caption2"])} >
+            <FormattedMessage id="component.address.input.receiver.label"/>
           </Text>
           <TextInput
             value={recipientConfig.rawRecipient}
@@ -103,14 +100,9 @@ export const AddressInput: FunctionComponent<{
           />
         </TouchableOpacity>
       </View>
-      <Text
-        style={style.flatten([
-          "margin-top-4",
-          "color-text-black-low",
-          "text-caption2",
-        ])}
-      >
-        Lưu ý: nhập chính xác để đảm bảo số Astra được gửi đến đúng địa chỉ.
+      
+      <Text style={style.flatten(["margin-top-4", "color-text-black-low", "text-caption2"])}>
+        <FormattedMessage id="component.address.input.warning"/>
       </Text>
     </React.Fragment>
   );

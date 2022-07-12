@@ -14,6 +14,7 @@ import { useSmartNavigation } from "../../../navigation";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { TooltipLabel } from "../component";
+import { FormattedMessage, useIntl } from "react-intl";
 
 type Sort = "APY" | "Voting Power" | "Name";
 
@@ -40,6 +41,7 @@ export const NewValidatorListScreen: FunctionComponent = observer(() => {
     );
 
     const style = useStyle();
+    const intl = useIntl();
 
     const data = useMemo(() => {
         let data = bondedValidators.validators;
@@ -107,8 +109,10 @@ export const NewValidatorListScreen: FunctionComponent = observer(() => {
                     return (
                         <View style={style.flatten(["flex", "height-40", "padding-top-12"])}>
                             <View style={style.flatten(["flex-row", "justify-between", "padding-x-16", "margin-bottom-8"])}>
-                                <Text style={style.flatten(["color-gray-30", "text-caption2"])}>Tên</Text>
-                                <TooltipLabel text="Tổng số cổ phần"/>
+                                <Text style={style.flatten(["color-gray-30", "text-caption2"])}>
+                                    <FormattedMessage id="validator.list.name" />
+                                </Text>
+                                <TooltipLabel text={intl.formatMessage({ id: "validator.list.totalShares" })}/>
                             </View>
                             <CardDivider style={style.flatten(["background-color-gray-70", "margin-bottom-0"])} />
                         </View>

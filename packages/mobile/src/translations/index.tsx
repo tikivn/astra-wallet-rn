@@ -1,12 +1,13 @@
 
 import { NativeModules, Platform } from "react-native";
 
-import MessagesVi from "./vi.json";
-import MessagesEn from "./en.json";
-
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { CustomFormats, IntlProvider } from "react-intl";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import { EnMsgs, ViMsgs } from "./splits";
+import MessagesVi from "./vi.json";
+import MessagesEn from "./en.json";
 
 export type IntlMessage = Record<string, string>;
 export type IntlMessages = { [lang: string]: Record<string, string> };
@@ -17,7 +18,6 @@ interface Language {
   language: string;
   setLanguage: (language: string) => void;
 }
-
 
 function getDeviceLang() {
   switch (Platform.OS) {
@@ -33,9 +33,17 @@ function getDeviceLang() {
   }
 }
 
-const messages: IntlMessages = {
-    vi: MessagesVi,
-    en: MessagesEn
+const allLangeMessages: IntlMessages = {
+    vi: Object.assign(
+      {}, 
+      ...ViMsgs,
+      MessagesVi
+    ),
+    en: Object.assign(
+      {}, 
+      ...EnMsgs,
+      MessagesEn
+    ),
 };
 
 function getMessages(
@@ -44,8 +52,8 @@ function getMessages(
 ): IntlMessage {
   return Object.assign(
     {},
-    messages[DEFAULT_LANG],
-    messages[language],
+    allLangeMessages[DEFAULT_LANG],
+    allLangeMessages[language],
     additionalMessages[language]
   );
 }
@@ -56,7 +64,7 @@ async function initLanguage(additionalMessages: IntlMessages): Promise<string> {
   const language = 
     (await AsyncStorage.getItem(LANGUAGE_KEY)) || getDeviceLang()
 
-  if (!messages[language] && !additionalMessages[language]) {
+  if (!allLangeMessages[language] && !additionalMessages[language]) {
     return DEFAULT_LANG;
   }
 

@@ -20,7 +20,7 @@ import { toUiItem } from "./transaction_adapter";
 import { TransactionItem } from "./transaction_history_item";
 import { TxResponse } from "@keplr-wallet/stores/build/query/cosmos/tx/types";
 import { useSmartNavigation } from "../../navigation";
-import { useIntl } from "react-intl";
+import { FormattedMessage } from "react-intl";
 
 export type PageRequestInfo = {
   currentPage: number;
@@ -40,7 +40,6 @@ export const HistoryScreen: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
   const style = useStyle();
-  const intl = useIntl();
 
   const currentChain = chainStore.current;
   const currentChainId = currentChain.chainId;
@@ -181,7 +180,7 @@ export const HistoryScreen: FunctionComponent = observer(() => {
 
     const histories = txResponses
       .sort((lh, rh) => rh.timestamp.localeCompare(lh.timestamp))
-      .map((txResponse) => toUiItem(intl, bech32Address, txResponse));
+      .map((txResponse) => toUiItem(bech32Address, txResponse));
     return histories;
   })();
 
@@ -210,7 +209,7 @@ export const HistoryScreen: FunctionComponent = observer(() => {
             "flex-1",
           ])}
         >
-          {intl.formatMessage({ id: "history.emptyHistory" })}
+          <FormattedMessage id="history.emptyHistory" />
         </Text>
       }
       ItemSeparatorComponent={() => (
@@ -235,7 +234,7 @@ export const HistoryScreen: FunctionComponent = observer(() => {
                 "flex-1",
               ])}
             >
-            {intl.formatMessage({ id: "common.loading" })}
+              <FormattedMessage id="common.loading" />
             </Text>
           )}
         </View>

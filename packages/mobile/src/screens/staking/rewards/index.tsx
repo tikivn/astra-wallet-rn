@@ -9,6 +9,7 @@ import { useSmartNavigation } from "../../../navigation";
 import { RewardDetails } from "./rewards";
 import { useSendTxConfig } from "@keplr-wallet/hooks";
 import { EthereumEndpoint } from "../../../config";
+import { FormattedMessage, useIntl } from "react-intl";
 export const StakingRewardScreen: FunctionComponent = () => {
     const { chainStore, accountStore, queriesStore, analyticsStore, transactionStore } = useStore();
 
@@ -16,6 +17,7 @@ export const StakingRewardScreen: FunctionComponent = () => {
     const queries = queriesStore.get(chainStore.current.chainId);
   
     const style = useStyle();
+    const intl = useIntl();
     const smartNavigation = useSmartNavigation();
   
     const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
@@ -67,7 +69,9 @@ export const StakingRewardScreen: FunctionComponent = () => {
     return (
         <PageWithScrollView backgroundColor={style.get("color-background").color}>
             <View style={style.flatten(["height-32"])}></View>
-            <Text style={style.flatten(["color-gray-30", "subtitle3", "text-center"])}>Tổng số tiền lãi</Text>
+            <Text style={style.flatten(["color-gray-30", "subtitle3", "text-center"])}>
+              <FormattedMessage id="staking.rewards.totalProfit" />
+            </Text>
             <Text style={style.flatten(["color-gray-10", "title1", "text-center", "margin-top-8"])}>
                 {stakingReward
                     .shrink(true)
@@ -82,7 +86,7 @@ export const StakingRewardScreen: FunctionComponent = () => {
             <Button
                 containerStyle={style.flatten(["border-radius-4", "height-44", "margin-16"])}
                 textStyle={style.flatten(["subtitle2"])}
-                text="Nhận tiền lãi"
+                text={intl.formatMessage({ id: "staking.rewards.withdrawRewards" })}
                 size="large" onPress={withdrawAllRewards}
                 loading={account.txTypeInProgress === "withdrawRewards"}
                 />

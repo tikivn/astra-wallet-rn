@@ -919,7 +919,6 @@ export const WalletNavigation: FunctionComponent = () => {
       <Stack.Screen
         options={{
           title: intl.formatMessage({ id: "validator.details.new.title" }),
-          headerShown: false,
         }}
         name="Validator.Details.New"
         component={NewValidatorDetailsScreen}

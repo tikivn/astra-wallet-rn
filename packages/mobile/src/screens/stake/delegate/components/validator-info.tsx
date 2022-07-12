@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
+import { useIntl } from "react-intl";
 import { ViewStyle } from "react-native";
 import FastImage from "react-native-fast-image";
 import { buildLeftColumn, buildRightColumn } from "../../../../components/foundation-view/item-row";
@@ -24,6 +25,7 @@ export const ValidatorInfo: FunctionComponent<{
   commission,
   votingPower,
 }) => {
+  const intl = useIntl();
   function thumbnailIcon(url: string): React.ReactNode {
     return url
       ? <FastImage
@@ -52,14 +54,14 @@ export const ValidatorInfo: FunctionComponent<{
     {
       type: "items",
       cols: [
-        buildLeftColumn({ text: "Tổng số cổ phần" }),
+        buildLeftColumn({ text: intl.formatMessage({ id: "stake.delegate.validator.totalShares" }) }),
         buildRightColumn({ text: votingPower }),
       ]
     },
     {
       type: "items",
       cols: [
-        buildLeftColumn({ text: "Thời gian hoạt động" }),
+        buildLeftColumn({ text: intl.formatMessage({ id: "stake.delegate.validator.uptime" }) }),
         buildRightColumn({ text: "100%" }),
       ]
     },

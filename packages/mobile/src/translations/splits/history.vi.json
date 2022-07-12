@@ -1,0 +1,19 @@
+{
+    "history.emptyHistory": "Không tìm thấy giao dịch nào trong quá khứ. Bạn hãy kéo refresh để tải lại dữ liệu hoặc thử lại sau một lúc.",
+    "history.status.success": "Thành công",
+    "history.status.unknown": "Không xác định",
+    "history.action.notsupport": "Chưa hỗ trợ",
+    "history.action.MsgSend.sender": "Gửi",
+    "history.action.MsgSend.receiver": "Nhận",
+    "history.action.MsgMultiSend.sender": "Gửi theo nhóm",
+    "history.action.MsgMultiSend.receiver": "Nhận theo nhóm",
+    "history.action.MsgDelegate.sender": "Đầu tư",
+    "history.action.MsgDelegate.receiver": "Nhận đầu tư",
+    "history.action.MsgBeginRedelegate.sender": "Chuyển quỹ đầu tư",
+    "history.action.MsgBeginRedelegate.receiver": "Nhận đầu tư",
+    "history.action.MsgUndelegate.sender": "Rút khỏi quỹ đầu tư",
+    "history.action.MsgUndelegate.receiver": "Bị rút đầu tư",
+    "history.action.MsgWithdrawDelegatorReward.sender": "Rút thưởng về ví",
+    "history.action.MsgWithdrawDelegatorReward.receiver": "Nhà đầu tư rút thưởng",
+    "": ""
+}

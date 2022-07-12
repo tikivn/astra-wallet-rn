@@ -11,6 +11,7 @@ import { useSmartNavigation } from "../../../navigation";
 import { useSendTxConfig } from "@keplr-wallet/hooks";
 import { EthereumEndpoint } from "../../../config";
 import { RouteProp, useRoute } from "@react-navigation/native";
+import { useIntl } from "react-intl";
 
 export const SendTokenScreen: FunctionComponent = observer(() => {
   const {
@@ -77,6 +78,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
     sendConfigs.feeConfig.error;
   const txStateIsValid = sendConfigError == null;
   const style = useStyle();
+  const intl = useIntl();
   const smartNavigation = useSmartNavigation();
 
   return (
@@ -84,17 +86,6 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
       style={style.flatten(["margin-top-16", "padding-x-16"])}
       backgroundColor={style.get("color-background").color}
     >
-      <Text
-        style={style.flatten([
-          "color-text-black-low",
-          "margin-top-16",
-          "text-left",
-          "body3",
-        ])}
-      >
-        Bạn có thể sao chép địa chỉ này và dán vào ô địa chỉ khi gửi Astra từ
-        nguồn khác vào đây.
-      </Text>
       <View style={style.get("height-12")} />
       <AddressInput
         recipientConfig={sendConfigs.recipientConfig}
@@ -104,7 +95,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
       <AmountInput amountConfig={sendConfigs.amountConfig} />
       <View style={style.get("height-12")} />
       <Button
-        text="Tiếp tục"
+        text={intl.formatMessage({id: "wallet.send.continue"})}
         size="large"
         containerStyle={style.flatten(["border-radius-4"])}
         textStyle={style.flatten(["subtitle2"])}

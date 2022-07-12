@@ -16,6 +16,7 @@ import { Button } from "../../../components/button";
 import { useSmartNavigation } from "../../../navigation";
 import { ItemRow, AlignItems } from "../../../components/foundation-view/item-row";
 import { TextAlign } from "../../../components/foundation-view/text-style";
+import { FormattedMessage, useIntl } from "react-intl";
 
 export const RedelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -37,6 +38,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, analyticsStore, transactionStore } = useStore();
 
   const style = useStyle();
+  const intl = useIntl();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
@@ -111,7 +113,9 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
       contentContainerStyle={style.get("flex-grow-1")}
     >
       <View style={style.flatten(["height-page-pad"])} />
-      <Text style={style.flatten(["color-gray-30", "subtitle2"])}>Từ</Text>
+      <Text style={style.flatten(["color-gray-30", "subtitle2"])}>
+        <FormattedMessage  id="stake.redelegate.from" />
+      </Text>
       <ValidatorItem
         containerStyle={style.flatten(["margin-bottom-16"])}
         name={srcValidator ? srcValidator.description.moniker : "..."}
@@ -120,8 +124,8 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
       />
 
       <SelectorButtonWithoutModal
-        label="Sang"
-        placeHolder="Select Validator"
+        label={intl.formatMessage({ id: "stake.redelegate.to" })}
+        placeHolder={intl.formatMessage({ id: "stake.redelegate.selectValidator" })}
         selected={
           dstValidator
             ? {
@@ -138,13 +142,15 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           });
         }}
       />
-      <AmountInput label="Số tiền chuyển đổi" amountConfig={sendConfigs.amountConfig} />
+      <AmountInput label={intl.formatMessage({ id: "stake.redelegate.amountLabel" })} 
+        amountConfig={sendConfigs.amountConfig} 
+      />
       <ItemRow style={{ marginHorizontal: 0, paddingHorizontal: 0, }}
         alignItems={AlignItems.center}
         itemSpacing={12}
         columns={[
           {
-            text: "Khả dụng",
+            text: intl.formatMessage({ id: "stake.redelegate.available" }),
             textColor: Colors["gray-30"],
           },
           {
@@ -159,7 +165,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
         itemSpacing={12}
         columns={[
           {
-            text: "Phí",
+            text: intl.formatMessage({ id: "stake.redelegate.fee" }),
             textColor: Colors["gray-30"],
           },
           {
@@ -171,7 +177,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
         ]} />
       <View style={style.flatten(["flex-1"])} />
       <Button
-        text="Chuyển đổi quỹ"
+        text={intl.formatMessage({ id: "stake.redelegate.redelagate" })}
         size="large"
         disabled={!account.isReadyToSendTx || !txStateIsValid}
         loading={account.txTypeInProgress === "redelegate"}

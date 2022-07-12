@@ -16,6 +16,7 @@ import { buildLeftColumn, buildRightColumn } from "../../../components/foundatio
 import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
 import { IRow, ListRowView } from "../../../components/foundation-view/list-row-view";
 import { AlertInline } from "../../../components";
+import { useIntl } from "react-intl";
 
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -35,6 +36,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, analyticsStore, userBalanceStore, transactionStore } = useStore();
 
   const style = useStyle();
+  const intl = useIntl();
   const smartNavigation = useSmartNavigation();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -96,14 +98,14 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     {
       type: "items",
       cols: [
-        buildLeftColumn({ text: "Khả dụng" }),
+        buildLeftColumn({ text: intl.formatMessage({ id: "stake.delegate.available" }) }),
         buildRightColumn({ text: balance }),
       ]
     },
     {
       type: "items",
       cols: [
-        buildLeftColumn({ text: "Phí" }),
+        buildLeftColumn({ text: intl.formatMessage({ id: "stake.delegate.fee" }) }),
         buildRightColumn({ text: fee }),
       ]
     },
@@ -118,7 +120,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       <View style={style.flatten(["height-page-pad"])} />
       <AlertInline
         type="warning"
-        content="Sau khi đầu tư, nếu bạn muốn rút tiền, thì bạn sẽ nhận được tiền sau 14 ngày."
+        content={intl.formatMessage({ id: "stake.delegate.warning" })}
       />
       <ValidatorInfo
         style={{ marginTop: 24, }}
@@ -126,7 +128,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       />
       <AmountInput
         containerStyle={{ marginTop: 24, }}
-        label="Số lượng"
+        label={intl.formatMessage({ id: "stake.delegate.amount" })}
         amountConfig={sendConfigs.amountConfig}
       />
 
@@ -139,7 +141,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
 
       <View style={style.flatten(["flex-1"])} />
       <Button
-        text="Đầu tư"
+        text={intl.formatMessage({ id: "stake.delegate.invest" })}
         size="large"
         disabled={!account.isReadyToSendTx || !txStateIsValid}
         loading={account.txTypeInProgress === "delegate"}

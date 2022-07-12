@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useMemo } from "react";
 import { observer } from "mobx-react-lite";
-import { ViewStyle, StyleSheet, Text, View, TextInput } from "react-native";
+import { Text, View, TextInput } from "react-native";
 import { useStyle } from "../../../styles";
 import { Button } from "../../../components/button";
 import {
@@ -12,6 +12,7 @@ import {
     ZeroAmountError,
 } from "@keplr-wallet/hooks";
 import { useStore } from "../../../stores";
+import { FormattedMessage, useIntl } from "react-intl";
 
 export const AmountInput: FunctionComponent<{
     amountConfig: IAmountConfig;
@@ -19,9 +20,10 @@ export const AmountInput: FunctionComponent<{
     ({
         amountConfig,
     }) => {
-        const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+        const { chainStore, accountStore, queriesStore } = useStore();
   
         const style = useStyle();
+        const intl = useIntl();
       
       
         const account = accountStore.getAccount(chainStore.current.chainId);
@@ -58,17 +60,19 @@ export const AmountInput: FunctionComponent<{
                 <View style={
                     style.flatten(["padding-x-16", "padding-y-12", "flex-0", "background-color-background-secondary", "overflow-hidden", "border-radius-12", "justify-between"])}>
                     <View style={style.flatten(["flex-row", "justify-between"])}>
-                        <Text style={style.flatten(["color-text-black-low", "text-caption2"])}>Số Astra muốn gửi</Text>
+                        <Text style={style.flatten(["color-text-black-low", "text-caption2"])}><FormattedMessage id="component.amount.input.sendindAmount"/></Text>
                         <View style={style.flatten(["flex-row"])}>
-                        <Text style={style.flatten(["color-text-black-low", "text-caption2"])}>{'(Khả dụng: '}</Text>
-                        <Text style={style.flatten(["color-text-black-low", "text-caption2"])}>
-                            {stakable.trim(true)
-                            .shrink(true)
-                            .maxDecimals(6)
-                            .upperCase(true)
-                            .hideDenom(true)
-                            .toString()}{')'}</Text>
-                            </View>
+                            <Text style={style.flatten(["color-text-black-low", "text-caption2"])}>
+                                <FormattedMessage id="component.amount.input.available" values={{
+                                        amount: stakable.trim(true)
+                                            .shrink(true)
+                                            .maxDecimals(6)
+                                            .upperCase(true)
+                                            .hideDenom(true)
+                                            .toString()
+                                }} />
+                            </Text>
+                        </View>
                     </View>
                     <View style={style.flatten(["flex-row", "margin-top-8", "justify-between"])}>
                         <TextInput
@@ -78,7 +82,7 @@ export const AmountInput: FunctionComponent<{
                                 amountConfig.setAmount(text);
                             }}
                             keyboardType="numeric" />
-                        <Button text={"Gửi hết"}
+                        <Button text={intl.formatMessage({id: "component.amount.input.sendAll"})}
                             style={style.flatten(["self-center"])}
                             size="small"
                             textStyle={style.flatten(["color-white", "subtitle5"])}
@@ -91,7 +95,7 @@ export const AmountInput: FunctionComponent<{
                     </View>
                 </View>
                 <View style={style.flatten(["flex-row", "padding-y-16", "justify-between"])}>
-                    <Text style={style.flatten(["color-text-black-low", "body3"])}>Phí giao dịch</Text>
+                    <Text style={style.flatten(["color-text-black-low", "body3"])}><FormattedMessage id="component.amount.input.fee"/></Text>
                     <Text style={style.flatten(["color-text-black-low", "body3", "text-right"])}>1 ASA</Text>
                 </View>
             </React.Fragment>

@@ -13,6 +13,7 @@ import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { TooltipLabel } from "../component";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
+import { useIntl } from "react-intl";
 
 export const ValidatorNameCard: FunctionComponent<{
     containerStyle?: ViewStyle;
@@ -51,6 +52,7 @@ export const ValidatorNameCard: FunctionComponent<{
 
 
     const style = useStyle();
+    const intl = useIntl();
 
     return (
         <Card style={containerStyle}>
@@ -64,13 +66,17 @@ export const ValidatorNameCard: FunctionComponent<{
                     <Text style={style.flatten(["subtitle1", "color-white", "margin-top-16", "margin-bottom-4"])}>
                         {validator.description.moniker}
                     </Text>
-                    <TooltipLabel textStyle={style.flatten(["color-green-50"])} text={"Hoa hồng " + new IntPretty(
-                        new Dec(validator.commission.commission_rates.rate)
-                    )
-                        .moveDecimalPointRight(2)
-                        .maxDecimals(2)
-                        .trim(true)
-                        .toString() + "%"} />
+                    <TooltipLabel textStyle={style.flatten(["color-green-50"])}
+                        text={intl.formatMessage(
+                            { id: "validator.details.namecard.commission" },
+                            {
+                                percent: new IntPretty(new Dec(validator.commission.commission_rates.rate))
+                                    .moveDecimalPointRight(2)
+                                    .maxDecimals(2)
+                                    .trim(true)
+                                    .toString()
+                            }
+                        )} />
                 </CardBody>
             ) : null}
         </Card>

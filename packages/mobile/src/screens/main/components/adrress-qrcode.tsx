@@ -1,17 +1,17 @@
-import { Bech32Address } from "@keplr-wallet/cosmos";
 import React, { FunctionComponent } from "react";
 import { ViewStyle, StyleSheet, Text, View } from "react-native";
 import { useSimpleTimer } from "../../../hooks";
 import { useStyle } from "../../../styles";
 import Clipboard from "expo-clipboard";
-import LottieView from "lottie-react-native";
 import { Button } from "../../../components/button";
 import QRCode from "react-native-qrcode-svg";
+import { useIntl } from "react-intl";
 export const AddressQRCodeItem: FunctionComponent<{
     style?: ViewStyle;
     address: string;
 }> = ({ style: propStyle, address }) => {
     const style = useStyle();
+    const intl = useIntl();
     const { isTimedOut, setTimer } = useSimpleTimer();
 
     return (
@@ -36,7 +36,7 @@ export const AddressQRCodeItem: FunctionComponent<{
                 ])}
                 underlayColor={style.get("color-rect-button-default-underlay").color}
                 size={"small"}
-                text={!isTimedOut ? "Sao chép" : "Đã sao chép"}
+                text={intl.formatMessage({id: (!isTimedOut ? "component.text.copy" : "component.text.copied") })}
                 onPress={() => {
                     Clipboard.setString(address);
                     setTimer(2000);

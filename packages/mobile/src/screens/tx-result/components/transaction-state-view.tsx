@@ -1,6 +1,7 @@
 import LottieView from "lottie-react-native";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
+import { useIntl } from "react-intl";
 import { Text, View, ViewStyle } from "react-native";
 import {
   StepView,
@@ -32,6 +33,8 @@ export const TransactionStateView: FunctionComponent<{
 
   const isFailure = txState == "failure";
 
+  const intl = useIntl();
+
   function getMainText(type: TxType, state: TxState): string {
     // send:        Đang gửi - Đã gửi thành công
     // delegate:    Đang chuyển tiền - Đầu tư thành công
@@ -41,29 +44,29 @@ export const TransactionStateView: FunctionComponent<{
     // swap:
     const allMainText: Record<string, Record<string, string>> = {
       send: {
-        pending: "Đang gửi",
-        success: "Đã gửi thành công",
-        failure: "Giao dịch gửi tiền thất bại",
+        pending: intl.formatMessage({ id: "tx.result.state.send.pending" }),
+        success: intl.formatMessage({ id: "tx.result.state.send.success" }),
+        failure: intl.formatMessage({ id: "tx.result.state.send.failure" }),
       },
       delegate: {
-        pending: "Đang chuyển tiền",
-        success: "Đầu tư thành công",
-        failure: "Giao dịch đầu tư thất bại",
+        pending: intl.formatMessage({ id: "tx.result.state.delegate.pending" }),
+        success: intl.formatMessage({ id: "tx.result.state.delegate.success" }),
+        failure: intl.formatMessage({ id: "tx.result.state.delegate.failure" }),
       },
       undelegate: {
-        pending: "Đang rút tiền",
-        success: "Rút tiền thành công",
-        failure: "Rút tiền thất bại",
+        pending: intl.formatMessage({ id: "tx.result.state.undelegate.pending" }),
+        success: intl.formatMessage({ id: "tx.result.state.undelegate.success" }),
+        failure: intl.formatMessage({ id: "tx.result.state.undelegate.failure" }),
       },
       redelegate: {
-        pending: "Đang chuyển đổi",
-        success: "Chuyển đổi thành công",
-        failure: "Chuyển đổi thất bại",
+        pending: intl.formatMessage({ id: "tx.result.state.redelegate.pending" }),
+        success: intl.formatMessage({ id: "tx.result.state.redelegate.success" }),
+        failure: intl.formatMessage({ id: "tx.result.state.redelegate.failure" }),
       },
       withdraw: {
-        pending: "Đang chuyển tiền lãi",
-        success: "Tiền lãi đã được chuyển đến bạn",
-        failure: "Chuyển tiền lãi thất bại",
+        pending: intl.formatMessage({ id: "tx.result.state.withdraw.pending" }),
+        success: intl.formatMessage({ id: "tx.result.state.withdraw.success" }),
+        failure: intl.formatMessage({ id: "tx.result.state.withdraw.failure" }),
       },
       swap: {
         pending: "",
@@ -79,7 +82,7 @@ export const TransactionStateView: FunctionComponent<{
   }
 
   const mainText = getMainText(transactionStore.txType, txState);
-  const errorText = "Hệ thông bị quá tải. Vui lòng thử lại";
+  const errorText = intl.formatMessage({ id: "tx.result.state.error" });
   const subText = isFailure ? errorText : amountText;
 
   const mainTextStyle = {
@@ -96,14 +99,14 @@ export const TransactionStateView: FunctionComponent<{
     marginTop: isFailure ? 8 : 4,
   };
 
-  var initialStepText = "Đã ghi nhận";
-  var finalStepText = "Đang xử lý";
+  var initialStepText = intl.formatMessage({ id: "tx.result.state.initialized" });
+  var finalStepText = intl.formatMessage({ id: "tx.result.state.processing" });
   var lineState: StepViewState = "inactive";
   var type: StepViewType = "dot";
   var stateColors: StepViewStateColors = StepViewStateColorsBlue;
 
   if (txState == "success") {
-    finalStepText = "Giao dịch thành công";
+    finalStepText = intl.formatMessage({ id: "tx.result.state.sucess" });
     lineState = "active";
     type = "tick";
     stateColors = StepViewStateColorsGreen;

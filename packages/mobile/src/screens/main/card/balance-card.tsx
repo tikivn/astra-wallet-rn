@@ -1,6 +1,7 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
-import { ViewStyle, View, Text } from "react-native";
+import { useIntl } from "react-intl";
+import { ViewStyle, Text } from "react-native";
 import { Card, CardBody } from "../../../components/card";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
@@ -10,6 +11,7 @@ export const BalanceCard: FunctionComponent<{
     containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
     const style = useStyle();
+    const intl = useIntl();
     const { chainStore, queriesStore, accountStore, priceStore } = useStore();
 
     const priceChange = priceStore.getPriceChangePercent();
@@ -37,7 +39,9 @@ export const BalanceCard: FunctionComponent<{
     return (
         <Card style={containerStyle}>
             <CardBody>
-                <Text style={style.flatten(["color-white", "subtitle2", "margin-top-32"])}>Tài sản của tôi</Text>
+                <Text style={style.flatten(["color-white", "subtitle2", "margin-top-32"])}>
+                    {intl.formatMessage({id: "main.balance.card.title"})}
+                </Text>
                 {tokens.map((token) => {
                     return (
                         <TokenItemNew

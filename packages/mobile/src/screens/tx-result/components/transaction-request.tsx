@@ -7,7 +7,7 @@ import { CardDivider } from "../../../components/card";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { Button } from "../../../components";
-import { useIntl } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 
 export const TransactionRequestView: FunctionComponent<{
   onApprove: (name?: string) => void;
@@ -89,9 +89,7 @@ export const TransactionRequestView: FunctionComponent<{
           ])}
         >
           <Text style={style.flatten(["color-blue-70", "subtitle3"])}>
-            {isOpen
-              ? intl.formatMessage({ id: "walletconnect.action.hide" })
-              : intl.formatMessage({ id: "walletconnect.action.show" })}
+            <FormattedMessage id={isOpen ? "walletconnect.action.hide" : "walletconnect.action.show"} />
           </Text>
           {isOpen ? (
             <CollapseIcon size={20} color={style.get("color-blue-70").color} />

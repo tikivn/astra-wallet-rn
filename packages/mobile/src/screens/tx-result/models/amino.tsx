@@ -11,7 +11,6 @@ import {
   MessageObj,
   MsgBeginRedelegate,
   MsgDelegate,
-  MsgExecuteContract,
   MsgSend,
   MsgTransfer,
   MsgUndelegate,

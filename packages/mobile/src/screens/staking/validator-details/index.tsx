@@ -9,13 +9,11 @@ import { useStyle } from "../../../styles";
 import { CommissionsCard } from "./commission-card";
 import { ValidatorNameCard } from "./name-card";
 import { DelegatedCard } from "./delegated-card";
-import { Dimensions, ImageBackground, Text, View } from "react-native";
-import { LeftArrowIcon } from "../../../components/icon";
-import { RectButton } from "../../../components/rect-button";
-import { useSmartNavigation } from "../../../navigation";
+import { ImageBackground, Text, View } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import { UnbondingCard } from "./unbonding-card";
 import { DelegationsEmptyItem } from "../dashboard/delegate";
+import { useIntl } from "react-intl";
 
 export const NewValidatorDetailsScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -30,7 +28,6 @@ export const NewValidatorDetailsScreen: FunctionComponent = observer(() => {
     >
   >();
 
-  const smartNavigation = useSmartNavigation();
   const validatorAddress = route.params.validatorAddress;
 
   const { chainStore, queriesStore, accountStore } = useStore();
@@ -43,12 +40,13 @@ export const NewValidatorDetailsScreen: FunctionComponent = observer(() => {
     .getDelegationTo(validatorAddress);
 
   const style = useStyle();
+  const intl = useIntl();
 
   const hasStake = staked.toDec().gt(new Dec(0));
   const [index, setIndex] = useState(0);
   const [routes] = useState([
-    { key: "first", title: "Về quỹ" },
-    { key: "second", title: "Số tiền đang rút" },
+    { key: "first", title: intl.formatMessage({ id: "validator.details.about" }) },
+    { key: "second", title: intl.formatMessage({ id: "validator.details.amountBeingWithdrawn" }) },
   ]);
   
   const FirstRoute = () => (
@@ -95,21 +93,6 @@ export const NewValidatorDetailsScreen: FunctionComponent = observer(() => {
           backgroundColor={style.get("color-transparent").color}
           stickyHeaderIndices={[0]}
         >
-          <RectButton
-            style={style.flatten([
-              "border-radius-32",
-              "padding-4",
-              "margin-left-20",
-              "background-color-black-transparent",
-              "width-32",
-              "height-32",
-            ])}
-            onPress={() => {
-              smartNavigation.goBack();
-            }}
-          >
-            <LeftArrowIcon size={24} color={style.get("color-white").color} />
-          </RectButton>
           <ValidatorNameCard
             containerStyle={style.flatten([
               "margin-y-card-gap",
@@ -130,8 +113,8 @@ export const NewValidatorDetailsScreen: FunctionComponent = observer(() => {
           <TabView
             lazy
             renderLazyPlaceholder={route => (
-                <DelegationsEmptyItem
-                label="Bạn chưa có giao dịch rút tiền nào"
+              <DelegationsEmptyItem
+                label={intl.formatMessage({ id: "validator.details.emptyWithdrawHistory" })}
                 containerStyle={style.flatten([
                   "background-color-background",
                   "margin-y-32",

@@ -6,16 +6,14 @@ import { Colors, useStyle } from "../../../styles";
 import { useUndelegateTxConfig } from "@keplr-wallet/hooks";
 import { PageWithScrollView } from "../../../components/page";
 import { AmountInput, ValidatorItem } from "../../../components/input";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { Button } from "../../../components/button";
-import { Card, CardBody, CardDivider } from "../../../components/card";
 import { Staking } from "@keplr-wallet/stores";
-import { ValidatorThumbnail } from "../../../components/thumbnail";
-import { Buffer } from "buffer/";
 import { useSmartNavigation } from "../../../navigation";
 import { AlertInline } from "../../../components/alert-inline";
 import { AlignItems, ItemRow } from "../../../components/foundation-view/item-row";
 import { TextAlign } from "../../../components/foundation-view/text-style";
+import { useIntl } from "react-intl";
 
 export const UndelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -35,6 +33,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, analyticsStore, transactionStore } = useStore();
 
   const style = useStyle();
+  const intl = useIntl();
   const smartNavigation = useSmartNavigation();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -98,7 +97,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       <View style={style.flatten(["height-page-pad"])} />
       <AlertInline
         type="warning"
-        content="Bạn sẽ nhận được số ASA bạn rút sau 14 ngày"
+        content={intl.formatMessage({ id: "stake.undelegate.noticeWithdrawalPeriod" }, { coin: "ASA" })}
       />
       <ValidatorItem
         containerStyle={style.flatten(["margin-y-16"])}
@@ -106,13 +105,15 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         thumbnail={validatorThumbnail}
         value={staked.trim(true).shrink(true).maxDecimals(6).toString()}
       />
-      <AmountInput label="Số tiền rút (không bao gồm lãi)" amountConfig={sendConfigs.amountConfig} />
+      <AmountInput label={intl.formatMessage({ id: "stake.undelegate.amountLabel" })}
+        amountConfig={sendConfigs.amountConfig}
+      />
       <ItemRow style={{ marginHorizontal: 0, paddingHorizontal: 0, }}
         alignItems={AlignItems.center}
         itemSpacing={12}
         columns={[
           {
-            text: "Khả dụng",
+            text: intl.formatMessage({ id: "stake.undelegate.available" }),
             textColor: Colors["gray-30"],
           },
           {
@@ -127,7 +128,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         itemSpacing={12}
         columns={[
           {
-            text: "Phí",
+            text: intl.formatMessage({ id: "stake.undelegate.fee" }),
             textColor: Colors["gray-30"],
           },
           {
@@ -148,7 +149,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       <Button
         containerStyle={style.flatten(["border-radius-4", "height-44"])}
         textStyle={style.flatten(["subtitle2"])}
-        text="Rút"
+        text={intl.formatMessage({ id: "stake.undelegate.undelegate" })}
         size="large"
         disabled={!account.isReadyToSendTx || !txStateIsValid}
         loading={account.txTypeInProgress === "undelegate"}

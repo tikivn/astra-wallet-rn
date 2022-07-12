@@ -7,6 +7,7 @@ import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { DelegationsEmptyItem } from "../dashboard/delegate";
 import { ValidatorItem } from "../../../components/input";
+import { FormattedMessage, useIntl } from "react-intl";
 
 export const RewardDetails: FunctionComponent<{
     containerStyle?: ViewStyle;
@@ -57,6 +58,7 @@ export const RewardDetails: FunctionComponent<{
     }, [validators]);
 
     const style = useStyle();
+    const intl = useIntl();
 
     return (
         <Card style={containerStyle}>
@@ -71,7 +73,7 @@ export const RewardDetails: FunctionComponent<{
                             "margin-bottom-8",
                         ])}
                     >
-                        Nhận từ quỹ
+                        <FormattedMessage id="staking.rewards.details.label" />
                     </Text>
                     {delegations.map((del) => {
                         const val = validatorsMap.get(del.delegation.validator_address);
@@ -97,8 +99,11 @@ export const RewardDetails: FunctionComponent<{
                             />
                         );
                     })}
-                </CardBody>
-            ) : (<DelegationsEmptyItem containerStyle={style.flatten(["background-color-background", "margin-y-32"])} />)}
+                </CardBody>) : (<DelegationsEmptyItem
+                    label={intl.formatMessage({ id: "staking.rewards.details.empty" })}
+                    containerStyle={style.flatten(["background-color-background", "margin-y-32"])}
+                />)
+            }
         </Card>
     );
 });
