@@ -12,32 +12,22 @@ import { useStore } from "../../stores";
 import { useSmartNavigation } from "../../navigation";
 import { Button } from "../../components/button";
 import { Share, StyleSheet, View } from "react-native";
-import { ChainSelectorModal } from "../../components/chain-selector";
 import { registerModal } from "../../modals/base";
 import { CardModal } from "../../modals/card";
 import { AddressCopyable } from "../../components/address-copyable";
 import QRCode from "react-native-qrcode-svg";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { FullScreenCameraView } from "../../components/camera";
-import {
-  parseQRCodeDataForImportFromExtension,
-  registerExportedAddressBooks,
-  registerExportedKeyRingDatas,
-} from "../../utils/import-from-extension";
-import { AddressBookConfigMap, useRegisterConfig } from "@keplr-wallet/hooks";
-import { AsyncKVStore } from "../../common";
 import { useFocusEffect } from "@react-navigation/native";
-import { TextInput } from "../../components/input";
+import { useToastModal } from "../../providers/toast-modal";
 
 export const CameraScreen: FunctionComponent = observer(() => {
-  const { chainStore, keyRingStore, signClientStore } = useStore();
-
-  const style = useStyle();
-
+  const { chainStore, signClientStore } = useStore();
+  const toastModal = useToastModal();
   const smartNavigation = useSmartNavigation();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [tempURI, setTempURI] = useState("");
+
   // To prevent the reading while changing to other screen after processing the result.
   // Expectedly, screen should be moved to other after processing the result.
   const [isCompleted, setIsCompleted] = useState(false);
@@ -51,21 +41,6 @@ export const CameraScreen: FunctionComponent = observer(() => {
     }, [])
   );
 
-  const [isSelectChainModalOpen, setIsSelectChainModalOpen] = useState(false);
-  const [isAddressQRCodeModalOpen, setIsAddressQRCodeModalOpen] = useState(
-    false
-  );
-  const [
-    showingAddressQRCodeChainId,
-    setShowingAddressQRCodeChainId,
-  ] = useState(chainStore.current.chainId);
-
-  const registerConfig = useRegisterConfig(keyRingStore, []);
-
-  const [addressBookConfigMap] = useState(
-    () => new AddressBookConfigMap(new AsyncKVStore("address_book"), chainStore)
-  );
-
   useEffect(() => {
     if (signClientStore.pendingProposal) {
       console.log("useEffect: ", signClientStore.pendingProposal);
@@ -74,10 +49,6 @@ export const CameraScreen: FunctionComponent = observer(() => {
       });
     }
   }, [smartNavigation, signClientStore.pendingProposal]);
-
-  const onWalletConnection = async () => {
-    await signClientStore.pair(tempURI);
-  };
 
   return (
     <PageWithView disableSafeArea={true}>
@@ -89,11 +60,9 @@ export const CameraScreen: FunctionComponent = observer(() => {
         onBarCodeRead={async ({ data }) => {
           if (!isLoading && !isCompleted) {
             setIsLoading(true);
-
             try {
               if (data.startsWith("wc:")) {
-                setTempURI(data);
-                onWalletConnection;
+                await signClientStore.pair(data);
               } else {
                 const isBech32Address = (() => {
                   try {
@@ -101,6 +70,11 @@ export const CameraScreen: FunctionComponent = observer(() => {
                     // If this is not valid bech32 address, it will throw an error.
                     Bech32Address.validate(data);
                   } catch {
+                    toastModal.makeToast({
+                      title: "Mã QR hiện không được hỗ trợ",
+                      type: "error",
+                      displayTime: 2000,
+                    });
                     return false;
                   }
                   return true;
@@ -113,75 +87,32 @@ export const CameraScreen: FunctionComponent = observer(() => {
                       chainInfo.bech32Config.bech32PrefixAccAddr === prefix
                   );
                   if (chainInfo) {
-                    smartNavigation.pushSmart("Send", {
+                    smartNavigation.pushSmart("Wallet.Send", {
                       chainId: chainInfo.chainId,
                       recipient: data,
                     });
                   } else {
-                    smartNavigation.navigateSmart("NewHome", {});
+                    toastModal.makeToast({
+                      title: "Mã QR hiện không được hỗ trợ",
+                      type: "error",
+                      displayTime: 2000,
+                    });
                   }
                 }
               }
-
               setIsCompleted(true);
             } catch (e) {
+              toastModal.makeToast({
+                title: "Mã QR hiện không được hỗ trợ",
+                type: "error",
+                displayTime: 2000,
+              });
               console.log(e);
             } finally {
               setIsLoading(false);
             }
           }
         }}
-        containerBottom={
-          <View
-            style={style.flatten(["flex-1", "width-full", "margin-top-18"])}
-          >
-            <TextInput
-              value={tempURI}
-              onChangeText={(text) => {
-                setTempURI(text);
-              }}
-              numberOfLines={1}
-              style={style.flatten([
-                "width-full",
-                "margin-top-4",
-                // "color-white",
-                "body2",
-              ])}
-            />
-            <Button text="Connect" onPress={onWalletConnection} />
-          </View>
-          // <Button
-          //   text="Show my QR code"
-          //   mode="light"
-          //   size="large"
-          //   containerStyle={style.flatten([
-          //     "margin-top-64",
-          //     "border-radius-64",
-          //     "opacity-90",
-          //   ])}
-          //   style={style.flatten(["padding-x-52"])}
-          //   onPress={() => {
-          //     setIsSelectChainModalOpen(true);
-          //   }}
-          // />
-        }
-      />
-      <ChainSelectorModal
-        isOpen={isSelectChainModalOpen}
-        close={() => setIsSelectChainModalOpen(false)}
-        chainIds={chainStore.chainInfosInUI.map(
-          (chainInfo) => chainInfo.chainId
-        )}
-        onSelectChain={(chainId) => {
-          setShowingAddressQRCodeChainId(chainId);
-          setIsAddressQRCodeModalOpen(true);
-          setIsSelectChainModalOpen(false);
-        }}
-      />
-      <AddressQRCodeModal
-        isOpen={isAddressQRCodeModalOpen}
-        close={() => setIsAddressQRCodeModalOpen(false)}
-        chainId={showingAddressQRCodeChainId}
       />
     </PageWithView>
   );

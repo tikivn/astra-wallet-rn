@@ -977,7 +977,7 @@ export const WalletNavigation: FunctionComponent = () => {
       <Stack.Screen
         name="Camera"
         options={{
-          title: intl.formatMessage({ id: "camera.title" }),
+          headerShown: false,
         }}
         component={CameraScreen}
       />

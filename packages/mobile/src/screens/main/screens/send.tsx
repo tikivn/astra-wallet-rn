@@ -99,7 +99,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
       <AddressInput
         recipientConfig={sendConfigs.recipientConfig}
         memoConfig={sendConfigs.memoConfig}
-      ></AddressInput>
+      />
       <View style={style.get("height-12")} />
       <AmountInput amountConfig={sendConfigs.amountConfig} />
       <View style={style.get("height-12")} />

@@ -1,10 +1,13 @@
 import React, { FunctionComponent } from "react";
 import { RNCamera } from "react-native-camera";
-import { useIsFocused } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { useStyle } from "../../styles";
 import { StyleSheet, Text, View } from "react-native";
 import { LoadingSpinner } from "../spinner";
 import { BarcodeMask } from "@nartc/react-native-barcode-mask";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { CloseIcon, LeftArrowIcon } from "../icon";
+import { RectButton } from "../rect-button";
 
 export const FullScreenCameraView: FunctionComponent<
   React.ComponentProps<typeof RNCamera> & {
@@ -15,7 +18,7 @@ export const FullScreenCameraView: FunctionComponent<
   const style = useStyle();
 
   const isFocused = useIsFocused();
-
+  const navigation = useNavigation();
   const {
     children,
     containerBottom,
@@ -40,7 +43,6 @@ export const FullScreenCameraView: FunctionComponent<
             height={304}
             edgeColor={"#FFFFFF"}
             edgeRadius={16}
-            showAnimatedLine={false}
             backgroundColor={"#141828"}
             maskOpacity={0.7}
             edgeHeight={32}
@@ -51,7 +53,26 @@ export const FullScreenCameraView: FunctionComponent<
 
       <View style={style.flatten(["absolute-fill", "items-center"])}>
         <View style={style.flatten(["flex-row"])}>
-          <View style={style.get("flex-1")} />
+          <View style={style.flatten(["flex"])} />
+          {navigation.canGoBack() ? (
+            <RectButton
+              style={style.flatten([
+                "border-radius-32",
+                "padding-4",
+                "margin-top-44",
+                "margin-left-20",
+                "background-color-black-transparent",
+                "width-32",
+                "height-32",
+              ])}
+              onPress={() => {
+                navigation.goBack();
+              }}
+            >
+              <LeftArrowIcon size={24} color={style.get("color-white").color} />
+            </RectButton>
+          ) : null}
+          <View style={style.flatten(["flex-1"])} />
         </View>
         <View style={style.get("flex-5")} />
         <View>
