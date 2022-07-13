@@ -34,17 +34,27 @@ function getDeviceLang() {
 }
 
 const allLangeMessages: IntlMessages = {
-    vi: Object.assign(
-      {}, 
-      ...ViMsgs,
-      MessagesVi
-    ),
-    en: Object.assign(
-      {}, 
-      ...EnMsgs,
-      MessagesEn
-    ),
+  vi: Object.assign(
+    {},
+    ...ViMsgs,
+    MessagesVi
+  ),
+  en: Object.assign(
+    {},
+    ...EnMsgs.map(removeEmptyValueJson),
+    removeEmptyValueJson(MessagesEn),
+  ),
 };
+
+function removeEmptyValueJson(item: any) {
+  const json: Record<string, string> = item;
+  Object.keys(json).forEach((key) => {
+    if (json[key].length == 0) {
+      delete json[key];
+    }
+  });
+  return json;
+}
 
 function getMessages(
   additionalMessages: IntlMessages,
