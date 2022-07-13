@@ -1,4 +1,21 @@
 {
-    "stake.redelegate.selectValidator": "Select Validator",
-    "": ""
+  "stake.delegate.amount": "",
+  "stake.delegate.available": "",
+  "stake.delegate.fee": "",
+  "stake.delegate.invest": "",
+  "stake.delegate.validator.totalShares": "",
+  "stake.delegate.validator.uptime": "",
+  "stake.delegate.warning": "",
+  "stake.redelegate.amountLabel": "",
+  "stake.redelegate.available": "",
+  "stake.redelegate.fee": "",
+  "stake.redelegate.from": "",
+  "stake.redelegate.redelagate": "",
+  "stake.redelegate.selectValidator": "",
+  "stake.redelegate.to": "",
+  "stake.undelegate.amountLabel": "",
+  "stake.undelegate.available": "",
+  "stake.undelegate.fee": "",
+  "stake.undelegate.noticeWithdrawalPeriod": "",
+  "stake.undelegate.undelegate": ""
 }
