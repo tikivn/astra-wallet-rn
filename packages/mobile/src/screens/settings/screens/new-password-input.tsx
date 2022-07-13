@@ -19,8 +19,7 @@ export const NewPasswordInputScreen: FunctionComponent = observer(() => {
 
   const style = useStyle();
   const intl = useIntl();
-  const { keyRingStore } = useStore();
-  const smartNavigation = useSmartNavigation();
+  const { keyRingStore, keychainStore } = useStore();
   const navigation = useNavigation();
 
   const [password, setPassword] = useState("");
@@ -51,6 +50,7 @@ export const NewPasswordInputScreen: FunctionComponent = observer(() => {
       );
 
       await keyRingStore.unlock(password);
+      await keychainStore.turnOnBiometry(password);
 
       setIsCreating(false);
 

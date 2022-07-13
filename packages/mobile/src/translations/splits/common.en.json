@@ -13,7 +13,7 @@
   "common.text.disconnect": "",
   "common.text.inputVerifyNewPassword": "Input new password",
   "common.text.inputVerifyPassword": "Confirm",
-  "common.text.minimumCharacters": "Input minimun {x} characters",
+  "common.text.minimumCharacters": "Input minimun {number} characters",
   "common.text.newPassword": "New password",
   "common.text.password": "Password",
   "common.text.passwordNotMatching": "Password is not the same. Please check",
