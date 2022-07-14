@@ -14,6 +14,9 @@ import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import { UnbondingCard } from "./unbonding-card";
 import { DelegationsEmptyItem } from "../dashboard/delegate";
 import { useIntl } from "react-intl";
+import { RectButton } from "../../../components/rect-button";
+import { LeftArrowIcon } from "../../../components/icon";
+import { useSmartNavigation } from "../../../navigation-util";
 
 export const NewValidatorDetailsScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -27,7 +30,7 @@ export const NewValidatorDetailsScreen: FunctionComponent = observer(() => {
       string
     >
   >();
-
+  const smartNavigation = useSmartNavigation();
   const validatorAddress = route.params.validatorAddress;
 
   const { chainStore, queriesStore, accountStore } = useStore();
@@ -45,10 +48,18 @@ export const NewValidatorDetailsScreen: FunctionComponent = observer(() => {
   const hasStake = staked.toDec().gt(new Dec(0));
   const [index, setIndex] = useState(0);
   const [routes] = useState([
-    { key: "first", title: intl.formatMessage({ id: "validator.details.about" }) },
-    { key: "second", title: intl.formatMessage({ id: "validator.details.amountBeingWithdrawn" }) },
+    {
+      key: "first",
+      title: intl.formatMessage({ id: "validator.details.about" }),
+    },
+    {
+      key: "second",
+      title: intl.formatMessage({
+        id: "validator.details.amountBeingWithdrawn",
+      }),
+    },
   ]);
-  
+
   const FirstRoute = () => (
     <CommissionsCard
       showStake={!hasStake}
@@ -93,6 +104,21 @@ export const NewValidatorDetailsScreen: FunctionComponent = observer(() => {
           backgroundColor={style.get("color-transparent").color}
           stickyHeaderIndices={[0]}
         >
+          <RectButton
+            style={style.flatten([
+              "border-radius-32",
+              "padding-4",
+              "margin-left-20",
+              "background-color-black-transparent",
+              "width-32",
+              "height-32",
+            ])}
+            onPress={() => {
+              smartNavigation.goBack();
+            }}
+          >
+            <LeftArrowIcon size={24} color={style.get("color-white").color} />
+          </RectButton>
           <ValidatorNameCard
             containerStyle={style.flatten([
               "margin-y-card-gap",
@@ -112,9 +138,11 @@ export const NewValidatorDetailsScreen: FunctionComponent = observer(() => {
           ) : null}
           <TabView
             lazy
-            renderLazyPlaceholder={route => (
+            renderLazyPlaceholder={() => (
               <DelegationsEmptyItem
-                label={intl.formatMessage({ id: "validator.details.emptyWithdrawHistory" })}
+                label={intl.formatMessage({
+                  id: "validator.details.emptyWithdrawHistory",
+                })}
                 containerStyle={style.flatten([
                   "background-color-background",
                   "margin-y-32",
@@ -126,20 +154,25 @@ export const NewValidatorDetailsScreen: FunctionComponent = observer(() => {
             navigationState={{ index, routes }}
             renderScene={renderScene}
             onIndexChange={setIndex}
-            renderTabBar={props => (
-                <TabBar
-                  {...props}
-                  indicatorStyle={style.get("background-color-primary")}
-                  tabStyle={style.flatten(["flex-0"])}
+            renderTabBar={(props) => (
+              <TabBar
+                {...props}
+                indicatorStyle={style.get("background-color-primary")}
+                tabStyle={style.flatten(["flex-0"])}
                 //   scrollEnabled={true}
-                  style={style.get("background-color-background")}
-                  renderLabel={({route, focused}) => (
-                    <Text style={style.flatten(["subtitle3", "color-gray-30"], [focused && "color-primary"])}>
-                      {route.title}
-                    </Text>
-                  )}
-                />
-              )}
+                style={style.get("background-color-background")}
+                renderLabel={({ route, focused }) => (
+                  <Text
+                    style={style.flatten(
+                      ["subtitle3", "color-gray-30"],
+                      [focused && "color-primary"]
+                    )}
+                  >
+                    {route.title}
+                  </Text>
+                )}
+              />
+            )}
           />
         </PageWithScrollView>
       </ImageBackground>

@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { View, Image, Text } from "react-native";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { CollapseIcon, ExpandIcon } from "../../../components";
@@ -7,14 +7,34 @@ import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { Button } from "../../../components";
 import { FormattedMessage, useIntl } from "react-intl";
+import FastImage from "react-native-fast-image";
 
-export const DappSignRequestView: FunctionComponent<{
+export const TransactionSignRequestView: FunctionComponent<{
   onApprove: (name?: string) => void;
-  onReject: (name?: string) => void;
+  onReject: (name?: string, isWC?: boolean) => void;
 }> = ({ onApprove, onReject }) => {
-  const { signInteractionStore } = useStore();
+  const { signInteractionStore, signClientStore } = useStore();
+
+  const [isWC, setIsWC] = useState(false);
+
+  useEffect(() => {
+    const pendingRequest = signClientStore.pendingRequest;
+    const requestSession = signClientStore.requestSession(
+      pendingRequest?.topic
+    );
+    if (pendingRequest && requestSession) {
+      setIsWC(true);
+    }
+  }, [signClientStore]);
+
   const waitingData = signInteractionStore.waitingData;
+  const request = signClientStore.pendingRequest;
+  const session = signClientStore.requestSession(request?.topic);
+  
+  const metadata = session?.peer.metadata;
+
   const data = waitingData?.data;
+
   const [isOpen, setIsOpen] = useState(false);
   const style = useStyle();
   const signDocWrapper = data?.signDocWrapper;
@@ -25,7 +45,8 @@ export const DappSignRequestView: FunctionComponent<{
     : [];
 
   const messsages = JSON.stringify(msgs, null, 2);
-  const source = data?.msgOrigin;
+  const source = isWC ? session?.peer.metadata.name : data?.msgOrigin;
+  
   const intl = useIntl();
   return (
     <React.Fragment>
@@ -48,11 +69,24 @@ export const DappSignRequestView: FunctionComponent<{
               "justify-center",
             ])}
           >
-            <Image
-              source={require("../../../assets/image/icon_verified.png")}
-              resizeMode="contain"
-              style={style.flatten(["width-64", "height-64"])}
-            />
+            {metadata && metadata.icons.length > 0 ? (
+              <FastImage
+                style={{
+                  width: 64,
+                  height: 64,
+                }}
+                source={{
+                  uri: metadata.icons[0],
+                }}
+                resizeMode={FastImage.resizeMode.contain}
+              />
+            ) : (
+              <Image
+                source={require("../../../assets/image/icon_verified.png")}
+                resizeMode="contain"
+                style={style.flatten(["width-64", "height-64"])}
+              />
+            )}
           </View>
         </View>
         <Text style={style.flatten(["color-gray-10", "text-center", "h5"])}>
@@ -142,7 +176,7 @@ export const DappSignRequestView: FunctionComponent<{
             text={intl.formatMessage({ id: "common.text.reject" })}
             mode="fill"
             onPress={async () => {
-              onReject(source);
+              onReject(source, isWC);
             }}
           />
           <Button
