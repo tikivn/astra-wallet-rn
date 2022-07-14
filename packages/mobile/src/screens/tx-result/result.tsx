@@ -22,10 +22,11 @@ import { TransactionDetailsView } from "./components/transaction-details-view";
 import { TxState } from "../../stores/transaction";
 import { TransactionActionView } from "./components/transaction-action-view";
 import { PageWithScrollView } from "../../components";
-import { TransactionRequestView } from "./components/transaction-request";
+import { WalletConnectSignRequestView } from "./components/walletconnect-sign-request";
 import { useSmartNavigation } from "../../navigation-util";
 import { useToastModal } from "../../providers/toast-modal";
 import { useIntl } from "react-intl";
+import { DappSignRequestView } from "./components/dapp-sign-request";
 
 export const TxResultScreen: FunctionComponent = observer(() => {
   const {
@@ -66,6 +67,7 @@ export const TxResultScreen: FunctionComponent = observer(() => {
   const chainInfo = chainStore.getChain(chainId);
   const intl = useIntl();
   const [waitApprove, setWaitApprove] = useState(false);
+  const [isInternal, setIsInternal] = useState(false);
 
   useEffect(() => {
     const pendingRequest = signClientStore.pendingRequest;
@@ -77,7 +79,45 @@ export const TxResultScreen: FunctionComponent = observer(() => {
     }
   }, [signClientStore]);
 
-  const onRejectRequest = useCallback(
+  const onRejectSignRequest = useCallback(
+    async (name) => {
+      signInteractionStore.rejectAll();
+      toastModal.makeToast({
+        title: intl
+          .formatMessage({ id: "walletconnect.rejected" })
+          .replace("${name}", `${name}`),
+        type: "infor",
+        displayTime: 2000,
+      });
+      if (smartNavigation.canGoBack()) {
+        smartNavigation.goBack();
+      } else {
+        smartNavigation.navigateSmart("NewHome", {});
+      }
+    },
+    [intl, signInteractionStore, smartNavigation, toastModal]
+  );
+
+  const onConfirmSignRequest = useCallback(
+    async (name) => {
+      await transactionStore.startTransaction();
+      toastModal.makeToast({
+        title: intl
+          .formatMessage({ id: "walletconnect.verified" })
+          .replace("${name}", `${name}`),
+        type: "infor",
+        displayTime: 2000,
+      });
+      if (smartNavigation.canGoBack()) {
+        smartNavigation.goBack();
+      } else {
+        smartNavigation.navigateSmart("NewHome", {});
+      }
+    },
+    [transactionStore, toastModal, smartNavigation]
+  );
+
+  const onRejectWCRequest = useCallback(
     async (name) => {
       await signClientStore.rejectRequest();
       // signInteractionStore.rejectAll();
@@ -93,7 +133,7 @@ export const TxResultScreen: FunctionComponent = observer(() => {
     [signClientStore, smartNavigation, toastModal]
   );
 
-  const onApproveRequest = useCallback(
+  const onApproveWCRequest = useCallback(
     async (name) => {
       await transactionStore.startTransaction();
       toastModal.makeToast({
@@ -164,6 +204,7 @@ export const TxResultScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     if (signInteractionStore.waitingData) {
       const data = signInteractionStore.waitingData;
+      setIsInternal(data.isInternal);
       signDocHelper.setSignDocWrapper(data.data.signDocWrapper);
       setChainId(data.data.signDocWrapper.chainId);
       gasConfig.setGas(data.data.signDocWrapper.gas);
@@ -187,24 +228,20 @@ export const TxResultScreen: FunctionComponent = observer(() => {
     signInteractionStore.waitingData,
   ]);
 
-  if (!waitApprove) {
+  if (!waitApprove || isInternal) {
     transactionStore.startTransaction();
   }
-  return (
-    <PageWithScrollView
-      backgroundColor={style.get("color-background").color}
-      contentContainerStyle={style.flatten([
-        "padding-y-16",
-        "flex-1",
-        "justify-between",
-      ])}
-    >
-      {waitApprove ? (
-        <TransactionRequestView
-          onApprove={onApproveRequest}
-          onReject={onRejectRequest}
+
+  const renderedMsgs = (() => {
+    if (waitApprove) {
+      return (
+        <WalletConnectSignRequestView
+          onApprove={onApproveWCRequest}
+          onReject={onRejectWCRequest}
         />
-      ) : (
+      );
+    } else if (isInternal) {
+      return (
         <React.Fragment>
           <TransactionStateView />
           <TransactionDetailsView
@@ -217,7 +254,27 @@ export const TxResultScreen: FunctionComponent = observer(() => {
           />
           <TransactionActionView />
         </React.Fragment>
-      )}
+      );
+    } else {
+      return (
+        <DappSignRequestView
+          onApprove={onConfirmSignRequest}
+          onReject={onRejectSignRequest}
+        />
+      );
+    }
+  })();
+
+  return (
+    <PageWithScrollView
+      backgroundColor={style.get("color-background").color}
+      contentContainerStyle={style.flatten([
+        "padding-y-16",
+        "flex-1",
+        "justify-between",
+      ])}
+    >
+      {renderedMsgs}
     </PageWithScrollView>
   );
 });

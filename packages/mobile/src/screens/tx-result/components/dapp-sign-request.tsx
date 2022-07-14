@@ -1,7 +1,6 @@
 import React, { FunctionComponent, useState } from "react";
 import { View, Image, Text } from "react-native";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
-import FastImage from "react-native-fast-image";
 import { CollapseIcon, ExpandIcon } from "../../../components";
 import { CardDivider } from "../../../components/card";
 import { useStore } from "../../../stores";
@@ -9,17 +8,24 @@ import { useStyle } from "../../../styles";
 import { Button } from "../../../components";
 import { FormattedMessage, useIntl } from "react-intl";
 
-export const TransactionRequestView: FunctionComponent<{
+export const DappSignRequestView: FunctionComponent<{
   onApprove: (name?: string) => void;
   onReject: (name?: string) => void;
 }> = ({ onApprove, onReject }) => {
-  const { signClientStore } = useStore();
-  const request = signClientStore.pendingRequest;
-  const session = signClientStore.requestSession(request?.topic);
+  const { signInteractionStore } = useStore();
+  const waitingData = signInteractionStore.waitingData;
+  const data = waitingData?.data;
   const [isOpen, setIsOpen] = useState(false);
   const style = useStyle();
-  const metadata = session?.peer.metadata;
-  const messsages = JSON.stringify(request?.params.request, null, 2);
+  const signDocWrapper = data?.signDocWrapper;
+  const msgs = signDocWrapper
+    ? signDocWrapper.mode === "amino"
+      ? signDocWrapper.aminoSignDoc.msgs
+      : signDocWrapper.protoSignDoc.txMsgs
+    : [];
+
+  const messsages = JSON.stringify(msgs, null, 2);
+  const source = data?.msgOrigin;
   const intl = useIntl();
   return (
     <React.Fragment>
@@ -42,30 +48,17 @@ export const TransactionRequestView: FunctionComponent<{
               "justify-center",
             ])}
           >
-            {metadata && metadata.icons.length > 0 ? (
-              <FastImage
-                style={{
-                  width: 64,
-                  height: 64,
-                }}
-                source={{
-                  uri: metadata.icons[0],
-                }}
-                resizeMode={FastImage.resizeMode.contain}
-              />
-            ) : (
-              <Image
-                source={require("../../../assets/image/icon_verified.png")}
-                resizeMode="contain"
-                style={style.flatten(["width-64", "height-64"])}
-              />
-            )}
+            <Image
+              source={require("../../../assets/image/icon_verified.png")}
+              resizeMode="contain"
+              style={style.flatten(["width-64", "height-64"])}
+            />
           </View>
         </View>
         <Text style={style.flatten(["color-gray-10", "text-center", "h5"])}>
           {intl
             .formatMessage({ id: "walletconnect.text.verify" })
-            .replace("${name}", `${metadata?.name}`)}
+            .replace("${name}", `${source}`)}
         </Text>
         <Text
           style={style.flatten([
@@ -75,7 +68,7 @@ export const TransactionRequestView: FunctionComponent<{
             "margin-top-8",
           ])}
         >
-          {metadata?.url}
+          {source}
         </Text>
         <TouchableOpacity
           onPress={() => {
@@ -89,7 +82,13 @@ export const TransactionRequestView: FunctionComponent<{
           ])}
         >
           <Text style={style.flatten(["color-blue-70", "subtitle3"])}>
-            <FormattedMessage id={isOpen ? "walletconnect.action.hide" : "walletconnect.action.show"} />
+            <FormattedMessage
+              id={
+                isOpen
+                  ? "walletconnect.action.hide"
+                  : "walletconnect.action.show"
+              }
+            />
           </Text>
           {isOpen ? (
             <CollapseIcon size={20} color={style.get("color-blue-70").color} />
@@ -143,14 +142,14 @@ export const TransactionRequestView: FunctionComponent<{
             text={intl.formatMessage({ id: "common.text.reject" })}
             mode="fill"
             onPress={async () => {
-              onReject(metadata?.name);
+              onReject(source);
             }}
           />
           <Button
             size="small"
             text={intl.formatMessage({ id: "common.text.verify" })}
             onPress={async () => {
-              onApprove(metadata?.name);
+              onApprove(source);
             }}
             containerStyle={style.flatten(["flex-1"])}
           />

@@ -194,9 +194,10 @@ export class TransactionStore {
       const wrapper = this._signDocHelper?.signDocWrapper;
       if (wrapper) {
         await this.signInteractionStore.approveAndWaitEnd(wrapper);
+        console.log("__Transacion__ done");
       }
     } catch (error) {
-      console.log(error);
+      console.log("__Transacion__", error);
     }
   }
 
