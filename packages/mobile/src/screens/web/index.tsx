@@ -42,47 +42,10 @@ export const WebScreen: FunctionComponent = () => {
         Discover Apps
       </Text>
       <WebpageImageButton
-        name="Osmosis"
+        name="Astra Web App"
         source={require("../../assets/image/webpage/osmosis.png")}
         onPress={() => {
-          smartNavigation.pushSmart("Web.Osmosis", {});
-        }}
-      />
-      <WebpageImageButton
-        name="Stargaze"
-        source={require("../../assets/image/webpage/stargaze.png")}
-        onPress={() => {
-          smartNavigation.pushSmart("Web.Stargaze", {});
-        }}
-      />
-      <WebpageImageButton
-        name="Junoswap"
-        source={require("../../assets/image/webpage/junoswap.png")}
-        nameContainerStyle={style.flatten(["flex-row"])}
-        onPress={() => {
-          smartNavigation.pushSmart("Web.Junoswap", {});
-        }}
-      />
-      <WebpageImageButton
-        name="Osmosis"
-        source={require("../../assets/image/webpage/osmosis-frontier.png")}
-        nameContainerStyle={style.flatten(["flex-row"])}
-        nameAppend={
-          <View style={style.flatten(["justify-end"])}>
-            <Image
-              source={require("../../assets/image/webpage/osmosis-frontier-text.png")}
-              style={{
-                width: 52.8,
-                height: 18,
-                marginLeft: 8,
-                marginBottom: 7,
-              }}
-              fadeDuration={0}
-            />
-          </View>
-        }
-        onPress={() => {
-          smartNavigation.pushSmart("Web.OsmosisFrontier", {});
+          smartNavigation.pushSmart("Web.Astranaut", {});
         }}
       />
       <WebpageImageButton
