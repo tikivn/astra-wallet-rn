@@ -15,7 +15,7 @@ import {
 import { useStyle } from "../../styles";
 import { Button } from "../../components/button";
 import { RouteProp, useRoute } from "@react-navigation/native";
-import { useSmartNavigation } from "../../navigation";
+import { useSmartNavigation } from "../../navigation-util";
 import { Buffer } from "buffer/";
 
 export const SendScreen: FunctionComponent = observer(() => {

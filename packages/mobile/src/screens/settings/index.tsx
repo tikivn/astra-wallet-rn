@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { PageWithScrollViewInBottomTabView } from "../../components/page";
-import { useSmartNavigation } from "../../navigation";
+import { useSmartNavigation } from "../../navigation-util";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { useStyle } from "../../styles";

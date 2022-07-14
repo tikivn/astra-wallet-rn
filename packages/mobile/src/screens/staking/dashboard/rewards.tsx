@@ -4,7 +4,7 @@ import { useIntl } from "react-intl";
 import { View, Text, ViewStyle } from "react-native";
 import { Button } from "../../../components/button";
 import { CardDivider } from "../../../components/card";
-import { useSmartNavigation } from "../../../navigation";
+import { useSmartNavigation } from "../../../navigation-util";
 import { useStore } from "../../../stores";
 
 import { useStyle } from "../../../styles";

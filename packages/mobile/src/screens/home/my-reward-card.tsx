@@ -6,7 +6,7 @@ import { RewardIcon } from "../../components/icon";
 import { Dec } from "@keplr-wallet/unit";
 import { ViewStyle } from "react-native";
 import { useStore } from "../../stores";
-import { useSmartNavigation } from "../../navigation";
+import { useSmartNavigation } from "../../navigation-util";
 
 export const MyRewardCard: FunctionComponent<{
   containerStyle?: ViewStyle;

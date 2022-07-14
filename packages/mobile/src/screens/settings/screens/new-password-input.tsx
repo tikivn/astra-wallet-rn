@@ -7,7 +7,7 @@ import { NormalInput } from "../../../components/input/normal-input";
 import { Button } from "../../../components";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { useStore } from "../../../stores";
-import { useSmartNavigation } from "../../../navigation";
+import { useSmartNavigation } from "../../../navigation-util";
 import { useIntl } from "react-intl";
 
 export const NewPasswordInputScreen: FunctionComponent = observer(() => {

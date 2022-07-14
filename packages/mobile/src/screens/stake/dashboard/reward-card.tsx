@@ -6,7 +6,7 @@ import { Text, View, ViewStyle } from "react-native";
 import { useStyle } from "../../../styles";
 import { Button } from "../../../components/button";
 import { Dec } from "@keplr-wallet/unit";
-import { useSmartNavigation } from "../../../navigation";
+import { useSmartNavigation } from "../../../navigation-util";
 
 export const MyRewardCard: FunctionComponent<{
   containerStyle?: ViewStyle;

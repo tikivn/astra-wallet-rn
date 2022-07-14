@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useWebViewState } from "../context";
 import Svg, { Path } from "react-native-svg";
 import { RectButton } from "../../../../components/rect-button";
-import { useSmartNavigation } from "../../../../navigation";
+import { useSmartNavigation } from "../../../../navigation-util";
 
 const ArrowLeftIcon: FunctionComponent<{
   size: number;

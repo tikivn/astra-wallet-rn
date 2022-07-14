@@ -8,7 +8,7 @@ import { useStyle } from "../../../styles";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
 import { Staking } from "@keplr-wallet/stores";
 import { DelegationsEmptyItem } from "../dashboard/delegate";
-import { useSmartNavigation } from "../../../navigation";
+import { useSmartNavigation } from "../../../navigation-util";
 
 export const UnbondingCard: FunctionComponent<{
   containerStyle?: ViewStyle;

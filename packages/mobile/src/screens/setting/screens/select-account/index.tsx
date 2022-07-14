@@ -11,7 +11,7 @@ import {
   MultiKeyStoreInfoWithSelectedElem,
 } from "@keplr-wallet/background";
 import { View } from "react-native";
-import { useSmartNavigation } from "../../../../navigation";
+import { useSmartNavigation } from "../../../../navigation-util";
 
 const CheckIcon: FunctionComponent<{
   color: string;

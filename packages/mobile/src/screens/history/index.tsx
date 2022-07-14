@@ -19,7 +19,7 @@ import { ChainUpdaterService } from "@keplr-wallet/background";
 import { toUiItem } from "./transaction_adapter";
 import { TransactionItem } from "./transaction_history_item";
 import { TxResponse } from "@keplr-wallet/stores/build/query/cosmos/tx/types";
-import { useSmartNavigation } from "../../navigation";
+import { useSmartNavigation } from "../../navigation-util";
 import { FormattedMessage } from "react-intl";
 
 export type PageRequestInfo = {

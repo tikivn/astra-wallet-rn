@@ -3,7 +3,7 @@ import { StyleSheet, Text, ViewStyle, View } from "react-native";
 import { useStyle } from "../../../styles";
 import { RectButton } from "../../../components/rect-button";
 import { AllIcon } from "../../../components/icon";
-import { useSmartNavigation } from "../../../navigation";
+import { useSmartNavigation } from "../../../navigation-util";
 
 export const AllAddressItem: FunctionComponent<{
   style?: ViewStyle;

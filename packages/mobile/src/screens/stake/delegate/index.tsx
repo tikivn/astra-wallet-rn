@@ -9,7 +9,7 @@ import { useDelegateTxConfig } from "@keplr-wallet/hooks";
 import { EthereumEndpoint } from "../../../config";
 import { AmountInput } from "../../../components/input";
 import { Button } from "../../../components/button";
-import { useSmartNavigation } from "../../../navigation";
+import { useSmartNavigation } from "../../../navigation-util";
 import { Staking } from "@keplr-wallet/stores";
 import { ValidatorInfo } from "./components/validator-info";
 import { buildLeftColumn, buildRightColumn } from "../../../components/foundation-view/item-row";

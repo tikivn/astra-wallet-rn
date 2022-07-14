@@ -9,7 +9,7 @@ import { AmountInput, ValidatorItem } from "../../../components/input";
 import { View } from "react-native";
 import { Button } from "../../../components/button";
 import { Staking } from "@keplr-wallet/stores";
-import { useSmartNavigation } from "../../../navigation";
+import { useSmartNavigation } from "../../../navigation-util";
 import { AlertInline } from "../../../components/alert-inline";
 import { AlignItems, ItemRow } from "../../../components/foundation-view/item-row";
 import { TextAlign } from "../../../components/foundation-view/text-style";

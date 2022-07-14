@@ -6,7 +6,7 @@ import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { Button } from "../../../components/button";
 import { SwapIcon, SendIcon, ReceiveIcon } from "../../../components/icon";
-import { useSmartNavigation } from "../../../navigation";
+import { useSmartNavigation } from "../../../navigation-util";
 import { useIntl } from "react-intl";
 import { useToastModal } from "../../../providers/toast-modal";
 

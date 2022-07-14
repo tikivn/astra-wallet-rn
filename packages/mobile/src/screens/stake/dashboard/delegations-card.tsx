@@ -8,7 +8,7 @@ import { StakedTokenSymbol } from "../../../components/token-symbol";
 import { Button } from "../../../components/button";
 import { Staking } from "@keplr-wallet/stores";
 import { RightArrowIcon } from "../../../components/icon";
-import { useSmartNavigation } from "../../../navigation";
+import { useSmartNavigation } from "../../../navigation-util";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
 import { RectButton } from "../../../components/rect-button";
 

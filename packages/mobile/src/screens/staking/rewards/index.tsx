@@ -5,7 +5,7 @@ import { useStyle } from "../../../styles";
 
 import { View, Text } from "react-native";
 import { Button } from "../../../components/button";
-import { useSmartNavigation } from "../../../navigation";
+import { useSmartNavigation } from "../../../navigation-util";
 import { RewardDetails } from "./rewards";
 import { useSendTxConfig } from "@keplr-wallet/hooks";
 import { EthereumEndpoint } from "../../../config";

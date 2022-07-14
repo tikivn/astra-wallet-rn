@@ -3,7 +3,7 @@ import React, { FunctionComponent } from "react";
 import { View, Image, Text, ViewStyle } from "react-native";
 import { Button } from "../../../components/button";
 import { useStyle } from "../../../styles";
-import { useSmartNavigation } from "../../../navigation";
+import { useSmartNavigation } from "../../../navigation-util";
 import { FormattedMessage, useIntl } from "react-intl";
 
 export const DashboardHeader: FunctionComponent<{

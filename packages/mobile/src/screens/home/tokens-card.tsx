@@ -5,7 +5,7 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { useStyle } from "../../styles";
 import { TokenItem } from "../tokens";
-import { useSmartNavigation } from "../../navigation";
+import { useSmartNavigation } from "../../navigation-util";
 import { RectButton } from "../../components/rect-button";
 
 export const TokensCard: FunctionComponent<{

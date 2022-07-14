@@ -23,7 +23,7 @@ import { TxState } from "../../stores/transaction";
 import { TransactionActionView } from "./components/transaction-action-view";
 import { PageWithScrollView } from "../../components";
 import { TransactionRequestView } from "./components/transaction-request";
-import { useSmartNavigation } from "../../navigation";
+import { useSmartNavigation } from "../../navigation-util";
 import { useToastModal } from "../../providers/toast-modal";
 import { useIntl } from "react-intl";
 

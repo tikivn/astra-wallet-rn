@@ -9,7 +9,7 @@ import {
   ViewStyle,
 } from "react-native";
 import { useStyle } from "../../styles";
-import { useSmartNavigation } from "../../navigation";
+import { useSmartNavigation } from "../../navigation-util";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { RectButton } from "../../components/rect-button";
 import Svg, { Path, G, Defs, ClipPath } from "react-native-svg";

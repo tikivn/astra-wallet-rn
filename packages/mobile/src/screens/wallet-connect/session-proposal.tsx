@@ -9,7 +9,7 @@ import {
   PageWithScrollView,
   VerifiedIcon,
 } from "../../components";
-import { useSmartNavigation } from "../../navigation";
+import { useSmartNavigation } from "../../navigation-util";
 import { useStyle } from "../../styles";
 import FastImage from "react-native-fast-image";
 import { CardDivider } from "../../components/card";

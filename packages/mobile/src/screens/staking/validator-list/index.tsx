@@ -10,7 +10,7 @@ import { CardDivider } from "../../../components/card";
 import { AllIcon } from "../../../components/icon";
 import { PageWithSectionList } from "../../../components/page";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
-import { useSmartNavigation } from "../../../navigation";
+import { useSmartNavigation } from "../../../navigation-util";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { TooltipLabel } from "../component";

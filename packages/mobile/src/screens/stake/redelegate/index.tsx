@@ -13,7 +13,7 @@ import {
   ValidatorItem,
 } from "../../../components/input";
 import { Button } from "../../../components/button";
-import { useSmartNavigation } from "../../../navigation";
+import { useSmartNavigation } from "../../../navigation-util";
 import { ItemRow, AlignItems } from "../../../components/foundation-view/item-row";
 import { TextAlign } from "../../../components/foundation-view/text-style";
 import { FormattedMessage, useIntl } from "react-intl";

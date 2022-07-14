@@ -9,7 +9,7 @@ import { useStyle } from "../../styles";
 import { PageWithView } from "../../components/page";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-import { useSmartNavigation } from "../../navigation";
+import { useSmartNavigation } from "../../navigation-util";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { FullScreenCameraView } from "../../components/camera";
 import { useFocusEffect } from "@react-navigation/native";

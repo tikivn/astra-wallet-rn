@@ -2,7 +2,7 @@ import React, { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
 import { Image, Text, View, ViewStyle } from "react-native";
 import { Card, CardBody, CardDivider } from "../../../components/card";
-import { useSmartNavigation } from "../../../navigation";
+import { useSmartNavigation } from "../../../navigation-util";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { RectButton } from "../../../components/rect-button";

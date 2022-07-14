@@ -10,7 +10,7 @@ import { Card, CardBody, CardDivider } from "../../../components/card";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { TooltipLabel } from "../component";
-import { useSmartNavigation } from "../../../navigation";
+import { useSmartNavigation } from "../../../navigation-util";
 import { FormattedMessage, useIntl } from "react-intl";
 
 export const CommissionsCard: FunctionComponent<{

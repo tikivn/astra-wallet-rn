@@ -6,7 +6,7 @@ import { Text, View, ViewStyle, Image } from "react-native";
 import { useStyle } from "../../../styles";
 import { Staking } from "@keplr-wallet/stores";
 import { RightArrowIcon } from "../../../components/icon";
-import { useSmartNavigation } from "../../../navigation";
+import { useSmartNavigation } from "../../../navigation-util";
 import { RectButton } from "../../../components/rect-button";
 import { Dec, IntPretty } from "@keplr-wallet/unit";
 import { PropertyView } from "../component/property";

@@ -26,7 +26,7 @@ import { ChainUpdaterService } from "@keplr-wallet/background";
 import { AccountCardNew, ActionsCard, BalanceCard } from "./card";
 import { ScanIcon } from "../../components";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { useSmartNavigation } from "../../navigation";
+import { useSmartNavigation } from "../../navigation-util";
 
 export const MainScreen: FunctionComponent = observer(() => {
   const [refreshing, setRefreshing] = React.useState(false);

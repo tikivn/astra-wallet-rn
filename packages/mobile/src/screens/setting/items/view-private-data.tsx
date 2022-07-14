@@ -4,7 +4,7 @@ import { SettingItem } from "../components";
 import { PasswordInputModal } from "../../../modals/password-input/modal";
 import { useStore } from "../../../stores";
 import { getPrivateDataTitle } from "../screens/view-private-data";
-import { useSmartNavigation } from "../../../navigation";
+import { useSmartNavigation } from "../../../navigation-util";
 
 export const SettingViewPrivateDataItem: FunctionComponent<{
   topBorder?: boolean;

@@ -5,7 +5,7 @@ import React, { FunctionComponent } from "react";
 import { ViewStyle, View, StyleSheet, Text } from "react-native";
 import { RectButton } from "../../../components/rect-button";
 import { RightArrowIcon } from "../../../components/icon";
-import { useSmartNavigation } from "../../../navigation";
+import { useSmartNavigation } from "../../../navigation-util";
 import { useStyle } from "../../../styles";
 import FastImage from "react-native-fast-image";
 import { VectorCharacter } from "../../../components/vector-character";

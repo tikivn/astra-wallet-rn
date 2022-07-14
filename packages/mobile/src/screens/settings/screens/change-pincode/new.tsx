@@ -4,7 +4,7 @@ import { Text, View } from "react-native";
 import { useStyle } from "../../../../styles";
 import { Button } from "../../../../components/button";
 
-import { useSmartNavigation } from "../../../../navigation";
+import { useSmartNavigation } from "../../../../navigation-util";
 
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../../stores";

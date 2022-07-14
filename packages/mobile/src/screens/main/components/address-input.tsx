@@ -18,7 +18,7 @@ import {
 } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { ScanIcon } from "../../../components";
-import { useSmartNavigation } from "../../../navigation";
+import { useSmartNavigation } from "../../../navigation-util";
 import { useStyle } from "../../../styles";
 
 export const AddressInput: FunctionComponent<{

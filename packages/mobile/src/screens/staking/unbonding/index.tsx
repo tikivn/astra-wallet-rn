@@ -6,7 +6,7 @@ import { Text, View } from "react-native";
 import { AlertInline, PageWithScrollView } from "../../../components";
 import { CardDivider } from "../../../components/card";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
-import { useSmartNavigation } from "../../../navigation";
+import { useSmartNavigation } from "../../../navigation-util";
 import { useStore } from "../../../stores";
 import { Colors, useStyle } from "../../../styles";
 

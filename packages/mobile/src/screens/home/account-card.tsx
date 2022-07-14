@@ -9,7 +9,7 @@ import { DoubleDoughnutChart } from "../../components/svg";
 import { Button } from "../../components/button";
 import { LoadingSpinner } from "../../components/spinner";
 import { StakedTokenSymbol, TokenSymbol } from "../../components/token-symbol";
-import { useSmartNavigation } from "../../navigation";
+import { useSmartNavigation } from "../../navigation-util";
 import { NetworkErrorView } from "./network-error-view";
 import { Dec } from "@keplr-wallet/unit";
 

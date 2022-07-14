@@ -8,7 +8,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { useConfirmModal } from "../../providers/confirm-modal";
 import { Button } from "../../components";
 import { CardDivider } from "../../components/card";
-import { useSmartNavigation } from "../../navigation";
+import { useSmartNavigation } from "../../navigation-util";
 import { DelegationsEmptyItem } from "../staking/dashboard/delegate";
 import FastImage from "react-native-fast-image";
 import { useToastModal } from "../../providers/toast-modal";

@@ -6,7 +6,7 @@ import { useStore } from "../../../stores";
 import { renderAminoMessages } from "../models/amino";
 import { renderDirectMessages } from "../models/direct";
 import { useIntl } from "react-intl";
-import { useSmartNavigation } from "../../../navigation";
+import { useSmartNavigation } from "../../../navigation-util";
 
 export const TransactionDetailsView: FunctionComponent<{
   style?: ViewStyle;

@@ -7,7 +7,7 @@ import { AddressInput, AmountInput } from "../components";
 
 import { useStore } from "../../../stores";
 import { Button } from "../../../components/button";
-import { useSmartNavigation } from "../../../navigation";
+import { useSmartNavigation } from "../../../navigation-util";
 import { useSendTxConfig } from "@keplr-wallet/hooks";
 import { EthereumEndpoint } from "../../../config";
 import { RouteProp, useRoute } from "@react-navigation/native";
