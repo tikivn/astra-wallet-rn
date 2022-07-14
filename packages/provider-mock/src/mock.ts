@@ -42,8 +42,10 @@ export class MockKeplr implements Keplr {
 
       this.walletMap[chainId] = await Secp256k1HdWallet.fromMnemonic(
         this.mnemonic,
-        makeCosmoshubPath(0),
-        chainInfo.bech32Config.bech32PrefixAccAddr
+        {
+          hdPaths: [makeCosmoshubPath(0)],
+          prefix: chainInfo.bech32Config.bech32PrefixAccAddr,
+        }
       );
     }
 
