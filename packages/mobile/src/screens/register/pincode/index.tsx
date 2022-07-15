@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { Image, View } from "react-native";
+import { Image, Text, View } from "react-native";
 import { useStyle } from "../../../styles";
 import { Button } from "../../../components/button";
 import { RouteProp, useRoute } from "@react-navigation/native";
@@ -11,6 +11,9 @@ import { BIP44HDPath } from "@keplr-wallet/background";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { NormalInput } from "../../../components/input/normal-input";
 import { useIntl } from "react-intl";
+import { BiometricsIcon } from "../../../components";
+import { Toggle } from "../../../components/toggle";
+import { useStore } from "../../../stores";
 
 export const NewPincodeScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -30,6 +33,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
 
   const MIN_LENGTH_PASSWORD = 8;
 
+  const { keychainStore } = useStore();
   const style = useStyle();
   const intl = useIntl();
 
@@ -43,6 +47,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [inputDataValid, setInputDataValid] = useState(false);
+  const [isBiometricOn, setIsBiometricOn] = useState(true);
 
   const [isCreating, setIsCreating] = useState(false);
   const [confirmPasswordErrorText, setConfirmPasswordErrorText] = useState("");
@@ -56,6 +61,10 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
       password,
       route.params.bip44HDPath
     );
+
+    if (keychainStore.isBiometrySupported && isBiometricOn) {
+      await keychainStore.turnOnBiometry(password);
+    }
 
     smartNavigation.reset({
       index: 0,
@@ -146,9 +155,19 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
               },
               error: intl.formatMessage({ id: "common.text.passwordNotMatching" })
             }]}
-            style={{ marginBottom: 24, paddingBottom: 24, }}
+            style={{ marginBottom: 24, }}
           />
 
+          {keychainStore.isBiometrySupported && (
+            <View style={{ flexDirection: "row", alignContent: "stretch", alignItems: "center", marginVertical: 16, }}>
+              <BiometricsIcon />
+              <Text style={style.flatten(["text-base-medium", "color-gray-10", "flex-1", "margin-left-8"])}>{intl.formatMessage({ id: "settings.unlockBiometrics" })}</Text>
+              <Toggle
+                on={isBiometricOn}
+                onChange={(value) => setIsBiometricOn(value)}
+              />
+            </View>
+          )}
           <Button
             containerStyle={style.flatten(["border-radius-4", "height-44"])}
             textStyle={style.flatten(["subtitle2"])}

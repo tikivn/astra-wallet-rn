@@ -72,6 +72,52 @@ export class KeychainStore {
   }
 
   @flow
+  *turnOnBiometryWithoutPassword() {
+    const credentials = yield* toGenerator(
+      Keychain.getGenericPassword(KeychainStore.defaultOptions)
+    );
+
+    if (credentials) {
+      const result = yield* toGenerator(
+        this.keyRingStore.checkPassword(credentials.password)
+      );
+      if (result) {
+        yield this.turnOnBiometry(credentials.password);
+      }
+      else {
+        throw new Error(
+          "Failed to get valid password from keychain. This may be due to changes of biometry information"
+        );
+      }
+    } else {
+      throw new Error("Failed to get credentials from keychain");
+    }
+  }
+
+  @flow
+  *turnOffBiometryWithoutReset() {
+    const credentials = yield* toGenerator(
+      Keychain.getGenericPassword(KeychainStore.defaultOptions)
+    );
+    if (credentials) {
+      if (
+        yield* toGenerator(
+          this.keyRingStore.checkPassword(credentials.password)
+        )
+      ) {
+        this._isBiometryOn = false;
+        yield this.save();
+      } else {
+        throw new Error(
+          "Failed to get valid password from keychain. This may be due to changes of biometry information"
+        );
+      }
+    } else {
+      throw new Error("Failed to get credentials from keychain");
+    }
+  }
+
+  @flow
   *turnOffBiometry() {
     if (this.isBiometryOn) {
       const credentials = yield* toGenerator(

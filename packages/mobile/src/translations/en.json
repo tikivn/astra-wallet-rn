@@ -35,6 +35,7 @@
   "settings.lockScreen": "Lock screen",
   "settings.network": "Network",
   "settings.text.myWallet": "My wallet",
+  "settings.unlockBiometrics": "",
   "settings.viewPassphase": "Reveal secret phrase",
   "staking.headerTitle": "Staking",
   "staking.reward.title": "Claim",

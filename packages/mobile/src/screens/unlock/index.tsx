@@ -21,6 +21,8 @@ import { IAccountStore } from "@keplr-wallet/stores";
 import { autorun } from "mobx";
 import { NormalInput } from "../../components/input/normal-input";
 import { useIntl } from "react-intl";
+import { BiometricsIcon } from "../../components";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 let splashScreenHided = false;
 async function hideSplashScreen() {
@@ -276,13 +278,18 @@ export const UnlockScreen: FunctionComponent = observer(() => {
             />
 
             {keychainStore.isBiometryOn ? (
-              <Button
-                containerStyle={style.flatten(["margin-top-40"])}
-                text="Use Biometric Authentication"
-                mode="text"
-                loading={isBiometricLoading}
+              <TouchableOpacity
                 onPress={tryBiometric}
-              />
+                style={{
+                  flexDirection: "row",
+                  alignContent: "stretch",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginVertical: 16,
+                }}>
+                <BiometricsIcon />
+                <Text style={style.flatten(["text-base-medium", "color-gray-10", "margin-left-8"])}>{intl.formatMessage({ id: "settings.unlockBiometrics" })}</Text>
+              </TouchableOpacity>
             ) : null}
           </View>
           <View style={style.get("flex-7")} />

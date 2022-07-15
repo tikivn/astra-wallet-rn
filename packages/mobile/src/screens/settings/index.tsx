@@ -12,6 +12,7 @@ import {
   SocialIcon,
   ConnectIcon,
   LockIcon,
+  BiometricsIcon,
 } from "../../components/icon";
 import { SettingsAccountItem } from "./items/select-account";
 import { AccountItem } from "./components";
@@ -21,9 +22,10 @@ import { AccountLanguageItem } from "./items/select-language";
 import { useIntl } from "react-intl";
 import { AlertInline } from "../../components";
 import { RouteProp, useRoute } from "@react-navigation/native";
+import { Toggle } from "../../components/toggle";
 
 export const SettingsScreen: FunctionComponent = observer(() => {
-  const { keyRingStore, signClientStore } = useStore();
+  const { keyRingStore, signClientStore, keychainStore } = useStore();
 
   const connect = signClientStore.sessions.length;
 
@@ -56,6 +58,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
     >
   >();
 
+  const [isBiometricOn, setIsBiometricOn] = useState(keychainStore.isBiometryOn && keychainStore.isBiometrySupported);
   const floatAlert =
     route.params && route.params.floatAlert ? route.params.floatAlert : null;
   const [displayFloatAlert, setDisplayFloatAlert] = useState(floatAlert);
@@ -70,6 +73,21 @@ export const SettingsScreen: FunctionComponent = observer(() => {
     }, 3000);
     return () => clearTimeout(timeoutId);
   }, [route.params]);
+
+  async function tryUnlock() {
+    try {
+      if (isBiometricOn) {
+        await keychainStore.turnOffBiometryWithoutReset();
+      }
+      else {
+        await keychainStore.turnOnBiometryWithoutPassword();
+      }
+      setIsBiometricOn(!isBiometricOn);
+    }
+    catch (error) {
+      console.log("__DEBUG__", error);
+    }
+  }
 
   return (
     <View style={style.flatten(["background-color-background", "flex-grow-1"])}>
@@ -108,6 +126,23 @@ export const SettingsScreen: FunctionComponent = observer(() => {
               smartNavigation.navigateSmart("Settings.EnterPincode", {});
             }}
           />
+          {keychainStore.isBiometrySupported && (
+            <View style={style.get("margin-top-8")}>
+              <AccountItem
+                {...accountItemProps}
+                label={intl.formatMessage({ id: "settings.unlockBiometrics" })}
+                right={
+                  <View style={{ marginRight: 12 }}>
+                    <Toggle
+                      on={isBiometricOn}
+                      onChange={tryUnlock}
+                    />
+                  </View>
+                }
+                left={<BiometricsIcon />}
+              />
+            </View>
+          )}
 
           <View style={style.get("height-32")} />
           <AccountItem

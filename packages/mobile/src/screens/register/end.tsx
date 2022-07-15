@@ -1,46 +1,21 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
-import { PageWithView } from "../../components/page";
+import React, { FunctionComponent, useState } from "react";
 import { useStyle } from "../../styles";
 import { View, Text } from "react-native";
 import { Button } from "../../components/button";
 import { useSmartNavigation } from "../../navigation-util";
-import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-import { Toggle } from "../../components/toggle";
 import LottieView from "lottie-react-native";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import delay from "delay";
 
 export const RegisterEndScreen: FunctionComponent = observer(() => {
-  const { keychainStore, keyRingStore } = useStore();
+  const { keyRingStore } = useStore();
 
   const style = useStyle();
 
   const smartNavigation = useSmartNavigation();
-
-  const route = useRoute<
-    RouteProp<
-      Record<
-        string,
-        {
-          password?: string;
-        }
-      >,
-      string
-    >
-  >();
-
-  const password = route.params?.password;
-
-  const [isBiometricOn, setIsBiometricOn] = useState(false);
-
-  useEffect(() => {
-    if (password && keychainStore.isBiometrySupported) {
-      setIsBiometricOn(true);
-    }
-  }, [keychainStore.isBiometrySupported, password]);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -71,20 +46,6 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
           Tạo tài khoản mới thành công
         </Text>
       </View>
-      {password && keychainStore.isBiometrySupported ? (
-        <View
-          style={style.flatten(["flex-row", "margin-top-58", "items-center"])}
-        >
-          <Text style={style.flatten(["subtitle1", "color-gray-10"])}>
-            Enable Biometric
-          </Text>
-          <View style={style.get("flex-1")} />
-          <Toggle
-            on={isBiometricOn}
-            onChange={(value) => setIsBiometricOn(value)}
-          />
-        </View>
-      ) : null}
       <View style={style.get("flex-1")} />
       <Button
         containerStyle={style.flatten(["margin-bottom-44"])}
@@ -97,10 +58,6 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
             // Because javascript is synchronous language, the loadnig state change would not delivered to the UI thread
             // So to make sure that the loading state changes, just wait very short time.
             await delay(10);
-
-            if (password && isBiometricOn) {
-              await keychainStore.turnOnBiometry(password);
-            }
 
             // Definetly, the last key is newest keyring.
             if (keyRingStore.multiKeyStoreInfo.length > 0) {
