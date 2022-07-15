@@ -5,8 +5,15 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Dimensions, Image, StatusBar, StyleSheet, View, Text } from "react-native";
-import Animated, { Easing } from "react-native-reanimated";
+import {
+  Dimensions,
+  Image,
+  StatusBar,
+  StyleSheet,
+  View,
+  Text,
+} from "react-native";
+import Animated, { EasingNode } from "react-native-reanimated";
 import { observer } from "mobx-react-lite";
 import { useStyle } from "../../styles";
 import * as SplashScreen from "expo-splash-screen";
@@ -149,7 +156,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         Animated.timing(animatedContinuityEffectOpacity, {
           toValue: 0,
           duration: 600,
-          easing: Easing.ease,
+          easing: EasingNode.ease,
         }).start();
       }, 700);
     }
@@ -233,42 +240,53 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   return (
     <React.Fragment>
       <View
-        style={style.flatten([
-          "absolute-fill",
-          "background-color-background",
-        ])}>
+        style={style.flatten(["absolute-fill", "background-color-background"])}
+      >
         <Image
           style={style.flatten(["width-full", "height-full"])}
           resizeMode="contain"
           source={require("../../assets/logo/splash-screen-background.png")}
         />
       </View>
-      <View
-        style={style.flatten(["flex-1", "background-color-transparent"])}
-      >
-
+      <View style={style.flatten(["flex-1", "background-color-transparent"])}>
         <KeyboardAwareScrollView
           contentContainerStyle={style.flatten(["flex-grow-1"])}
         >
-
           <View style={style.get("flex-3")} />
 
           <View style={style.flatten(["padding-x-page"])}>
-            <Text style={style.flatten(["color-white", "h4", "text-center", "margin-bottom-64"])}>Nhập mật khẩu</Text>
+            <Text
+              style={style.flatten([
+                "color-white",
+                "h4",
+                "text-center",
+                "margin-bottom-64",
+              ])}
+            >
+              Nhập mật khẩu
+            </Text>
 
             <NormalInput
               value={password}
-              error={isFailed ? intl.formatMessage({ id: "common.text.wrongPassword" }) : ""}
+              error={
+                isFailed
+                  ? intl.formatMessage({ id: "common.text.wrongPassword" })
+                  : ""
+              }
               secureTextEntry={true}
               showPassword={showPassword}
               onShowPasswordChanged={setShowPassword}
               onChangeText={setPassword}
-              style={{ marginBottom: 24, paddingBottom: 24, }}
+              style={{ marginBottom: 24, paddingBottom: 24 }}
             />
 
             <Button
               textStyle={style.flatten(["subtitle2", "color-background"])}
-              containerStyle={style.flatten(["margin-bottom-16", "border-radius-52", "margin-top-16"])}
+              containerStyle={style.flatten([
+                "margin-bottom-16",
+                "border-radius-52",
+                "margin-top-16",
+              ])}
               text="Đăng nhập"
               size="large"
               mode="light"
@@ -286,9 +304,18 @@ export const UnlockScreen: FunctionComponent = observer(() => {
                   alignItems: "center",
                   justifyContent: "center",
                   marginVertical: 16,
-                }}>
+                }}
+              >
                 <BiometricsIcon />
-                <Text style={style.flatten(["text-base-medium", "color-gray-10", "margin-left-8"])}>{intl.formatMessage({ id: "settings.unlockBiometrics" })}</Text>
+                <Text
+                  style={style.flatten([
+                    "text-base-medium",
+                    "color-gray-10",
+                    "margin-left-8",
+                  ])}
+                >
+                  {intl.formatMessage({ id: "settings.unlockBiometrics" })}
+                </Text>
               </TouchableOpacity>
             ) : null}
           </View>
@@ -336,9 +363,9 @@ export const SplashContinuityEffectView: FunctionComponent<{
   const [isBackgroundLoaded, setIsBackgroundLoaded] = useState(false);
   const [logoSize, setLogoSize] = useState<
     | {
-      width: number;
-      height: number;
-    }
+        width: number;
+        height: number;
+      }
     | undefined
   >();
 
@@ -400,7 +427,7 @@ export const SplashContinuityEffectView: FunctionComponent<{
                 backgroundClippingWidth,
                 {
                   duration: backgroundClippingAnimationDuration,
-                  easing: Easing.out(Easing.cubic),
+                  easing: EasingNode.out(EasingNode.cubic),
                   toValue: 1,
                 }
               ),
@@ -409,7 +436,7 @@ export const SplashContinuityEffectView: FunctionComponent<{
                 backgroundClippingHeight,
                 {
                   duration: backgroundClippingAnimationDuration,
-                  easing: Easing.out(Easing.cubic),
+                  easing: EasingNode.out(EasingNode.cubic),
                   toValue: 1,
                 }
               ),
@@ -418,7 +445,7 @@ export const SplashContinuityEffectView: FunctionComponent<{
                 backgroundClippingRadius,
                 {
                   duration: backgroundClippingAnimationDuration,
-                  easing: Easing.out(Easing.cubic),
+                  easing: EasingNode.out(EasingNode.cubic),
                   toValue: 1,
                 }
               ),
@@ -467,12 +494,12 @@ export const SplashContinuityEffectView: FunctionComponent<{
                 [
                   Animated.timing(animation.backgroundClock, backgroundWidth, {
                     duration: backgroundAnimationDuration,
-                    easing: Easing.out(Easing.quad),
+                    easing: EasingNode.out(EasingNode.quad),
                     toValue: 1,
                   }),
                   Animated.timing(animation.backgroundClock, backgroundHeight, {
                     duration: backgroundAnimationDuration,
-                    easing: Easing.out(Easing.quad),
+                    easing: EasingNode.out(EasingNode.quad),
                     toValue: 1,
                   }),
                   Animated.cond(
@@ -497,7 +524,7 @@ export const SplashContinuityEffectView: FunctionComponent<{
                   // it is for the delay.
                   Animated.timing(animation.backgroundClock, backgroundDelay, {
                     duration: backgroundAnimationDelay,
-                    easing: Easing.ease,
+                    easing: EasingNode.ease,
                     toValue: 1,
                   }),
                   Animated.cond(backgroundDelay.finished, [
@@ -525,10 +552,7 @@ export const SplashContinuityEffectView: FunctionComponent<{
   return (
     <React.Fragment>
       <View
-        style={style.flatten([
-          "absolute-fill",
-          "background-color-background",
-        ])}
+        style={style.flatten(["absolute-fill", "background-color-background"])}
       />
       <View
         style={style.flatten([
@@ -555,7 +579,7 @@ export const SplashContinuityEffectView: FunctionComponent<{
                 inputRange: [0, 1],
                 outputRange: [
                   Dimensions.get("window").height +
-                  (StatusBar.currentHeight ?? 0),
+                    (StatusBar.currentHeight ?? 0),
                   expectedLogoSize,
                 ],
               }),
@@ -581,7 +605,7 @@ export const SplashContinuityEffectView: FunctionComponent<{
                   inputRange: [0, 1],
                   outputRange: [
                     Dimensions.get("window").height +
-                    (StatusBar.currentHeight ?? 0),
+                      (StatusBar.currentHeight ?? 0),
                     expectedLogoSize,
                   ],
                 }),

@@ -15,7 +15,7 @@ import {
   Svg,
   Use,
 } from "react-native-svg";
-import Animated, { Easing } from "react-native-reanimated";
+import Animated, { EasingNode } from "react-native-reanimated";
 
 // Convert to cartesian coordinates from polar coordinates.
 const polarToCartesian = (
@@ -145,7 +145,7 @@ const useAnimated = (
     return {
       duration: new Animated.Value(0),
       toValue,
-      easing: Easing.out(Easing.cubic),
+      easing: EasingNode.out(EasingNode.cubic),
     };
   }, [toValue]);
 

@@ -189,10 +189,7 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = () => {
               }
             }}
           >
-            <ArrowAllIcon
-              size={32}
-              color={style.get("color-primary").color}
-            />
+            <ArrowAllIcon size={32} color={style.get("color-primary").color} />
           </RectButton>
           <View style={style.get("flex-1")} />
           <RectButton
