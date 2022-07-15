@@ -15,9 +15,9 @@
     "version": "zx ./scripts/lerna-lifecyle-version.mjs"
   },
   "dependencies": {
-    "@cosmjs/encoding": "^0.27.1",
+    "@cosmjs/encoding": "^0.28.11",
     "@cosmjs/launchpad": "^0.27.1",
-    "@cosmjs/proto-signing": "^0.27.1",
+    "@cosmjs/proto-signing": "^0.28.11",
     "@fortawesome/fontawesome-free": "^5.11.2",
     "@keplr-wallet/analytics": "0.10.12",
     "@keplr-wallet/background": "0.10.12",
@@ -65,7 +65,7 @@
     "react-router-dom": "^5.1.2",
     "reactstrap": "^8.4.1",
     "scrypt-js": "^3.0.1",
-    "secretjs": "^0.17.0",
+    "secretjs": "^0.17.5",
     "sha.js": "^2.4.11",
     "utility-types": "^3.10.0",
     "webextension-polyfill": "^0.7.0"
