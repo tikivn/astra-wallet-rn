@@ -14,7 +14,6 @@ export const UnbondingCard: FunctionComponent<{
   containerStyle?: ViewStyle;
   validatorAddress: string;
 }> = observer(({ containerStyle, validatorAddress }) => {
-  
   const smartNavigation = useSmartNavigation();
   const { chainStore, accountStore, queriesStore } = useStore();
 
@@ -62,11 +61,13 @@ export const UnbondingCard: FunctionComponent<{
             style={style.flatten([
               "margin-y-8",
               "color-gray-30",
-              "text-center",
               "text-caption2",
             ])}
           >
-            <FormattedMessage id="validator.details.unbonding.noticeWithdrawalPeroid" values={{ coin: "ASA" }} />
+            <FormattedMessage
+              id="validator.details.unbonding.noticeWithdrawalPeroid"
+              values={{ coin: "ASA" }}
+            />
             <Text
               style={style.flatten(["text-underline", "color-primary"])}
               onPress={() => {
@@ -113,7 +114,10 @@ export const UnbondingCard: FunctionComponent<{
                   numeric: "always",
                 })
                 .replace("in ", "")
-                .replace("days", intl.formatMessage({id: "validator.details.unbonding.days"}));
+                .replace(
+                  "days",
+                  intl.formatMessage({ id: "validator.details.unbonding.days" })
+                );
             } else if (relativeEndTimeHours) {
               return intl
                 .formatRelativeTime(relativeEndTimeHours, "hours", {
@@ -127,7 +131,7 @@ export const UnbondingCard: FunctionComponent<{
           })();
 
           return (
-            <View style={style.flatten(["height-72"])}>
+            <View style={style.flatten(["height-72"])} key={i}>
               <View
                 style={style.flatten([
                   "flex-row",
@@ -169,7 +173,7 @@ export const UnbondingCard: FunctionComponent<{
     </Card>
   ) : (
     <DelegationsEmptyItem
-      label={intl.formatMessage({id: "validator.details.unbonding.empty"})}
+      label={intl.formatMessage({ id: "validator.details.unbonding.empty" })}
       containerStyle={style.flatten([
         "background-color-background",
         "margin-y-32",

@@ -17,7 +17,7 @@
   "validator.details.unbonding.empty": "Bạn chưa có giao dịch rút tiền nào",
   "validator.details.unbonding.history": "lịch sử",
   "validator.details.unbonding.nameAndAmount": "Tên quỹ & số tiền rút",
-  "validator.details.unbonding.noticeWithdrawalPeroid": "Sau khi rút {coin}, bạn sẽ nhận được số tiền đó sau 14 ngày. \nĐể xem số {coin} đã rút thành công vui lòng xem ",
+  "validator.details.unbonding.noticeWithdrawalPeroid": "Sau khi rút {coin}, bạn sẽ nhận được số tiền đó sau 14 ngày. Để xem số {coin} đã rút thành công vui lòng xem ",
   "validator.details.unbonding.receiveAfter": "Sẽ nhận được sau",
   "validator.details.updateTime": "Lần thay đổi cuối cùng",
   "validator.details.uptime": "Thời gian hoạt động",
