@@ -91,16 +91,16 @@ export const SettingsScreen: FunctionComponent = observer(() => {
 
   return (
     <View style={style.flatten(["background-color-background", "flex-grow-1"])}>
-      {/* <ImageBackground
+      <ImageBackground
         style={style.flatten(["width-full", "height-full"])}
         source={require("../../assets/logo/main_background.png")}
         resizeMode="contain"
-      > */}
-        {/* <SafeAreaView /> */}
-        {/* <View style={style.get("height-64")} /> */}
+      >
+        <SafeAreaView />
+        <View style={style.get("height-64")} />
         <PageWithScrollViewInBottomTabView
           style={style.flatten(["flex-grow-1"])}
-          backgroundColor={style.get("color-green-30").color}
+          backgroundColor={style.get("color-transparent").color}
         >
           <SettingsAccountItem />
           <View style={style.get("height-32")} />
@@ -223,10 +223,10 @@ export const SettingsScreen: FunctionComponent = observer(() => {
               }}
             />
             <View style={{ height: 44, marginTop: 16 }} />
-            {/* <SafeAreaView /> */}
+            <SafeAreaView />
           </View>
         )}
-      {/* </ImageBackground> */}
+      </ImageBackground>
     </View>
   );
 });
