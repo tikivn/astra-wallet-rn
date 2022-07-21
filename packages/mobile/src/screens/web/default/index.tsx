@@ -1,6 +1,12 @@
-import React, { FunctionComponent, useEffect, useRef, useState } from "react";
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { BackHandler, Platform } from "react-native";
-import WebView from "react-native-webview";
+import WebView, { WebViewMessageEvent } from "react-native-webview";
 
 import {
   RouteProp,
@@ -10,10 +16,6 @@ import {
 } from "@react-navigation/native";
 
 import { observer } from "mobx-react-lite";
-import { PageWithScrollView } from "../../../components";
-import { useStyle } from "../../../styles";
-import { WebViewStateContext } from "../components/context";
-import { OnScreenWebpageScreenHeader } from "../components/header";
 
 export const WebViewScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -27,12 +29,11 @@ export const WebViewScreen: FunctionComponent = observer(() => {
       string
     >
   >();
-  const style = useStyle();
 
   const webviewRef = useRef<WebView | null>(null);
   const [currentURL, setCurrentURL] = useState(() => {
     if (route.params.url) {
-        return route.params.url;
+      return route.params.url;
     }
 
     return "";
@@ -80,28 +81,52 @@ export const WebViewScreen: FunctionComponent = observer(() => {
     }
   }, [canGoBack, navigation]);
 
-  return (
-      <WebView
-        source={{uri: currentURL}}
-        onNavigationStateChange={(e) => {
-          // Strangely, `onNavigationStateChange` is only invoked whenever page changed only in IOS.
-          // Use two handlers to measure simultaneously in ios and android.
-          setCanGoBack(e.canGoBack);
-          setCanGoForward(e.canGoForward);
-          setCurrentURL(e.url);
-        }}
-        onLoadProgress={(e) => {
-          // Strangely, `onLoadProgress` is only invoked whenever page changed only in Android.
-          // Use two handlers to measure simultaneously in ios and android.
-          setCanGoBack(e.nativeEvent.canGoBack);
-          setCanGoForward(e.nativeEvent.canGoForward);
+  const script = `
+  let _documentTitle = document.title;
+  window.ReactNativeWebView.postMessage(_documentTitle)
+  Object.defineProperty(document, 'title', {
+    set (val) {
+      _documentTitle = val
+      window.ReactNativeWebView.postMessage(_documentTitle)
+    },
+    get () {
+      return _documentTitle
+    }
+  });
+`;
 
-          setCurrentURL(e.nativeEvent.url);
-        }}
-        contentInsetAdjustmentBehavior="never"
-        automaticallyAdjustContentInsets={false}
-        decelerationRate="normal"
-        allowsBackForwardNavigationGestures={true}
-      />
+  const onMessage = useCallback(
+    ({ nativeEvent }: WebViewMessageEvent) => {
+      console.log("nativeEvent.title: ", nativeEvent.title);
+      navigation.setOptions({ title: nativeEvent.title });
+    },
+    [navigation]
+  );
+
+  return (
+    <WebView
+      source={{ uri: currentURL }}
+      onNavigationStateChange={(e) => {
+        // Strangely, `onNavigationStateChange` is only invoked whenever page changed only in IOS.
+        // Use two handlers to measure simultaneously in ios and android.
+        setCanGoBack(e.canGoBack);
+        setCanGoForward(e.canGoForward);
+        setCurrentURL(e.url);
+      }}
+      onLoadProgress={(e) => {
+        // Strangely, `onLoadProgress` is only invoked whenever page changed only in Android.
+        // Use two handlers to measure simultaneously in ios and android.
+        setCanGoBack(e.nativeEvent.canGoBack);
+        setCanGoForward(e.nativeEvent.canGoForward);
+
+        setCurrentURL(e.nativeEvent.url);
+      }}
+      contentInsetAdjustmentBehavior="never"
+      automaticallyAdjustContentInsets={false}
+      decelerationRate="normal"
+      allowsBackForwardNavigationGestures={true}
+      onMessage={onMessage}
+      injectedJavaScript={script}
+    />
   );
 });

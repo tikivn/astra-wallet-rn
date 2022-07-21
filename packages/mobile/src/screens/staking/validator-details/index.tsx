@@ -1,22 +1,21 @@
 import { Dec } from "@keplr-wallet/unit";
 import { useRoute, RouteProp } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useState } from "react";
-import { PageWithScrollView } from "../../../components/page";
+import React, { FunctionComponent, useCallback, useRef, useState } from "react";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 
 import { CommissionsCard } from "./commission-card";
 import { ValidatorNameCard } from "./name-card";
 import { DelegatedCard } from "./delegated-card";
-import { ImageBackground, Text, View } from "react-native";
+import { Animated, Text, View } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import { UnbondingCard } from "./unbonding-card";
 import { DelegationsEmptyItem } from "../dashboard/delegate";
 import { useIntl } from "react-intl";
-import { RectButton } from "../../../components/rect-button";
-import { LeftArrowIcon } from "../../../components/icon";
-import { useSmartNavigation } from "../../../navigation-util";
+import { ScrollView } from "react-native-gesture-handler";
+import { ValidatorHeaderCard } from "./header-card";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export const NewValidatorDetailsScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -30,7 +29,10 @@ export const NewValidatorDetailsScreen: FunctionComponent = observer(() => {
       string
     >
   >();
-  const smartNavigation = useSmartNavigation();
+
+  const opacityAnim = useRef(new Animated.Value(0)).current;
+  const safeAreaInsets = useSafeAreaInsets();
+  const height = 44 + safeAreaInsets.top;
   const validatorAddress = route.params.validatorAddress;
 
   const { chainStore, queriesStore, accountStore } = useStore();
@@ -86,96 +88,84 @@ export const NewValidatorDetailsScreen: FunctionComponent = observer(() => {
     first: FirstRoute,
     second: SecondRoute,
   });
+
+  const onScrollContent = useCallback((e) => {
+    opacityAnim.setValue(e.nativeEvent.contentOffset.y);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
-    <View
-      style={style.flatten([
-        "width-full",
-        "height-full",
-        "background-color-background",
-      ])}
-    >
-      <ImageBackground
-        style={style.flatten(["width-full", "height-full"])}
-        source={require("../../../assets/logo/main_background.png")}
-        resizeMode="contain"
+    <View style={style.flatten(["background-color-background", "flex-grow-1"])}>
+      <ScrollView
+        scrollEventThrottle={16}
+        contentContainerStyle={style.flatten(["flex-grow-1"])}
+        onScroll={onScrollContent}
       >
-        <PageWithScrollView
-          contentContainerStyle={style.flatten(["flex-grow-1"])}
-          backgroundColor={style.get("color-transparent").color}
-          stickyHeaderIndices={[0]}
-        >
-          <RectButton
-            style={style.flatten([
-              "border-radius-32",
-              "padding-4",
-              "margin-left-20",
-              "background-color-black-transparent",
-              "width-32",
-              "height-32",
-            ])}
-            onPress={() => {
-              smartNavigation.goBack();
-            }}
-          >
-            <LeftArrowIcon size={24} color={style.get("color-white").color} />
-          </RectButton>
-          <ValidatorNameCard
+        <ValidatorNameCard
+          containerStyle={style.flatten([
+            "background-color-transparent",
+            "height-276",
+          ])}
+          validatorAddress={validatorAddress}
+        />
+        {hasStake ? (
+          <DelegatedCard
             containerStyle={style.flatten([
-              "margin-y-card-gap",
+              "background-color-transparent",
+              "padding-y-0",
               "background-color-transparent",
             ])}
             validatorAddress={validatorAddress}
           />
-          {hasStake ? (
-            <DelegatedCard
+        ) : null}
+        <TabView
+          lazy
+          renderLazyPlaceholder={() => (
+            <DelegationsEmptyItem
+              label={intl.formatMessage({
+                id: "validator.details.emptyWithdrawHistory",
+              })}
               containerStyle={style.flatten([
-                "background-color-transparent",
-                "padding-y-0",
-                "background-color-transparent",
+                "background-color-background",
+                "margin-y-32",
+                "flex-1",
               ])}
-              validatorAddress={validatorAddress}
             />
-          ) : null}
-          <TabView
-            lazy
-            renderLazyPlaceholder={() => (
-              <DelegationsEmptyItem
-                label={intl.formatMessage({
-                  id: "validator.details.emptyWithdrawHistory",
-                })}
-                containerStyle={style.flatten([
-                  "background-color-background",
-                  "margin-y-32",
-                  "flex-1",
-                ])}
-              />
-            )}
-            style={style.flatten(["margin-top-16", "height-600"])}
-            navigationState={{ index, routes }}
-            renderScene={renderScene}
-            onIndexChange={setIndex}
-            renderTabBar={(props) => (
-              <TabBar
-                {...props}
-                indicatorStyle={style.get("background-color-primary")}
-                tabStyle={style.flatten(["flex-0"])}
-                //   scrollEnabled={true}
-                style={style.get("background-color-background")}
-                renderLabel={({ route, focused }) => (
-                  <Text
-                    style={style.flatten(
-                      ["subtitle3", "color-gray-30"],
-                      [focused && "color-primary"]
-                    )}
-                  >
-                    {route.title}
-                  </Text>
-                )}
-              />
-            )}
-          />
-        </PageWithScrollView>
-      </ImageBackground>
+          )}
+          style={style.flatten(["margin-top-16", "height-600"])}
+          navigationState={{ index, routes }}
+          renderScene={renderScene}
+          onIndexChange={setIndex}
+          renderTabBar={(props) => (
+            <TabBar
+              {...props}
+              indicatorStyle={style.get("background-color-primary")}
+              tabStyle={style.flatten(["flex-0"])}
+              //   scrollEnabled={true}
+              style={style.get("background-color-background")}
+              renderLabel={({ route, focused }) => (
+                <Text
+                  style={style.flatten(
+                    ["subtitle3", "color-gray-30"],
+                    [focused && "color-primary"]
+                  )}
+                >
+                  {route.title}
+                </Text>
+              )}
+            />
+          )}
+        />
+      </ScrollView>
+      <ValidatorHeaderCard
+        animOpacity={opacityAnim}
+        containerStyle={{
+          position: "absolute",
+          width: "100%",
+          height: height,
+          backgroundColor: "transparent",
+        }}
+      />
     </View>
   );
 });

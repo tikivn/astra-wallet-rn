@@ -56,7 +56,9 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
             .upperCase(true)
             .toString()}
         </Text>
-        <Text style={style.flatten(["color-gray-30", "body3", "margin-bottom-0"])} >
+        <Text
+          style={style.flatten(["color-gray-30", "body3", "margin-bottom-0"])}
+        >
           ~
           {totalUnboding
             ? totalUnboding.toString()
@@ -66,7 +68,10 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
       <View style={style.flatten(["background-color-background"])}>
         <AlertInline
           type="info"
-          content={intl.formatMessage({ id: "staking.unbonding.noticeWithdrawalPeriod" }, { coin: "ASA" })}
+          content={intl.formatMessage(
+            { id: "staking.unbonding.noticeWithdrawalPeriod" },
+            { coin: "ASA" }
+          )}
         />
         <Text
           style={style.flatten([
@@ -87,7 +92,9 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
           </Text>
         </Text>
       </View>
-      <View style={style.flatten(["margin-top-16", "background-color-background"])}>
+      <View
+        style={style.flatten(["margin-top-16", "background-color-background"])}
+      >
         <View
           style={style.flatten([
             "margin-top-16",
@@ -104,7 +111,9 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
             <FormattedMessage id="staking.unbonding.receiveAfter" />
           </Text>
         </View>
-        <CardDivider style={style.flatten(["background-color-gray-70", "margin-x-0"])} />
+        <CardDivider
+          style={style.flatten(["background-color-gray-70", "margin-x-0"])}
+        />
       </View>
       {unbondings.map((unbonding, unbondingIndex) => {
         const validator = bondedValidators.validators
@@ -133,33 +142,42 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
                 const relativeEndTimeHours = Math.ceil(relativeEndTime / 3600);
 
                 if (relativeEndTimeDays) {
-                  return (
-                    intl
-                      .formatRelativeTime(relativeEndTimeDays, "days", {
-                        numeric: "always",
-                      })
-                      .replace("in ", "").replace("days", intl.formatMessage({ id: "staking.unbonding.days" }))
-                  );
+                  return intl
+                    .formatRelativeTime(relativeEndTimeDays, "days", {
+                      numeric: "always",
+                    })
+                    .replace("in ", "")
+                    .replace(
+                      "days",
+                      intl.formatMessage({ id: "staking.unbonding.days" })
+                    );
                 } else if (relativeEndTimeHours) {
-                  return (
-                    intl
-                      .formatRelativeTime(relativeEndTimeHours, "hours", {
-                        numeric: "always",
-                      })
-                      .replace("in ", "").replace("hours", "h")
-                  );
+                  return intl
+                    .formatRelativeTime(relativeEndTimeHours, "hours", {
+                      numeric: "always",
+                    })
+                    .replace("in ", "")
+                    .replace("hours", "h");
                 }
 
                 return "";
               })();
 
               return (
-                <View style={style.flatten(["height-72"])}>
-                  <View style={style.flatten(["flex-row", "justify-between", "margin-y-16"])}>
-                    <View style={style.flatten(["flex-row", "justify-start",])}>
+                <View style={style.flatten(["height-72"])} key={i}>
+                  <View
+                    style={style.flatten([
+                      "flex-row",
+                      "justify-between",
+                      "margin-y-16",
+                    ])}
+                  >
+                    <View style={style.flatten(["flex-row", "justify-start"])}>
                       <ValidatorThumbnail size={24} url={thumbnail} />
                       <View style={style.flatten(["padding-x-16", "flex"])}>
-                        <Text style={style.flatten(["subtitle3", "color-gray-10"])} >
+                        <Text
+                          style={style.flatten(["subtitle3", "color-gray-10"])}
+                        >
                           {validator?.description.moniker ?? "..."}
                         </Text>
                         <Text
