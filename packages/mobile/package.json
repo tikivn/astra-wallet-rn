@@ -125,7 +125,8 @@
     "@nartc/react-native-barcode-mask": "^1.2.0",
     "@react-native-masked-view/masked-view": "0.2.6",
     "web3": "^1.7.4",
-    "react-native-select-dropdown": "^2.0.4"
+    "react-native-select-dropdown": "^2.0.4",
+    "bech32-converting": "^1.0.9"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",

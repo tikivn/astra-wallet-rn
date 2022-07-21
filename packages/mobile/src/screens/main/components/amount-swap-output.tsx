@@ -30,7 +30,6 @@ export const AmountSwapOutput: FunctionComponent<{
   const queryStakable = queries.queryBalances.getQueryBech32Address(
     account.bech32Address
   ).stakable;
-  const stakable = queryStakable.balance;
 
   const error = amountConfig.error;
   const errorText: string | undefined = useMemo(() => {

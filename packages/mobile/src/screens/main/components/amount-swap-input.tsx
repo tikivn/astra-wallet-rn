@@ -53,8 +53,8 @@ export const AmountSwapInput: FunctionComponent<{
     }
   }, [error]);
 
-  const cointImg =
-    "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png";
+  const cointImg = stakable.currency.coinImageUrl;
+
   return (
     <React.Fragment>
       <View

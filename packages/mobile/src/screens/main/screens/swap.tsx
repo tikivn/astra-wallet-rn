@@ -1,6 +1,7 @@
 import { useSendTxConfig } from "@keplr-wallet/hooks";
 import { Dec, IntPretty } from "@keplr-wallet/unit";
 import { RouteProp, useRoute } from "@react-navigation/native";
+import converter from "bech32-converting";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -12,13 +13,8 @@ import { RectButton } from "../../../components/rect-button";
 import { EthereumEndpoint } from "../../../config";
 import { useStore } from "../../../stores";
 import { Colors, useStyle } from "../../../styles";
-import { Keplr } from "@keplr-wallet/types";
-import Web3 from "web3";
-declare const window: Window &
-  typeof globalThis & {
-    astra: Keplr;
-  };
 
+import Web3 from "web3";
 import {
   AmountSwapInput,
   AmountSwapOutput,
@@ -63,25 +59,17 @@ export const SwapScreen: FunctionComponent = observer(() => {
     EthereumEndpoint
   );
 
-  // const toHexString = (bytes: any) =>
-  //   bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, "0"), "");
-
-  // const get = async () => {
-  //   const web3 = new Web3(
-  //     new Web3.providers.HttpProvider("https://rpc.astranaut.dev")
-  //   );
-  //   const a = await web3.eth.getChainId();
-
-  //   // const address = toHexString(account.evmosHexAddress)
-
-  //   console.log("🚀 -> get -> address", account.name);
-  //   // const b = await web3.eth.getBalance(
-  //   //   "astra1rq90fld2wz4djfqjuklru8sc37jea9t222576z"
-  //   // );
-  //   // console.log("🚀 -> get -> web3.eth achain", a, b);
-  // };
-  // get();
-  // useEffect(() => {}, []);
+  const get = async () => {
+    const web3 = new Web3(
+      new Web3.providers.HttpProvider("https://rpc.astranaut.dev")
+    );
+    const address = converter("astra").toHex(account.bech32Address);
+    console.log("🚀 -> get -> address", address);
+    // const a = await web3.eth.getChainId();
+    const b = await web3.eth.getBalance(address);
+  };
+  get();
+  useEffect(() => {}, []);
 
   useEffect(() => {
     if (route.params.currency) {
