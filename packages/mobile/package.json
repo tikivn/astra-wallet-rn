@@ -51,7 +51,7 @@
     "@keplr-wallet/unit": "0.10.12",
     "@ledgerhq/react-native-hw-transport-ble": "=6.20.0",
     "moment": "^2.24.0",
-    "@react-native-async-storage/async-storage":"^1.17.7",
+    "@react-native-async-storage/async-storage": "^1.17.7",
     "@react-native-community/blur": "^3.6.0",
     "@react-native-community/netinfo": "^7.1.9",
     "@react-navigation/bottom-tabs": "^5.11.8",
@@ -123,7 +123,9 @@
     "react-native-pager-view": "^5.4.25",
     "fast-text-encoding": "^1.0.4",
     "@nartc/react-native-barcode-mask": "^1.2.0",
-    "@react-native-masked-view/masked-view": "0.2.6"
+    "@react-native-masked-view/masked-view": "0.2.6",
+    "web3": "^1.7.4",
+    "react-native-select-dropdown": "^2.0.4"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",

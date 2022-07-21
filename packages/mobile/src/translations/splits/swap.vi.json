@@ -1,0 +1,13 @@
+{
+  "swap.amount.inputText": "Số {token} muốn đổi",
+  "swap.amount.outputText": "Số {token} nhận được",
+  "swap.amount.swapAll": "Đổi hết",
+  "swap.amount.available": "(Khả dụng: <b>amount</b>)",
+  "swap.exchangeRate": "Tỉ giá",
+  "swap.exchangeRate.describe": "Tỉ giá ...",
+  "swap.transactionFee": "Phí giao dịch",
+  "swap.transactionFee.describe": "Phí giao dịch ...",
+  "swap.priceSlippage": "Khả năng trượt giá",
+  "swap.priceSlippage.describe": "Giá thực tế sau khi đặt lệnh có thể khác với giá đưa ra ở trên, hãy chọn mức trượt giá tối đa mà bạn mong muốn. Nếu trượt giá cao hơn mức bạn chọn, lệnh sẽ bị huỷ.",
+  "swap.buttonText": "Chuyển đổi"
+}

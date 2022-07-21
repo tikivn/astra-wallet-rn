@@ -89,11 +89,11 @@ export const ActionsCard: FunctionComponent<{
             size="default"
             mode="fill"
             onPress={() => {
-              toastModal.makeToast({
-                title: "Coming soon",
-                type: "infor",
-              });
-              // smartNavigation.navigateSmart("Swap", {});
+              // toastModal.makeToast({
+              //   title: "Coming soon",
+              //   type: "infor",
+              // });
+              smartNavigation.navigateSmart("Swap", {});
             }}
           />
         </View>

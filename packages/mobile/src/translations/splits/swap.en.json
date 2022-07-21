@@ -1,0 +1,13 @@
+{
+  "swap.amount.inputText": "",
+  "swap.amount.outputText": "",
+  "swap.amount.swapAll": "",
+  "swap.amount.available": "",
+  "swap.exchangeRate": "",
+  "swap.exchangeRate.describe": "",
+  "swap.transactionFee": "",
+  "swap.transactionFee.describe": "",
+  "swap.priceSlippage": "",
+  "swap.priceSlippage.describe": "",
+  "swap.buttonText": ""
+}
