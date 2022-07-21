@@ -13,13 +13,23 @@ export interface AppChainInfo extends ChainInfo {
     readonly name: string;
     readonly txUrl: string;
   };
+  readonly wcInfor?: {
+    readonly relayUrl: string;
+    readonly projectId: string;
+    readonly metadata: {
+      readonly name: string;
+      readonly description: string;
+      readonly url: string;
+      readonly icons: [string];
+    },
+  },
 }
 
 export const EmbedChainInfos: AppChainInfo[] = [
   {
-    rpc: "https://rpc.astranaut.network",
-    rest: "https://api.astranaut.network",
-    chainId: "astra_11112-1",
+    rpc: "https://rpc.astranaut.dev",
+    rest: "https://api.astranaut.dev",
+    chainId: "astra_11115-1",
     chainName: "Testnet",
     stakeCurrency: {
       coinDenom: "ASA",
@@ -42,13 +52,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinImageUrl:
           "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
       },
-      // {
-      //   coinDenom: "UST",
-      //   coinMinimalDenom: "uusd",
-      //   coinDecimals: 6,
-      //   coinGeckoId: "ust",
-      //   coinImageUrl: "https://salt.tikicdn.com/ts/upload/e0/3a/3f/73b30182fd438639dbfb1ed26ab98497.png",
-      // },
     ],
     feeCurrencies: [
       {
@@ -73,30 +76,42 @@ export const EmbedChainInfos: AppChainInfo[] = [
       name: "Astra Scan",
       txUrl: "https://scan.astranaut.network/transaction/{txHash}",
     },
+    wcInfor: {
+      relayUrl: "wss://relay.astranaut.dev",
+      projectId: "dd47fbeda006ccb670152d74136f846a",
+      metadata: {
+        name: "Astra Hub",
+        description: "Everything for Astra",
+        url: "https://astranaut.io",
+        icons: [
+          "https://salt.tikicdn.com/ts/upload/ae/af/2a/d24e08ad40c1bec8958cc39d5bc924cc.png",
+        ],
+      },
+    },
   },
   {
-    rpc: "https://rpc.astra.bar",
-    rest: "https://api.astra.bar",
-    chainId: "astra-devnet-001",
-    chainName: "Testnet (deprecated)",
+    rpc: "https://rpc.astranaut.network",
+    rest: "https://api.astranaut.network",
+    chainId: "astra_11112-1",
+    chainName: "Testnet (Deprecated)",
     stakeCurrency: {
       coinDenom: "ASA",
-      coinMinimalDenom: "astra",
-      coinDecimals: 6,
-      coinGeckoId: "astra",
+      coinMinimalDenom: "aastra",
+      coinDecimals: 18,
+      coinGeckoId: "aastra",
       coinImageUrl:
         "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
     },
     bip44: {
-      coinType: 118,
+      coinType: 60,
     },
     bech32Config: Bech32Address.defaultBech32Config("astra"),
     currencies: [
       {
         coinDenom: "ASA",
-        coinMinimalDenom: "astra",
-        coinDecimals: 6,
-        coinGeckoId: "astra",
+        coinMinimalDenom: "aastra",
+        coinDecimals: 18,
+        coinGeckoId: "aastra",
         coinImageUrl:
           "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
       },
@@ -104,75 +119,37 @@ export const EmbedChainInfos: AppChainInfo[] = [
     feeCurrencies: [
       {
         coinDenom: "ASA",
-        coinMinimalDenom: "astra",
-        coinDecimals: 6,
-        coinGeckoId: "astra",
+        coinMinimalDenom: "aastra",
+        coinDecimals: 18,
+        coinGeckoId: "aastra",
         coinImageUrl:
-          "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
+          "https://salt.tikicdn.com/ts/upload/2a/74/6d/1000f0249fd530a9313a07fc3e13c1b2.png",
       },
     ],
-    coinType: 118,
-    features: ["ibc-transfer", "ibc-go"],
-    chainSymbolImageUrl:
-      "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
-    txExplorer: {
-      name: "Mintscan",
-      txUrl: "https://www.mintscan.io/cosmos/txs/{txHash}",
-    },
-  },
-  {
-    rpc: "https://rpc-test.osmosis.zone",
-    rest: "https://lcd-test.osmosis.zone",
-    chainId: "osmo-test-4",
-    chainName: "Osmosis Testnet",
-    stakeCurrency: {
-      coinDenom: "OSMO",
-      coinMinimalDenom: "uosmo",
-      coinDecimals: 6,
-      coinGeckoId: "osmosis",
-      coinImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png",
-    },
-    bip44: {
-      coinType: 118,
-    },
-    bech32Config: Bech32Address.defaultBech32Config("osmo"),
-    currencies: [
-      {
-        coinDenom: "OSMO",
-        coinMinimalDenom: "uosmo",
-        coinDecimals: 6,
-        coinGeckoId: "osmosis",
-        coinImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png",
-      },
-      {
-        coinDenom: "ION",
-        coinMinimalDenom: "uion",
-        coinDecimals: 6,
-        coinGeckoId: "ion",
-        coinImageUrl:
-          "https://dhj8dql1kzq2v.cloudfront.net/white/osmosis-ion.png",
-      },
-    ],
-    feeCurrencies: [
-      {
-        coinDenom: "OSMO",
-        coinMinimalDenom: "uosmo",
-        coinDecimals: 6,
-        coinGeckoId: "osmosis",
-        coinImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png",
-      },
-    ],
-    coinType: 118,
+    coinType: 60,
     gasPriceStep: {
-      low: 0,
-      average: 0.025,
-      high: 0.04,
+      low: 500000000000,
+      average: 1000000000000,
+      high: 2000000000000,
     },
-    features: ["ibc-transfer", "ibc-go", "cosmwasm"],
-    chainSymbolImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png",
+    features: ["ibc-transfer", "ibc-go", "eth-key-sign", "eth-address-gen"],
+    chainSymbolImageUrl:
+      "https://salt.tikicdn.com/ts/upload/2a/74/6d/1000f0249fd530a9313a07fc3e13c1b2.png",
     txExplorer: {
-      name: "Mintscan",
-      txUrl: "https://www.mintscan.io/osmosis/txs/{txHash}",
+      name: "Astra Scan",
+      txUrl: "https://scan.astranaut.network/transaction/{txHash}",
+    },
+    wcInfor: {
+      relayUrl: "wss://relay.walletconnect.com",
+      projectId: "dd47fbeda006ccb670152d74136f846a",
+      metadata: {
+        name: "Astra Hub",
+        description: "Everything for Astra",
+        url: "https://astranaut.io",
+        icons: [
+          "https://salt.tikicdn.com/ts/upload/ae/af/2a/d24e08ad40c1bec8958cc39d5bc924cc.png",
+        ],
+      },
     },
   },
 ];

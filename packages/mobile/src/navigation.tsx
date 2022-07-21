@@ -121,7 +121,6 @@ import {
 } from "./screens/main/screens";
 import { RegisterTutorialcreen } from "./screens/register/tutorial";
 import { NewPincodeScreen } from "./screens/register/pincode";
-import { VerifyPincodeScreen } from "./screens/register/pincode/verify";
 import {
   DeleteWalletScreen,
   EnterPincodeScreen,
@@ -374,13 +373,6 @@ export const RegisterNavigation: FunctionComponent = () => {
         }}
         name="Register.SetPincode"
         component={NewPincodeScreen}
-      />
-      <Stack.Screen
-        options={{
-          title: intl.formatMessage({ id: "register.verifyPincode.title" }),
-        }}
-        name="Register.VerifyPincode"
-        component={VerifyPincodeScreen}
       />
     </Stack.Navigator>
   );
