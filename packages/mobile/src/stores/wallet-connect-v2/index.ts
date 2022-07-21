@@ -36,18 +36,13 @@ export abstract class SignClientManager {
 
   async initSignClient() {
     await this.waitInitStores();
+    const chainInfo = this.chainStore.getChain(this.chainStore.current.chainId)
+      .raw;
     const _client = await SignClient.init({
       logger: "debug",
-      projectId: "dd47fbeda006ccb670152d74136f846a",
-      relayUrl: "wss://relay.walletconnect.com",
-      metadata: {
-        name: "Astra Hub",
-        description: "Everything for Astra",
-        url: "https://astranaut.io",
-        icons: [
-          "https://salt.tikicdn.com/ts/upload/ae/af/2a/d24e08ad40c1bec8958cc39d5bc924cc.png",
-        ],
-      },
+      projectId: chainInfo.wcInfor?.projectId,
+      relayUrl: chainInfo.wcInfor?.relayUrl,
+      metadata: chainInfo.wcInfor?.metadata,
     });
     this.onSessionConnected(_client);
   }
