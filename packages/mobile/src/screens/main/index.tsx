@@ -99,7 +99,7 @@ export const MainScreen: FunctionComponent = observer(() => {
 
   const onRefresh = React.useCallback(async () => {
     const account = accountStore.getAccount(chainStore.current.chainId);
-    console.log("account: ", account, account.evmosHexAddress);
+    console.log("account: ", account, account.hasEvmosHexAddress);
     const queries = queriesStore.get(chainStore.current.chainId);
 
     // Because the components share the states related to the queries,
@@ -126,15 +126,6 @@ export const MainScreen: FunctionComponent = observer(() => {
     setRefreshing(false);
   }, [accountStore, chainStore, priceStore, queriesStore]);
 
-  const queryBalances = queriesStore
-    .get(chainStore.current.chainId)
-    .queryBalances.getQueryBech32Address(
-      accountStore.getAccount(chainStore.current.chainId).bech32Address
-    );
-
-  const tokens = queryBalances.positiveNativeUnstakables.concat(
-    queryBalances.nonNativeBalances
-  );
   const smartNavigation = useSmartNavigation();
 
   return (

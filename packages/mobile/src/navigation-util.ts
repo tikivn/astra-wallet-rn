@@ -57,9 +57,6 @@ const {
     "Register.SetPincode": {
       upperScreenName: "Register",
     },
-    "Register.VerifyPincode": {
-      upperScreenName: "Register",
-    },
     Home: {
       upperScreenName: "Main",
     },
@@ -221,13 +218,6 @@ const {
       registerConfig: RegisterConfig;
       newMnemonicConfig: NewMnemonicConfig;
       bip44HDPath: BIP44HDPath;
-      type: "new" | "restore";
-    };
-    "Register.VerifyPincode": {
-      registerConfig: RegisterConfig;
-      newMnemonicConfig: NewMnemonicConfig;
-      bip44HDPath: BIP44HDPath;
-      password: string;
       type: "new" | "restore";
     };
     "Register.RecoverMnemonic": {

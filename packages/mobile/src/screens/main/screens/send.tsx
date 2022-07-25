@@ -95,7 +95,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
       <AmountInput amountConfig={sendConfigs.amountConfig} />
       <View style={style.get("height-12")} />
       <Button
-        text={intl.formatMessage({id: "wallet.send.continue"})}
+        text={intl.formatMessage({ id: "wallet.send.continue" })}
         size="large"
         containerStyle={style.flatten(["border-radius-4"])}
         textStyle={style.flatten(["subtitle2"])}

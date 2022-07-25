@@ -10,3 +10,13 @@ export const AstranautWebpageScreen: FunctionComponent = () => {
     />
   );
 };
+
+export const AstraDefiWebpageScreen: FunctionComponent = () => {
+  return (
+    <WebpageScreen
+      name="Astra Defi"
+      source={{ uri: "https://defi.astranaut.network" }}
+      originWhitelist={["https://defi.astranaut.network"]}
+    />
+  );
+};

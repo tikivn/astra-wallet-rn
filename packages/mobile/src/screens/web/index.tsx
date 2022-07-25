@@ -24,23 +24,9 @@ export const WebScreen: FunctionComponent = () => {
   return (
     <PageWithScrollViewInBottomTabView
       contentContainerStyle={style.get("flex-grow-1")}
-      style={StyleSheet.flatten([
-        style.flatten(["padding-x-20"]),
-        {
-          marginTop: safeAreaInsets.top,
-        },
-      ])}
+      backgroundColor={style.get("color-background").color}
+      style={StyleSheet.flatten([style.flatten(["padding-x-20"])])}
     >
-      <Text
-        style={style.flatten([
-          "h3",
-          "color-text-black-high",
-          "margin-top-44",
-          "margin-bottom-20",
-        ])}
-      >
-        Discover Apps
-      </Text>
       <WebpageImageButton
         name="Astra Web App"
         source={require("../../assets/image/webpage/osmosis.png")}
@@ -48,6 +34,16 @@ export const WebScreen: FunctionComponent = () => {
           smartNavigation.pushSmart("Web.Astranaut", {});
         }}
       />
+      <WebpageImageButton
+        name="Astra Defi"
+        source={require("../../assets/image/webpage/osmosis.png")}
+        onPress={() => {
+          smartNavigation.navigateSmart("WebView", {
+            url: "https://defi.astranaut.network",
+          });
+        }}
+      />
+
       <WebpageImageButton
         overrideInner={
           <View style={style.flatten(["flex-1", "items-center"])}>

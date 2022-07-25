@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { SignModal } from "../../modals/sign";
-import { LedgerGranterModal } from "../../modals/ledger";
+
 import { WCGoBackToBrowserModal } from "../../modals/wc-go-back-to-browser";
 import { BackHandler, Platform } from "react-native";
 import { LoadingScreenModal } from "../loading-screen/modal";
@@ -10,7 +10,7 @@ import { KeyRingStatus } from "@keplr-wallet/background";
 
 export const InteractionModalsProvider: FunctionComponent = observer(
   ({ children }) => {
-    const { ledgerInitStore, permissionStore } = useStore();
+    const { permissionStore } = useStore();
 
     useEffect(() => {
       for (const data of permissionStore.waitingDatas) {
@@ -40,12 +40,12 @@ export const InteractionModalsProvider: FunctionComponent = observer(
             }}
           />
         ) : null*/}
-        {ledgerInitStore.isInitNeeded ? (
+        {/* {ledgerInitStore.isInitNeeded ? (
           <LedgerGranterModal
             isOpen={true}
             close={() => ledgerInitStore.abortAll()}
           />
-        ) : null}
+        ) : null} */}
 
         {children}
       </React.Fragment>

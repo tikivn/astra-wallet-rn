@@ -78,7 +78,6 @@ export const useInjectedSourceCode = () => {
       );
     }
   }, []);
-
   return code;
 };
 
@@ -165,6 +164,7 @@ export const WebpageScreen: FunctionComponent<
   const [eventEmitter] = useState(() => new EventEmitter());
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {
+      console.log("event: ", event.nativeEvent);
       eventEmitter.emit("message", event.nativeEvent);
     },
     [eventEmitter]

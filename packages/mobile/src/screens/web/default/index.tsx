@@ -97,7 +97,7 @@ export const WebViewScreen: FunctionComponent = observer(() => {
 
   const onMessage = useCallback(
     ({ nativeEvent }: WebViewMessageEvent) => {
-      console.log("nativeEvent.title: ", nativeEvent.title);
+      console.log("nativeEvent.title: ",nativeEvent , nativeEvent.title);
       navigation.setOptions({ title: nativeEvent.title });
     },
     [navigation]

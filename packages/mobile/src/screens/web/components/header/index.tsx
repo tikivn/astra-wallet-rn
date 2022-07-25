@@ -97,7 +97,11 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = () => {
             safeAreaInsets.top -
             (Platform.OS === "ios" && safeAreaInsets.top > 44 ? 6 : 0),
         },
-        style.flatten(["background-color-white", "flex-row", "items-center"]),
+        style.flatten([
+          "background-color-background",
+          "flex-row",
+          "items-center",
+        ]),
       ])}
     >
       <View
@@ -124,19 +128,10 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = () => {
             }
           }}
         >
-          <Text
-            style={style.flatten([
-              "h4",
-              "color-text-black-medium",
-              "margin-right-8",
-            ])}
-          >
+          <Text style={style.flatten(["h4", "color-white", "margin-right-8"])}>
             {webViewState.name}
           </Text>
-          <RefreshIcon
-            size={20}
-            color={style.get("color-text-black-very-very-low").color}
-          />
+          <RefreshIcon size={20} color={style.get("color-white").color} />
         </RectButton>
 
         {/* Other buttons like the back, forward, home... */}
@@ -172,7 +167,7 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = () => {
               }
             }}
           >
-            <ArrowLeftIcon size={32} color={style.get("color-primary").color} />
+            <ArrowLeftIcon size={32} color={style.get("color-white").color} />
           </RectButton>
           <RectButton
             style={style.flatten([
@@ -189,7 +184,7 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = () => {
               }
             }}
           >
-            <ArrowAllIcon size={32} color={style.get("color-primary").color} />
+            <ArrowAllIcon size={32} color={style.get("color-white").color} />
           </RectButton>
           <View style={style.get("flex-1")} />
           <RectButton
@@ -205,7 +200,7 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = () => {
               smartNavigation.navigateSmart("Web.Intro", {});
             }}
           >
-            <HomeIcon size={32} color={style.get("color-primary").color} />
+            <HomeIcon size={32} color={style.get("color-white").color} />
           </RectButton>
         </View>
       </View>

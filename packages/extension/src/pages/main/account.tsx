@@ -112,17 +112,17 @@ export const AccountView: FunctionComponent = observer(() => {
           <div style={{ flex: 1 }} />
           <div
             className={styleAccount.address}
-            onClick={() => copyAddress(accountInfo.evmosHexAddress)}
+            onClick={() => copyAddress(accountInfo.hexAddress)}
           >
-            <Address isRaw={true} tooltipAddress={accountInfo.evmosHexAddress}>
+            <Address isRaw={true} tooltipAddress={accountInfo.hexAddress}>
               {accountInfo.walletStatus === WalletStatus.Loaded &&
-              accountInfo.evmosHexAddress
-                ? accountInfo.evmosHexAddress.length === 42
-                  ? `${accountInfo.evmosHexAddress.slice(
+              accountInfo.hexAddress
+                ? accountInfo.hexAddress.length === 42
+                  ? `${accountInfo.hexAddress.slice(
                       0,
                       10
-                    )}...${accountInfo.evmosHexAddress.slice(-8)}`
-                  : accountInfo.evmosHexAddress
+                    )}...${accountInfo.hexAddress.slice(-8)}`
+                  : accountInfo.hexAddress
                 : "..."}
             </Address>
           </div>

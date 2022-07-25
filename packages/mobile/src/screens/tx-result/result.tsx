@@ -56,8 +56,6 @@ export const TxResultScreen: FunctionComponent = observer(() => {
     >
   >();
 
-  console.log("__PARAMS__", route.params);
-
   const style = useStyle();
   const smartNavigation = useSmartNavigation();
   const [signer, setSigner] = useState("");
@@ -78,7 +76,6 @@ export const TxResultScreen: FunctionComponent = observer(() => {
       setIsPendingSignRequest(true);
     }
   }, [signClientStore]);
-
 
   const onRejectSignRequest = useCallback(
     async (name, isWC) => {
@@ -123,12 +120,12 @@ export const TxResultScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     let txTracer: TendermintTxTracer | undefined;
-
     if (transactionStore.txHash) {
       const txHash = Buffer.from(transactionStore.txHash).toString("hex");
       txTracer = new TendermintTxTracer(chainInfo.rpc, "/websocket");
+      console.log("Tx: ", txTracer);
       txTracer
-        .traceTx(Buffer.from(txHash, "hex"))
+        .traceTx(transactionStore.txHash)
         .then((tx) => {
           console.log("__GOT TX__ ", tx);
           if (tx.code == null || tx.code === 0) {

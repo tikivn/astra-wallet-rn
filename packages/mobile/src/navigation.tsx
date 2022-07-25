@@ -109,6 +109,7 @@ import {
   AstranautWebpageScreen,
   UmeeWebpageScreen,
   JunoswapWebpageScreen,
+  AstraDefiWebpageScreen,
 } from "./screens/web/webpages";
 import { WebpageScreenScreenOptionsPreset } from "./screens/web/components/webpage-screen";
 import Bugsnag from "@bugsnag/react-native";
@@ -687,63 +688,63 @@ export const WalletNavigation: FunctionComponent = () => {
   );
 };
 
-export const SettingStackScreen: FunctionComponent = () => {
-  const style = useStyle();
+// export const SettingStackScreen: FunctionComponent = () => {
+//   const style = useStyle();
 
-  const navigation = useNavigation();
+//   const navigation = useNavigation();
 
-  const { analyticsStore } = useStore();
+//   const { analyticsStore } = useStore();
 
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        ...PlainHeaderScreenOptionsPreset,
-        headerTitleStyle: style.flatten(["h5", "color-text-black-high"]),
-      }}
-      headerMode="screen"
-    >
-      <Stack.Screen
-        options={{
-          title: "Settings",
-          ...getPlainHeaderScreenOptionsPresetWithBackgroundColor(
-            style.get("color-setting-screen-background").color
-          ),
-          headerTitleStyle: style.flatten(["h3", "color-text-black-high"]),
-        }}
-        name="Setting"
-        component={SettingScreen}
-      />
-      <Stack.Screen
-        name="SettingSelectAccount"
-        options={{
-          title: "Select Account",
-          headerRight: () => (
-            <HeaderRightButton
-              onPress={() => {
-                analyticsStore.logEvent("Add additional account started");
-                navigation.navigate("Register", {
-                  screen: "Register.Intro",
-                });
-              }}
-            >
-              <HeaderAddIcon />
-            </HeaderRightButton>
-          ),
-          ...BlurredHeaderScreenOptionsPreset,
-        }}
-        component={SettingSelectAccountScreen}
-      />
+//   return (
+//     <Stack.Navigator
+//       screenOptions={{
+//         ...PlainHeaderScreenOptionsPreset,
+//         headerTitleStyle: style.flatten(["h5", "color-text-black-high"]),
+//       }}
+//       headerMode="screen"
+//     >
+//       <Stack.Screen
+//         options={{
+//           title: "Settings",
+//           ...getPlainHeaderScreenOptionsPresetWithBackgroundColor(
+//             style.get("color-setting-screen-background").color
+//           ),
+//           headerTitleStyle: style.flatten(["h3", "color-text-black-high"]),
+//         }}
+//         name="Setting"
+//         component={SettingScreen}
+//       />
+//       <Stack.Screen
+//         name="SettingSelectAccount"
+//         options={{
+//           title: "Select Account",
+//           headerRight: () => (
+//             <HeaderRightButton
+//               onPress={() => {
+//                 analyticsStore.logEvent("Add additional account started");
+//                 navigation.navigate("Register", {
+//                   screen: "Register.Intro",
+//                 });
+//               }}
+//             >
+//               <HeaderAddIcon />
+//             </HeaderRightButton>
+//           ),
+//           ...BlurredHeaderScreenOptionsPreset,
+//         }}
+//         component={SettingSelectAccountScreen}
+//       />
 
-      <Stack.Screen
-        options={{
-          title: "Version",
-        }}
-        name="Setting.Version"
-        component={KeplrVersionScreen}
-      />
-    </Stack.Navigator>
-  );
-};
+//       <Stack.Screen
+//         options={{
+//           title: "Version",
+//         }}
+//         name="Setting.Version"
+//         component={KeplrVersionScreen}
+//       />
+//     </Stack.Navigator>
+//   );
+// };
 
 export const SettingsStackScreen: FunctionComponent = () => {
   const style = useStyle();
@@ -803,7 +804,7 @@ export const ChainListStackScreen: FunctionComponent = () => {
   return (
     <Stack.Navigator
       screenOptions={{
-        ...BlurredHeaderScreenOptionsPreset,
+        ...WalletHeaderScreenOptionsPreset,
         headerTitleStyle: style.flatten(["h5", "color-text-black-high"]),
       }}
       headerMode="screen"
@@ -820,16 +821,20 @@ export const ChainListStackScreen: FunctionComponent = () => {
 };
 
 export const WebNavigation: FunctionComponent = () => {
+  const inl = useIntl();
+  const style = useStyle();
   return (
     <Stack.Navigator
       initialRouteName="Web.Intro"
       screenOptions={{
-        ...WebpageScreenScreenOptionsPreset,
+        ...WalletHeaderScreenOptionsPreset,
+        headerStyle: style.get("background-color-background"),
+        headerTitleStyle: style.flatten(["title2", "color-white"]),
       }}
       headerMode="screen"
     >
       <Stack.Screen
-        options={{ headerShown: false }}
+        options={{ title: inl.formatMessage({ id: "tabs.d-apps" }) }}
         name="Web.Intro"
         component={WebScreen}
       />

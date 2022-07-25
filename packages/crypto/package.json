@@ -19,7 +19,8 @@
   "devDependencies": {
     "@types/crypto-js": "^4.0.1",
     "@types/elliptic": "^6.4.12",
-    "@types/sha.js": "^2.4.0"
+    "@types/sha.js": "^2.4.0",
+    "@types/node": "^16.6.2"
   },
   "dependencies": {
     "bip32": "^2.0.6",

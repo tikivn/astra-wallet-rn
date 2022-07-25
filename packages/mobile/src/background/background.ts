@@ -26,7 +26,7 @@ init(
   EmbedChainInfos,
   [
     "http://192.168.50.49:3000",
-    "http://192.168.50.49:8800",
+    "https://defi.astranaut.network",
     "https://app.stargaze.zone",
     "https://app.umee.cc",
     "https://junoswap.com",
