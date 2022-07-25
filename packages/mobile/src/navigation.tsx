@@ -849,6 +849,9 @@ export const WebNavigation: FunctionComponent = () => {
 export const MainTabNavigation: FunctionComponent = () => {
   const style = useStyle();
   const intl = useIntl();
+  const { remoteConfigStore } = useStore();
+  const dappsEnabled = remoteConfigStore.getBool("feature_dapps_enabled");
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -921,13 +924,15 @@ export const MainTabNavigation: FunctionComponent = () => {
           tabBarLabel: intl.formatMessage({ id: "tabs.stake" }),
         }}
       />
-      <Tab.Screen
-        name="D-apps"
-        component={WebNavigation}
-        options={{
-          tabBarLabel: intl.formatMessage({ id: "tabs.d-apps" }),
-        }}
-      />
+      {dappsEnabled && (
+        <Tab.Screen
+          name="D-apps"
+          component={WebNavigation}
+          options={{
+            tabBarLabel: intl.formatMessage({ id: "tabs.d-apps" }),
+          }}
+        />
+      )}
       <Tab.Screen
         name="History"
         component={HistoryNavigation}

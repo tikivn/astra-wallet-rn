@@ -27,6 +27,8 @@ import { AccountCardNew, ActionsCard, BalanceCard } from "./card";
 import { ScanIcon } from "../../components";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useSmartNavigation } from "../../navigation-util";
+import { useToastModal } from "../../providers/toast-modal";
+import { useIntl } from "react-intl";
 
 export const MainScreen: FunctionComponent = observer(() => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -34,6 +36,8 @@ export const MainScreen: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
   const style = useStyle();
+  const intl = useIntl();
+  const toastModal = useToastModal();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
 
@@ -95,6 +99,7 @@ export const MainScreen: FunctionComponent = observer(() => {
     if (scrollViewRef.current) {
       scrollViewRef.current.scrollTo({ y: 0 });
     }
+    showAccessTestnetToast();
   }, [chainStore.current.chainId]);
 
   const onRefresh = React.useCallback(async () => {
@@ -136,6 +141,15 @@ export const MainScreen: FunctionComponent = observer(() => {
     queryBalances.nonNativeBalances
   );
   const smartNavigation = useSmartNavigation();
+
+  function showAccessTestnetToast() {
+    if (chainStore.current.chainName.toLowerCase().indexOf("testnet") != -1) {
+      toastModal.makeToast({
+        type: "error",
+        title: intl.formatMessage({ id: "common.alert.content.accessTestnet" }),
+      });
+    }
+  }
 
   return (
     <View style={style.get("background-color-background")}>

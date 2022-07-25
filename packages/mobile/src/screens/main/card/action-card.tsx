@@ -15,9 +15,12 @@ export const ActionsCard: FunctionComponent<{
 }> = observer(({ containerStyle }) => {
   const style = useStyle();
   const smartNavigation = useSmartNavigation();
-  const { chainStore } = useStore();
+  const { chainStore, remoteConfigStore } = useStore();
   const intl = useIntl();
   const toastModal = useToastModal();
+
+  const swapEnabled = remoteConfigStore.getBool("feature_swap_enabled");
+
   return (
     <Card style={containerStyle}>
       <CardBody>
@@ -70,32 +73,34 @@ export const ActionsCard: FunctionComponent<{
               });
             }}
           />
-          <Button
-            color="primary"
-            containerStyle={style.flatten([
-              "border-radius-52",
-              "border-width-0",
-              "height-44",
-            ])}
-            text={intl.formatMessage({ id: "main.swap" })}
-            leftIcon={
-              <View style={style.flatten(["margin-right-6", "margin-left-6"])}>
-                <SwapIcon color={style.get("color-white").color} size={20} />
-              </View>
-            }
-            rightIcon={<View style={style.flatten(["margin-right-12"])} />}
-            textStyle={style.flatten(["color-white", "subtitle3"])}
-            underlayColor="#00000020"
-            size="default"
-            mode="fill"
-            onPress={() => {
-              toastModal.makeToast({
-                title: "Coming soon",
-                type: "infor",
-              });
-              // smartNavigation.navigateSmart("Swap", {});
-            }}
-          />
+          {swapEnabled && (
+            <Button
+              color="primary"
+              containerStyle={style.flatten([
+                "border-radius-52",
+                "border-width-0",
+                "height-44",
+              ])}
+              text={intl.formatMessage({ id: "main.swap" })}
+              leftIcon={
+                <View style={style.flatten(["margin-right-6", "margin-left-6"])}>
+                  <SwapIcon color={style.get("color-white").color} size={20} />
+                </View>
+              }
+              rightIcon={<View style={style.flatten(["margin-right-12"])} />}
+              textStyle={style.flatten(["color-white", "subtitle3"])}
+              underlayColor="#00000020"
+              size="default"
+              mode="fill"
+              onPress={() => {
+                toastModal.makeToast({
+                  title: "Coming soon",
+                  type: "infor",
+                });
+                // smartNavigation.navigateSmart("Swap", {});
+              }}
+            />
+          )}
         </View>
       </CardBody>
     </Card>
