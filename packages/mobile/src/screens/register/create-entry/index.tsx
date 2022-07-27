@@ -65,11 +65,11 @@ export const RegisterCreateEntryScreen: FunctionComponent = observer(() => {
             <InfoIcon />
           </RectButton>
         </View>
-        <EntryItem
+        {/* <EntryItem
           iconType="tiki"
           title={intl.formatMessage({ id: "register.createEntry.item.title.tiki" })}
           onPress={registerWithTiki}
-        />
+        /> */}
         <EntryItem
           iconType="google"
           title={intl.formatMessage({ id: "register.createEntry.item.title.google" })}
