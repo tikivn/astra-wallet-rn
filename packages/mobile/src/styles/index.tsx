@@ -62,7 +62,7 @@ export const Colors = {
   "gray-50": "#4C5975",
   "gray-60": "#3A4561",
   "gray-70": "#2C364F",
-  "gray-80": "#818DA6",
+  "gray-80": "#222940",
   "gray-90": "#1A2033",
   "gray-100": "#141828",
   "orange-10": "#FFF5EB",

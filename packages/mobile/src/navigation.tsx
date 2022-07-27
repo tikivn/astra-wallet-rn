@@ -140,6 +140,7 @@ import { WebViewScreen } from "./screens/web/default";
 import { SessionProposalScreen } from "./screens/wallet-connect";
 import { useIntl } from "react-intl";
 import { SmartNavigatorProvider } from "./navigation-util";
+import { RegisterCreateEntryScreen } from "./screens/register/create-entry";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -381,6 +382,13 @@ export const RegisterNavigation: FunctionComponent = () => {
         }}
         name="Register.VerifyPincode"
         component={VerifyPincodeScreen}
+      />
+      <Stack.Screen
+        options={{
+          title: intl.formatMessage({ id: "register.createEntry.nav.title" }),
+        }}
+        name="Register.CreateEntry"
+        component={RegisterCreateEntryScreen}
       />
     </Stack.Navigator>
   );

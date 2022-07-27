@@ -34,6 +34,8 @@ import { ChainIdHelper } from "@keplr-wallet/cosmos";
 import { UserBalanceStore } from "./user-balance";
 import { TransactionStore } from "./transaction";
 import { SignClientStore } from "./wallet-connect-v2";
+import { SocialLoginStore } from "./social-login";
+
 export class RootStore {
   public readonly chainStore: ChainStore;
   public readonly keyRingStore: KeyRingStore;
@@ -81,7 +83,8 @@ export class RootStore {
 
   public readonly userBalanceStore: UserBalanceStore;
   public readonly transactionStore: TransactionStore;
-
+  public readonly socialLoginStore: SocialLoginStore;
+  
   constructor() {
     const router = new RNRouterUI(RNEnv.produceEnv);
 
@@ -363,6 +366,7 @@ export class RootStore {
       this.accountStore,
       this.queriesStore
     );
+    this.socialLoginStore = new SocialLoginStore();
   }
 }
 

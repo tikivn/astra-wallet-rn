@@ -350,6 +350,29 @@ export class KeyRingStore {
     );
   }
 
+  async updatePassword(currentPassword: string, newPassword: string): Promise<boolean> {
+    const index = this.multiKeyStoreInfo.findIndex((keyStore) => {
+      return keyStore.selected;
+    });
+    const keyRingDatas = await this.exportKeyRingDatas(currentPassword);
+    console.log("keyRingDatas", keyRingDatas);
+    if (index < keyRingDatas.length) {
+      const data = keyRingDatas[index];
+      await this.deleteKeyRing(index, currentPassword);
+
+      await this.createMnemonicKey(
+        data.key,
+        newPassword,
+        data.meta,
+        data.bip44HDPath
+      );
+
+      return true;
+    }
+
+    return false;
+  }
+
   getKeyStoreSelectables(chainId: string): KeyRingSelectablesStore {
     if (!this.selectablesMap.has(chainId)) {
       runInAction(() => {

@@ -7,7 +7,6 @@ import { NormalInput } from "../../../components/input/normal-input";
 import { Button } from "../../../components";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { useStore } from "../../../stores";
-import { useSmartNavigation } from "../../../navigation-util";
 import { useIntl } from "react-intl";
 
 export const NewPasswordInputScreen: FunctionComponent = observer(() => {
@@ -31,26 +30,15 @@ export const NewPasswordInputScreen: FunctionComponent = observer(() => {
 
   const onCreate = async () => {
     setIsCreating(true);
-    const index = keyRingStore.multiKeyStoreInfo.findIndex((keyStore) => {
-      return keyStore.selected;
-    });
 
     const currentPassword = route.params.currentPassword;
 
-    const keyRingDatas = await keyRingStore.exportKeyRingDatas(currentPassword);
-    if (index < keyRingDatas.length) {
-      const data = keyRingDatas[index];
-      await keyRingStore.deleteKeyRing(index, currentPassword);
-
-      await keyRingStore.createMnemonicKey(
-        data.key,
-        password,
-        data.meta,
-        data.bip44HDPath
-      );
-
+    const success = await keyRingStore.updatePassword(currentPassword, password);
+    if (success) {
       await keyRingStore.unlock(password);
-      await keychainStore.turnOnBiometry(password);
+      if (keychainStore.isBiometryOn && keychainStore.isBiometrySupported) {
+        await keychainStore.turnOnBiometry(password);
+      }
 
       setIsCreating(false);
 
@@ -63,8 +51,6 @@ export const NewPasswordInputScreen: FunctionComponent = observer(() => {
           }
         }
       });
-      console.log("navigation", navigation);
-      // console.log("smartNavigation", smartNavigation);
       return;
     }
 

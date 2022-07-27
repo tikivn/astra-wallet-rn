@@ -60,6 +60,9 @@ const {
     "Register.VerifyPincode": {
       upperScreenName: "Register",
     },
+    "Register.CreateEntry": {
+      upperScreenName: "Register",
+    },
     Home: {
       upperScreenName: "Main",
     },
@@ -219,9 +222,8 @@ const {
     };
     "Register.SetPincode": {
       registerConfig: RegisterConfig;
-      newMnemonicConfig: NewMnemonicConfig;
       bip44HDPath: BIP44HDPath;
-      type: "new" | "restore";
+      mnemonic?: string;
     };
     "Register.VerifyPincode": {
       registerConfig: RegisterConfig;
@@ -254,6 +256,7 @@ const {
     "Register.End": {
       password?: string;
     };
+    "Register.CreateEntry": {};
     Send: {
       chainId?: string;
       currency?: string;

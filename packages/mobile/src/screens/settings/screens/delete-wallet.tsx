@@ -17,7 +17,7 @@ export const DeleteWalletScreen: FunctionComponent = observer(() => {
   const style = useStyle();
   const intl = useIntl();
 
-  const { keyRingStore, keychainStore } = useStore();
+  const { keyRingStore, keychainStore, socialLoginStore } = useStore();
   const smartNavigation = useSmartNavigation();
 
   const [password, setPassword] = useState("");
@@ -49,6 +49,11 @@ export const DeleteWalletScreen: FunctionComponent = observer(() => {
 
       if (keyRingStore.multiKeyStoreInfo.length === 0) {
         await keychainStore.reset();
+
+        // Social Login
+        if (socialLoginStore.isActive) {
+          await socialLoginStore.clearLoginData();
+        }
 
         smartNavigation.reset({
           index: 0,

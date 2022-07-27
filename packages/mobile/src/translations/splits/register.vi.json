@@ -1,0 +1,16 @@
+{
+  "register.intro.appName": "Astra Hub",
+  "register.intro.appDesc": "Nơi an toàn để lưu giữ Astra của bạn",
+  "register.intro.button.create": "Tạo tài khoản mới",
+  "register.intro.button.recover": "Tôi đã có tài khoản",
+  "register.createEntry.nav.title": "Tạo tài khoản mới",
+  "register.createEntry.section.convenient": "Cách tiện lợi nhất",
+  "register.createEntry.section.safe": "Cách an toàn nhất",
+  "register.createEntry.item.title.tiki": "Tiki",
+  "register.createEntry.item.title.google": "Google account",
+  "register.createEntry.item.title.mnemonic": "Cụm từ bí mật",
+  "register.createEntry.item.desc.mnemonic": "Tạo cụm từ gồm 12 từ và lưu trữ ở một nơi an toàn",
+  "register.alert.socialLogin.newAccount": "Đăng nhập bằng {provider} thành công",
+  "register.alert.socialLogin.existedAccount": "Bạn đã đăng nhập vào tài khoản đã tồn tại",
+  "": ""
+}
