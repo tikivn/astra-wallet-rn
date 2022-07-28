@@ -14,14 +14,12 @@ export const AccountCardNew: FunctionComponent<{
   const style = useStyle();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
-  console.log("__ Accout __", account.hasEvmosHexAddress);
   const queries = queriesStore.get(chainStore.current.chainId);
 
   const queryStakable = queries.queryBalances.getQueryBech32Address(
     account.bech32Address
   ).stakable;
   const stakable = queryStakable.balance;
-
   const totalPrice = priceStore.calculatePrice(stakable);
 
   return (

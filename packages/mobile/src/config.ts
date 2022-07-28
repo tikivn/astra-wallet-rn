@@ -21,8 +21,8 @@ export interface AppChainInfo extends ChainInfo {
       readonly description: string;
       readonly url: string;
       readonly icons: [string];
-    },
-  },
+    };
+  };
 }
 
 export const EmbedChainInfos: AppChainInfo[] = [
@@ -90,7 +90,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
   },
   {
-    rpc: "https://rpc.astranaut.network",
+    rpc: "https://evm.astranaut.network",
     rest: "https://api.astranaut.network",
     chainId: "astra_11112-1",
     chainName: "Testnet (Deprecated)",
@@ -114,6 +114,14 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: "aastra",
         coinImageUrl:
           "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
+      },
+      {
+        coinDenom: "USDT",
+        coinMinimalDenom: "usdt",
+        coinDecimals: 18,
+        coinImageUrl:
+          "https://pancakeswap.finance/images/tokens/0x55d398326f99059fF775485246999027B3197955.png",
+        contractAddress: "0xf8B0c22089C5EE643A5bA475656Ca32Daf48eEcb",
       },
     ],
     feeCurrencies: [

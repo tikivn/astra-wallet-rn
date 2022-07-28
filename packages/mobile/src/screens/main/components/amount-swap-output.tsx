@@ -1,59 +1,41 @@
-import React, { FunctionComponent, useMemo } from "react";
+import { AppCurrency } from "@keplr-wallet/types";
 import { observer } from "mobx-react-lite";
-import { Text, View, TextInput, StyleSheet } from "react-native";
-import { useStyle } from "../../../styles";
-import { Button } from "../../../components/button";
-import {
-  EmptyAmountError,
-  IAmountConfig,
-  InsufficientAmountError,
-  InvalidNumberAmountError,
-  NegativeAmountError,
-  ZeroAmountError,
-} from "@keplr-wallet/hooks";
-import { useStore } from "../../../stores";
+import React, { FunctionComponent } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
+import { StyleSheet, Text, View } from "react-native";
 import FastImage from "react-native-fast-image";
 import { VectorCharacter } from "../../../components";
+import { useStyle } from "../../../styles";
 
 export const AmountSwapOutput: FunctionComponent<{
-  amountConfig: IAmountConfig;
-}> = observer(({ amountConfig }) => {
-  const { chainStore, accountStore, queriesStore } = useStore();
-
+  currency?: AppCurrency;
+  value?: string;
+}> = observer(({ currency, value }) => {
   const style = useStyle();
   const intl = useIntl();
 
-  const account = accountStore.getAccount(chainStore.current.chainId);
-  const queries = queriesStore.get(chainStore.current.chainId);
+  // const error = amountConfig.error;
+  // const errorText: string | undefined = useMemo(() => {
+  //   if (error) {
+  //     switch (error.constructor) {
+  //       case EmptyAmountError:
+  //         // No need to show the error to user.
+  //         return;
+  //       case InvalidNumberAmountError:
+  //         return "Invalid number";
+  //       case ZeroAmountError:
+  //         return "Amount is zero";
+  //       case NegativeAmountError:
+  //         return "Amount is negative";
+  //       case InsufficientAmountError:
+  //         return "Insufficient fund";
+  //       default:
+  //         return "Unknown error";
+  //     }
+  //   }
+  // }, [error]);
 
-  const queryStakable = queries.queryBalances.getQueryBech32Address(
-    account.bech32Address
-  ).stakable;
-
-  const error = amountConfig.error;
-  const errorText: string | undefined = useMemo(() => {
-    if (error) {
-      switch (error.constructor) {
-        case EmptyAmountError:
-          // No need to show the error to user.
-          return;
-        case InvalidNumberAmountError:
-          return "Invalid number";
-        case ZeroAmountError:
-          return "Amount is zero";
-        case NegativeAmountError:
-          return "Amount is negative";
-        case InsufficientAmountError:
-          return "Insufficient fund";
-        default:
-          return "Unknown error";
-      }
-    }
-  }, [error]);
-
-  const cointImg =
-    "https://salt.tikicdn.com/ts/upload/e0/3a/3f/73b30182fd438639dbfb1ed26ab98497.png";
+  const cointImg = currency?.coinImageUrl;
   return (
     <React.Fragment>
       <View
@@ -94,7 +76,7 @@ export const AmountSwapOutput: FunctionComponent<{
             />
           ) : (
             <VectorCharacter
-              char={"USDC"}
+              char={currency?.coinDenom || "ASA"}
               height={Math.floor(24 * 0.35)}
               color="white"
             />
@@ -107,7 +89,7 @@ export const AmountSwapOutput: FunctionComponent<{
             >
               <FormattedMessage
                 id="swap.amount.outputText"
-                values={{ token: "USDC" }}
+                values={{ token: currency?.coinDenom }}
               />
             </Text>
           </View>
@@ -128,7 +110,7 @@ export const AmountSwapOutput: FunctionComponent<{
                 "min-height-32",
               ])}
             >
-              {amountConfig.amount}
+              {value}
             </Text>
           </View>
         </View>

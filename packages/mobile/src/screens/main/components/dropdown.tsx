@@ -4,7 +4,7 @@ import SelectDropdown from "react-native-select-dropdown";
 import { Colors } from "../../../styles";
 
 interface DropdownProps {
-  data: number[] | string[];
+  data: number[];
   onSelect: (selectItem: any, index: number) => void;
 }
 
@@ -13,7 +13,7 @@ export const Dropdown: React.FC<DropdownProps> = ({ data, onSelect }) => {
     <>
       <SelectDropdown
         data={data}
-        defaultValueByIndex={0}
+        defaultValueByIndex={1}
         onSelect={onSelect}
         renderDropdownIcon={() => (
           <Image
@@ -29,20 +29,18 @@ export const Dropdown: React.FC<DropdownProps> = ({ data, onSelect }) => {
             source={require("../../../assets/image/icon_dropdown.png")}
           />
         )}
-        buttonTextAfterSelection={(selectedItem, index) => {
-          // text represented after item is selected
-          // if data array is an array of objects then return selectedItem.property to render after item is selected
-          return selectedItem + " %";
+        buttonTextAfterSelection={(_, index) => {
+          return data[index].toFixed(1) + " %";
         }}
-        rowTextForSelection={(item, index) => {
+        rowTextForSelection={(_, index) => {
           // text represented for each item in dropdown
           // if data array is an array of objects then return item.property to represent item in dropdown
-          return item + " %";
+          return data[index].toFixed(1) + " %";
         }}
         buttonStyle={StyleSheet.flatten([
           {
             backgroundColor: Colors["secondary"],
-            width: 96,
+            width: 108,
             height: 40,
             borderRadius: 8,
           },

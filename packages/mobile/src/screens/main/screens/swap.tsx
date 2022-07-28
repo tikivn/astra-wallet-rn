@@ -1,104 +1,46 @@
-import { useSendTxConfig } from "@keplr-wallet/hooks";
-import { Dec, IntPretty } from "@keplr-wallet/unit";
-import { RouteProp, useRoute } from "@react-navigation/native";
-import converter from "bech32-converting";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useEffect } from "react";
-import { FormattedMessage, useIntl } from "react-intl";
+import React, { FunctionComponent, useCallback } from "react";
+import { useIntl } from "react-intl";
 import { StyleSheet, Text, View } from "react-native";
 import { Button } from "../../../components";
 import { ChangeTokenIcon } from "../../../components/icon/change-token";
 import { PageWithScrollView } from "../../../components/page";
 import { RectButton } from "../../../components/rect-button";
-import { EthereumEndpoint } from "../../../config";
-import { useStore } from "../../../stores";
+import { useSwap, useSwapCallback } from "../../../hooks";
 import { Colors, useStyle } from "../../../styles";
-
-import Web3 from "web3";
 import {
   AmountSwapInput,
   AmountSwapOutput,
   Dropdown,
   Tooltip,
 } from "../components";
+
+const DATA_SLIPPAGE_TOLERANCE = [0.1, 0.5, 1.0];
+
 export const SwapScreen: FunctionComponent = observer(() => {
   const {
-    chainStore,
-    accountStore,
-    queriesStore,
-    analyticsStore,
-    transactionStore,
-  } = useStore();
+    inputBalance,
+    inputCurrency,
+    setSwapValue,
+    handleSwapAll,
+    outputCurrency,
+    outputSwapValue,
+    pricePerInputCurrency,
+    lpFee,
+    isReadyToSwap,
+    handleSetSlippageTolerance,
+    trade,
+  } = useSwap();
 
-  const route = useRoute<
-    RouteProp<
-      Record<
-        string,
-        {
-          chainId?: string;
-          currency?: string;
-          recipient?: string;
-        }
-      >,
-      string
-    >
-  >();
-
-  const chainId = route.params.chainId
-    ? route.params.chainId
-    : chainStore.current.chainId;
-
-  const account = accountStore.getAccount(chainId);
-
-  const sendConfigs = useSendTxConfig(
-    chainStore,
-    queriesStore,
-    accountStore,
-    chainId,
-    account.bech32Address,
-    EthereumEndpoint
-  );
-
-  const get = async () => {
-    const web3 = new Web3(
-      new Web3.providers.HttpProvider("https://rpc.astranaut.dev")
-    );
-    const address = converter("astra").toHex(account.bech32Address);
-    console.log("🚀 -> get -> address", address);
-    // const a = await web3.eth.getChainId();
-    const b = await web3.eth.getBalance(address);
-  };
-  get();
-  useEffect(() => {}, []);
-
-  useEffect(() => {
-    if (route.params.currency) {
-      const currency = sendConfigs.amountConfig.sendableCurrencies.find(
-        (cur) => cur.coinMinimalDenom === route.params.currency
-      );
-      if (currency) {
-        sendConfigs.amountConfig.setSendCurrency(currency);
-      }
-    }
-  }, [route.params.currency, sendConfigs.amountConfig]);
-
-  useEffect(() => {
-    if (route.params.recipient) {
-      sendConfigs.recipientConfig.setRawRecipient(route.params.recipient);
-    }
-  }, [route.params.recipient, sendConfigs.recipientConfig]);
-
-  sendConfigs.gasConfig.setGas(200000);
-
-  const sendConfigError =
-    sendConfigs.recipientConfig.error ??
-    sendConfigs.amountConfig.error ??
-    sendConfigs.memoConfig.error ??
-    sendConfigs.gasConfig.error ??
-    sendConfigs.feeConfig.error;
-  const txStateIsValid = sendConfigError == null;
+  const { callback: swapCallback } = useSwapCallback(trade, 50);
   const style = useStyle();
   const intl = useIntl();
+
+  const handleSwap = useCallback(() => {
+    if (swapCallback) {
+      swapCallback();
+    }
+  }, [swapCallback]);
 
   return (
     <PageWithScrollView
@@ -106,7 +48,12 @@ export const SwapScreen: FunctionComponent = observer(() => {
       backgroundColor={style.get("color-background").color}
     >
       {/* <View style={style.get("height-12")} /> */}
-      <AmountSwapInput amountConfig={sendConfigs.amountConfig} />
+      <AmountSwapInput
+        setSwapValue={setSwapValue}
+        currency={inputCurrency}
+        balance={inputBalance}
+        onSwapAll={handleSwapAll}
+      />
 
       <View
         style={StyleSheet.flatten([
@@ -144,7 +91,9 @@ export const SwapScreen: FunctionComponent = observer(() => {
           </RectButton>
         </View>
       </View>
-      <AmountSwapOutput amountConfig={sendConfigs.amountConfig} />
+
+      <AmountSwapOutput currency={outputCurrency} value={outputSwapValue} />
+
       <View style={style.get("height-12")} />
 
       {/* start describe */}
@@ -159,16 +108,7 @@ export const SwapScreen: FunctionComponent = observer(() => {
       >
         <Tooltip text={intl.formatMessage({ id: "swap.exchangeRate" })} />
         <Text style={style.flatten(["color-gray-10", "body3"])}>
-          <FormattedMessage
-            id="validator.details.percentValue"
-            values={{
-              percent: new IntPretty(new Dec(12))
-                .moveDecimalPointRight(2)
-                .maxDecimals(2)
-                .trim(true)
-                .toString(),
-            }}
-          />
+          {`1 ${inputCurrency.denom} ≈ ${pricePerInputCurrency} ${outputCurrency.coinDenom}`}
         </Text>
       </View>
       <View
@@ -181,23 +121,17 @@ export const SwapScreen: FunctionComponent = observer(() => {
       >
         <Tooltip text={intl.formatMessage({ id: "swap.transactionFee" })} />
         <Text style={style.flatten(["color-gray-10", "body3"])}>
-          <FormattedMessage
-            id="validator.details.percentValue"
-            values={{
-              percent: new IntPretty(new Dec(12))
-                .moveDecimalPointRight(2)
-                .maxDecimals(2)
-                .trim(true)
-                .toString(),
-            }}
-          />
+          {lpFee} ASA
         </Text>
       </View>
       <View
         style={style.flatten(["flex-row", "items-center", "justify-between"])}
       >
         <Tooltip text={intl.formatMessage({ id: "swap.priceSlippage" })} />
-        <Dropdown data={[1, 2, 3]} onSelect={console.log} />
+        <Dropdown
+          data={DATA_SLIPPAGE_TOLERANCE}
+          onSelect={handleSetSlippageTolerance}
+        />
       </View>
       {/* end describe */}
 
@@ -206,11 +140,9 @@ export const SwapScreen: FunctionComponent = observer(() => {
         size="large"
         containerStyle={style.flatten(["border-radius-4", "margin-top-34"])}
         textStyle={style.flatten(["subtitle2"])}
-        disabled={!account.isReadyToSendTx || !txStateIsValid}
-        loading={account.txTypeInProgress === "send"}
-        onPress={async () => {
-          console.log("123");
-        }}
+        disabled={!isReadyToSwap}
+        // loading={account.txTypeInProgress === "send"}
+        onPress={handleSwap}
       />
     </PageWithScrollView>
   );
