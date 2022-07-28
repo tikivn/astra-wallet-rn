@@ -1,7 +1,7 @@
 {
   "default": "",
   "tx.result.action.homepage": "Trang chủ",
-  "tx.result.action.reInvest": "Đầu tư lại",
+  "tx.result.action.reInvest": "Quay lại",
   "tx.result.models.msgBeginRedelegate.fee": "Phí giao dịch",
   "tx.result.models.msgBeginRedelegate.from": "Chuyển từ quỹ",
   "tx.result.models.msgBeginRedelegate.time": "Thời gian thực hiện",
@@ -9,7 +9,7 @@
   "tx.result.models.msgDelegate.commission": "Hoa hồng khi mở quỹ",
   "tx.result.models.msgDelegate.fee": "Phí giao dịch",
   "tx.result.models.msgDelegate.time": "Thời gian thực hiện",
-  "tx.result.models.msgDelegate.validator": "Quỹ đầu tư",
+  "tx.result.models.msgDelegate.validator": "Quỹ tiết kiệm",
   "tx.result.models.msgSend.amount": "Số {coin}",
   "tx.result.models.msgSend.fee": "Phí giao dịch",
   "tx.result.models.msgSend.reveiver": "Người nhận",

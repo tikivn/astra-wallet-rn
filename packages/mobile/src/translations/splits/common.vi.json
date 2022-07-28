@@ -1,5 +1,6 @@
 {
   "common.alert.content.notShareMnemonic": "Không chia sẻ cụm từ bí mật cho người khác. Nếu ai đó biết chuỗi mật mã, họ sẽ kiểm soát được ví của bạn.",
+  "common.alert.content.accessTestnet": "Bạn đang truy cập mạng Astra Testnet.",
   "common.loading": "Loading...",
   "common.text.accountHolder": "Tên tài khoản",
   "common.text.approve": "Cho phép",
