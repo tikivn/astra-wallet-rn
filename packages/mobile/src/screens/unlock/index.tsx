@@ -30,6 +30,8 @@ import { NormalInput } from "../../components/input/normal-input";
 import { useIntl } from "react-intl";
 import { BiometricsIcon } from "../../components";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { useRegisterConfig } from "@keplr-wallet/hooks";
+import { useBIP44Option } from "../register/bip44";
 
 let splashScreenHided = false;
 async function hideSplashScreen() {
@@ -109,12 +111,14 @@ const useAutoBiomtric = (keychainStore: KeychainStore, tryEnabled: boolean) => {
  * @constructor
  */
 export const UnlockScreen: FunctionComponent = observer(() => {
-  const { keyRingStore, keychainStore, accountStore, chainStore } = useStore();
+  const { keyRingStore, keychainStore, accountStore, chainStore, socialLoginStore } = useStore();
 
   const style = useStyle();
   const intl = useIntl();
 
   const navigation = useNavigation();
+  const registerConfig = useRegisterConfig(keyRingStore, []);
+  const bip44Option = useBIP44Option();
 
   const [isSplashEnd, setIsSplashEnd] = useState(false);
 
@@ -134,7 +138,8 @@ export const UnlockScreen: FunctionComponent = observer(() => {
 
   const autoBiometryStatus = useAutoBiomtric(
     keychainStore,
-    keyRingStore.status === KeyRingStatus.LOCKED && isSplashEnd
+    keyRingStore.status === KeyRingStatus.LOCKED
+    && isSplashEnd
   );
 
   useEffect(() => {
@@ -147,9 +152,15 @@ export const UnlockScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     if (
-      isSplashEnd &&
-      keyRingStore.status === KeyRingStatus.LOCKED &&
-      (autoBiometryStatus === AutoBiomtricStatus.NO_NEED ||
+      isSplashEnd
+      && (
+        keyRingStore.status === KeyRingStatus.LOCKED
+        || (
+          keyRingStore.status === KeyRingStatus.EMPTY
+          && (socialLoginStore.userData && socialLoginStore.isActive)
+        )
+      )
+      && (autoBiometryStatus === AutoBiomtricStatus.NO_NEED ||
         autoBiometryStatus === AutoBiomtricStatus.FAILED)
     ) {
       setTimeout(() => {
@@ -195,6 +206,34 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       // Because javascript is synchronous language, the loadnig state change would not delivered to the UI thread
       // before the actually decryption is complete.
       // So to make sure that the loading state changes, just wait very short time.
+      if (socialLoginStore.userData && socialLoginStore.isActive) {
+        try {
+          await socialLoginStore.reconstruct({ password });
+          const name = socialLoginStore.userData.email;
+          const registerMnemonic = await socialLoginStore.getSeedPhrase();
+          const registerPassword = await socialLoginStore.getPassword();
+
+          await registerConfig.createMnemonic(
+            name,
+            registerMnemonic,
+            registerPassword,
+            bip44Option.bip44HDPath
+          )
+
+          if (keychainStore.isBiometrySupported && keychainStore.isBiometryOn) {
+            await keychainStore.turnOnBiometry(registerPassword);
+          }
+        }
+        catch (e) {
+          setIsLoading(false);
+          setIsFailed(true);
+          return;
+        }
+
+        await hideSplashScreen();
+        return;
+      }
+
       await delay(10);
       await keyRingStore.unlock(password);
 
@@ -213,7 +252,10 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     if (
       !routeToRegisterOnce.current &&
       isSplashEnd &&
-      keyRingStore.status === KeyRingStatus.EMPTY
+      (
+        keyRingStore.status === KeyRingStatus.EMPTY
+        && !(socialLoginStore.userData && socialLoginStore.isActive)
+      )
     ) {
       (async () => {
         await hideSplashScreen();
@@ -244,7 +286,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       >
         <Image
           style={style.flatten(["width-full", "height-full"])}
-          resizeMode="contain"
+          resizeMode="cover"
           source={require("../../assets/logo/splash-screen-background.png")}
         />
       </View>
@@ -363,9 +405,9 @@ export const SplashContinuityEffectView: FunctionComponent<{
   const [isBackgroundLoaded, setIsBackgroundLoaded] = useState(false);
   const [logoSize, setLogoSize] = useState<
     | {
-        width: number;
-        height: number;
-      }
+      width: number;
+      height: number;
+    }
     | undefined
   >();
 
@@ -579,7 +621,7 @@ export const SplashContinuityEffectView: FunctionComponent<{
                 inputRange: [0, 1],
                 outputRange: [
                   Dimensions.get("window").height +
-                    (StatusBar.currentHeight ?? 0),
+                  (StatusBar.currentHeight ?? 0),
                   expectedLogoSize,
                 ],
               }),
@@ -605,7 +647,7 @@ export const SplashContinuityEffectView: FunctionComponent<{
                   inputRange: [0, 1],
                   outputRange: [
                     Dimensions.get("window").height +
-                      (StatusBar.currentHeight ?? 0),
+                    (StatusBar.currentHeight ?? 0),
                     expectedLogoSize,
                   ],
                 }),

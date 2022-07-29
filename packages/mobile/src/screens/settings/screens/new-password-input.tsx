@@ -18,7 +18,7 @@ export const NewPasswordInputScreen: FunctionComponent = observer(() => {
 
   const style = useStyle();
   const intl = useIntl();
-  const { keyRingStore, keychainStore } = useStore();
+  const { keyRingStore, keychainStore, socialLoginStore } = useStore();
   const navigation = useNavigation();
 
   const [password, setPassword] = useState("");
@@ -33,6 +33,17 @@ export const NewPasswordInputScreen: FunctionComponent = observer(() => {
 
     const currentPassword = route.params.currentPassword;
 
+    if (socialLoginStore.isActive) {
+      try {
+        await socialLoginStore.updatePassword(password);
+      }
+      catch (e) {
+        console.log(e);
+        setIsCreating(false);
+        return
+      }
+    }
+    
     const success = await keyRingStore.updatePassword(currentPassword, password);
     if (success) {
       await keyRingStore.unlock(password);

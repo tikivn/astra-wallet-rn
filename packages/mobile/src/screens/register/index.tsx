@@ -30,7 +30,7 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
       <ImageBackground
         style={style.flatten(["width-full", "height-full"])}
         source={require("../../assets/logo/main_background.png")}
-        resizeMode="contain"
+        resizeMode="cover"
       >
         <PageWithScrollView
           backgroundColor={style.get("color-transparent").color}

@@ -20,7 +20,7 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
 
   const style = useStyle();
   const intl = useIntl();
-  const { keyRingStore } = useStore();
+  const { keyRingStore, keychainStore, socialLoginStore } = useStore();
   const smartNavigation = useSmartNavigation();
 
   const [password, setPassword] = useState("");
@@ -29,8 +29,40 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
   const [inputDataValid, setInputDataValid] = useState(false);
 
   const onCreate = async () => {
-    const isCorrected = await keyRingStore.checkPassword(password);
+    var localPassword = password;
+    if (socialLoginStore.isActive) {
+      try {
+        localPassword = await socialLoginStore.getPassword();
+        console.log("__get tKey password__", localPassword);
+      }
+      catch (e) {
+        console.log(e);
+      }
+    }
+
+    var isCorrected = await keyRingStore.checkPassword(localPassword);
     if (isCorrected) {
+      if (socialLoginStore.isActive) {
+        try {
+          await socialLoginStore.reconstruct({ password });
+          // update password
+          if (localPassword !== password) {
+            const success = await keyRingStore.updatePassword(localPassword, password);
+            if (success) {
+              await keyRingStore.unlock(localPassword);
+              if (keychainStore.isBiometryOn && keychainStore.isBiometrySupported) {
+                await keychainStore.turnOnBiometry(password);
+              }
+            }
+          }
+        }
+        catch (e) {
+          setError(intl.formatMessage({ id: "common.text.wrongPassword" }));
+          setInputDataValid(false);
+          return;
+        }
+      }
+
       smartNavigation.navigate(
         route.params.nextScreen,
         route.params.forwardPassword ? { currentPassword: password } : {}

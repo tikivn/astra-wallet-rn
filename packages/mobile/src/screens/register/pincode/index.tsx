@@ -55,6 +55,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
   const [isBiometricOn, setIsBiometricOn] = useState(true);
 
   const [isCreating, setIsCreating] = useState(false);
+  const [passwordErrorText, setPasswordErrorText] = useState("");
   const [confirmPasswordErrorText, setConfirmPasswordErrorText] = useState("");
 
   // Social Login
@@ -79,6 +80,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
       }
       catch (e) {
         console.log(e);
+        setPasswordErrorText(intl.formatMessage({ id: "common.text.wrongPassword" }));
         setIsCreating(false);
         return;
       }
@@ -113,6 +115,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
   };
 
   useEffect(() => {
+    setPasswordErrorText("");
     validateInputData();
   }, [name, password, confirmPassword]);
 
@@ -200,6 +203,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
           <NormalInput
             value={password}
             label={intl.formatMessage({ id: "common.text.password" })}
+            error={passwordErrorText}
             info={intl.formatMessage({
               id: "common.text.minimumCharacters"
             }).replace("{number}", `${MIN_LENGTH_PASSWORD}`)}

@@ -25,7 +25,7 @@ import { RouteProp, useRoute } from "@react-navigation/native";
 import { Toggle } from "../../components/toggle";
 
 export const SettingsScreen: FunctionComponent = observer(() => {
-  const { keyRingStore, signClientStore, keychainStore } = useStore();
+  const { keyRingStore, signClientStore, keychainStore, socialLoginStore } = useStore();
 
   const connect = signClientStore.sessions.length;
 
@@ -89,12 +89,52 @@ export const SettingsScreen: FunctionComponent = observer(() => {
     }
   }
 
+  async function lock() {
+    console.log("socialLoginStore.isActive", socialLoginStore.isActive);
+    if (socialLoginStore.isActive) {
+      // Social Login
+      const index = keyRingStore.multiKeyStoreInfo.findIndex(
+        (keyStore) => keyStore.selected
+      );
+
+      if (index === -1) {
+        return;
+      }
+
+      const password = await socialLoginStore.getPassword();
+
+      await keyRingStore.deleteKeyRing(index, password);
+
+      if (keyRingStore.multiKeyStoreInfo.length === 0) {
+        await keychainStore.reset();
+
+        smartNavigation.reset({
+          index: 0,
+          routes: [{
+            name: "Unlock",
+          }],
+        });
+      }
+      else {
+        return;
+      }
+    }
+    else {
+      await keyRingStore.lock();
+    }
+
+    smartNavigation.reset({
+      index: 0,
+      routes: [{ name: "Unlock" }],
+    });
+  }
+
   return (
     <View style={style.flatten(["background-color-background", "flex-grow-1"])}>
       <ImageBackground
         style={style.flatten(["width-full", "height-full"])}
         source={require("../../assets/logo/main_background.png")}
-        resizeMode="contain"
+        resizeMode="cover"
       >
         <SafeAreaView />
         <View style={style.get("height-64")} />
@@ -188,17 +228,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
           <AccountItem
             containerStyle={accountItemProps.containerStyle}
             label={intl.formatMessage({ id: "settings.lockScreen" })}
-            onPress={async () => {
-              keyRingStore.lock();
-              smartNavigation.reset({
-                index: 0,
-                routes: [
-                  {
-                    name: "Unlock",
-                  },
-                ],
-              });
-            }}
+            onPress={lock}
           />
           <View style={style.get("height-8")} />
           <AccountItem
