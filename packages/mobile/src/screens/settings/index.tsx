@@ -4,7 +4,7 @@ import { useSmartNavigation } from "../../navigation-util";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { useStyle } from "../../styles";
-import { View, SafeAreaView, ImageBackground } from "react-native";
+import { View, SafeAreaView, ImageBackground, Linking } from "react-native";
 import {
   AllIcon,
   KeyIcon,
@@ -58,7 +58,9 @@ export const SettingsScreen: FunctionComponent = observer(() => {
     >
   >();
 
-  const [isBiometricOn, setIsBiometricOn] = useState(keychainStore.isBiometryOn && keychainStore.isBiometrySupported);
+  const [isBiometricOn, setIsBiometricOn] = useState(
+    keychainStore.isBiometryOn && keychainStore.isBiometrySupported
+  );
   const floatAlert =
     route.params && route.params.floatAlert ? route.params.floatAlert : null;
   const [displayFloatAlert, setDisplayFloatAlert] = useState(floatAlert);
@@ -78,13 +80,11 @@ export const SettingsScreen: FunctionComponent = observer(() => {
     try {
       if (isBiometricOn) {
         await keychainStore.turnOffBiometryWithoutReset();
-      }
-      else {
+      } else {
         await keychainStore.turnOnBiometryWithoutPassword();
       }
       setIsBiometricOn(!isBiometricOn);
-    }
-    catch (error) {
+    } catch (error) {
       console.log("__DEBUG__", error);
     }
   }
@@ -133,10 +133,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
                 label={intl.formatMessage({ id: "settings.unlockBiometrics" })}
                 right={
                   <View style={{ marginRight: 12 }}>
-                    <Toggle
-                      on={isBiometricOn}
-                      onChange={tryUnlock}
-                    />
+                    <Toggle on={isBiometricOn} onChange={tryUnlock} />
                   </View>
                 }
                 left={<BiometricsIcon />}
@@ -152,7 +149,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
             left={<FaqIcon />}
             onPress={() => {
               smartNavigation.navigateSmart("WebView", {
-                url: "https://google.com",
+                url: "https://hotro.tiki.vn/s/article/chuong-trinh-sep-mua-sam-co-loi",
               });
             }}
           />
@@ -163,9 +160,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
             right={<AllIcon color={style.get("color-white").color} />}
             left={<SocialIcon />}
             onPress={() => {
-              smartNavigation.navigateSmart("WebView", {
-                url: "https://tiki.vn/sep/home",
-              });
+              Linking.openURL("https://t.me/AstraOfficialChannel");
             }}
           />
           <View style={style.get("height-32")} />

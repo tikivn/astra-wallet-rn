@@ -21,8 +21,8 @@ export interface AppChainInfo extends ChainInfo {
       readonly description: string;
       readonly url: string;
       readonly icons: [string];
-    },
-  },
+    };
+  };
 }
 
 export const EmbedChainInfos: AppChainInfo[] = [
@@ -74,7 +74,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       "https://salt.tikicdn.com/ts/upload/2a/74/6d/1000f0249fd530a9313a07fc3e13c1b2.png",
     txExplorer: {
       name: "Astra Scan",
-      txUrl: "https://scan.astranaut.network/transaction/{txHash}",
+      txUrl: "https://scan.astranaut.dev/transactions/{txHash}",
     },
     wcInfor: {
       relayUrl: "wss://relay.astranaut.dev",
