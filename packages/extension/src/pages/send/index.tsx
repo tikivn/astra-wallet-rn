@@ -211,7 +211,7 @@ export const SendPage: FunctionComponent = observer(() => {
               if (!isDetachedPage) {
                 history.replace("/");
               }
-            } catch (e) {
+            } catch (e: any) {
               if (!isDetachedPage) {
                 history.replace("/");
               }

@@ -110,7 +110,7 @@ export class ObservableSecretContractChainQuery<
       const fetched = await super.fetchResponse(cancelToken);
       response = fetched.response;
       headers = fetched.headers;
-    } catch (e) {
+    } catch (e: any) {
       if (!Axios.isCancel(e) && e.response?.data?.error) {
         const encryptedError = e.response.data.error;
 

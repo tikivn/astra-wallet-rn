@@ -349,7 +349,7 @@ export class ChainUpdaterService {
           };
         };
       }>("/status");
-    } catch (e) {
+    } catch (e: any) {
       console.log(e);
       throw new Error("Failed to get response /status from rpc endpoint");
     }
@@ -418,7 +418,7 @@ export class ChainUpdaterService {
           network: string;
         };
       }>("/cosmos/base/tendermint/v1beta1/node_info");
-    } catch (e) {
+    } catch (e: any) {
       console.log(e);
       throw new Error(
         "Failed to get response /cosmos/base/tendermint/v1beta1/node_info from lcd endpoint"

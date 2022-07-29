@@ -93,7 +93,7 @@ export class BackgroundTxService {
       });
 
       return txHash;
-    } catch (e) {
+    } catch (e: any) {
       console.log(e);
       BackgroundTxService.processTxErrorNotification(this.notification, e);
       throw e;
@@ -129,7 +129,7 @@ export class BackgroundTxService {
         // TODO: Let users know the tx id?
         message: "Congratulations!",
       });
-    } catch (e) {
+    } catch (e: any) {
       BackgroundTxService.processTxErrorNotification(notification, e);
     }
   }

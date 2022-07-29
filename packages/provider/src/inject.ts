@@ -157,7 +157,7 @@ export class InjectedKeplr implements IKeplr {
         };
 
         eventListener.postMessage(proxyResponse);
-      } catch (e) {
+      } catch (e: any) {
         const proxyResponse: ProxyRequestResponse = {
           type: "proxy-request-response",
           id: message.id,

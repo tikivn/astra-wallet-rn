@@ -100,7 +100,7 @@ export class LedgerService {
           });
         }
         return signature;
-      } catch (e) {
+      } catch (e: any) {
         // Notify UI Ledger signing failed only when Ledger initialization is tried again.
         if (retryCount > 0) {
           this.interactionService.dispatchEvent(APP_PORT, "ledger-init", {
@@ -174,7 +174,7 @@ export class LedgerService {
           ledger,
           retryCount,
         };
-      } catch (e) {
+      } catch (e: any) {
         console.log(e);
 
         const timeoutAbortController = new AbortController();
@@ -219,7 +219,7 @@ export class LedgerService {
                 await delay(5 * 60 * 1000, {
                   signal: timeoutAbortController.signal,
                 });
-              } catch (e) {
+              } catch (e: any) {
                 if (e.name === "AbortError") {
                   timeoutAborted = true;
                 } else {
