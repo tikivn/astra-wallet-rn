@@ -1,3 +1,3 @@
-export * from './adrress-qrcode';
-export * from './address-input';
-export * from './amount-input';
+export * from "./address-qrcode";
+export * from "./address-input";
+export * from "./amount-input";

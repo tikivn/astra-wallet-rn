@@ -91,5 +91,7 @@ export const ToastModal: FunctionComponent<{
   },
   {
     align: "bottom",
+    disableBackdrop: true,
+    blurBackdropOnIOS: false,
   }
 );
