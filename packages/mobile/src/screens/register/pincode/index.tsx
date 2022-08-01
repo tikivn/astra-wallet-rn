@@ -182,7 +182,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
       setCheckingSocialLogin(true);
 
       userLoginStore.checkSocialLogin().then((info) => {
-        setName(info.userData.email);
+        setName(info.socialLoginData.email);
         setIsNewSocialLoginUser(
           info.isNewUser ? SocialLoginUserState.new : SocialLoginUserState.existed
         );
