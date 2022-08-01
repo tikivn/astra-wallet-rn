@@ -3,13 +3,13 @@ export const SocialLoginConfigUAT = {
   serviceProviders: {
     apple: {
       name: "apple",
-      hostUrl: "https://tkey-apple-provider.tala.xyz",
-      loginPath: "/login",
+      hostUrl: "https://tkey-provider.tala.xyz",
+      loginPath: "/apple/login",
     },
     google: {
       name: "google",
-      hostUrl: "https://tkey-google-provider.tala.xyz",
-      loginPath: "/login",
+      hostUrl: "https://tkey-provider.tala.xyz",
+      loginPath: "/google/login",
     },
     tiki: {
       name: "tiki",
@@ -24,13 +24,13 @@ export const SocialLoginConfigPROD = {
   serviceProviders: {
     apple: {
       name: "apple",
-      hostUrl: "https://tkey-apple-provider.tiki.vn",
-      loginPath: "/login",
+      hostUrl: "https://tkey-provider.tiki.vn",
+      loginPath: "/apple/login",
     },
     google: {
       name: "google",
-      hostUrl: "https://tkey-google-provider.tiki.vn",
-      loginPath: "/login",
+      hostUrl: "https://tkey-provider.tiki.vn",
+      loginPath: "/google/login",
     },
     tiki: {
       name: "tiki",
