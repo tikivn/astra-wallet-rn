@@ -51,16 +51,19 @@ export const RewardsItem: FunctionComponent<{
 
   return (
     <View
-      style={style.flatten([
-        "height-184",
-        "padding-0",
-        "margin-x-16",
-        "margin-y-16",
-        "justify-between",
-        "border-radius-16",
-        "border-color-gray-60",
-        "border-width-1",
-      ],[isPending && "height-276"])}
+      style={style.flatten(
+        [
+          "height-184",
+          "padding-0",
+          "margin-x-16",
+          "margin-y-16",
+          "justify-between",
+          "border-radius-16",
+          "border-color-gray-60",
+          "border-width-1",
+        ],
+        [isPending && "height-276"]
+      )}
     >
       <View
         style={style.flatten([
@@ -72,7 +75,9 @@ export const RewardsItem: FunctionComponent<{
         ])}
       >
         <PropertyView
-          label={intl.formatMessage({ id: "staking.dashboard.rewards.totalInvestment" })}
+          label={intl.formatMessage({
+            id: "staking.dashboard.rewards.totalInvestment",
+          })}
           value={delegated
             .shrink(true)
             .maxDecimals(6)
@@ -114,7 +119,9 @@ export const RewardsItem: FunctionComponent<{
         ])}
       >
         <PropertyView
-          label={intl.formatMessage({ id: "staking.dashboard.rewards.totalProfit" })}
+          label={intl.formatMessage({
+            id: "staking.dashboard.rewards.totalProfit",
+          })}
           value={pendingStakableReward
             .shrink(true)
             .maxDecimals(6)
@@ -140,7 +147,9 @@ export const RewardsItem: FunctionComponent<{
             ],
             [!isRewardExist && "opacity-40"]
           )}
-          text={intl.formatMessage({ id: "staking.dashboard.rewards.withdrawProfit" })}
+          text={intl.formatMessage({
+            id: "staking.dashboard.rewards.withdrawProfit",
+          })}
           mode="text"
           size="small"
           underlayColor={style.get("color-background").color}
@@ -151,54 +160,61 @@ export const RewardsItem: FunctionComponent<{
           }}
         />
       </View>
-      {isPending ? (<React.Fragment>
-      <CardDivider style={style.flatten(["background-color-gray-70"])} />
-      <View
-        style={style.flatten([
-          "height-90",
-          "padding-y-16",
-          "margin-x-16",
-          "margin-y-1",
-          "flex-row",
-        ])}
-      >
-        <PropertyView
-          label={intl.formatMessage({ id: "staking.dashboard.rewards.totalWithdrawals" })}
-          value={unboding
-            .shrink(true)
-            .maxDecimals(6)
-            .trim(true)
-            .upperCase(true)
-            .toString()}
-          subValue={`~ ${
-            totalUnboding
-              ? totalUnboding.toString()
-              : unboding.shrink(true).maxDecimals(6).toString()
-          }`}
-        />
+      {isPending ? (
+        <React.Fragment>
+          <CardDivider style={style.flatten(["background-color-gray-70"])} />
+          <View
+            style={style.flatten([
+              "height-90",
+              "padding-y-16",
+              "margin-x-16",
+              "margin-y-1",
+              "flex-row",
+            ])}
+          >
+            <PropertyView
+              label={intl.formatMessage({
+                id: "staking.dashboard.rewards.totalWithdrawals",
+              })}
+              value={unboding
+                .shrink(true)
+                .maxDecimals(6)
+                .trim(true)
+                .upperCase(true)
+                .toString()}
+              subValue={`~ ${
+                totalUnboding
+                  ? totalUnboding.toString()
+                  : unboding.shrink(true).maxDecimals(6).toString()
+              }`}
+            />
 
-        <Button
-          containerStyle={style.flatten(
-            [
-              "self-center",
-              "border-radius-4",
-              "border-color-gray-30",
-              "border-width-1",
-              "width-132",
-            ],
-            [!isRewardExist && "opacity-40"]
-          )}
-          text={intl.formatMessage({ id: "staking.dashboard.rewards.follow" })}
-          mode="text"
-          size="small"
-          underlayColor={style.get("color-background").color}
-          textStyle={style.flatten(["color-gray-10", "body3"])}
-          disabled={!isPending}
-          onPress={() => {
-            smartNavigation.navigateSmart("Unbonding", {});
-          }}
-        />
-      </View></React.Fragment>) : null}
+            <Button
+              containerStyle={style.flatten(
+                [
+                  "self-center",
+                  "border-radius-4",
+                  "border-color-gray-30",
+                  "border-width-1",
+                  "width-132",
+                ],
+                [!isRewardExist && "opacity-40"]
+              )}
+              text={intl.formatMessage({
+                id: "staking.dashboard.rewards.follow",
+              })}
+              mode="text"
+              size="small"
+              underlayColor={style.get("color-background").color}
+              textStyle={style.flatten(["color-gray-10", "body3"])}
+              disabled={!isPending}
+              onPress={() => {
+                smartNavigation.navigateSmart("Unbonding", {});
+              }}
+            />
+          </View>
+        </React.Fragment>
+      ) : null}
     </View>
   );
 });

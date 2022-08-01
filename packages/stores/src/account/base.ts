@@ -3,7 +3,7 @@ import { AppCurrency, Keplr, KeplrSignOptions } from "@keplr-wallet/types";
 import { ChainGetter } from "../common";
 import { DenomHelper, toGenerator } from "@keplr-wallet/common";
 import { StdFee } from "@cosmjs/launchpad";
-import { evmosToEth } from "@tharsis/address-converter";
+import converter from "bech32-converting";
 
 export enum WalletStatus {
   NotInit = "NotInit",
@@ -43,6 +43,9 @@ export class AccountSetBase {
 
   @observable
   protected _bech32Address: string = "";
+  
+  @observable
+  protected _bech32Prefix: string = "";
 
   @observable
   protected _txTypeInProgress: string = "";
@@ -110,7 +113,7 @@ export class AccountSetBase {
 
   protected async enable(keplr: Keplr, chainId: string): Promise<void> {
     const chainInfo = this.chainGetter.getChain(chainId);
-
+    this._bech32Prefix = chainInfo.bech32Config.bech32PrefixAccAddr;
     if (this.opts.suggestChain) {
       if (this.opts.suggestChainFn) {
         await this.opts.suggestChainFn(keplr, chainInfo);
@@ -296,11 +299,15 @@ export class AccountSetBase {
   }
 
   get hasEvmosHexAddress(): boolean {
-    return this.bech32Address.startsWith("evmos");
+    return this._bech32Prefix === "evmos";
   }
 
   get evmosHexAddress(): string {
-    return evmosToEth(this.bech32Address);
+    return this.hexAddress;
+  }
+
+  get hexAddress(): string {
+    return converter(this._bech32Prefix).toHex(this.bech32Address);
   }
 }
 

@@ -73,5 +73,3 @@ export const AddressCopyable: FunctionComponent<{
     </RectButton>
   );
 };
-
-

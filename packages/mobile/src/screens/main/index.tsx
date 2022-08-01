@@ -104,7 +104,6 @@ export const MainScreen: FunctionComponent = observer(() => {
 
   const onRefresh = React.useCallback(async () => {
     const account = accountStore.getAccount(chainStore.current.chainId);
-    console.log("account: ", account, account.evmosHexAddress);
     const queries = queriesStore.get(chainStore.current.chainId);
 
     // Because the components share the states related to the queries,

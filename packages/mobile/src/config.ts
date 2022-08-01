@@ -77,7 +77,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       txUrl: "https://scan.astranaut.dev/transactions/{txHash}",
     },
     wcInfor: {
-      relayUrl: "wss://relay.astranaut.dev",
+      relayUrl: "wss://wc-relay.astranaut.dev",
       projectId: "dd47fbeda006ccb670152d74136f846a",
       metadata: {
         name: "Astra Hub",
