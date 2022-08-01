@@ -11,7 +11,6 @@ import { RegisterConfig } from "@keplr-wallet/hooks";
 import { observer } from "mobx-react-lite";
 import { RectButton } from "../../../components/rect-button";
 import { BIP44HDPath } from "@keplr-wallet/background";
-import { useStore } from "../../../stores";
 import { useBIP44Option } from "../bip44";
 import { useForm } from "react-hook-form";
 import { useIntl } from "react-intl";
@@ -86,6 +85,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
   } = useForm<FormData>();
 
   const submit = handleSubmit(() => {
+    setIsCreating(true);
     smartNavigation.navigateSmart("Register.SetPincode", {
       registerConfig,
       newMnemonicConfig,
