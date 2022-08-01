@@ -27,7 +27,7 @@ export interface AppChainInfo extends ChainInfo {
 
 export const EmbedChainInfos: AppChainInfo[] = [
   {
-    rpc: "https://rpc.astranaut.dev",
+    rpc: "https://cosmos.astranaut.dev",
     rest: "https://api.astranaut.dev",
     chainId: "astra_11115-1",
     chainName: "Testnet",

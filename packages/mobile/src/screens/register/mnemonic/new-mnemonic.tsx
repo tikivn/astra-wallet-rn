@@ -5,19 +5,19 @@ import { RouteProp, useIsFocused, useRoute } from "@react-navigation/native";
 import { RegisterConfig } from "@keplr-wallet/hooks";
 import { useNewMnemonicConfig } from "./hook";
 import { PageWithScrollView } from "../../../components/page";
-import { CheckIcon } from "../../../components/icon";
 import { useStyle } from "../../../styles";
 import { WordChip } from "../../../components/mnemonic";
 import { Button } from "../../../components/button";
 import Clipboard from "expo-clipboard";
-import { TextInput } from "../../../components/input";
-import { Controller, useForm } from "react-hook-form";
+
+import { useForm } from "react-hook-form";
 import { useSmartNavigation } from "../../../navigation-util";
 import { useSimpleTimer } from "../../../hooks";
-import { BIP44AdvancedButton, useBIP44Option } from "../bip44";
-import Svg, { ClipPath, Defs, G, Path, Rect } from "react-native-svg";
+import { useBIP44Option } from "../bip44";
+
 import { AlertInline } from "../../../components";
 import { useIntl } from "react-intl";
+import { useToastModal } from "../../../providers/toast-modal";
 
 interface FormData {
   name: string;
@@ -74,7 +74,11 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
     >
       {/* Mock for flexible margin top */}
       <View style={style.flatten(["margin-y-32", "items-center"])}>
-        <Image style={style.flatten(["height-16"])} source={require('../../../assets/image/step-1.png')} resizeMode='contain' />
+        <Image
+          style={style.flatten(["height-16"])}
+          source={require("../../../assets/image/step-1.png")}
+          resizeMode="contain"
+        />
       </View>
       <Text
         style={style.flatten([
@@ -100,15 +104,18 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
       <View style={style.flatten(["flex-1"])} />
       <AlertInline
         type="warning"
-        content={intl.formatMessage({ id: "common.alert.content.notShareMnemonic" })}
+        content={intl.formatMessage({
+          id: "common.alert.content.notShareMnemonic",
+        })}
       />
       <View style={style.flatten(["height-24"])} />
       <Button
         containerStyle={style.flatten(["border-radius-4", "height-44"])}
         textStyle={style.flatten(["subtitle2"])}
-        text="Tiếp tục"
+        text={intl.formatMessage({ id: "common.text.continue" })}
         size="large"
-        onPress={submit} />
+        onPress={submit}
+      />
       {/* Mock element for bottom padding */}
       <View style={style.flatten(["height-page-pad"])} />
     </PageWithScrollView>
@@ -119,15 +126,14 @@ const WordsCard: FunctionComponent<{
   words: string[];
 }> = ({ words }) => {
   const style = useStyle();
-  const { isTimedOut, setTimer } = useSimpleTimer();
-
+  const toast = useToastModal();
   /*
     On IOS, user can peek the words by right side gesture from the verifying mnemonic screen.
     To prevent this, hide the words if the screen lost the focus.
    */
   const [hideWord, setHideWord] = useState(false);
   const isFocused = useIsFocused();
-
+  const intl = useIntl();
   useEffect(() => {
     if (isFocused) {
       setHideWord(false);
@@ -167,14 +173,15 @@ const WordsCard: FunctionComponent<{
       </View>
       <View style={style.flatten(["width-full"])}>
         <Button
-          textStyle={style.flatten([
-            "subtitle3", "color-primary",
-          ])}
+          textStyle={style.flatten(["subtitle3", "color-primary"])}
           mode="text"
-          text={isTimedOut ? "Đã sao chép" : "Sao chép"}
+          text={intl.formatMessage({ id: "component.text.copy" })}
           onPress={() => {
             Clipboard.setString(words.join(" "));
-            setTimer(3000);
+            toast.makeToast({
+              title: intl.formatMessage({ id: "seedphrase.copied" }),
+              type: "success",
+            });
           }}
         />
       </View>

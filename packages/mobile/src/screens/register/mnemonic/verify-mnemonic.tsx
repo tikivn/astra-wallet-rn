@@ -14,6 +14,8 @@ import { BIP44HDPath } from "@keplr-wallet/background";
 import { useStore } from "../../../stores";
 import { useBIP44Option } from "../bip44";
 import { useForm } from "react-hook-form";
+import { useIntl } from "react-intl";
+import { AlertInline } from "../../../components";
 
 export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -36,7 +38,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
 
   const registerConfig = route.params.registerConfig;
   const newMnemonicConfig = route.params.newMnemonicConfig;
-
+  const intl = useIntl();
   const [candidateWords, setCandidateWords] = useState<
     {
       word: string;
@@ -73,7 +75,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
   );
 
   const [isCreating, setIsCreating] = useState(false);
-  
+
   const bip44Option = useBIP44Option();
   const {
     control,
@@ -88,7 +90,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
       registerConfig,
       newMnemonicConfig,
       bip44HDPath: bip44Option.bip44HDPath,
-      type: 'new',
+      type: "new",
     });
   });
 
@@ -99,7 +101,11 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
       style={style.flatten(["padding-x-page"])}
     >
       <View style={style.flatten(["margin-y-32", "items-center"])}>
-        <Image style={style.flatten(["height-16"])} source={require('../../../assets/image/step-2.png')} resizeMode='contain'/>
+        <Image
+          style={style.flatten(["height-16"])}
+          source={require("../../../assets/image/step-2.png")}
+          resizeMode="contain"
+        />
       </View>
       <Text
         style={style.flatten([
@@ -109,7 +115,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
           "text-center",
         ])}
       >
-        Xếp lại cụm từ bí mật
+        {intl.formatMessage({ id: "seedphrase.action.rearrange" })}
       </Text>
       <Text
         style={style.flatten([
@@ -118,7 +124,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
           "margin-bottom-4",
         ])}
       >
-        Bạn vui lòng sắp xếp lại theo thứ tự ở bước trước. Bước này nhằm đảm bảo bạn đã lưu trữ lại chuỗi kí tự cẩn thận. 
+        {intl.formatMessage({ id: "seedphrase.action.rearrange.description" })}
       </Text>
       <WordsCard
         wordSet={wordSet.map((word, i) => {
@@ -161,11 +167,22 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
           );
         })}
       </View>
+
       <View style={style.flatten(["flex-1"])} />
+      <AlertInline
+        type="warning"
+        content={intl.formatMessage({
+          id: "seedphrase.important",
+        })}
+      />
       <Button
-        containerStyle={style.flatten(["border-radius-4", "height-44"])}
+        containerStyle={style.flatten([
+          "border-radius-4",
+          "height-44",
+          "margin-top-12",
+        ])}
         textStyle={style.flatten(["subtitle2"])}
-        text="Tiếp tục"
+        text={intl.formatMessage({ id: "common.text.continue" })}
         size="large"
         loading={isCreating}
         disabled={wordSet.join(" ") !== newMnemonicConfig.mnemonic}
@@ -195,11 +212,13 @@ const WordButton: FunctionComponent<{
           "margin-bottom-12",
           "border-radius-8",
         ],
-        [used && "opacity-40", used && "background-color-disabled"],
+        [used && "opacity-40", used && "background-color-disabled"]
       )}
       onPress={onPress}
     >
-      <Text style={style.flatten(["subtitle3", "color-background"])}>{word}</Text>
+      <Text style={style.flatten(["subtitle3", "color-background"])}>
+        {word}
+      </Text>
     </RectButton>
   );
 };
