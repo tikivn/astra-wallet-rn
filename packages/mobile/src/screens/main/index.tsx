@@ -156,7 +156,7 @@ export const MainScreen: FunctionComponent = observer(() => {
       <ImageBackground
         style={style.flatten(["width-full", "height-full"])}
         source={require("../../assets/logo/main_background.png")}
-        resizeMode="contain"
+        resizeMode="cover"
       >
         <PageWithScrollViewInBottomTabView
           style={style.flatten(["margin-top-44"])}

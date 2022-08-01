@@ -15,7 +15,7 @@ import CommonViMsgs from "./common.vi.json";
 import WalletConnectEnMsgs from "./walletconnect.en.json";
 import WalletConnectViMsgs from "./walletconnect.vi.json";
 import RegisterEnMsgs from "./register.en.json";
-import RegisterViMsgs from "./register.en.json";
+import RegisterViMsgs from "./register.vi.json";
 
 export const ViMsgs = [
   ComponentViMsgs,

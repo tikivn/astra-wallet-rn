@@ -9,6 +9,7 @@ import {
 import { SignClientTypes } from "@walletconnect/types";
 import { createSmartNavigatorProvider, SmartNavigator } from "./hooks";
 import { NewMnemonicConfig } from "./screens/register/mnemonic";
+import { PasswordInputScreenType } from "./screens/settings/screens";
 
 const {
   SmartNavigatorProvider,
@@ -57,7 +58,7 @@ const {
     "Register.SetPincode": {
       upperScreenName: "Register",
     },
-    "Register.VerifyPincode": {
+    "Register.CreateEntry": {
       upperScreenName: "Register",
     },
     Home: {
@@ -157,16 +158,10 @@ const {
     "Web.Astranaut": {
       upperScreenName: "Web",
     },
-    "Settings.EnterPincode": {
-      upperScreenName: "Wallet",
-    },
     "Settings.PasswordInput": {
       upperScreenName: "Wallet",
     },
     "Settings.NewPasswordInput": {
-      upperScreenName: "Wallet",
-    },
-    "Settings.DeleteWallet": {
       upperScreenName: "Wallet",
     },
     "Staking.Dashboard.New": {
@@ -219,16 +214,8 @@ const {
     };
     "Register.SetPincode": {
       registerConfig: RegisterConfig;
-      newMnemonicConfig: NewMnemonicConfig;
       bip44HDPath: BIP44HDPath;
-      type: "new" | "restore";
-    };
-    "Register.VerifyPincode": {
-      registerConfig: RegisterConfig;
-      newMnemonicConfig: NewMnemonicConfig;
-      bip44HDPath: BIP44HDPath;
-      password: string;
-      type: "new" | "restore";
+      mnemonic?: string;
     };
     "Register.RecoverMnemonic": {
       registerConfig: RegisterConfig;
@@ -254,6 +241,7 @@ const {
     "Register.End": {
       password?: string;
     };
+    "Register.CreateEntry": {};
     Send: {
       chainId?: string;
       currency?: string;
@@ -288,8 +276,7 @@ const {
       privateDataType: string;
     };
     "Settings.PasswordInput": {
-      nextScreen: string;
-      forwardPassword: boolean;
+      type: PasswordInputScreenType;
     };
     "Settings.NewPasswordInput": {
       currentPassword: string;

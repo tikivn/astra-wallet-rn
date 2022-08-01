@@ -88,9 +88,8 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
     setIsCreating(true);
     smartNavigation.navigateSmart("Register.SetPincode", {
       registerConfig,
-      newMnemonicConfig,
       bip44HDPath: bip44Option.bip44HDPath,
-      type: "new",
+      mnemonic: newMnemonicConfig.mnemonic,
     });
   });
 

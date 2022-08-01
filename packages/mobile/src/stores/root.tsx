@@ -35,6 +35,8 @@ import { UserBalanceStore } from "./user-balance";
 import { TransactionStore } from "./transaction";
 import { SignClientStore } from "./wallet-connect-v2";
 import { RemoteConfigStore } from "./remote-config";
+import { UserLoginStore } from "./user-login";
+
 export class RootStore {
   public readonly chainStore: ChainStore;
   public readonly keyRingStore: KeyRingStore;
@@ -83,7 +85,8 @@ export class RootStore {
   public readonly userBalanceStore: UserBalanceStore;
   public readonly transactionStore: TransactionStore;
   public readonly remoteConfigStore: RemoteConfigStore;
-
+  public readonly userLoginStore: UserLoginStore;
+  
   constructor() {
     const router = new RNRouterUI(RNEnv.produceEnv);
 
@@ -366,6 +369,11 @@ export class RootStore {
       this.queriesStore
     );
     this.remoteConfigStore = new RemoteConfigStore();
+    this.userLoginStore = new UserLoginStore({
+      socialLoginEnabledFunc: () => {
+        return this.remoteConfigStore.getBool("feature_socialLogin_enabled");
+      }
+    });
   }
 }
 

@@ -564,6 +564,52 @@ export class KeyRing {
     };
   }
 
+  public async forceDeleteKeyRing(
+    index: number,
+  ): Promise<{
+    multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
+    keyStoreChanged: boolean;
+  }> {
+    const keyStore = this.multiKeyStore[index];
+
+    if (!keyStore) {
+      throw new KeplrError("keyring", 130, "Key store is empty");
+    }
+
+    const multiKeyStore = this.multiKeyStore
+      .slice(0, index)
+      .concat(this.multiKeyStore.slice(index + 1));
+
+    let keyStoreChanged = false;
+    if (this.keyStore) {
+      // If key store is currently selected key store
+      if (
+        KeyRing.getKeyStoreId(keyStore) === KeyRing.getKeyStoreId(this.keyStore)
+      ) {
+        // If there is a key store left
+        if (multiKeyStore.length > 0) {
+          // Select first key store
+          this.keyStore = multiKeyStore[0];
+        } else {
+          // Else clear keyring.
+          this.keyStore = null;
+          this.mnemonicMasterSeed = undefined;
+          this.privateKey = undefined;
+          this.ledgerPublicKey = undefined;
+        }
+
+        keyStoreChanged = true;
+      }
+    }
+
+    this.multiKeyStore = multiKeyStore;
+    await this.save();
+    return {
+      multiKeyStoreInfo: this.getMultiKeyStoreInfo(),
+      keyStoreChanged,
+    };
+  }
+
   public async updateNameKeyRing(
     index: number,
     name: string
@@ -587,6 +633,57 @@ export class KeyRing {
     ) {
       this.keyStore = keyStore;
     }
+    await this.save();
+    return this.getMultiKeyStoreInfo();
+  }
+
+  public async updatePasswordKeyRing(
+    index: number,
+    password: string,
+    newPassword: string,
+  ): Promise<MultiKeyStoreInfoWithSelected> {
+    if (this.status !== KeyRingStatus.UNLOCKED) {
+      throw new KeplrError("keyring", 143, "Key ring is not unlocked");
+    }
+
+    const keyStore = this.multiKeyStore[index];
+
+    if (!keyStore) {
+      throw new KeplrError("keyring", 130, "Key store is empty");
+    }
+
+    if (this.password !== password) {
+      throw new KeplrError("keyring", 121, "Invalid password");
+    }
+
+    // After decrypt using previous password, encrypt using new password for all key store
+    this.multiKeyStore = await Promise.all(
+      this.multiKeyStore.map(async (keyStore) => {
+        const decryptText = Buffer.from(
+          await Crypto.decrypt(this.crypto, keyStore, password)
+        ).toString();
+
+        const newKeyStore = await Crypto.encrypt(
+          this.crypto,
+          keyStore.crypto.kdf,
+          keyStore.type || "mnemonic",
+          decryptText,
+          newPassword,
+          keyStore.meta || {},
+          keyStore.bip44HDPath,
+        );
+
+        // If select key store and changed store are same, sync keystore
+        if (this.keyStore 
+          && KeyRing.getKeyStoreId(this.keyStore) === KeyRing.getKeyStoreId(keyStore)) {
+          this.keyStore = newKeyStore;
+        }
+
+        return newKeyStore
+      })
+    );
+
+    this.password = newPassword;
     await this.save();
     return this.getMultiKeyStoreInfo();
   }

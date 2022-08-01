@@ -74,6 +74,33 @@ export class DeleteKeyRingMsg extends Message<{
   }
 }
 
+export class ForceDeleteKeyRingMsg extends Message<{
+  status: KeyRingStatus;
+  multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
+}> {
+  public static type() {
+    return "force-delete-keyring";
+  }
+
+  constructor(public readonly index: number) {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!Number.isInteger(this.index)) {
+      throw new KeplrError("keyring", 201, "Invalid index");
+    }
+  }
+
+  route(): string {
+    return ROUTE;
+  }
+
+  type(): string {
+    return ForceDeleteKeyRingMsg.type();
+  }
+}
+
 export class UpdateNameKeyRingMsg extends Message<{
   multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
 }> {
@@ -101,6 +128,36 @@ export class UpdateNameKeyRingMsg extends Message<{
 
   type(): string {
     return UpdateNameKeyRingMsg.type();
+  }
+}
+
+export class UpdatePasswordKeyRingMsg extends Message<{
+  multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
+}> {
+  public static type() {
+    return "update-password-keyring";
+  }
+
+  constructor(public readonly index: number, public readonly password: string, public readonly newPassword: string) {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!Number.isInteger(this.index)) {
+      throw new KeplrError("keyring", 201, "Invalid index");
+    }
+
+    if (!this.password) {
+      throw new KeplrError("keyring", 274, "password not set");
+    }
+  }
+
+  route(): string {
+    return ROUTE;
+  }
+
+  type(): string {
+    return UpdatePasswordKeyRingMsg.type();
   }
 }
 

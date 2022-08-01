@@ -9,6 +9,7 @@ export class RemoteConfigStore {
       .setDefaults({
         feature_dapps_enabled: false,
         feature_swap_enabled: false,
+        feature_socialLogin_enabled: true,
       }).then(() => {
         remoteConfig().setConfigSettings({
           minimumFetchIntervalMillis: 30000,
@@ -65,6 +66,8 @@ class MockRemoteConfig {
   }
 }
 
+const mockRemoteConfig = new MockRemoteConfig();
+
 const remoteConfig = () => {
-  return new MockRemoteConfig();
+  return mockRemoteConfig;
 }

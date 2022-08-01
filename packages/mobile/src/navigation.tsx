@@ -122,8 +122,6 @@ import {
 import { RegisterTutorialcreen } from "./screens/register/tutorial";
 import { NewPincodeScreen } from "./screens/register/pincode";
 import {
-  DeleteWalletScreen,
-  EnterPincodeScreen,
   PasswordInputScreen,
   NewPasswordInputScreen,
 } from "./screens/settings/screens";
@@ -139,6 +137,7 @@ import { WebViewScreen } from "./screens/web/default";
 import { SessionProposalScreen } from "./screens/wallet-connect";
 import { useIntl } from "react-intl";
 import { SmartNavigatorProvider } from "./navigation-util";
+import { RegisterCreateEntryScreen } from "./screens/register/create-entry";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -374,6 +373,13 @@ export const RegisterNavigation: FunctionComponent = () => {
         name="Register.SetPincode"
         component={NewPincodeScreen}
       />
+      <Stack.Screen
+        options={{
+          title: intl.formatMessage({ id: "register.createEntry.nav.title" }),
+        }}
+        name="Register.CreateEntry"
+        component={RegisterCreateEntryScreen}
+      />
     </Stack.Navigator>
   );
 };
@@ -562,13 +568,6 @@ export const WalletNavigation: FunctionComponent = () => {
 
       <Stack.Screen
         options={{
-          title: intl.formatMessage({ id: "viewPassphase.title" }),
-        }}
-        name="Settings.EnterPincode"
-        component={EnterPincodeScreen}
-      />
-      <Stack.Screen
-        options={{
           title: intl.formatMessage({ id: "changePassword.title" }),
         }}
         name="Settings.PasswordInput"
@@ -580,13 +579,6 @@ export const WalletNavigation: FunctionComponent = () => {
         }}
         name="Settings.NewPasswordInput"
         component={NewPasswordInputScreen}
-      />
-      <Stack.Screen
-        options={{
-          title: intl.formatMessage({ id: "deleteAccount.title" }),
-        }}
-        name="Settings.DeleteWallet"
-        component={DeleteWalletScreen}
       />
       <Stack.Screen
         options={{

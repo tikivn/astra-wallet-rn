@@ -125,6 +125,32 @@ export class KeyRingService {
     }
   }
 
+  async forceDeleteKeyRing(
+    index: number,
+  ): Promise<{
+    multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
+    status: KeyRingStatus;
+  }> {
+    let keyStoreChanged = false;
+
+    try {
+      const result = await this.keyRing.forceDeleteKeyRing(index);
+      keyStoreChanged = result.keyStoreChanged;
+      return {
+        multiKeyStoreInfo: result.multiKeyStoreInfo,
+        status: this.keyRing.status,
+      };
+    } finally {
+      if (keyStoreChanged) {
+        this.interactionService.dispatchEvent(
+          WEBPAGE_PORT,
+          "keystore-changed",
+          {}
+        );
+      }
+    }
+  }
+
   async updateNameKeyRing(
     index: number,
     name: string
@@ -132,6 +158,19 @@ export class KeyRingService {
     multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
   }> {
     const multiKeyStoreInfo = await this.keyRing.updateNameKeyRing(index, name);
+    return {
+      multiKeyStoreInfo,
+    };
+  }
+
+  async updatePasswordKeyRing(
+    index: number,
+    password: string,
+    newPassword: string,
+  ): Promise<{
+    multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
+  }> {
+    const multiKeyStoreInfo = await this.keyRing.updatePasswordKeyRing(index, password, newPassword);
     return {
       multiKeyStoreInfo,
     };

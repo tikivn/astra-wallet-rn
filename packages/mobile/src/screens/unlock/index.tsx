@@ -30,6 +30,8 @@ import { NormalInput } from "../../components/input/normal-input";
 import { useIntl } from "react-intl";
 import { BiometricsIcon } from "../../components";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { useRegisterConfig } from "@keplr-wallet/hooks";
+import { useBIP44Option } from "../register/bip44";
 
 let splashScreenHided = false;
 async function hideSplashScreen() {
@@ -109,12 +111,14 @@ const useAutoBiomtric = (keychainStore: KeychainStore, tryEnabled: boolean) => {
  * @constructor
  */
 export const UnlockScreen: FunctionComponent = observer(() => {
-  const { keyRingStore, keychainStore, accountStore, chainStore } = useStore();
+  const { keyRingStore, keychainStore, accountStore, chainStore, userLoginStore } = useStore();
 
   const style = useStyle();
   const intl = useIntl();
 
   const navigation = useNavigation();
+  const registerConfig = useRegisterConfig(keyRingStore, []);
+  const bip44Option = useBIP44Option();
 
   const [isSplashEnd, setIsSplashEnd] = useState(false);
 
@@ -195,6 +199,41 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       // Because javascript is synchronous language, the loadnig state change would not delivered to the UI thread
       // before the actually decryption is complete.
       // So to make sure that the loading state changes, just wait very short time.
+      if (userLoginStore.socialLoginData && userLoginStore.isSocialLoginActive) {
+        try {
+          await userLoginStore.reconstructSocialLoginData({ password });
+          const name = userLoginStore.socialLoginData.email;
+          const registerMnemonic = await userLoginStore.getSeedPhrase();
+          const registerPassword = await userLoginStore.getPassword();
+
+          const index = keyRingStore.multiKeyStoreInfo.findIndex(
+            (keyStore: any) => { return keyStore.selected; }
+          );
+          if (index !== -1) {
+            await keyRingStore.forceDeleteKeyRing(index);
+          }
+
+          await registerConfig.createMnemonic(
+            name,
+            registerMnemonic,
+            registerPassword,
+            bip44Option.bip44HDPath
+          )
+
+          if (keychainStore.isBiometrySupported && keychainStore.isBiometryOn) {
+            await keychainStore.turnOnBiometry(registerPassword);
+          }
+        }
+        catch (e) {
+          setIsLoading(false);
+          setIsFailed(true);
+          return;
+        }
+
+        await hideSplashScreen();
+        return;
+      }
+
       await delay(10);
       await keyRingStore.unlock(password);
 
@@ -213,7 +252,8 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     if (
       !routeToRegisterOnce.current &&
       isSplashEnd &&
-      keyRingStore.status === KeyRingStatus.EMPTY
+      (keyRingStore.status === KeyRingStatus.EMPTY 
+        && !(userLoginStore.socialLoginData && userLoginStore.isSocialLoginActive))
     ) {
       (async () => {
         await hideSplashScreen();
@@ -244,7 +284,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       >
         <Image
           style={style.flatten(["width-full", "height-full"])}
-          resizeMode="contain"
+          resizeMode="cover"
           source={require("../../assets/logo/splash-screen-background.png")}
         />
       </View>

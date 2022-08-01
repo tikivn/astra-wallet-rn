@@ -7,7 +7,6 @@ import { NormalInput } from "../../../components/input/normal-input";
 import { Button } from "../../../components";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { useStore } from "../../../stores";
-import { useSmartNavigation } from "../../../navigation-util";
 import { useIntl } from "react-intl";
 
 export const NewPasswordInputScreen: FunctionComponent = observer(() => {
@@ -19,7 +18,7 @@ export const NewPasswordInputScreen: FunctionComponent = observer(() => {
 
   const style = useStyle();
   const intl = useIntl();
-  const { keyRingStore, keychainStore } = useStore();
+  const { keyRingStore, keychainStore, userLoginStore } = useStore();
   const navigation = useNavigation();
 
   const [password, setPassword] = useState("");
@@ -31,44 +30,44 @@ export const NewPasswordInputScreen: FunctionComponent = observer(() => {
 
   const onCreate = async () => {
     setIsCreating(true);
-    const index = keyRingStore.multiKeyStoreInfo.findIndex((keyStore) => {
-      return keyStore.selected;
-    });
 
     const currentPassword = route.params.currentPassword;
 
-    const keyRingDatas = await keyRingStore.exportKeyRingDatas(currentPassword);
-    if (index < keyRingDatas.length) {
-      const data = keyRingDatas[index];
-      await keyRingStore.deleteKeyRing(index, currentPassword);
+    if (userLoginStore.isSocialLoginActive) {
+      try {
+        await userLoginStore.updatePassword(password);
+      }
+      catch (e) {
+        console.log(e);
+        setIsCreating(false);
+        return;
+      }
+    }
 
-      await keyRingStore.createMnemonicKey(
-        data.key,
-        password,
-        data.meta,
-        data.bip44HDPath
-      );
+    const index = keyRingStore.multiKeyStoreInfo.findIndex(
+      (keyStore: any) => { return keyStore.selected; }
+    );
 
-      await keyRingStore.unlock(password);
+    // Must unlock with current password before update password
+    await keyRingStore.unlock(currentPassword);
+    await keyRingStore.updatePasswordKeyRing(index, currentPassword, password);
+    await keyRingStore.unlock(password);
+
+    if (keychainStore.isBiometryOn && keychainStore.isBiometrySupported) {
       await keychainStore.turnOnBiometry(password);
-
-      setIsCreating(false);
-
-      navigation.navigate("Setting", {
-        screen: "Setting",
-        params: {
-          floatAlert: {
-            type: "success",
-            content: intl.formatMessage({ id: "common.text.changePasswordSuccess" }),
-          }
-        }
-      });
-      console.log("navigation", navigation);
-      // console.log("smartNavigation", smartNavigation);
-      return;
     }
 
     setIsCreating(false);
+
+    navigation.navigate("Setting", {
+      screen: "Setting",
+      params: {
+        floatAlert: {
+          type: "success",
+          content: intl.formatMessage({ id: "common.text.changePasswordSuccess" }),
+        }
+      }
+    });
   };
 
   useEffect(() => {

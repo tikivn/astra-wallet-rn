@@ -9,7 +9,9 @@ import {
   CreateMnemonicKeyMsg,
   CreatePrivateKeyMsg,
   DeleteKeyRingMsg,
+  ForceDeleteKeyRingMsg,
   UpdateNameKeyRingMsg,
+  UpdatePasswordKeyRingMsg,
   GetIsKeyStoreCoinTypeSetMsg,
   GetMultiKeyStoreInfoMsg,
   KeyRingStatus,
@@ -328,6 +330,25 @@ export class KeyRingStore {
   }
 
   @flow
+  *forceDeleteKeyRing(index: number) {
+    const selectedIndex = this.multiKeyStoreInfo.findIndex(
+      (keyStore) => keyStore.selected
+    );
+    const msg = new ForceDeleteKeyRingMsg(index);
+    const result = yield* toGenerator(
+      this.requester.sendMessage(BACKGROUND_PORT, msg)
+    );
+    this.status = result.status;
+    this.multiKeyStoreInfo = result.multiKeyStoreInfo;
+
+    // Selected keystore may be changed if the selected one is deleted.
+    if (selectedIndex === index) {
+      this.dispatchKeyStoreChangeEvent();
+      this.selectablesMap.forEach((selectables) => selectables.refresh());
+    }
+  }
+
+  @flow
   *updateNameKeyRing(index: number, name: string) {
     const msg = new UpdateNameKeyRingMsg(index, name);
     const result = yield* toGenerator(
@@ -338,6 +359,22 @@ export class KeyRingStore {
       (keyStore) => keyStore.selected
     );
     // If selectedIndex and index are same, name could be changed, so dispatch keystore event
+    if (selectedIndex === index) {
+      this.dispatchKeyStoreChangeEvent();
+    }
+  }
+
+  @flow
+  *updatePasswordKeyRing(index: number, password: string, newPassword: string) {
+    const msg = new UpdatePasswordKeyRingMsg(index, password, newPassword);
+    const result = yield* toGenerator(
+      this.requester.sendMessage(BACKGROUND_PORT, msg)
+    );
+    this.multiKeyStoreInfo = result.multiKeyStoreInfo;
+    const selectedIndex = this.multiKeyStoreInfo.findIndex(
+      (keyStore) => keyStore.selected
+    );
+    // If selectedIndex and index are same, password could be changed, so dispatch keystore event
     if (selectedIndex === index) {
       this.dispatchKeyStoreChangeEvent();
     }

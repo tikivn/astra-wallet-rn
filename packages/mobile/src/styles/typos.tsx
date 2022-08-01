@@ -37,6 +37,11 @@ const MediumTypos = {
     lineHeight: 24,
     ...getPlatformFontWeight("500"),
   },
+  "text-medium-semi-bold": {
+    fontSize: 16,
+    lineHeight: 24,
+    ...getPlatformFontWeight("600"),
+  },
 };
 
 const LargeTypos = {

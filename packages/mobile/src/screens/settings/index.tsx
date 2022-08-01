@@ -89,12 +89,21 @@ export const SettingsScreen: FunctionComponent = observer(() => {
     }
   }
 
+  async function lock() {
+    await keyRingStore.lock();
+
+    smartNavigation.reset({
+      index: 0,
+      routes: [{ name: "Unlock" }],
+    });
+  }
+
   return (
     <View style={style.flatten(["background-color-background", "flex-grow-1"])}>
       <ImageBackground
         style={style.flatten(["width-full", "height-full"])}
         source={require("../../assets/logo/main_background.png")}
-        resizeMode="contain"
+        resizeMode="cover"
       >
         <SafeAreaView />
         <View style={style.get("height-64")} />
@@ -111,8 +120,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
             right={<AllIcon color={style.get("color-white").color} />}
             onPress={() => {
               smartNavigation.navigateSmart("Settings.PasswordInput", {
-                nextScreen: "Settings.NewPasswordInput",
-                forwardPassword: true,
+                type: "updatePassword",
               });
             }}
           />
@@ -123,7 +131,9 @@ export const SettingsScreen: FunctionComponent = observer(() => {
             right={<AllIcon color={style.get("color-white").color} />}
             left={<KeyIcon />}
             onPress={() => {
-              smartNavigation.navigateSmart("Settings.EnterPincode", {});
+              smartNavigation.navigateSmart("Settings.PasswordInput", {
+                type: "viewMnemonic",
+              });
             }}
           />
           {keychainStore.isBiometrySupported && (
@@ -183,24 +193,16 @@ export const SettingsScreen: FunctionComponent = observer(() => {
           <AccountItem
             containerStyle={accountItemProps.containerStyle}
             label={intl.formatMessage({ id: "settings.lockScreen" })}
-            onPress={async () => {
-              keyRingStore.lock();
-              smartNavigation.reset({
-                index: 0,
-                routes: [
-                  {
-                    name: "Unlock",
-                  },
-                ],
-              });
-            }}
+            onPress={lock}
           />
           <View style={style.get("height-8")} />
           <AccountItem
             {...accountItemProps}
             label={intl.formatMessage({ id: "settings.deleteAccount" })}
             onPress={() => {
-              smartNavigation.navigateSmart("Settings.DeleteWallet", {});
+              smartNavigation.navigateSmart("Settings.PasswordInput", {
+                type: "deleteWallet",
+              });
             }}
             labelStyle={style.flatten(["body3", "color-danger"])}
           />
