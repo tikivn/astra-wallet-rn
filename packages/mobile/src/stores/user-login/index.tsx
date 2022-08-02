@@ -341,9 +341,10 @@ export class UserLoginStore {
       })
     }
     const privateKey = Buffer.from(
-      new PrivKeySecp256k1(
-        Mnemonic.generateWalletFromMnemonic(validMnemonic)
-      ).toBytes()
+      Mnemonic.generateWalletFromMnemonic(
+        validMnemonic,
+        `m/44'/60'/0'/0/0`
+      )
     );
 
     console.log("__mnemonic__", validMnemonic);
