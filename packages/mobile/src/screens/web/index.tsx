@@ -49,6 +49,13 @@ export const WebScreen: FunctionComponent = () => {
         }}
       />
       <WebpageImageButton
+        name="Astra Defi"
+        source={require("../../assets/image/webpage/osmosis.png")}
+        onPress={() => {
+          smartNavigation.pushSmart("Web.AstraDefi", {});
+        }}
+      />
+      <WebpageImageButton
         overrideInner={
           <View style={style.flatten(["flex-1", "items-center"])}>
             <Text

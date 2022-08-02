@@ -107,6 +107,7 @@ import {
   OsmosisFrontierWebpageScreen,
   StargazeWebpageScreen,
   AstranautWebpageScreen,
+  AstraDefiWebpageScreen,
   UmeeWebpageScreen,
   JunoswapWebpageScreen,
 } from "./screens/web/webpages";
@@ -832,6 +833,7 @@ export const WebNavigation: FunctionComponent = () => {
       />
       <Stack.Screen name="Web.Stargaze" component={StargazeWebpageScreen} />
       <Stack.Screen name="Web.Astranaut" component={AstranautWebpageScreen} />
+      <Stack.Screen name="Web.AstraDefi" component={AstraDefiWebpageScreen} />
       <Stack.Screen name="Web.Umee" component={UmeeWebpageScreen} />
       <Stack.Screen name="Web.Junoswap" component={JunoswapWebpageScreen} />
     </Stack.Navigator>

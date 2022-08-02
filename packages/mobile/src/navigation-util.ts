@@ -158,6 +158,9 @@ const {
     "Web.Astranaut": {
       upperScreenName: "Web",
     },
+    "Web.AstraDefi": {
+      upperScreenName: "Web",
+    },
     "Settings.PasswordInput": {
       upperScreenName: "Wallet",
     },
