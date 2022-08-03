@@ -554,4 +554,7 @@ export class KeyRingService {
   async exportKeyRingDatas(password: string): Promise<ExportKeyRingData[]> {
     return await this.keyRing.exportKeyRingDatas(password);
   }
+  async exportPrivateKey(password?: string): Promise<string> {
+    return await this.keyRing.exportPrivateKey(password);
+  }
 }

@@ -9,7 +9,8 @@ export const useWeb3 = () => {
   const web3Ref = useRef<Web3>();
   const etherProviderRef = useRef<Web3Provider>();
   const { chainStore, accountStore } = useStore();
-  const { rpc, bech32Config } = chainStore.current;
+
+  const { rpc, bech32Config, chainId: chainIdStr } = chainStore.current;
   const [chainId, setChainId] = useState<number>();
 
   const account = useMemo(() => {
@@ -25,17 +26,15 @@ export const useWeb3 = () => {
     if (rpc) {
       const web3 = new Web3(new Web3.providers.HttpProvider(rpc));
       web3Ref.current = web3;
-
       etherProviderRef.current = new Web3Provider(
         new Web3.providers.HttpProvider(rpc) as any
       );
+
       (async () => {
         if (etherProviderRef.current) {
           const chain = (await etherProviderRef.current.getNetwork()).chainId;
           setChainId(chain);
         }
-        // const a = await web3.eth.getAccounts();
-        // console.log("🚀 -> a", a);
       })();
     }
   }, [rpc]);
@@ -46,5 +45,6 @@ export const useWeb3 = () => {
     chainId,
     account,
     accountHex,
+    chainIdStr,
   };
 };

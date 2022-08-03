@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useCallback } from "react";
+import React, { FunctionComponent, useCallback, useState } from "react";
 import { useIntl } from "react-intl";
 import { StyleSheet, Text, View } from "react-native";
 import { Button } from "../../../components";
@@ -7,6 +7,8 @@ import { ChangeTokenIcon } from "../../../components/icon/change-token";
 import { PageWithScrollView } from "../../../components/page";
 import { RectButton } from "../../../components/rect-button";
 import { useSwap, useSwapCallback } from "../../../hooks";
+import { ConfirmSwapModal } from "../../../modals/confirm-swap";
+import { useToastModal } from "../../../providers/toast-modal";
 import { Colors, useStyle } from "../../../styles";
 import {
   AmountSwapInput,
@@ -15,7 +17,7 @@ import {
   Tooltip,
 } from "../components";
 
-const DATA_SLIPPAGE_TOLERANCE = [0.1, 0.5, 1.0];
+const DATA_SLIPPAGE_TOLERANCE = [10, 50, 100];
 
 export const SwapScreen: FunctionComponent = observer(() => {
   const {
@@ -30,17 +32,44 @@ export const SwapScreen: FunctionComponent = observer(() => {
     isReadyToSwap,
     handleSetSlippageTolerance,
     trade,
+    slippageTolerance,
   } = useSwap();
+  console.log(
+    "🚀 -> constSwapScreen:FunctionComponent=observer -> slippageTolerance",
+    slippageTolerance
+  );
 
-  const { callback: swapCallback } = useSwapCallback(trade, 50);
+  const { callback: swapCallback } = useSwapCallback(trade, slippageTolerance);
+  const [isOpenConfirm, setIsOpenConfirm] = useState<boolean>(false);
   const style = useStyle();
   const intl = useIntl();
-
+  const [loading, setLoading] = useState<boolean>();
+  const toastModal = useToastModal();
   const handleSwap = useCallback(() => {
-    if (swapCallback) {
-      swapCallback();
+    if (loading) {
+      return;
     }
-  }, [swapCallback]);
+    setLoading(true);
+
+    if (swapCallback) {
+      swapCallback()
+        .then((hash) => {
+          toastModal.makeToast({
+            title: "Swap Successful!",
+            type: "success",
+            displayTime: 2000,
+          });
+        })
+        .catch((error) => {
+          toastModal.makeToast({
+            title: "Swap Failed!",
+            type: "error",
+            displayTime: 2000,
+          });
+        })
+        .finally(() => setLoading(false));
+    }
+  }, [loading, swapCallback, toastModal]);
 
   return (
     <PageWithScrollView
@@ -108,7 +137,7 @@ export const SwapScreen: FunctionComponent = observer(() => {
       >
         <Tooltip text={intl.formatMessage({ id: "swap.exchangeRate" })} />
         <Text style={style.flatten(["color-gray-10", "body3"])}>
-          {`1 ${inputCurrency.denom} ≈ ${pricePerInputCurrency} ${outputCurrency.coinDenom}`}
+          {`1 ${inputCurrency.denom} ≈ ${pricePerInputCurrency} ${outputCurrency?.coinDenom}`}
         </Text>
       </View>
       <View
@@ -142,7 +171,19 @@ export const SwapScreen: FunctionComponent = observer(() => {
         textStyle={style.flatten(["subtitle2"])}
         disabled={!isReadyToSwap}
         // loading={account.txTypeInProgress === "send"}
-        onPress={handleSwap}
+        onPress={() => setIsOpenConfirm(true)}
+      />
+      <ConfirmSwapModal
+        isOpen={isOpenConfirm}
+        close={() => setIsOpenConfirm(false)}
+        title={"Confirm Swap"}
+        onConfirmSwap={handleSwap}
+        inputCurrency={inputCurrency.currency}
+        outputCurrency={outputCurrency}
+        trade={trade}
+        lpFee={lpFee}
+        pricePerInputCurrency={pricePerInputCurrency}
+        slippageTolerance={slippageTolerance}
       />
     </PageWithScrollView>
   );

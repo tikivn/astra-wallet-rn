@@ -30,12 +30,12 @@ export const Dropdown: React.FC<DropdownProps> = ({ data, onSelect }) => {
           />
         )}
         buttonTextAfterSelection={(_, index) => {
-          return data[index].toFixed(1) + " %";
+          return (data[index] / 100).toFixed(1) + " %";
         }}
         rowTextForSelection={(_, index) => {
           // text represented for each item in dropdown
           // if data array is an array of objects then return item.property to represent item in dropdown
-          return data[index].toFixed(1) + " %";
+          return (data[index] / 100).toFixed(1) + " %";
         }}
         buttonStyle={StyleSheet.flatten([
           {

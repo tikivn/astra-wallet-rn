@@ -1,9 +1,5 @@
-import { BigNumber } from "@ethersproject/bignumber";
-import { Contract } from "@ethersproject/contracts";
-
 import {
   ChainId,
-  ETHER,
   JSBI,
   Percent,
   Router,
@@ -11,12 +7,11 @@ import {
   Trade,
   TradeType,
 } from "@astradefi/sdk";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import IRouterPancakeABI from "../contracts/abis/IPancakeRouter02.json";
+import { useStore } from "../stores";
 import {
-  calculateGasMargin,
   GAS_PRICE_GWEI,
-  getProviderOrSigner,
   INITIAL_ALLOWED_SLIPPAGE,
   isZero,
   ROUTER_ADDRESS,
@@ -31,12 +26,12 @@ export enum SwapCallbackState {
 }
 
 interface SwapCall {
-  contract: Contract;
+  contract: any;
   parameters: SwapParameters;
 }
 
 interface SuccessfulCall extends SwapCallEstimate {
-  gasEstimate: BigNumber;
+  gasEstimate: any;
 }
 
 interface FailedCall extends SwapCallEstimate {
@@ -44,7 +39,8 @@ interface FailedCall extends SwapCallEstimate {
 }
 
 interface SwapCallEstimate {
-  call: SwapCall;
+  functionAbi: any;
+  value: any;
 }
 
 function useTransactionDeadline() {
@@ -90,15 +86,13 @@ export function useSwapCallArguments(
     )
       return [];
 
-    const contract = new Contract(
-      ROUTER_ADDRESS[chainId as ChainId],
+    const contract = new web3Instance.eth.Contract(
       IRouterPancakeABI as any,
-      getProviderOrSigner(library, account)
+      ROUTER_ADDRESS[chainId as ChainId]
     );
     if (!contract) {
       return [];
     }
-
     const swapMethods = [];
 
     swapMethods.push(
@@ -143,17 +137,60 @@ export function useSwapCallback(
   callback: null | (() => Promise<string>);
   error: string | null;
 } {
-  const { etherProvider: library, chainId, account } = useWeb3();
+  const {
+    etherProvider: library,
+    chainId,
+    accountHex,
+    web3Instance,
+  } = useWeb3();
   const gasPrice = GAS_PRICE_GWEI.testnet;
-
+  const { keyRingStore } = useStore();
   const swapCalls = useSwapCallArguments(trade, allowedSlippage);
+  const accountSignAsync = useMemo(async () => {
+    if (!web3Instance) return;
+    const privateKey = await keyRingStore.exportPrivateKey();
+    return web3Instance.eth.accounts.privateKeyToAccount("0x" + privateKey);
+  }, [keyRingStore, web3Instance]);
 
-  // const addTransaction = useTransactionAdder();
+  const recipient = accountHex;
 
-  const recipient = account;
+  const signTransaction = useCallback(
+    async (functionAbi: any, opts: { gas: any; value: any }) => {
+      const accountSign = await accountSignAsync;
+      if (!web3Instance || !accountSign)
+        return Promise.reject("An error occurred!");
+
+      return new Promise<string>((resolve, reject) => {
+        web3Instance.eth
+          .getTransactionCount(accountSign.address)
+          .then((_nonce) => {
+            const txParams = {
+              gasPrice,
+              to: ROUTER_ADDRESS[11112],
+              data: functionAbi,
+              from: accountSign.address,
+              nonce: web3Instance.utils.toHex(_nonce),
+              ...opts,
+            };
+            accountSign
+              .signTransaction(txParams as any)
+              .then((signed) => {
+                web3Instance.eth
+                  .sendSignedTransaction(signed.rawTransaction || "")
+                  .on("transactionHash", (hash) => {
+                    resolve(hash);
+                  })
+                  .on("error", reject);
+              })
+              .catch(reject);
+          });
+      });
+    },
+    [accountSignAsync, gasPrice, web3Instance]
+  );
 
   return useMemo(() => {
-    if (!trade || !library || !account || !chainId) {
+    if (!trade || !library || !accountHex || !chainId) {
       return {
         state: SwapCallbackState.INVALID,
         callback: null,
@@ -161,13 +198,6 @@ export function useSwapCallback(
       };
     }
     if (!recipient) {
-      // if (recipientAddressOrName !== null) {
-      //   return {
-      //     state: SwapCallbackState.INVALID,
-      //     callback: null,
-      //     error: "Invalid recipient",
-      //   };
-      // }
       return { state: SwapCallbackState.LOADING, callback: null, error: null };
     }
     return {
@@ -179,45 +209,28 @@ export function useSwapCallback(
               parameters: { methodName, args, value },
               contract,
             } = call;
-            const options = !value || isZero(value) ? {} : { value };
 
-            return contract.estimateGas[methodName](...args, options)
-              .then((gasEstimate) => {
-                console.log("🚀 -> .then -> gasEstimate", gasEstimate);
+            const options = !value || isZero(value) ? {} : { value };
+            const contractFunction = contract.methods[methodName](...args);
+            const functionAbi = contractFunction.encodeABI();
+
+            return contractFunction
+              .estimateGas(options)
+              .then((gasEstimate: any) => {
                 return {
-                  call,
+                  functionAbi,
                   gasEstimate,
+                  value,
                 };
               })
-              .catch((gasError) => {
+              .catch((gasError: any) => {
                 console.error(
                   "Gas estimate failed, trying eth_call to extract error",
-                  call,
                   gasError
                 );
-
-                return contract.callStatic[methodName](...args, options)
-                  .then((result) => {
-                    console.error(
-                      "Unexpected successful call after failed estimate gas",
-                      call,
-                      gasError,
-                      result
-                    );
-                    return {
-                      call,
-                      error:
-                        "Unexpected issue with estimating the gas. Please try again.",
-                    };
-                  })
-                  .catch((callError) => {
-                    console.error("Call threw error", call, callError);
-
-                    return {
-                      call,
-                      error: callError,
-                    };
-                  });
+                return {
+                  error: gasError,
+                };
               });
           })
         );
@@ -240,58 +253,33 @@ export function useSwapCallback(
           );
         }
 
-        const {
-          call: {
-            contract,
-            parameters: { methodName, args, value },
-          },
-          gasEstimate,
-        } = successfulEstimation;
+        const { functionAbi, gasEstimate, value } = successfulEstimation;
 
-        return contract[methodName](...args, {
-          gasLimit: calculateGasMargin(gasEstimate),
-          gasPrice,
-          ...(value && !isZero(value)
-            ? { value, from: account }
-            : { from: account }),
+        return signTransaction(functionAbi, {
+          gas: gasEstimate,
+          value,
         })
-          .then((response: any) => {
-            console.log("🚀 -> .then -> response", response);
-            // const inputSymbol = trade.inputAmount.currency.symbol;
-            // const outputSymbol = trade.outputAmount.currency.symbol;
-            // const inputAmount = trade.inputAmount.toSignificant(3);
-            // const outputAmount = trade.outputAmount.toSignificant(3);
-
-            // const base = `Swap ${inputAmount} ${inputSymbol} for ${outputAmount} ${outputSymbol}`;
-            // const withRecipient =
-            //   recipient === account
-            //     ? base
-            //     : `${base} to ${
-            //         recipientAddressOrName && isAddress(recipientAddressOrName)
-            //           ? truncateHash(recipientAddressOrName)
-            //           : recipientAddressOrName
-            //       }`;
-
-            // addTransaction(response, {
-            //   summary: withRecipient,
-            // });
-
-            return response.hash;
+          .then((hash) => {
+            return hash;
           })
-          .catch((error: any) => {
-            // if the user rejected the tx, pass this along
-            if (error?.code === 4001) {
-              throw new Error("Transaction rejected.");
-            } else {
-              // otherwise, the error was unexpected and we need to convey that
-              console.error(`Swap failed`, error, methodName, args, value);
-              throw new Error(error);
-            }
+          .catch((error) => {
+            console.log(
+              `Swap failed: ${swapErrorToUserReadableMessage(error)}`
+            );
+            return "failed";
           });
       },
       error: null,
     };
-  }, [trade, library, account, chainId, recipient, swapCalls, gasPrice]);
+  }, [
+    trade,
+    library,
+    accountHex,
+    chainId,
+    recipient,
+    swapCalls,
+    signTransaction,
+  ]);
 }
 
 /**
@@ -299,47 +287,36 @@ export function useSwapCallback(
  * This object seems to be undocumented by ethers.
  * @param error an error from the ethers provider
  */
-// function swapErrorToUserReadableMessage(error: any, t: TranslateFunction) {
-//   let reason: string | undefined;
-//   while (error) {
-//     reason = error.reason ?? error.data?.message ?? error.message ?? reason;
-//     // eslint-disable-next-line no-param-reassign
-//     error = error.error ?? error.data?.originalError;
-//   }
+function swapErrorToUserReadableMessage(error: any) {
+  let reason: string | undefined;
+  while (error) {
+    reason = error.reason ?? error.data?.message ?? error.message ?? reason;
+    // eslint-disable-next-line no-param-reassign
+    error = error.error ?? error.data?.originalError;
+  }
 
-//   if (reason?.indexOf("execution reverted: ") === 0)
-//     reason = reason.substring("execution reverted: ".length);
+  if (reason?.indexOf("execution reverted: ") === 0)
+    reason = reason.substring("execution reverted: ".length);
 
-//   switch (reason) {
-//     case "PancakeRouter: EXPIRED":
-//       return t(
-//         "The transaction could not be sent because the deadline has passed. Please check that your transaction deadline is not too low."
-//       );
-//     case "PancakeRouter: INSUFFICIENT_OUTPUT_AMOUNT":
-//     case "PancakeRouter: EXCESSIVE_INPUT_AMOUNT":
-//       return t(
-//         "This transaction will not succeed either due to price movement or fee on transfer. Try increasing your slippage tolerance."
-//       );
-//     case "TransferHelper: TRANSFER_FROM_FAILED":
-//       return t(
-//         "The input token cannot be transferred. There may be an issue with the input token."
-//       );
-//     case "Pancake: TRANSFER_FAILED":
-//       return t(
-//         "The output token cannot be transferred. There may be an issue with the output token."
-//       );
-//     default:
-//       if (reason?.indexOf("undefined is not an object") !== -1) {
-//         console.error(error, reason);
-//         return t(
-//           "An error occurred when trying to execute this swap. You may need to increase your slippage tolerance. If that does not work, there may be an incompatibility with the token you are trading."
-//         );
-//       }
-//       return t(
-//         "Unknown error%reason%. Try increasing your slippage tolerance.",
-//         {
-//           reason: reason ? `: "${reason}"` : "",
-//         }
-//       );
-//   }
-// }
+  switch (reason) {
+    case "PancakeRouter: EXPIRED":
+      return "The transaction could not be sent because the deadline has passed. Please check that your transaction deadline is not too low.";
+
+    case "PancakeRouter: INSUFFICIENT_OUTPUT_AMOUNT":
+    case "PancakeRouter: EXCESSIVE_INPUT_AMOUNT":
+      return "This transaction will not succeed either due to price movement or fee on transfer. Try increasing your slippage tolerance.";
+
+    case "TransferHelper: TRANSFER_FROM_FAILED":
+      return "The input token cannot be transferred. There may be an issue with the input token.";
+
+    case "Pancake: TRANSFER_FAILED":
+      return "The output token cannot be transferred. There may be an issue with the output token.";
+
+    default:
+      if (reason?.indexOf("undefined is not an object") !== -1) {
+        console.error(error, reason);
+        return "An error occurred when trying to execute this swap. You may need to increase your slippage tolerance. If that does not work, there may be an incompatibility with the token you are trading.";
+      }
+      return "Try increasing your slippage tolerance.";
+  }
+}

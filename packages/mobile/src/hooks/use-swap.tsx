@@ -12,7 +12,7 @@ export const useSwap = () => {
   const [pricePerInputCurrency, setpricePerInputCurrency] = useState<string>(
     ""
   );
-  const [slippageTolerance, setSlippageTolerance] = useState<number>(0.5);
+  const [slippageTolerance, setSlippageTolerance] = useState<number>(50);
   const [isReadyToSwap, setIsReadyToSwap] = useState<boolean>(false);
   const { trade: amountOut } = useAmountOut();
   const [fee, setFee] = useState<string>("0");
@@ -62,9 +62,9 @@ export const useSwap = () => {
   const handleSetSlippageTolerance = useCallback(
     (value: number) => {
       if (value !== slippageTolerance) {
-        return;
-      } else {
         setSlippageTolerance(value);
+      } else {
+        return;
       }
     },
     [slippageTolerance]
@@ -135,6 +135,7 @@ export const useSwap = () => {
       isReadyToSwap,
       handleSetSlippageTolerance,
       trade,
+      slippageTolerance,
     };
   }, [
     account,
@@ -150,5 +151,6 @@ export const useSwap = () => {
     isReadyToSwap,
     handleSetSlippageTolerance,
     trade,
+    slippageTolerance,
   ]);
 };
