@@ -5,6 +5,7 @@ import {
   KeplrMode,
   KeplrSignOptions,
   Key,
+  SignArbitraryMode,
 } from "@keplr-wallet/types";
 import { BACKGROUND_PORT, MessageRequester } from "@keplr-wallet/router";
 import {
@@ -49,7 +50,7 @@ export class Keplr implements IKeplr {
     public readonly version: string,
     public readonly mode: KeplrMode,
     protected readonly requester: MessageRequester
-  ) {}
+  ) { }
 
   async enable(chainIds: string | string[]): Promise<void> {
     if (typeof chainIds === "string") {
@@ -136,7 +137,8 @@ export class Keplr implements IKeplr {
   async signArbitrary(
     chainId: string,
     signer: string,
-    data: string | Uint8Array
+    data: string | Uint8Array,
+    signArbitraryMode?: SignArbitraryMode
   ): Promise<StdSignature> {
     let isADR36WithString = false;
     if (typeof data === "string") {
@@ -168,6 +170,7 @@ export class Keplr implements IKeplr {
 
     const msg = new RequestSignAminoMsg(chainId, signer, signDoc, {
       isADR36WithString,
+      signArbitraryMode,
     });
     return (await this.requester.sendMessage(BACKGROUND_PORT, msg)).signature;
   }

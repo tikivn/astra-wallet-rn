@@ -6,6 +6,7 @@ import {
   KeplrMode,
   KeplrSignOptions,
   Key,
+  SignArbitraryMode,
 } from "@keplr-wallet/types";
 import { Result, JSONUint8Array } from "@keplr-wallet/router";
 import {
@@ -51,11 +52,11 @@ export class InjectedKeplr implements IKeplr {
       addMessageListener: (fn: (e: any) => void) => void;
       postMessage: (message: any) => void;
     } = {
-      addMessageListener: (fn: (e: any) => void) =>
-        window.addEventListener("message", fn),
-      postMessage: (message) =>
-        window.postMessage(message, window.location.origin),
-    },
+        addMessageListener: (fn: (e: any) => void) =>
+          window.addEventListener("message", fn),
+        postMessage: (message) =>
+          window.postMessage(message, window.location.origin),
+      },
     parseMessage?: (message: any) => any
   ) {
     eventListener.addMessageListener(async (e: any) => {
@@ -111,42 +112,42 @@ export class InjectedKeplr implements IKeplr {
         const result =
           message.method === "signDirect"
             ? await (async () => {
-                const receivedSignDoc: {
-                  bodyBytes?: Uint8Array | null;
-                  authInfoBytes?: Uint8Array | null;
-                  chainId?: string | null;
-                  accountNumber?: string | null;
-                } = message.args[2];
+              const receivedSignDoc: {
+                bodyBytes?: Uint8Array | null;
+                authInfoBytes?: Uint8Array | null;
+                chainId?: string | null;
+                accountNumber?: string | null;
+              } = message.args[2];
 
-                const result = await keplr.signDirect(
-                  message.args[0],
-                  message.args[1],
-                  {
-                    bodyBytes: receivedSignDoc.bodyBytes,
-                    authInfoBytes: receivedSignDoc.authInfoBytes,
-                    chainId: receivedSignDoc.chainId,
-                    accountNumber: receivedSignDoc.accountNumber
-                      ? Long.fromString(receivedSignDoc.accountNumber)
-                      : null,
-                  },
-                  message.args[3]
-                );
-
-                return {
-                  signed: {
-                    bodyBytes: result.signed.bodyBytes,
-                    authInfoBytes: result.signed.authInfoBytes,
-                    chainId: result.signed.chainId,
-                    accountNumber: result.signed.accountNumber.toString(),
-                  },
-                  signature: result.signature,
-                };
-              })()
-            : await keplr[message.method](
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                ...JSONUint8Array.unwrap(message.args)
+              const result = await keplr.signDirect(
+                message.args[0],
+                message.args[1],
+                {
+                  bodyBytes: receivedSignDoc.bodyBytes,
+                  authInfoBytes: receivedSignDoc.authInfoBytes,
+                  chainId: receivedSignDoc.chainId,
+                  accountNumber: receivedSignDoc.accountNumber
+                    ? Long.fromString(receivedSignDoc.accountNumber)
+                    : null,
+                },
+                message.args[3]
               );
+
+              return {
+                signed: {
+                  bodyBytes: result.signed.bodyBytes,
+                  authInfoBytes: result.signed.authInfoBytes,
+                  chainId: result.signed.chainId,
+                  accountNumber: result.signed.accountNumber.toString(),
+                },
+                signature: result.signature,
+              };
+            })()
+            : await keplr[message.method](
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              ...JSONUint8Array.unwrap(message.args)
+            );
 
         const proxyResponse: ProxyRequestResponse = {
           type: "proxy-request-response",
@@ -235,15 +236,15 @@ export class InjectedKeplr implements IKeplr {
       removeMessageListener: (fn: (e: any) => void) => void;
       postMessage: (message: any) => void;
     } = {
-      addMessageListener: (fn: (e: any) => void) =>
-        window.addEventListener("message", fn),
-      removeMessageListener: (fn: (e: any) => void) =>
-        window.removeEventListener("message", fn),
-      postMessage: (message) =>
-        window.postMessage(message, window.location.origin),
-    },
+        addMessageListener: (fn: (e: any) => void) =>
+          window.addEventListener("message", fn),
+        removeMessageListener: (fn: (e: any) => void) =>
+          window.removeEventListener("message", fn),
+        postMessage: (message) =>
+          window.postMessage(message, window.location.origin),
+      },
     protected readonly parseMessage?: (message: any) => any
-  ) {}
+  ) { }
 
   async enable(chainIds: string | string[]): Promise<void> {
     await this.requestMethod("enable", [chainIds]);
@@ -344,9 +345,15 @@ export class InjectedKeplr implements IKeplr {
   async signArbitrary(
     chainId: string,
     signer: string,
-    data: string | Uint8Array
+    data: string | Uint8Array,
+    signArbitraryMode?: SignArbitraryMode
   ): Promise<StdSignature> {
-    return await this.requestMethod("signArbitrary", [chainId, signer, data]);
+    return await this.requestMethod("signArbitrary", [
+      chainId,
+      signer,
+      data,
+      signArbitraryMode,
+    ]);
   }
 
   async verifyArbitrary(

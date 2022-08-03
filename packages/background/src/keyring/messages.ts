@@ -11,7 +11,7 @@ import {
   Bech32Address,
   checkAndValidateADR36AminoSignDoc,
 } from "@keplr-wallet/cosmos";
-import { BIP44, KeplrSignOptions, Key } from "@keplr-wallet/types";
+import { BIP44, KeplrSignOptions, Key, SignArbitraryMode } from "@keplr-wallet/types";
 
 import { StdSignDoc, AminoSignResponse, StdSignature } from "@cosmjs/launchpad";
 
@@ -553,6 +553,7 @@ export class RequestSignAminoMsg extends Message<AminoSignResponse> {
     public readonly signOptions: KeplrSignOptions & {
       // Hack option field to detect the sign arbitrary for string
       isADR36WithString?: boolean;
+      signArbitraryMode?: SignArbitraryMode;
     } = {}
   ) {
     super();
