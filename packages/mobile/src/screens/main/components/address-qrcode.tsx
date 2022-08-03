@@ -9,8 +9,9 @@ import { useIntl } from "react-intl";
 import { useToastModal } from "../../../providers/toast-modal";
 export const AddressQRCodeItem: FunctionComponent<{
   style?: ViewStyle;
-  address: string;
-}> = ({ style: propStyle, address }) => {
+  bech32Address: string;
+  hexAddress: string;
+}> = ({ style: propStyle, bech32Address, hexAddress }) => {
   const style = useStyle();
   const intl = useIntl();
   const toast = useToastModal();
@@ -35,7 +36,7 @@ export const AddressQRCodeItem: FunctionComponent<{
           size={200}
           color={"white"}
           backgroundColor={"black"}
-          value={address}
+          value={hexAddress}
         />
       </View>
       <Text
@@ -47,7 +48,7 @@ export const AddressQRCodeItem: FunctionComponent<{
           "color-white",
         ])}
       >
-        {address}
+        {hexAddress}
       </Text>
       <Button
         style={style.flatten([
@@ -62,8 +63,9 @@ export const AddressQRCodeItem: FunctionComponent<{
           id: "component.text.copy",
         })}
         onPress={() => {
-          console.log("__DEBUG__ address: ", address);
-          Clipboard.setString(address);
+          console.log("__DEBUG__ hexAddress: ", hexAddress);
+          console.log("__DEBUG__ bech32Address: ", bech32Address);
+          Clipboard.setString(hexAddress);
           toast.makeToast({
             title: intl.formatMessage({ id: "component.text.copied" }),
             type: "success",
