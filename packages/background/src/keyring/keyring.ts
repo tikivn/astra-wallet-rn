@@ -879,7 +879,11 @@ export class KeyRing {
       const privKey = this.loadPrivKey(coinType);
 
       const ethWallet = new Wallet(privKey.toBytes());
-
+      console.log("__ETH__ signMode: ", signingMode);
+      console.log(
+        `__ETH__ signMode ${signingMode} message: `,
+        JSON.parse(Buffer.from(message).toString())
+      );
       if (signingMode === "raw64bytes") {
         // Sign Cosmos transaction with Ethereum signing key
         const signature = await ethWallet
@@ -900,9 +904,10 @@ export class KeyRing {
           .signDigest(keccak256(message));
         return BytesUtils.arrayify(BytesUtils.joinSignature(signature));
       } else {
-        const signature = await ethWallet.signTransaction(
-          JSON.parse(Buffer.from(message).toString())
+        const jsonMessage = JSON.parse(
+          Buffer.from(message).toString().replace(`"gas"`, `"gasLimit"`)
         );
+        const signature = await ethWallet.signTransaction(jsonMessage);
         return BytesUtils.arrayify(signature);
       }
     }

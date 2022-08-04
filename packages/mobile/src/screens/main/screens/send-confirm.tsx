@@ -82,8 +82,8 @@ export const SendConfirmScreen: FunctionComponent = observer(() => {
       style={style.flatten(["margin-top-16", "padding-x-16"])}
       backgroundColor={style.get("color-background").color}
     >
-      <AddressInput style={style.flatten(["margin-top-16"])}></AddressInput>
-      <AmountInput style={style.flatten(["padding-12", "margin-top-16"])}></AmountInput>
+      <AddressInput style={style.flatten(["margin-top-16"])} />
+      <AmountInput style={style.flatten(["padding-12", "margin-top-16"])} />
       <Button
         text={intl.formatMessage({ id: "common.text.verify" })}
         size="large"
