@@ -638,7 +638,13 @@ export const WalletNavigation: FunctionComponent = () => {
         name="Wallet.History"
         component={HistoryScreen}
       />
-      <Stack.Screen name="WebView" component={WebViewScreen} />
+      <Stack.Screen
+        name="WebView"
+        options={{
+          title: "",
+        }}
+        component={WebViewScreen}
+      />
       <Stack.Screen
         name="Camera"
         options={{
