@@ -8,7 +8,7 @@ import { TextAlign } from "./text-style";
 export enum AlignItems {
   top = "items-start",
   center = "items-center",
-  bottom = "items-end"
+  bottom = "items-end",
 }
 
 export interface ITextColumn {
@@ -28,7 +28,6 @@ interface IItemRow {
   itemSpacing?: number;
   columns: IColumn[];
 }
-
 
 export function buildLeftColumn(config: ITextColumn): IColumn {
   return {
@@ -50,60 +49,74 @@ export function buildRightColumn(config: ITextColumn): IColumn {
   };
 }
 
-export const ItemRow: FunctionComponent<IItemRow> = observer(({
-  style,
-  highlight = false,
-  alignItems = AlignItems.top,
-  itemSpacing,
-  columns,
-}) => {
-  const styleBuilder = useStyle();
+export const ItemRow: FunctionComponent<IItemRow> = observer(
+  ({
+    style,
+    highlight = false,
+    alignItems = AlignItems.top,
+    itemSpacing,
+    columns,
+  }) => {
+    const styleBuilder = useStyle();
 
-  var cols = columns.map((column, index) => {
-    const {
-      text,
-      textStyle = Typos["text-base-regular"],
-      textAlign = TextAlign.left,
-      textColor,
-      flex,
-    } = column as ITextColumn;
+    const cols = columns.map((column, index) => {
+      const {
+        text,
+        textStyle = Typos["text-base-regular"],
+        textAlign = TextAlign.left,
+        textColor,
+        flex,
+      } = column as ITextColumn;
 
-    const key = "row_item_" + index;
+      const key = "row_item_" + index;
 
-    const marginRight = index < columns.length - 1 ? itemSpacing : 0;
+      const marginRight = index < columns.length - 1 ? itemSpacing : 0;
 
-    if (text == undefined) {
-      return <View
-        key={key}
+      if (text === undefined) {
+        return (
+          <View
+            key={key}
+            style={{
+              marginRight,
+            }}
+          >
+            {column}
+          </View>
+        );
+      }
+
+      return (
+        <Text
+          key={key}
+          style={{
+            ...textStyle,
+            ...{
+              flex: flex,
+              marginRight: marginRight,
+              textAlign: textAlign,
+              color: textColor,
+            },
+          }}
+        >
+          {text}
+        </Text>
+      );
+    });
+
+    return (
+      <View
         style={{
-          marginRight
-        }}>{column}</View>
-    }
-
-    return <Text
-      key={key}
-      style={{
-        ...textStyle,
-        ...{
-          flex: flex,
-          marginRight: marginRight,
-          textAlign: textAlign,
-          color: textColor,
-        },
-      }}>{text}</Text>;
-  });
-
-  return (
-    <View style={{
-      ...styles.itemContainer,
-      ...highlight ? styles.itemHighlight : {},
-      ...styleBuilder.flatten([alignItems]),
-      ...style,
-    }}>
-      {cols}
-    </View>
-  );
-});
+          ...styles.itemContainer,
+          ...(highlight ? styles.itemHighlight : {}),
+          ...styleBuilder.flatten([alignItems]),
+          ...style,
+        }}
+      >
+        {cols}
+      </View>
+    );
+  }
+);
 
 const styles = StyleSheet.create({
   itemContainer: {
