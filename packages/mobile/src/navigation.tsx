@@ -107,6 +107,7 @@ import {
   OsmosisFrontierWebpageScreen,
   StargazeWebpageScreen,
   AstranautWebpageScreen,
+  AstraDefiWebpageScreen,
   UmeeWebpageScreen,
   JunoswapWebpageScreen,
 } from "./screens/web/webpages";
@@ -637,7 +638,13 @@ export const WalletNavigation: FunctionComponent = () => {
         name="Wallet.History"
         component={HistoryScreen}
       />
-      <Stack.Screen name="WebView" component={WebViewScreen} />
+      <Stack.Screen
+        name="WebView"
+        options={{
+          title: "",
+        }}
+        component={WebViewScreen}
+      />
       <Stack.Screen
         name="Camera"
         options={{
@@ -832,6 +839,7 @@ export const WebNavigation: FunctionComponent = () => {
       />
       <Stack.Screen name="Web.Stargaze" component={StargazeWebpageScreen} />
       <Stack.Screen name="Web.Astranaut" component={AstranautWebpageScreen} />
+      <Stack.Screen name="Web.AstraDefi" component={AstraDefiWebpageScreen} />
       <Stack.Screen name="Web.Umee" component={UmeeWebpageScreen} />
       <Stack.Screen name="Web.Junoswap" component={JunoswapWebpageScreen} />
     </Stack.Navigator>

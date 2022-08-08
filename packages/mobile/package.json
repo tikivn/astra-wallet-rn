@@ -134,7 +134,8 @@
     "fast-text-encoding": "^1.0.4",
     "@nartc/react-native-barcode-mask": "^1.2.0",
     "@react-native-masked-view/masked-view": "0.2.6",
-    "big-integer": "^1.6.48"
+    "big-integer": "^1.6.48",
+    "@ethersproject/address": "^5.6.1"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",

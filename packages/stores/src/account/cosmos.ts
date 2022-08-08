@@ -185,7 +185,10 @@ export class CosmosAccountImpl {
     const hexAdjustedRecipient = (recipient: string) => {
       const bech32prefix = this.chainGetter.getChain(this.chainId).bech32Config
         .bech32PrefixAccAddr;
-      if (bech32prefix === "evmos" && recipient.startsWith("0x")) {
+      if (
+        (bech32prefix === "evmos" || bech32prefix === "astra") &&
+        recipient.startsWith("0x")
+      ) {
         // Validate hex address
         if (!isAddress(recipient)) {
           throw new Error("Invalid hex address");
@@ -194,7 +197,9 @@ export class CosmosAccountImpl {
           recipient.replace("0x", "").toLowerCase(),
           "hex"
         );
-        return new Bech32Address(buf).toBech32(bech32prefix);
+        const bech32Add = new Bech32Address(buf).toBech32(bech32prefix);
+        console.log("__DEBUG__ converterAdd: ", bech32Add);
+        return bech32Add;
       }
       return recipient;
     };
@@ -220,6 +225,8 @@ export class CosmosAccountImpl {
             ],
           },
         };
+
+        console.log("__DEBUG__ sendMsg: ", msg);
 
         await this.sendMsgs(
           "send",

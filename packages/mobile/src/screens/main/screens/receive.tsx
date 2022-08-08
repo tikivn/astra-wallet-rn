@@ -30,7 +30,8 @@ export const ReceiveScreen: FunctionComponent = observer(() => {
       </Text>
       <AddressQRCodeItem
         style={style.flatten(["self-center"])}
-        address={account.bech32Address}
+        bech32Address={account.bech32Address}
+        hexAddress={account.hexAddress}
       />
     </PageWithScrollView>
   );

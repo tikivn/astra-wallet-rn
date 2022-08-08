@@ -61,7 +61,7 @@ export const TxResultScreen: FunctionComponent = observer(() => {
   const [signer, setSigner] = useState("");
   const [chainId, setChainId] = useState(chainStore.current.chainId);
 
-  const chainInfo = chainStore.getChain(chainId);
+  const chainInfo = chainStore.getChain(chainId || chainStore.current.chainId);
   const intl = useIntl();
   const [isInternal, setIsInternal] = useState(false);
 

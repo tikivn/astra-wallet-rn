@@ -7,19 +7,22 @@ export class RemoteConfigStore {
   constructor() {
     remoteConfig()
       .setDefaults({
-        feature_dapps_enabled: false,
+        feature_dapps_enabled: true,
         feature_swap_enabled: false,
         feature_socialLogin_enabled: true,
-      }).then(() => {
-        remoteConfig().setConfigSettings({
-          minimumFetchIntervalMillis: 30000,
-        }).then(() => remoteConfig().fetchAndActivate());
+      })
+      .then(() => {
+        remoteConfig()
+          .setConfigSettings({
+            minimumFetchIntervalMillis: 30000,
+          })
+          .then(() => remoteConfig().fetchAndActivate());
       });
   }
 
   async fetch() {
     await remoteConfig().fetch(300);
-    console.log("__DEBUG__ remote config fetching completed!!!")
+    console.log("__DEBUG__ remote config fetching completed!!!");
   }
 
   async fetchAndActivate() {
@@ -47,9 +50,7 @@ class MockRemoteConfig {
     return this.defaults;
   }
 
-  async setConfigSettings(settings: {
-    minimumFetchIntervalMillis: number
-  }) {
+  async setConfigSettings(settings: { minimumFetchIntervalMillis: number }) {
     return this;
   }
 
@@ -70,4 +71,4 @@ const mockRemoteConfig = new MockRemoteConfig();
 
 const remoteConfig = () => {
   return mockRemoteConfig;
-}
+};
