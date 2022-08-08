@@ -55,10 +55,7 @@ export const AccountCardNew: FunctionComponent<{
         </Text>
       </CardBody>
       <CardBody style={style.flatten(["padding-bottom-0"])}>
-        <AddressCopyableItem
-          address={account.bech32Address}
-          maxCharacters={22}
-        />
+        <AddressCopyableItem address={account.hexAddress} maxCharacters={22} />
       </CardBody>
     </Card>
   );

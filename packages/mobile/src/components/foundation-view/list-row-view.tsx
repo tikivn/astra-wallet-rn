@@ -15,16 +15,11 @@ export interface IRow {
 }
 
 export const ListRowView: FunctionComponent<{
-  style?: ViewStyle,
-  rows: IRow[],
-  clearBackground?: boolean,
-  hideBorder?: boolean
-}> = observer(({
-  style,
-  rows,
-  clearBackground,
-  hideBorder,
-}) => {
+  style?: ViewStyle;
+  rows: IRow[];
+  clearBackground?: boolean;
+  hideBorder?: boolean;
+}> = observer(({ style, rows, clearBackground, hideBorder }) => {
   const items = rows.map((row, index) => {
     return buildItem(row, index);
   });
@@ -32,31 +27,37 @@ export const ListRowView: FunctionComponent<{
   function buildItem(row: IRow, index: number): React.ReactNode {
     const key = "row_" + index;
     if (row.type == "separator") {
-      return <HairLine
-        key={key}
-        style={{
-          backgroundColor: Colors["gray-70"],
-          marginHorizontal: 0,
-        }}
-      />;
+      return (
+        <HairLine
+          key={key}
+          style={{
+            backgroundColor: Colors["gray-70"],
+            marginHorizontal: 0,
+          }}
+        />
+      );
     }
 
-    return <ItemRow
-      key={key}
-      style={{ marginHorizontal: 0, paddingHorizontal: 0, }}
-      alignItems={row.alignItems}
-      itemSpacing={row.itemSpacing}
-      columns={row.cols || []}
-    />;
+    return (
+      <ItemRow
+        key={key}
+        style={{ marginHorizontal: 0, paddingHorizontal: 0 }}
+        alignItems={row.alignItems}
+        itemSpacing={row.itemSpacing}
+        columns={row.cols || []}
+      />
+    );
   }
 
   return (
-    <View style={{
-      ...styles.container,
-      ...style,
-      ...clearBackground ? { backgroundColor: undefined, } : {},
-      ...hideBorder ? { borderWidth: 0, } : {},
-    }}>
+    <View
+      style={{
+        ...styles.container,
+        ...style,
+        ...(clearBackground ? { backgroundColor: undefined } : {}),
+        ...(hideBorder ? { borderWidth: 0 } : {}),
+      }}
+    >
       {items}
     </View>
   );

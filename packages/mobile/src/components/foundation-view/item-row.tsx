@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
+import { useIntl, MessageDescriptor } from "react-intl";
 import { StyleSheet, Text, TextStyle, View, ViewStyle } from "react-native";
 import { Colors, useStyle } from "../../styles";
 import { Typos } from "../../styles/typos";
@@ -8,11 +9,17 @@ import { TextAlign } from "./text-style";
 export enum AlignItems {
   top = "items-start",
   center = "items-center",
-  bottom = "items-end"
+  bottom = "items-end",
 }
 
+export type InlFormat = Record<
+  string,
+  string | number | boolean | null | undefined | Date
+>;
 export interface ITextColumn {
-  text: string;
+  descriptor?: MessageDescriptor;
+  intlFormat?: InlFormat;
+  text?: string;
   textStyle?: ViewStyle | TextStyle;
   textAlign?: TextAlign;
   textColor?: string;
@@ -29,9 +36,10 @@ interface IItemRow {
   columns: IColumn[];
 }
 
-
 export function buildLeftColumn(config: ITextColumn): IColumn {
   return {
+    textFormat: config.descriptor,
+    intlId: config.intlFormat,
     text: config.text,
     textStyle: config.textStyle ?? Typos["text-base-regular"],
     textAlign: config.textAlign,
@@ -42,6 +50,8 @@ export function buildLeftColumn(config: ITextColumn): IColumn {
 
 export function buildRightColumn(config: ITextColumn): IColumn {
   return {
+    textFormat: config.descriptor,
+    intlId: config.intlFormat,
     text: config.text,
     textStyle: config.textStyle ?? Typos["text-base-regular"],
     textAlign: config.textAlign ?? TextAlign.right,
@@ -50,60 +60,77 @@ export function buildRightColumn(config: ITextColumn): IColumn {
   };
 }
 
-export const ItemRow: FunctionComponent<IItemRow> = observer(({
-  style,
-  highlight = false,
-  alignItems = AlignItems.top,
-  itemSpacing,
-  columns,
-}) => {
-  const styleBuilder = useStyle();
+export const ItemRow: FunctionComponent<IItemRow> = observer(
+  ({
+    style,
+    highlight = false,
+    alignItems = AlignItems.top,
+    itemSpacing,
+    columns,
+  }) => {
+    const intl = useIntl();
+    const styleBuilder = useStyle();
 
-  var cols = columns.map((column, index) => {
-    const {
-      text,
-      textStyle = Typos["text-base-regular"],
-      textAlign = TextAlign.left,
-      textColor,
-      flex,
-    } = column as ITextColumn;
+    const cols = columns.map((column, index) => {
+      const {
+        descriptor,
+        intlFormat,
+        text,
+        textStyle = Typos["text-base-regular"],
+        textAlign = TextAlign.left,
+        textColor,
+        flex,
+      } = column as ITextColumn;
 
-    const key = "row_item_" + index;
+      const key = "row_item_" + index;
 
-    const marginRight = index < columns.length - 1 ? itemSpacing : 0;
+      const marginRight = index < columns.length - 1 ? itemSpacing : 0;
 
-    if (text == undefined) {
-      return <View
-        key={key}
+      if (text === undefined && descriptor === undefined) {
+        return (
+          <View
+            key={key}
+            style={{
+              marginRight,
+            }}
+          >
+            {column}
+          </View>
+        );
+      }
+
+      return (
+        <Text
+          key={key}
+          style={{
+            ...textStyle,
+            ...{
+              flex: flex,
+              marginRight: marginRight,
+              textAlign: textAlign,
+              color: textColor,
+            },
+          }}
+        >
+          {descriptor ? intl.formatMessage(descriptor, intlFormat) : text}
+        </Text>
+      );
+    });
+
+    return (
+      <View
         style={{
-          marginRight
-        }}>{column}</View>
-    }
-
-    return <Text
-      key={key}
-      style={{
-        ...textStyle,
-        ...{
-          flex: flex,
-          marginRight: marginRight,
-          textAlign: textAlign,
-          color: textColor,
-        },
-      }}>{text}</Text>;
-  });
-
-  return (
-    <View style={{
-      ...styles.itemContainer,
-      ...highlight ? styles.itemHighlight : {},
-      ...styleBuilder.flatten([alignItems]),
-      ...style,
-    }}>
-      {cols}
-    </View>
-  );
-});
+          ...styles.itemContainer,
+          ...(highlight ? styles.itemHighlight : {}),
+          ...styleBuilder.flatten([alignItems]),
+          ...style,
+        }}
+      >
+        {cols}
+      </View>
+    );
+  }
+);
 
 const styles = StyleSheet.create({
   itemContainer: {

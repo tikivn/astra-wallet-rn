@@ -11,11 +11,7 @@ import {
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useMemo } from "react";
 import { FormattedMessage } from "react-intl";
-import {
-  Text,
-  View,
-  TextInput,
-} from "react-native";
+import { Text, View, TextInput } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { ScanIcon } from "../../../components";
 import { useSmartNavigation } from "../../../navigation-util";
@@ -70,8 +66,10 @@ export const AddressInput: FunctionComponent<{
         ])}
       >
         <View style={style.flatten(["flex-1", "margin-right-12"])}>
-          <Text style={style.flatten(["color-text-black-low", "text-caption2"])} >
-            <FormattedMessage id="component.address.input.receiver.label"/>
+          <Text
+            style={style.flatten(["color-text-black-low", "text-caption2"])}
+          >
+            <FormattedMessage id="component.address.input.receiver.label" />
           </Text>
           <TextInput
             value={recipientConfig.rawRecipient}
@@ -101,9 +99,15 @@ export const AddressInput: FunctionComponent<{
           <ScanIcon size={24} color={"#818DA6"} />
         </TouchableOpacity>
       </View>
-      
-      <Text style={style.flatten(["margin-top-4", "color-text-black-low", "text-caption2"])}>
-        <FormattedMessage id="component.address.input.warning"/>
+
+      <Text
+        style={style.flatten([
+          "margin-top-4",
+          "color-text-black-low",
+          "text-caption2",
+        ])}
+      >
+        <FormattedMessage id="component.address.input.warning" />
       </Text>
     </React.Fragment>
   );
