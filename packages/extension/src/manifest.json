@@ -1,9 +1,9 @@
 {
   "manifest_version": 2,
 
-  "name": "Astra Hub",
+  "name": "Keplr",
   "description": "Keplr is a browser extension wallet for the Inter blockchain ecosystem.",
-  "version": "0.10.12",
+  "version": "0.10.16",
   "applications": {
     "gecko": {
       "id": "keplr-extension@keplr.app",
@@ -18,7 +18,7 @@
 
   "browser_action": {
     "default_popup": "popup.html",
-    "default_title": "Astra Hub"
+    "default_title": "Keplr"
   },
   "background": {
     "scripts": ["browser-polyfill.js", "background.bundle.js"],

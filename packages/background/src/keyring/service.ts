@@ -13,15 +13,15 @@ import {
 } from "@keplr-wallet/cosmos";
 import { BIP44HDPath, CommonCrypto, ExportKeyRingData } from "./types";
 
-import { KVStore } from "@keplr-wallet/common";
+import { escapeHTML, KVStore } from "@keplr-wallet/common";
 
 import { ChainsService } from "../chains";
 import { LedgerService } from "../ledger";
 import {
   BIP44,
   ChainInfo,
+  EthSignType,
   KeplrSignOptions,
-  SignArbitraryMode,
 } from "@keplr-wallet/types";
 import { APP_PORT, Env, KeplrError, WEBPAGE_PORT } from "@keplr-wallet/router";
 import { InteractionService } from "../interaction";
@@ -52,7 +52,7 @@ export class KeyRingService {
     protected readonly kvStore: KVStore,
     protected readonly embedChainInfos: ChainInfo[],
     protected readonly crypto: CommonCrypto
-  ) { }
+  ) {}
 
   init(
     interactionService: InteractionService,
@@ -70,7 +70,13 @@ export class KeyRingService {
       ledgerService,
       this.crypto
     );
+
+    this.chainsService.addChainRemovedHandler(this.onChainRemoved);
   }
+
+  protected readonly onChainRemoved = (chainId: string) => {
+    this.keyRing.removeAllKeyStoreCoinType(chainId);
+  };
 
   async restore(): Promise<{
     status: KeyRingStatus;
@@ -273,9 +279,14 @@ export class KeyRingService {
     signOptions: KeplrSignOptions & {
       // Hack option field to detect the sign arbitrary for string
       isADR36WithString?: boolean;
-      signArbitraryMode?: SignArbitraryMode;
+      ethSignType?: EthSignType;
     }
   ): Promise<AminoSignResponse> {
+    signDoc = {
+      ...signDoc,
+      memo: escapeHTML(signDoc.memo),
+    };
+
     const coinType = await this.chainsService.getChainCoinType(chainId);
     const ethereumKeyFeatures = await this.chainsService.getChainEthereumKeyFeatures(
       chainId
@@ -311,7 +322,7 @@ export class KeyRingService {
       );
     }
 
-    const newSignDoc = (await this.interactionService.waitApprove(
+    let newSignDoc = (await this.interactionService.waitApprove(
       env,
       "/sign",
       "request-sign",
@@ -324,8 +335,14 @@ export class KeyRingService {
         signOptions,
         isADR36SignDoc,
         isADR36WithString: signOptions.isADR36WithString,
+        ethSignType: signOptions.ethSignType,
       }
     )) as StdSignDoc;
+
+    newSignDoc = {
+      ...newSignDoc,
+      memo: escapeHTML(newSignDoc.memo),
+    };
 
     if (isADR36SignDoc) {
       // Validate the new sign doc, if it was for ADR-36.
@@ -346,31 +363,34 @@ export class KeyRingService {
       }
     }
 
-    if (
-      (signOptions.signArbitraryMode || "default") !== "default" &&
-      newSignDoc.msgs.length !== 1
-    ) {
-      // Validate messages length for Ethereum sign
-      throw new Error("Invalid number of messages for Ethereum sign request");
+    // Handle Ethereum signing
+    if (signOptions.ethSignType) {
+      if (newSignDoc.msgs.length !== 1) {
+        // Validate number of messages
+        throw new Error("Invalid number of messages for Ethereum sign request");
+      }
+
+      const signBytes = Buffer.from(newSignDoc.msgs[0].value.data, "base64");
+
+      try {
+        const signatureBytes = await this.keyRing.signEthereum(
+          chainId,
+          coinType,
+          signBytes,
+          signOptions.ethSignType
+        );
+
+        return {
+          signed: newSignDoc, // Included to match return type
+          signature: {
+            pub_key: encodeSecp256k1Pubkey(key.pubKey), // Included to match return type
+            signature: Buffer.from(signatureBytes).toString("base64"), // No byte limit
+          },
+        };
+      } finally {
+        this.interactionService.dispatchEvent(APP_PORT, "request-sign-end", {});
+      }
     }
-
-    const generateEthereumSignature = async (
-      mode: "ethereum" | "ethereum-personal" | "ethereum-transaction"
-    ) => {
-      const message = Buffer.from(newSignDoc.msgs[0].value.data, "base64");
-
-      const signatureBytes = await this.keyRing.signEthereum(
-        chainId,
-        coinType,
-        message,
-        mode
-      );
-
-      return {
-        pub_key: encodeSecp256k1Pubkey(key.pubKey),
-        signature: Buffer.from(signatureBytes).toString("base64"),
-      };
-    };
 
     try {
       const signature = await this.keyRing.sign(
@@ -381,16 +401,9 @@ export class KeyRingService {
         ethereumKeyFeatures.signing
       );
 
-      const payload =
-        signOptions.signArbitraryMode === "ethereum" ||
-          signOptions.signArbitraryMode === "ethereum-personal" ||
-          signOptions.signArbitraryMode === "ethereum-transaction"
-          ? await generateEthereumSignature(signOptions.signArbitraryMode)
-          : encodeSecp256k1Signature(key.pubKey, signature);
-
       return {
         signed: newSignDoc,
-        signature: payload,
+        signature: encodeSecp256k1Signature(key.pubKey, signature),
       };
     } finally {
       this.interactionService.dispatchEvent(APP_PORT, "request-sign-end", {});

@@ -1,5 +1,6 @@
 import {
   ChainInfo,
+  EthSignType,
   Keplr,
   Keplr as IKeplr,
   KeplrIntereactionOptions,
@@ -367,6 +368,20 @@ export class InjectedKeplr implements IKeplr {
       signer,
       data,
       signature,
+    ]);
+  }
+
+  async signEthereum(
+    chainId: string,
+    signer: string,
+    data: string | Uint8Array,
+    type: EthSignType
+  ): Promise<Uint8Array> {
+    return await this.requestMethod("signEthereum", [
+      chainId,
+      signer,
+      data,
+      type,
     ]);
   }
 

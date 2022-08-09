@@ -7,7 +7,7 @@ import {
 import { KVStore } from "@keplr-wallet/common";
 import { LedgerService } from "../ledger";
 import { BIP44HDPath, CommonCrypto, ExportKeyRingData } from "./types";
-import { ChainInfo } from "@keplr-wallet/types";
+import { ChainInfo, EthSignType } from "@keplr-wallet/types";
 import { Env, KeplrError } from "@keplr-wallet/router";
 
 import { Buffer } from "buffer/";
@@ -200,8 +200,8 @@ export class KeyRing {
 
     return this.keyStore.coinTypeForChain
       ? this.keyStore.coinTypeForChain[
-      ChainIdHelper.parse(chainId).identifier
-      ] ?? defaultCoinType
+          ChainIdHelper.parse(chainId).identifier
+        ] ?? defaultCoinType
       : defaultCoinType;
   }
 
@@ -461,7 +461,7 @@ export class KeyRing {
     return (
       this.keyStore.coinTypeForChain &&
       this.keyStore.coinTypeForChain[
-      ChainIdHelper.parse(chainId).identifier
+        ChainIdHelper.parse(chainId).identifier
       ] !== undefined
     );
   }
@@ -474,7 +474,7 @@ export class KeyRing {
     if (
       this.keyStore.coinTypeForChain &&
       this.keyStore.coinTypeForChain[
-      ChainIdHelper.parse(chainId).identifier
+        ChainIdHelper.parse(chainId).identifier
       ] !== undefined
     ) {
       throw new KeplrError("keyring", 110, "Coin type already set");
@@ -500,6 +500,24 @@ export class KeyRing {
     }
 
     await this.save();
+  }
+
+  public removeAllKeyStoreCoinType(chainId: string) {
+    const identifier = ChainIdHelper.parse(chainId).identifier;
+
+    if (this.keyStore) {
+      const coinTypeForChain = this.keyStore.coinTypeForChain ?? {};
+      delete coinTypeForChain[identifier];
+      this.keyStore.coinTypeForChain = coinTypeForChain;
+    }
+
+    for (const keyStore of this.multiKeyStore) {
+      const coinTypeForChain = keyStore.coinTypeForChain ?? {};
+      delete coinTypeForChain[identifier];
+      keyStore.coinTypeForChain = coinTypeForChain;
+    }
+
+    this.save();
   }
 
   public async deleteKeyRing(
@@ -852,11 +870,7 @@ export class KeyRing {
     chainId: string,
     defaultCoinType: number,
     message: Uint8Array,
-    signingMode:
-      | "raw64bytes"
-      | "ethereum"
-      | "ethereum-personal"
-      | "ethereum-transaction" = "raw64bytes"
+    type: EthSignType = EthSignType.BYTE64 // Default to Ethereum signing for Evmos
   ): Promise<Uint8Array> {
     if (this.status !== KeyRingStatus.UNLOCKED) {
       throw new KeplrError("keyring", 143, "Key ring is not unlocked");
@@ -873,43 +887,34 @@ export class KeyRing {
         112,
         "Ethereum signing with Ledger is not yet supported"
       );
-    } else {
-      const coinType = this.computeKeyStoreCoinType(chainId, defaultCoinType);
-      // Allow signing with Ethereum for chains with coinType !== 60
-      const privKey = this.loadPrivKey(coinType);
+    }
 
-      const ethWallet = new Wallet(privKey.toBytes());
-      console.log("__ETH__ signMode: ", signingMode);
-      console.log(
-        `__ETH__ signMode ${signingMode} message: `,
-        JSON.parse(Buffer.from(message).toString())
+    const coinType = this.computeKeyStoreCoinType(chainId, defaultCoinType);
+    // Allow signing with Ethereum for chains with coinType !== 60
+    const privKey = this.loadPrivKey(coinType);
+
+    const ethWallet = new Wallet(privKey.toBytes());
+
+    if (type === EthSignType.BYTE64) {
+      // ECDSA Sign Keccak256 and discard parity byte
+      const signature = await ethWallet
+        ._signingKey()
+        .signDigest(keccak256(message));
+      const splitSignature = BytesUtils.splitSignature(signature);
+      return BytesUtils.arrayify(
+        BytesUtils.concat([splitSignature.r, splitSignature.s])
       );
-      if (signingMode === "raw64bytes") {
-        // Sign Cosmos transaction with Ethereum signing key
-        const signature = await ethWallet
-          ._signingKey()
-          .signDigest(keccak256(message));
-        const splitSignature = BytesUtils.splitSignature(signature);
-        return BytesUtils.arrayify(
-          BytesUtils.concat([splitSignature.r, splitSignature.s])
-        );
-      } else if (signingMode === "ethereum-personal") {
-        // Sign bytes with standard prefixed Ethereum signature
-        const signature = await ethWallet.signMessage(message);
-        return BytesUtils.arrayify(signature);
-      } else if (signingMode === "ethereum") {
-        // Sign bytes with standard unprefixed Ethereum signature
-        const signature = await ethWallet
-          ._signingKey()
-          .signDigest(keccak256(message));
-        return BytesUtils.arrayify(BytesUtils.joinSignature(signature));
-      } else {
-        const jsonMessage = JSON.parse(
-          Buffer.from(message).toString().replace(`"gas"`, `"gasLimit"`)
-        );
-        const signature = await ethWallet.signTransaction(jsonMessage);
-        return BytesUtils.arrayify(signature);
-      }
+    } else if (type === EthSignType.MESSAGE) {
+      // Sign bytes with prefixed Ethereum magic
+      const signature = await ethWallet.signMessage(message);
+      return BytesUtils.arrayify(signature);
+    } else {
+      // Sign Ethereum transaction
+      const jsonMessage = JSON.parse(
+        Buffer.from(message).toString().replace(`"gas"`, `"gasLimit"`)
+      );
+      const signature = await ethWallet.signTransaction(jsonMessage);
+      return BytesUtils.arrayify(signature);
     }
   }
 
@@ -1084,7 +1089,7 @@ export class KeyRing {
         bip44HDPath: keyStore.bip44HDPath,
         selected: this.keyStore
           ? KeyRing.getKeyStoreId(keyStore) ===
-          KeyRing.getKeyStoreId(this.keyStore)
+            KeyRing.getKeyStoreId(this.keyStore)
           : false,
       });
     }
