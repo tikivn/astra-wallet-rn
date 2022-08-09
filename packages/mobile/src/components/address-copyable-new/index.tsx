@@ -36,7 +36,13 @@ export const AddressCopyableItem: FunctionComponent<{
       underlayColor={style.get("color-transparent").color}
       activeOpacity={1}
     >
-      <Text style={style.flatten(["body3", "color-white"])}>{address}</Text>
+      <Text
+        numberOfLines={1}
+        ellipsizeMode="middle"
+        style={style.flatten(["body3", "color-white", "flex-1"])}
+      >
+        {address}
+      </Text>
       <View style={style.flatten(["margin-left-4", "width-20"])}>
         {isTimedOut ? (
           <View style={style.flatten(["margin-left-2"])}>
