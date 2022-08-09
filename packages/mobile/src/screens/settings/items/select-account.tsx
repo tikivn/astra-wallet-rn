@@ -10,7 +10,6 @@ import { useIntl } from "react-intl";
 import Svg, { Path } from "react-native-svg";
 
 export const SettingsAccountItem: FunctionComponent = observer(() => {
-
   const style = useStyle();
   const intl = useIntl();
 
@@ -36,12 +35,21 @@ export const SettingsAccountItem: FunctionComponent = observer(() => {
         underlayColor={style.get("color-transparent").color}
         activeOpacity={1}
       >
-        <Text style={style.flatten(["text-2x-large-semi-bold", "color-white", "text-center", "padding-right-10"])}>
-          {keyRingStore.multiKeyStoreInfo.filter((keyStore) => {
-            return keyStore.type === "mnemonic"
-          }).map((keyStore) => {
-            return keyStore.meta?.name
-          }) || intl.formatMessage({ id: "settings.text.myWallet" })}
+        <Text
+          style={style.flatten([
+            "text-2x-large-semi-bold",
+            "color-white",
+            "text-center",
+            "padding-right-10",
+          ])}
+        >
+          {keyRingStore.multiKeyStoreInfo
+            .filter((keyStore) => {
+              return keyStore.type === "mnemonic";
+            })
+            .map((keyStore) => {
+              return keyStore.meta?.name;
+            }) || intl.formatMessage({ id: "settings.text.myWallet" })}
         </Text>
         {/* <Svg width="18" height="18" viewBox="0 0 18 18" fill="none">
           <Path
@@ -52,5 +60,6 @@ export const SettingsAccountItem: FunctionComponent = observer(() => {
         </Svg> */}
       </RectButton>
       {/* <AddressCopyableItem address={account.bech32Address} maxCharacters={22} /> */}
-    </React.Fragment>);
+    </React.Fragment>
+  );
 });

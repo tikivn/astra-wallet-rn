@@ -1,4 +1,3 @@
-import { Bech32Address } from "@keplr-wallet/cosmos";
 import React, { FunctionComponent } from "react";
 import { ViewStyle, StyleSheet, Text, View } from "react-native";
 import { useSimpleTimer } from "../../hooks";
@@ -12,7 +11,7 @@ export const AddressCopyableItem: FunctionComponent<{
   style?: ViewStyle;
   address: string;
   maxCharacters: number;
-}> = ({ style: propStyle, address, maxCharacters }) => {
+}> = ({ style: propStyle, address }) => {
   const style = useStyle();
   const { isTimedOut, setTimer } = useSimpleTimer();
 
@@ -37,9 +36,7 @@ export const AddressCopyableItem: FunctionComponent<{
       underlayColor={style.get("color-transparent").color}
       activeOpacity={1}
     >
-      <Text style={style.flatten(["body3", "color-white"])}>
-        {Bech32Address.shortenAddress(address, maxCharacters)}
-      </Text>
+      <Text style={style.flatten(["body3", "color-white"])}>{address}</Text>
       <View style={style.flatten(["margin-left-4", "width-20"])}>
         {isTimedOut ? (
           <View style={style.flatten(["margin-left-2"])}>

@@ -582,9 +582,7 @@ export class KeyRing {
     };
   }
 
-  public async forceDeleteKeyRing(
-    index: number,
-  ): Promise<{
+  public async forceDeleteKeyRing(index: number): Promise<{
     multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
     keyStoreChanged: boolean;
   }> {
@@ -658,7 +656,7 @@ export class KeyRing {
   public async updatePasswordKeyRing(
     index: number,
     password: string,
-    newPassword: string,
+    newPassword: string
   ): Promise<MultiKeyStoreInfoWithSelected> {
     if (this.status !== KeyRingStatus.UNLOCKED) {
       throw new KeplrError("keyring", 143, "Key ring is not unlocked");
@@ -688,16 +686,19 @@ export class KeyRing {
           decryptText,
           newPassword,
           keyStore.meta || {},
-          keyStore.bip44HDPath,
+          keyStore.bip44HDPath
         );
 
         // If select key store and changed store are same, sync keystore
-        if (this.keyStore
-          && KeyRing.getKeyStoreId(this.keyStore) === KeyRing.getKeyStoreId(keyStore)) {
+        if (
+          this.keyStore &&
+          KeyRing.getKeyStoreId(this.keyStore) ===
+            KeyRing.getKeyStoreId(keyStore)
+        ) {
           this.keyStore = newKeyStore;
         }
 
-        return newKeyStore
+        return newKeyStore;
       })
     );
 
@@ -1049,9 +1050,7 @@ export class KeyRing {
     };
   }
 
-  public async changeKeyStoreFromMultiKeyStore(
-    index: number
-  ): Promise<{
+  public async changeKeyStoreFromMultiKeyStore(index: number): Promise<{
     multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
   }> {
     if (this.status !== KeyRingStatus.UNLOCKED || this.password == "") {
@@ -1219,9 +1218,7 @@ export class KeyRing {
     );
   }
 
-  private async assignKeyStoreIdMeta(meta: {
-    [key: string]: string;
-  }): Promise<{
+  private async assignKeyStoreIdMeta(meta: { [key: string]: string }): Promise<{
     [key: string]: string;
   }> {
     // `__id__` is used to distinguish the key store.
