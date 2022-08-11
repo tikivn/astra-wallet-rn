@@ -3,7 +3,6 @@ import { AppCurrency, Keplr, KeplrSignOptions } from "@keplr-wallet/types";
 import { ChainGetter } from "../common";
 import { DenomHelper, toGenerator } from "@keplr-wallet/common";
 import { StdFee } from "@cosmjs/launchpad";
-import converter from "bech32-converting";
 import { MakeTxResponse } from "./types";
 
 export enum WalletStatus {
@@ -47,6 +46,9 @@ export class AccountSetBase {
   
   @observable
   protected _bech32Prefix: string = "";
+
+  @observable
+  protected _hexAddress: string = "";
 
   @observable
   protected _txTypeInProgress: string = "";
@@ -190,6 +192,8 @@ export class AccountSetBase {
     try {
       const key = yield* toGenerator(keplr.getKey(this.chainId));
       this._bech32Address = key.bech32Address;
+      const buffer = Buffer.from(key.address);
+      this._hexAddress = `0x${buffer.toString("hex")}`;
       this._name = key.name;
       this.pubKey = key.pubKey;
 
@@ -200,6 +204,7 @@ export class AccountSetBase {
       // Caught error loading key
       // Reset properties, and set status to Rejected
       this._bech32Address = "";
+      this._hexAddress = "";
       this._name = "";
       this.pubKey = new Uint8Array(0);
 
@@ -222,6 +227,7 @@ export class AccountSetBase {
       this.handleInit
     );
     this._bech32Address = "";
+    this._hexAddress = "";
     this._name = "";
     this.pubKey = new Uint8Array(0);
   }
@@ -339,11 +345,11 @@ export class AccountSetBase {
   }
 
   get evmosHexAddress(): string {
-    return this.hexAddress;
+    return this._hexAddress;
   }
 
   get hexAddress(): string {
-    return converter(this._bech32Prefix).toHex(this.bech32Address);
+    return this._hexAddress;
   }
 }
 
