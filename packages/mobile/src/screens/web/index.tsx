@@ -1,12 +1,13 @@
 import React, { FunctionComponent } from "react";
-import { PageWithScrollView } from "../../components/page";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { PageWithScrollView, PageWithView } from "../../components/page";
+import { Image, Platform, StyleSheet, Text, View } from "react-native";
 import { useStyle } from "../../styles";
 import { useSmartNavigation } from "../../navigation-util";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useIntl } from "react-intl";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import FastImage from "react-native-fast-image";
+import { useHeaderHeight } from "@react-navigation/stack";
 
 export const WebScreen: FunctionComponent = () => {
   const style = useStyle();
@@ -14,18 +15,23 @@ export const WebScreen: FunctionComponent = () => {
   const smartNavigation = useSmartNavigation();
 
   const safeAreaInsets = useSafeAreaInsets();
-  const height = 44 + safeAreaInsets.top;
+  const headerHeight = useHeaderHeight();
+  const actualHeaderHeight = headerHeight - safeAreaInsets.top;
   const intl = useIntl();
 
   return (
-    <View style={style.flatten(["background-color-background", "flex-grow-1"])}>
+    <PageWithView
+      disableSafeArea={true}
+      style={style.flatten(["background-color-background"])}
+    >
       <PageWithScrollView
         backgroundColor={style.get("color-background").color}
         contentContainerStyle={style.get("flex-grow-1")}
         style={StyleSheet.flatten([
           style.flatten(["padding-0"]),
           {
-            marginTop: safeAreaInsets.top,
+            marginTop:
+              Platform.OS === "ios" ? actualHeaderHeight : headerHeight,
           },
         ])}
       >
@@ -66,19 +72,29 @@ export const WebScreen: FunctionComponent = () => {
             "width-full",
           ]),
           {
-            height: height,
+            height: headerHeight,
           },
         ])}
       >
-        <View style={{ height: safeAreaInsets.top }} />
         <View
-          style={style.flatten([
-            "background-color-background",
-            "height-44",
-            "flex-row",
-            "padding-x-16",
-            "justify-center",
-            "items-center",
+          style={{
+            height:
+              safeAreaInsets.top -
+              (Platform.OS === "ios" && safeAreaInsets.top > 44 ? 6 : 0),
+          }}
+        />
+        <View
+          style={StyleSheet.flatten([
+            style.flatten([
+              "background-color-background",
+              "flex-row",
+              "padding-x-16",
+              "justify-center",
+              "items-center",
+            ]),
+            {
+              height: actualHeaderHeight,
+            },
           ])}
         >
           <Text style={style.flatten(["color-white", "title2"])}>
@@ -87,7 +103,7 @@ export const WebScreen: FunctionComponent = () => {
         </View>
         <View style={style.flatten(["height-1", "background-color-gray-70"])} />
       </View>
-    </View>
+    </PageWithView>
   );
 };
 

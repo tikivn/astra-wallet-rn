@@ -828,7 +828,7 @@ export const WebNavigation: FunctionComponent = () => {
       headerMode="screen"
     >
       <Stack.Screen
-        options={{ headerShown: false }}
+        // options={{ headerShown: false }}
         name="Web.Intro"
         component={WebScreen}
       />
