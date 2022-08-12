@@ -6,7 +6,6 @@ export * from "./person";
 export * from "./camera";
 export * from "./reward";
 export * from "./scan";
-export * from "./drawer";
 export * from "./trash-can";
 export * from "./wallet-connect";
 export * from "./check";

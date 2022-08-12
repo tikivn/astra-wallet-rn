@@ -12,8 +12,6 @@ import {
   RefreshControl,
   ScrollView,
   View,
-  SafeAreaView,
-  Text,
 } from "react-native";
 import { useStore } from "../../stores";
 import { useStyle } from "../../styles";

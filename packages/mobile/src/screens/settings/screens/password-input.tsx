@@ -10,15 +10,26 @@ import { RouteProp, useRoute, useNavigation } from "@react-navigation/native";
 import { useStore } from "../../../stores";
 import { useIntl } from "react-intl";
 
-export declare type PasswordInputScreenType = "updatePassword" | "viewMnemonic" | "deleteWallet";
+export declare type PasswordInputScreenType =
+  | "updatePassword"
+  | "viewMnemonic"
+  | "deleteWallet";
 
 export const PasswordInputScreen: FunctionComponent = observer(() => {
   const MIN_LENGTH_PASSWORD = 8;
 
   const navigation = useNavigation();
-  const route = useRoute<RouteProp<Record<string, {
-    type: PasswordInputScreenType;
-  }>, string>>();
+  const route = useRoute<
+    RouteProp<
+      Record<
+        string,
+        {
+          type: PasswordInputScreenType;
+        }
+      >,
+      string
+    >
+  >();
   const { type } = route.params;
 
   const style = useStyle();
@@ -71,7 +82,15 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
     }
 
     return (
-      <Text style={style.flatten(["color-gray-30", "text-caption", "text-center", "padding-y-32", "margin-bottom-32"])}>
+      <Text
+        style={style.flatten([
+          "color-gray-30",
+          "text-caption",
+          "text-center",
+          "padding-y-32",
+          "margin-bottom-32",
+        ])}
+      >
         {intl.formatMessage({ id: "deleteAccount.top.title" })}
       </Text>
     );
@@ -95,22 +114,16 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
 
     switch (type) {
       case "updatePassword":
-        smartNavigation.navigate(
-          "Settings.NewPasswordInput",
-          {
-            currentPassword: password,
-          }
-        );
+        smartNavigation.navigate("Settings.NewPasswordInput", {
+          currentPassword: password,
+        });
         break;
       case "viewMnemonic":
         const privateData = await keyRingStore.showKeyRing(index, password);
-        smartNavigation.replaceSmart(
-          "Setting.ViewPrivateData",
-          {
-            privateData,
-            privateDataType: keyRingStore.keyRingType,
-          }
-        );
+        smartNavigation.replaceSmart("Setting.ViewPrivateData", {
+          privateData,
+          privateDataType: keyRingStore.keyRingType,
+        });
         break;
       case "deleteWallet":
         await keyRingStore.deleteKeyRing(index, password);
@@ -125,9 +138,11 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
 
           smartNavigation.reset({
             index: 0,
-            routes: [{
-              name: "Unlock",
-            }],
+            routes: [
+              {
+                name: "Unlock",
+              },
+            ],
           });
         }
         break;
@@ -179,13 +194,12 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
     try {
       await keyRingStore.unlock(password);
       isValidPassword = await keyRingStore.checkPassword(password);
-    }
-    catch (e) {
+    } catch (e) {
       isValidPassword = false;
     }
 
     return isValidPassword;
-  };
+  }
 
   async function checkAndUpdateSocialLoginPassword() {
     try {
@@ -195,19 +209,24 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
       // update password
       if (localPassword !== password) {
         const index = keyRingStore.multiKeyStoreInfo.findIndex(
-          (keyStore: any) => { return keyStore.selected; }
+          (keyStore: any) => {
+            return keyStore.selected;
+          }
         );
 
         await keyRingStore.unlock(localPassword);
-        await keyRingStore.updatePasswordKeyRing(index, localPassword, password);
+        await keyRingStore.updatePasswordKeyRing(
+          index,
+          localPassword,
+          password
+        );
         await keyRingStore.unlock(password);
 
         if (keychainStore.isBiometryOn && keychainStore.isBiometrySupported) {
           await keychainStore.turnOnBiometry(password);
         }
       }
-    }
-    catch (e) {
+    } catch (e) {
       return false;
     }
 
@@ -222,18 +241,16 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
   return (
     <React.Fragment>
       <View
-        style={style.flatten([
-          "absolute-fill",
-          "background-color-background",
-        ])}>
-      </View>
-      <View
-        style={style.flatten(["flex-1", "background-color-transparent"])}
-      >
+        style={style.flatten(["absolute-fill", "background-color-background"])}
+      ></View>
+      <View style={style.flatten(["flex-1", "background-color-transparent"])}>
         <KeyboardAwareScrollView
-          contentContainerStyle={style.flatten(["flex-grow-1", "padding-x-page"])}
+          contentContainerStyle={style.flatten([
+            "flex-grow-1",
+            "padding-x-page",
+          ])}
         >
-          <View style={{ height: 32, }}/>
+          <View style={{ height: 32 }} />
           {getTopView()}
           <NormalInput
             value={password}
@@ -244,7 +261,7 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
             onShowPasswordChanged={setShowPassword}
             onChangeText={setPassword}
             onBlur={validateInputData}
-            style={{ marginBottom: 24, paddingBottom: 24, }}
+            style={{ marginBottom: 24, paddingBottom: 24 }}
           />
 
           <Button

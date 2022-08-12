@@ -1,20 +1,14 @@
 /* eslint-disable react/display-name */
 import React, { FunctionComponent, useEffect, useRef } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
+import { KeyRingStatus } from "@keplr-wallet/background";
 import {
-  BIP44HDPath,
-  ExportKeyRingData,
-  KeyRingStatus,
-} from "@keplr-wallet/background";
-import {
-  DrawerActions,
   NavigationContainer,
   NavigationContainerRef,
   useNavigation,
 } from "@react-navigation/native";
 import { useStore } from "./stores";
 import { observer } from "mobx-react-lite";
-import { HomeScreen } from "./screens/home";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import {
   createStackNavigator,
@@ -25,22 +19,14 @@ import {
   GovernanceDetailsScreen,
   GovernanceScreen,
 } from "./screens/governance";
-import {
-  createDrawerNavigator,
-  useIsDrawerOpen,
-} from "@react-navigation/drawer";
-import { DrawerContent } from "./components/drawer";
 import { useStyle } from "./styles";
 import { BorderlessButton } from "react-native-gesture-handler";
-import { SettingScreen } from "./screens/setting";
 import { SettingsScreen } from "./screens/settings";
-import { SettingSelectAccountScreen } from "./screens/setting/screens/select-account";
-import { ViewPrivateDataScreen } from "./screens/setting/screens/view-private-data";
+import { ViewPrivateDataScreen } from "./screens/settings/screens/view-private-data";
 import { SettingChainListScreen } from "./screens/setting/screens/chain-list";
 import { WebScreen } from "./screens/web";
 import { RegisterIntroScreen } from "./screens/register";
 import {
-  NewMnemonicConfig,
   NewMnemonicScreen,
   RecoverMnemonicScreen,
   VerifyMnemonicScreen,
@@ -59,8 +45,6 @@ import {
   ConnectIcon,
   HistoryTabbarIcon,
   HomeTabbarIcon,
-  OpenDrawerIcon,
-  ScanIcon,
   SettingTabbarIcon,
   StakeTabbarIcon,
 } from "./components/icon";
@@ -72,26 +56,21 @@ import { NewLedgerScreen } from "./screens/register/ledger";
 import { PageScrollPositionProvider } from "./providers/page-scroll-position";
 import {
   BlurredHeaderScreenOptionsPreset,
-  getPlainHeaderScreenOptionsPresetWithBackgroundColor,
   HeaderLeftButton,
   HeaderRightButton,
-  PlainHeaderScreenOptionsPreset,
   WalletHeaderScreenOptionsPreset,
 } from "./components/header";
 import { TokensScreen } from "./screens/tokens";
 import { UndelegateScreen } from "./screens/stake/undelegate";
 import { RedelegateScreen } from "./screens/stake/redelegate";
 import { CameraScreen } from "./screens/camera";
-import {
-  FocusedScreenProvider,
-  useFocusedScreen,
-} from "./providers/focused-screen";
+import { FocusedScreenProvider } from "./providers/focused-screen";
 import { TxResultScreen } from "./screens/tx-result";
 import { TorusSignInScreen } from "./screens/register/torus";
 import { HeaderAddIcon } from "./components/header/icon";
 import { BlurredBottomTabBar } from "./components/bottom-tabbar";
 import { UnlockScreen } from "./screens/unlock";
-import { KeplrVersionScreen } from "./screens/setting/screens/version";
+
 import {
   SettingAddTokenScreen,
   SettingManageTokensScreen,
@@ -103,13 +82,8 @@ import {
   ImportFromExtensionSetPasswordScreen,
 } from "./screens/register/import-from-extension";
 import {
-  OsmosisWebpageScreen,
-  OsmosisFrontierWebpageScreen,
-  StargazeWebpageScreen,
   AstranautWebpageScreen,
   AstraDefiWebpageScreen,
-  UmeeWebpageScreen,
-  JunoswapWebpageScreen,
 } from "./screens/web/webpages";
 import { WebpageScreenScreenOptionsPreset } from "./screens/web/components/webpage-screen";
 import Bugsnag from "@bugsnag/react-native";
@@ -141,79 +115,7 @@ import { SmartNavigatorProvider } from "./navigation-util";
 import { RegisterCreateEntryScreen } from "./screens/register/create-entry";
 
 const Stack = createStackNavigator();
-const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
-
-const HomeScreenHeaderLeft: FunctionComponent = observer(() => {
-  const { chainStore } = useStore();
-
-  const style = useStyle();
-
-  const navigation = useNavigation();
-
-  return (
-    <HeaderLeftButton
-      onPress={() => {
-        navigation.dispatch(DrawerActions.toggleDrawer());
-      }}
-    >
-      <View style={style.flatten(["flex-row", "items-center"])}>
-        <OpenDrawerIcon size={28} color={style.get("color-primary").color} />
-        <Text
-          style={style.flatten([
-            "h4",
-            "color-text-black-high",
-            "margin-left-4",
-          ])}
-        >
-          {chainStore.current.chainName}
-        </Text>
-      </View>
-    </HeaderLeftButton>
-  );
-});
-
-const HomeScreenHeaderRight: FunctionComponent = observer(() => {
-  const style = useStyle();
-
-  const navigation = useNavigation();
-
-  return (
-    <React.Fragment>
-      <HeaderRightButton
-        onPress={() => {
-          navigation.navigate("Others", {
-            screen: "Camera",
-          });
-        }}
-      >
-        <ScanIcon size={28} color={style.get("color-primary").color} />
-      </HeaderRightButton>
-    </React.Fragment>
-  );
-});
-
-export const MainNavigation: FunctionComponent = () => {
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        ...BlurredHeaderScreenOptionsPreset,
-        headerTitle: "",
-      }}
-      initialRouteName="Home"
-      headerMode="screen"
-    >
-      <Stack.Screen
-        options={{
-          headerLeft: () => <HomeScreenHeaderLeft />,
-          headerRight: () => <HomeScreenHeaderRight />,
-        }}
-        name="Home"
-        component={HomeScreen}
-      />
-    </Stack.Navigator>
-  );
-};
 
 export const NewMainNavigation: FunctionComponent = () => {
   const style = useStyle();
@@ -686,64 +588,6 @@ export const WalletNavigation: FunctionComponent = () => {
   );
 };
 
-export const SettingStackScreen: FunctionComponent = () => {
-  const style = useStyle();
-
-  const navigation = useNavigation();
-
-  const { analyticsStore } = useStore();
-
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        ...PlainHeaderScreenOptionsPreset,
-        headerTitleStyle: style.flatten(["h5", "color-text-black-high"]),
-      }}
-      headerMode="screen"
-    >
-      <Stack.Screen
-        options={{
-          title: "Settings",
-          ...getPlainHeaderScreenOptionsPresetWithBackgroundColor(
-            style.get("color-setting-screen-background").color
-          ),
-          headerTitleStyle: style.flatten(["h3", "color-text-black-high"]),
-        }}
-        name="Setting"
-        component={SettingScreen}
-      />
-      <Stack.Screen
-        name="SettingSelectAccount"
-        options={{
-          title: "Select Account",
-          headerRight: () => (
-            <HeaderRightButton
-              onPress={() => {
-                analyticsStore.logEvent("Add additional account started");
-                navigation.navigate("Register", {
-                  screen: "Register.Intro",
-                });
-              }}
-            >
-              <HeaderAddIcon />
-            </HeaderRightButton>
-          ),
-          ...BlurredHeaderScreenOptionsPreset,
-        }}
-        component={SettingSelectAccountScreen}
-      />
-
-      <Stack.Screen
-        options={{
-          title: "Version",
-        }}
-        name="Setting.Version"
-        component={KeplrVersionScreen}
-      />
-    </Stack.Navigator>
-  );
-};
-
 export const SettingsStackScreen: FunctionComponent = () => {
   const style = useStyle();
   return (
@@ -827,21 +671,9 @@ export const WebNavigation: FunctionComponent = () => {
       }}
       headerMode="screen"
     >
-      <Stack.Screen
-        // options={{ headerShown: false }}
-        name="Web.Intro"
-        component={WebScreen}
-      />
-      <Stack.Screen name="Web.Osmosis" component={OsmosisWebpageScreen} />
-      <Stack.Screen
-        name="Web.OsmosisFrontier"
-        component={OsmosisFrontierWebpageScreen}
-      />
-      <Stack.Screen name="Web.Stargaze" component={StargazeWebpageScreen} />
+      <Stack.Screen name="Web.Intro" component={WebScreen} />
       <Stack.Screen name="Web.Astranaut" component={AstranautWebpageScreen} />
       <Stack.Screen name="Web.AstraDefi" component={AstraDefiWebpageScreen} />
-      <Stack.Screen name="Web.Umee" component={UmeeWebpageScreen} />
-      <Stack.Screen name="Web.Junoswap" component={JunoswapWebpageScreen} />
     </Stack.Navigator>
   );
 };
@@ -949,28 +781,6 @@ export const MainTabNavigation: FunctionComponent = () => {
         }}
       />
     </Tab.Navigator>
-  );
-};
-
-export const MainTabNavigationWithDrawer: FunctionComponent = () => {
-  const focused = useFocusedScreen();
-
-  return (
-    <Drawer.Navigator
-      drawerType="slide"
-      drawerContent={(props) => <DrawerContent {...props} />}
-      screenOptions={{
-        // If the focused screen is not "Home" screen,
-        // disable the gesture to open drawer.
-        swipeEnabled: focused.name === "Home",
-        gestureEnabled: focused.name === "Home",
-      }}
-      gestureHandlerProps={{
-        hitSlop: {},
-      }}
-    >
-      <Drawer.Screen name="MainTab" component={MainTabNavigation} />
-    </Drawer.Navigator>
   );
 };
 

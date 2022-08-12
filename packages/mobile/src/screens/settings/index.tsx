@@ -159,7 +159,8 @@ export const SettingsScreen: FunctionComponent = observer(() => {
             left={<FaqIcon />}
             onPress={() => {
               smartNavigation.navigateSmart("WebView", {
-                url: "https://hotro.tiki.vn/s/article/chuong-trinh-sep-mua-sam-co-loi",
+                url:
+                  "https://hotro.tiki.vn/s/article/chuong-trinh-sep-mua-sam-co-loi",
               });
             }}
           />

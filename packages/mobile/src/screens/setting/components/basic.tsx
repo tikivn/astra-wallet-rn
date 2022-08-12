@@ -4,32 +4,6 @@ import { StyleSheet, Text, TextStyle, View, ViewStyle } from "react-native";
 import { RightArrowIcon } from "../../../components/icon";
 import { RectButton } from "../../../components/rect-button";
 
-export const SettingSectionTitle: FunctionComponent<{
-  title: string;
-}> = ({ title }) => {
-  const style = useStyle();
-
-  return (
-    <View
-      style={style.flatten([
-        "padding-x-20",
-        "padding-top-16",
-        "padding-bottom-4",
-      ])}
-    >
-      <Text
-        style={style.flatten([
-          "text-caption1",
-          "color-text-black-very-low",
-          "uppercase",
-        ])}
-      >
-        {title}
-      </Text>
-    </View>
-  );
-};
-
 export const SettingItem: FunctionComponent<{
   containerStyle?: ViewStyle;
   style?: ViewStyle;
