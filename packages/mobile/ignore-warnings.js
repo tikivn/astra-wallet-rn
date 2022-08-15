@@ -2,6 +2,7 @@ import { LogBox } from "react-native";
 
 if (__DEV__) {
   const ignoreWarns = [
+    "",
     "Require cycle: ../unit/build/int.js -> ../unit/build/decimal.js -> ../unit/build/int.js",
     "Require cycle: ../unit/build/int.js -> ../unit/build/decimal.js -> ../unit/build/coin-utils.js -> ../unit/build/int.js",
     "Require cycle: ../unit/build/int.js -> ../unit/build/decimal.js -> ../unit/build/coin-utils.js -> ../unit/build/coin.js -> ../unit/build/int.js",

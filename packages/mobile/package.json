@@ -138,7 +138,9 @@
     "@react-native-masked-view/masked-view": "0.2.6",
     "big-integer": "^1.6.48",
     "@ethersproject/address": "^5.6.1",
-    "bech32-converting": "^1.0.9"
+    "bech32-converting": "^1.0.9",
+    "patch-package": "^6.4.7",
+    "deprecated-react-native-prop-types": "^2.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
