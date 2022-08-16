@@ -7,7 +7,6 @@ import {
   KeplrMode,
   KeplrSignOptions,
   Key,
-  SignArbitraryMode,
 } from "@keplr-wallet/types";
 import { Result, JSONUint8Array } from "@keplr-wallet/router";
 import {
@@ -346,15 +345,9 @@ export class InjectedKeplr implements IKeplr {
   async signArbitrary(
     chainId: string,
     signer: string,
-    data: string | Uint8Array,
-    signArbitraryMode?: SignArbitraryMode
+    data: string | Uint8Array
   ): Promise<StdSignature> {
-    return await this.requestMethod("signArbitrary", [
-      chainId,
-      signer,
-      data,
-      signArbitraryMode,
-    ]);
+    return await this.requestMethod("signArbitrary", [chainId, signer, data]);
   }
 
   async verifyArbitrary(
