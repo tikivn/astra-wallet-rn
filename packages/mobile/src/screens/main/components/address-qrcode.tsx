@@ -1,7 +1,6 @@
 import React, { FunctionComponent } from "react";
 import { ViewStyle, StyleSheet, Text, View } from "react-native";
-import { useSimpleTimer } from "../../../hooks";
-import { useStyle } from "../../../styles";
+import { Colors, useStyle } from "../../../styles";
 import Clipboard from "expo-clipboard";
 import { Button } from "../../../components/button";
 import QRCode from "react-native-qrcode-svg";
@@ -20,29 +19,35 @@ export const AddressQRCodeItem: FunctionComponent<{
     <View
       style={StyleSheet.flatten([
         style.flatten([
-          "width-248",
-          "flex-0",
-          "background-color-background-secondary",
-          "overflow-hidden",
-          "border-radius-12",
+          "margin-x-16",
+          "border-radius-8",
           "items-center",
-          "padding-24",
+          "padding-top-16",
+          "padding-bottom-24",
+          "background-color-gray-90",
+          "border-color-gray-60",
+          "border-width-1",
         ]),
         propStyle,
       ])}
     >
-      <View style={style.flatten(["width-200", "height-200"])}>
+      <View style={{
+        padding: 16,
+        borderRadius: 8,
+        backgroundColor: Colors["white"]
+      }}>
         <QRCode
           size={200}
-          color={"white"}
-          backgroundColor={"black"}
+          color={"black"}
+          backgroundColor={"white"}
           value={hexAddress}
         />
       </View>
       <Text
         style={style.flatten([
-          "margin-top-24",
-          "margin-bottom-24",
+          "width-240",
+          "margin-top-16",
+          "margin-bottom-12",
           "body3",
           "text-center",
           "color-white",

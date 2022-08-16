@@ -15,13 +15,13 @@ export const ReceiveScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollView
-      style={style.flatten(["margin-top-16"])}
+      style={style.flatten(["margin-top-8"])}
       backgroundColor={style.get("color-background").color}
     >
       <Text
         style={style.flatten([
           "color-text-black-low",
-          "text-left",
+          "text-center",
           "padding-16",
           "body3",
         ])}
@@ -29,7 +29,6 @@ export const ReceiveScreen: FunctionComponent = observer(() => {
         {intl.formatMessage({ id: "wallet.receive.address.guide" })}
       </Text>
       <AddressQRCodeItem
-        style={style.flatten(["self-center"])}
         bech32Address={account.bech32Address}
         hexAddress={account.hexAddress}
       />

@@ -39,7 +39,7 @@ export const AddressCopyableItem: FunctionComponent<{
       <Text
         numberOfLines={1}
         ellipsizeMode="middle"
-        style={style.flatten(["body3", "color-white", "flex-1"])}
+        style={style.flatten(["text-base-regular", "color-white", "flex-1"])}
       >
         {address}
       </Text>
@@ -70,7 +70,7 @@ export const AddressCopyableItem: FunctionComponent<{
           </View>
         ) : (
           <CopyIconNew
-            color={style.get("color-text-black-low").color}
+            color={style.get("color-white").color}
             size={17}
           />
         )}

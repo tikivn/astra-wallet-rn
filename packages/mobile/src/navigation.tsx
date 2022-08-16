@@ -61,7 +61,7 @@ import { PageScrollPositionProvider } from "./providers/page-scroll-position";
 import {
   BlurredHeaderScreenOptionsPreset,
   HeaderRightButton,
-  WalletHeaderScreenOptionsPreset,
+  NormalHeaderScreenOptions,
 } from "./components/header";
 import { TokensScreen } from "./screens/tokens";
 import { CameraScreen } from "./screens/camera";
@@ -113,14 +113,9 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 export const NewMainNavigation: FunctionComponent = () => {
-  const style = useStyle();
   return (
     <Stack.Navigator
-      screenOptions={{
-        ...WalletHeaderScreenOptionsPreset,
-        headerStyle: style.get("background-color-background"),
-        headerTitleStyle: style.flatten(["title2", "color-white"]),
-      }}
+      screenOptions={NormalHeaderScreenOptions}
       initialRouteName="NewHome"
       headerMode="screen"
     >
@@ -136,25 +131,17 @@ export const NewMainNavigation: FunctionComponent = () => {
 };
 
 export const HistoryNavigation: FunctionComponent = () => {
-  const style = useStyle();
   const intl = useIntl();
   return (
     <Stack.Navigator
-      screenOptions={{
-        ...WalletHeaderScreenOptionsPreset,
-        headerStyle: style.get("background-color-background"),
-        headerTitleStyle: style.flatten(["title2", "color-white"]),
-        headerTitle: intl.formatMessage({ id: "history.headerTitle" }),
-      }}
+      screenOptions={NormalHeaderScreenOptions}
       initialRouteName="History"
       headerMode="screen"
     >
       <Stack.Screen
-        options={
-          {
-            // headerRight: () => <HomeScreenHeaderRight />,
-          }
-        }
+        options={{
+          title: intl.formatMessage({ id: "history.headerTitle" })
+        }}
         name="History"
         component={HistoryScreen}
       />
@@ -163,16 +150,10 @@ export const HistoryNavigation: FunctionComponent = () => {
 };
 
 export const RegisterNavigation: FunctionComponent = () => {
-  const style = useStyle();
   const intl = useIntl();
-
   return (
     <Stack.Navigator
-      screenOptions={{
-        ...WalletHeaderScreenOptionsPreset,
-        headerStyle: style.get("background-color-background"),
-        headerTitleStyle: style.flatten(["title2", "color-white"]),
-      }}
+      screenOptions={NormalHeaderScreenOptions}
       initialRouteName="Register.Intro"
       headerMode="screen"
     >
@@ -283,15 +264,9 @@ export const RegisterNavigation: FunctionComponent = () => {
 };
 
 export const TransactionNavigation: FunctionComponent = () => {
-  const style = useStyle();
-
   return (
     <Stack.Navigator
-      screenOptions={{
-        ...WalletHeaderScreenOptionsPreset,
-        headerStyle: style.get("background-color-background"),
-        headerTitleStyle: style.flatten(["title2", "color-white"]),
-      }}
+      screenOptions={NormalHeaderScreenOptions}
       headerMode="screen"
       initialRouteName="Tx.Result"
     >
@@ -307,20 +282,17 @@ export const TransactionNavigation: FunctionComponent = () => {
 };
 
 export const StakingNavigation: FunctionComponent = () => {
-  const style = useStyle();
   const intl = useIntl();
   return (
     <Stack.Navigator
-      screenOptions={{
-        ...WalletHeaderScreenOptionsPreset,
-        headerStyle: style.get("background-color-background"),
-        headerTitleStyle: style.flatten(["title2", "color-white"]),
-        headerTitle: intl.formatMessage({ id: "staking.headerTitle" }),
-      }}
+      screenOptions={NormalHeaderScreenOptions}
       initialRouteName="Staking.Dashboard"
       headerMode="screen"
     >
       <Stack.Screen
+        options={{
+          title: intl.formatMessage({ id: "staking.headerTitle" })
+        }}
         name="Staking.Dashboard"
         component={StakingDashboardScreen}
       />
@@ -329,16 +301,10 @@ export const StakingNavigation: FunctionComponent = () => {
 };
 
 export const OtherNavigation: FunctionComponent = () => {
-  const style = useStyle();
   const intl = useIntl();
-
   return (
     <Stack.Navigator
-      screenOptions={{
-        ...WalletHeaderScreenOptionsPreset,
-        headerStyle: style.get("background-color-background"),
-        headerTitleStyle: style.flatten(["title2", "color-white"]),
-      }}
+      screenOptions={NormalHeaderScreenOptions}
       headerMode="screen"
     >
       <Stack.Screen
@@ -381,16 +347,11 @@ export const OtherNavigation: FunctionComponent = () => {
 };
 
 export const WalletNavigation: FunctionComponent = () => {
-  const style = useStyle();
   const navigation = useNavigation();
   const intl = useIntl();
   return (
     <Stack.Navigator
-      screenOptions={{
-        ...WalletHeaderScreenOptionsPreset,
-        headerStyle: style.get("background-color-background"),
-        headerTitleStyle: style.flatten(["title2", "color-white"]),
-      }}
+      screenOptions={NormalHeaderScreenOptions}
       headerMode="screen"
     >
       <Stack.Screen
@@ -549,19 +510,13 @@ export const WalletNavigation: FunctionComponent = () => {
 };
 
 export const SettingsStackScreen: FunctionComponent = () => {
-  const style = useStyle();
   return (
     <Stack.Navigator
-      screenOptions={{
-        ...WalletHeaderScreenOptionsPreset,
-        headerStyle: style.get("background-color-background"),
-        headerTitleStyle: style.flatten(["title2", "color-white"]),
-      }}
+      screenOptions={NormalHeaderScreenOptions}
       headerMode="screen"
     >
       <Stack.Screen
         options={{
-          title: "Settings",
           headerShown: false,
         }}
         name="Setting"

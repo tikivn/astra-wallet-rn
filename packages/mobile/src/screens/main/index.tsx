@@ -11,6 +11,7 @@ import {
   ImageBackground,
   RefreshControl,
   ScrollView,
+  Text,
   View,
 } from "react-native";
 import { useStore } from "../../stores";
@@ -128,15 +129,6 @@ export const MainScreen: FunctionComponent = observer(() => {
     setRefreshing(false);
   }, [accountStore, chainStore, priceStore, queriesStore]);
 
-  const queryBalances = queriesStore
-    .get(chainStore.current.chainId)
-    .queryBalances.getQueryBech32Address(
-      accountStore.getAccount(chainStore.current.chainId).bech32Address
-    );
-
-  const tokens = queryBalances.positiveNativeUnstakables.concat(
-    queryBalances.nonNativeBalances
-  );
   const smartNavigation = useSmartNavigation();
 
   function showAccessTestnetToast() {
@@ -163,9 +155,18 @@ export const MainScreen: FunctionComponent = observer(() => {
           }
           ref={scrollViewRef}
         >
-          <View style={style.flatten(["height-44", "width-44", "self-end"])}>
+          <View style={style.flatten([
+            "flex-row",
+            "height-44",
+            "justify-center",
+            "items-center",
+          ])}>
+            <View style={{ width: 44, }} />
+            <Text style={style.flatten(["text-large-bold", "color-white", "flex-1", "text-center"])}>
+              {intl.formatMessage({ id: "register.intro.appName" })}
+            </Text>
             <TouchableOpacity
-              style={style.flatten(["width-32", "height-32"])}
+              style={style.flatten(["width-44", "height-44", "justify-center"])}
               onPress={() => {
                 smartNavigation.navigateSmart("Camera", {});
               }}
