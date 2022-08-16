@@ -6,5 +6,6 @@
   "component.amount.input.sendAll": "Max",
   "component.amount.input.sendindAmount": "Input amount",
   "component.text.copied": "Copied",
-  "component.text.copy": "Copy"
+  "component.text.copy": "Copy",
+  "component.amount.input.max": "Max"
 }

@@ -11,7 +11,10 @@ import { Button } from "../../../components/button";
 import { Staking } from "@keplr-wallet/stores";
 import { useSmartNavigation } from "../../../navigation-util";
 import { AlertInline } from "../../../components/alert-inline";
-import { AlignItems, ItemRow } from "../../../components/foundation-view/item-row";
+import {
+  AlignItems,
+  ItemRow,
+} from "../../../components/foundation-view/item-row";
 import { TextAlign } from "../../../components/foundation-view/text-style";
 import { useIntl } from "react-intl";
 
@@ -30,7 +33,13 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
 
   const validatorAddress = route.params.validatorAddress;
 
-  const { chainStore, accountStore, queriesStore, analyticsStore, transactionStore } = useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    analyticsStore,
+    transactionStore,
+  } = useStore();
 
   const style = useStyle();
   const intl = useIntl();
@@ -52,14 +61,14 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
 
   const validatorThumbnail = validator
     ? queries.cosmos.queryValidators
-      .getQueryStatus(Staking.BondStatus.Bonded)
-      .getValidatorThumbnail(validatorAddress) ||
-    queries.cosmos.queryValidators
-      .getQueryStatus(Staking.BondStatus.Unbonding)
-      .getValidatorThumbnail(validatorAddress) ||
-    queries.cosmos.queryValidators
-      .getQueryStatus(Staking.BondStatus.Unbonded)
-      .getValidatorThumbnail(validatorAddress)
+        .getQueryStatus(Staking.BondStatus.Bonded)
+        .getValidatorThumbnail(validatorAddress) ||
+      queries.cosmos.queryValidators
+        .getQueryStatus(Staking.BondStatus.Unbonding)
+        .getValidatorThumbnail(validatorAddress) ||
+      queries.cosmos.queryValidators
+        .getQueryStatus(Staking.BondStatus.Unbonded)
+        .getValidatorThumbnail(validatorAddress)
     : undefined;
 
   const staked = queries.cosmos.queryDelegations
@@ -97,7 +106,10 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       <View style={style.flatten(["height-page-pad"])} />
       <AlertInline
         type="warning"
-        content={intl.formatMessage({ id: "stake.undelegate.noticeWithdrawalPeriod" }, { coin: "ASA" })}
+        content={intl.formatMessage(
+          { id: "stake.undelegate.noticeWithdrawalPeriod" },
+          { coin: "ASA" }
+        )}
       />
       <ValidatorItem
         containerStyle={style.flatten(["margin-y-16"])}
@@ -105,10 +117,12 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         thumbnail={validatorThumbnail}
         value={staked.trim(true).shrink(true).maxDecimals(6).toString()}
       />
-      <AmountInput label={intl.formatMessage({ id: "stake.undelegate.amountLabel" })}
+      <AmountInput
+        label={intl.formatMessage({ id: "stake.undelegate.amountLabel" })}
         amountConfig={sendConfigs.amountConfig}
       />
-      <ItemRow style={{ marginHorizontal: 0, paddingHorizontal: 0, }}
+      <ItemRow
+        style={{ marginHorizontal: 0, paddingHorizontal: 0 }}
         alignItems={AlignItems.center}
         itemSpacing={12}
         columns={[
@@ -122,8 +136,10 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
             textAlign: TextAlign.right,
             flex: 1,
           },
-        ]} />
-      <ItemRow style={{ marginHorizontal: 0, paddingHorizontal: 0, }}
+        ]}
+      />
+      <ItemRow
+        style={{ marginHorizontal: 0, paddingHorizontal: 0 }}
         alignItems={AlignItems.center}
         itemSpacing={12}
         columns={[
@@ -137,7 +153,8 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
             textAlign: TextAlign.right,
             flex: 1,
           },
-        ]} />
+        ]}
+      />
       {/* <MemoInput label="Memo (Optional)" memoConfig={sendConfigs.memoConfig} />
       <FeeButtons
         label="Fee"
@@ -162,11 +179,13 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                 fee: sendConfigs.feeConfig,
                 memo: sendConfigs.memoConfig,
               });
-              await account.cosmos.sendUndelegateMsg(
+              const tx = account.cosmos.makeUndelegateTx(
                 sendConfigs.amountConfig.amount,
-                sendConfigs.recipientConfig.recipient,
+                sendConfigs.recipientConfig.recipient
+              );
+              await tx.simulateAndSend(
+                { gasAdjustment: 1.3 },
                 sendConfigs.memoConfig.memo,
-                sendConfigs.feeConfig.toStdFee(),
                 {
                   preferNoSetMemo: true,
                   preferNoSetFee: true,
@@ -183,7 +202,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                   },
                 }
               );
-            } catch (e) {
+            } catch (e: any) {
               if (e?.message === "Request rejected") {
                 return;
               }

@@ -12,9 +12,15 @@ import { Button } from "../../../components/button";
 import { useSmartNavigation } from "../../../navigation-util";
 import { Staking } from "@keplr-wallet/stores";
 import { ValidatorInfo } from "./components/validator-info";
-import { buildLeftColumn, buildRightColumn } from "../../../components/foundation-view/item-row";
+import {
+  buildLeftColumn,
+  buildRightColumn,
+} from "../../../components/foundation-view/item-row";
 import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
-import { IRow, ListRowView } from "../../../components/foundation-view/list-row-view";
+import {
+  IRow,
+  ListRowView,
+} from "../../../components/foundation-view/list-row-view";
 import { AlertInline } from "../../../components";
 import { useIntl } from "react-intl";
 
@@ -33,7 +39,14 @@ export const DelegateScreen: FunctionComponent = observer(() => {
 
   const validatorAddress = route.params.validatorAddress;
 
-  const { chainStore, accountStore, queriesStore, analyticsStore, userBalanceStore, transactionStore } = useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    analyticsStore,
+    userBalanceStore,
+    transactionStore,
+  } = useStore();
 
   const style = useStyle();
   const intl = useIntl();
@@ -75,13 +88,12 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   const name = validator?.description.moniker ?? "";
   const thumbnailUrl = bondedValidators.getValidatorThumbnail(validatorAddress);
 
-  const commission = new IntPretty(
-    new Dec(validator?.commission.commission_rates.rate || 0)
-  )
-    .moveDecimalPointRight(2)
-    .maxDecimals(2)
-    .trim(true)
-    .toString() + "%";
+  const commission =
+    new IntPretty(new Dec(validator?.commission.commission_rates.rate || 0))
+      .moveDecimalPointRight(2)
+      .maxDecimals(2)
+      .trim(true)
+      .toString() + "%";
 
   const votingPower = new CoinPretty(
     chainStore.current.stakeCurrency,
@@ -92,22 +104,24 @@ export const DelegateScreen: FunctionComponent = observer(() => {
 
   sendConfigs.feeConfig.setFeeType("average");
   const fee = sendConfigs.feeConfig.fee?.trim(true).toString() ?? "";
-  // console.log("__DEBUG__ sendConfigs:", sendConfigs.feeConfig.fee);
-
   const rows: IRow[] = [
     {
       type: "items",
       cols: [
-        buildLeftColumn({ text: intl.formatMessage({ id: "stake.delegate.available" }) }),
+        buildLeftColumn({
+          text: intl.formatMessage({ id: "stake.delegate.available" }),
+        }),
         buildRightColumn({ text: balance }),
-      ]
+      ],
     },
     {
       type: "items",
       cols: [
-        buildLeftColumn({ text: intl.formatMessage({ id: "stake.delegate.fee" }) }),
+        buildLeftColumn({
+          text: intl.formatMessage({ id: "stake.delegate.fee" }),
+        }),
         buildRightColumn({ text: fee }),
-      ]
+      ],
     },
   ];
 
@@ -123,22 +137,20 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         content={intl.formatMessage({ id: "stake.delegate.warning" })}
       />
       <ValidatorInfo
-        style={{ marginTop: 24, }}
+        style={{ marginTop: 24 }}
         {...{ name, thumbnailUrl, commission, votingPower }}
       />
       <AmountInput
-        containerStyle={{ marginTop: 24, }}
+        containerStyle={{ marginTop: 24 }}
         label={intl.formatMessage({ id: "stake.delegate.amount" })}
         amountConfig={sendConfigs.amountConfig}
       />
-
       <ListRowView
         rows={rows}
-        style={{ paddingHorizontal: 0, }}
+        style={{ paddingHorizontal: 0 }}
         hideBorder
         clearBackground
       />
-
       <View style={style.flatten(["flex-1"])} />
       <Button
         text={intl.formatMessage({ id: "stake.delegate.invest" })}
@@ -146,7 +158,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         disabled={!account.isReadyToSendTx || !txStateIsValid}
         loading={account.txTypeInProgress === "delegate"}
         onPress={async () => {
-          if (account.isReadyToSendMsgs && txStateIsValid) {
+          if (account.isReadyToSendTx && txStateIsValid) {
             try {
               transactionStore.updateTxData({
                 chainInfo: chainStore.current,
@@ -154,11 +166,13 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                 fee: sendConfigs.feeConfig,
                 memo: sendConfigs.memoConfig,
               });
-              await account.cosmos.sendDelegateMsg(
+              const tx = account.cosmos.makeDelegateTx(
                 sendConfigs.amountConfig.amount,
-                sendConfigs.recipientConfig.recipient,
+                sendConfigs.recipientConfig.recipient
+              );
+              await tx.simulateAndSend(
+                { gasAdjustment: 1.3 },
                 sendConfigs.memoConfig.memo,
-                sendConfigs.feeConfig.toStdFee(),
                 {
                   preferNoSetMemo: true,
                   preferNoSetFee: true,
@@ -175,7 +189,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                   },
                 }
               );
-            } catch (e) {
+            } catch (e: any) {
               if (e?.message === "Request rejected") {
                 return;
               }

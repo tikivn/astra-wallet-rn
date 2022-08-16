@@ -110,7 +110,6 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.feeConfig.error;
   const txStateIsValid = sendConfigError == null;
   sendConfigs.feeConfig.setFeeType("average");
-  sendConfigs.gasConfig.setGas(400000);
   const fee = sendConfigs.feeConfig.fee?.trim(true).toString() ?? "";
   return (
     <PageWithScrollView
@@ -188,18 +187,20 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                 fee: sendConfigs.feeConfig,
                 memo: sendConfigs.memoConfig,
               });
-              await account.cosmos.sendBeginRedelegateMsg(
+              const tx = account.cosmos.makeBeginRedelegateTx(
                 sendConfigs.amountConfig.amount,
                 sendConfigs.srcValidatorAddress,
-                sendConfigs.dstValidatorAddress,
+                sendConfigs.dstValidatorAddress
+              );
+              await tx.simulateAndSend(
+                { gasAdjustment: 1.3 },
                 sendConfigs.memoConfig.memo,
-                sendConfigs.feeConfig.toStdFee(),
                 {
                   preferNoSetMemo: true,
                   preferNoSetFee: true,
                 },
                 {
-                  onBroadcasted: (txHash) => {
+                  onBroadcasted: (txHash: Uint8Array) => {
                     analyticsStore.logEvent("Redelgate tx broadcasted", {
                       chainId: chainStore.current.chainId,
                       chainName: chainStore.current.chainName,
@@ -211,7 +212,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                   },
                 }
               );
-            } catch (e) {
+            } catch (e: any) {
               if (e?.message === "Request rejected") {
                 return;
               }
