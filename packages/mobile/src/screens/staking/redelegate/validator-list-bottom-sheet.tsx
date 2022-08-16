@@ -6,7 +6,7 @@ import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { Staking } from "@keplr-wallet/stores";
 import { FormattedMessage, useIntl } from "react-intl";
-import { TooltipLabel } from "../../staking/component";
+import { TooltipLabel } from "../component";
 import { CardDivider } from "../../../components/card";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";

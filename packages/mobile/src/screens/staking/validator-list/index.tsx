@@ -18,7 +18,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 
 type Sort = "APY" | "Voting Power" | "Name";
 
-export const NewValidatorListScreen: FunctionComponent = observer(() => {
+export const ValidatorListScreen: FunctionComponent = observer(() => {
   const route = useRoute<
     RouteProp<
       Record<
@@ -178,7 +178,7 @@ const ValidatorItem: FunctionComponent<{
           onSelectValidator(validatorAddress);
           smartNavigation.goBack();
         } else {
-          smartNavigation.navigateSmart("Validator.Details.New", {
+          smartNavigation.navigateSmart("Validator.Details", {
             validatorAddress,
           });
         }

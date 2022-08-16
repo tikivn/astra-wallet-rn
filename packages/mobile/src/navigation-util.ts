@@ -85,17 +85,7 @@ const {
     Tokens: {
       upperScreenName: "Others",
     },
-
     ManageWalletConnect: {
-      upperScreenName: "Others",
-    },
-    "Staking.Dashboard": {
-      upperScreenName: "Others",
-    },
-    "Validator.Details": {
-      upperScreenName: "Others",
-    },
-    "Validator.List": {
       upperScreenName: "Others",
     },
     Delegate: {
@@ -155,13 +145,13 @@ const {
     "Settings.NewPasswordInput": {
       upperScreenName: "Wallet",
     },
-    "Staking.Dashboard.New": {
+    "Staking.Dashboard": {
       upperScreenName: "Stake",
     },
-    "Validator.Details.New": {
+    "Validator.Details": {
       upperScreenName: "Wallet",
     },
-    "Validator.List.New": {
+    "Validator.List": {
       upperScreenName: "Wallet",
     },
     "Staking.Rewards": {
@@ -235,13 +225,7 @@ const {
     "Validator.Details": {
       validatorAddress: string;
     };
-    "Validator.Details.New": {
-      validatorAddress: string;
-    };
     "Validator.List": {
-      validatorSelector?: (validatorAddress: string) => void;
-    };
-    "Validator.List.New": {
       validatorSelector?: (validatorAddress: string) => void;
     };
     Delegate: {

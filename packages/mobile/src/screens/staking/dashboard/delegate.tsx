@@ -111,7 +111,7 @@ export const DelegationsItem: FunctionComponent<{
                   "border-color-gray-60",
                 ])}
                 onPress={() => {
-                  smartNavigation.navigateSmart("Validator.Details.New", {
+                  smartNavigation.navigateSmart("Validator.Details", {
                     validatorAddress: del.delegation.validator_address,
                   });
                 }}

@@ -53,7 +53,7 @@ export const StakingRewardScreen: FunctionComponent = () => {
         validatorAddresses
       );
       await tx.simulateAndSend(
-        { gasAdjustment: 1.3 },
+        { gasAdjustment: 1.5 },
         sendConfigs.memoConfig.memo,
         {
           preferNoSetMemo: true,

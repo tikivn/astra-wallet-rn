@@ -99,7 +99,7 @@ export const RewardsItem: FunctionComponent<{
             "width-132",
           ])}
           onPress={() => {
-            smartNavigation.navigateSmart("Validator.List.New", {});
+            smartNavigation.navigateSmart("Validator.List", {});
           }}
           text={intl.formatMessage({ id: "staking.dashboard.rewards.invest" })}
           mode="text"

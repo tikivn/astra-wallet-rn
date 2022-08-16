@@ -37,10 +37,14 @@ import { RegisterNotNewUserScreen } from "./screens/register/not-new-user";
 
 import {
   DelegateScreen,
+  UndelegateScreen,
+  RedelegateScreen,
   StakingDashboardScreen,
   ValidatorDetailsScreen,
   ValidatorListScreen,
-} from "./screens/stake";
+  StakingRewardScreen,
+  UnbondingScreen,
+} from "./screens/staking";
 import {
   ConnectIcon,
   HistoryTabbarIcon,
@@ -60,8 +64,6 @@ import {
   WalletHeaderScreenOptionsPreset,
 } from "./components/header";
 import { TokensScreen } from "./screens/tokens";
-import { UndelegateScreen } from "./screens/stake/undelegate";
-import { RedelegateScreen } from "./screens/stake/redelegate";
 import { CameraScreen } from "./screens/camera";
 import { FocusedScreenProvider } from "./providers/focused-screen";
 import { TxResultScreen } from "./screens/tx-result";
@@ -99,14 +101,8 @@ import {
   PasswordInputScreen,
   NewPasswordInputScreen,
 } from "./screens/settings/screens";
-import {
-  NewStakingDashboardScreen,
-  NewValidatorDetailsScreen,
-  NewValidatorListScreen,
-} from "./screens/staking";
-import { StakingRewardScreen } from "./screens/staking/rewards";
+
 import { HistoryScreen } from "./screens/history";
-import { UnbondingScreen } from "./screens/staking/unbonding";
 import { WebViewScreen } from "./screens/web/default";
 import { SessionProposalScreen } from "./screens/wallet-connect";
 import { useIntl } from "react-intl";
@@ -321,12 +317,12 @@ export const StakingNavigation: FunctionComponent = () => {
         headerTitleStyle: style.flatten(["title2", "color-white"]),
         headerTitle: intl.formatMessage({ id: "staking.headerTitle" }),
       }}
-      initialRouteName="Staking.Dashboard.New"
+      initialRouteName="Staking.Dashboard"
       headerMode="screen"
     >
       <Stack.Screen
-        name="Staking.Dashboard.New"
-        component={NewStakingDashboardScreen}
+        name="Staking.Dashboard"
+        component={StakingDashboardScreen}
       />
     </Stack.Navigator>
   );
@@ -368,20 +364,6 @@ export const OtherNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          title: "Validator List",
-        }}
-        name="Validator List"
-        component={ValidatorListScreen}
-      />
-      <Stack.Screen
-        options={{
-          title: "Validator Details",
-        }}
-        name="Validator Details"
-        component={ValidatorDetailsScreen}
-      />
-      <Stack.Screen
-        options={{
           title: "Governance",
         }}
         name="Governance"
@@ -393,27 +375,6 @@ export const OtherNavigation: FunctionComponent = () => {
         }}
         name="Governance Details"
         component={GovernanceDetailsScreen}
-      />
-      <Stack.Screen
-        options={{
-          title: "Staking Dashboard",
-        }}
-        name="Staking.Dashboard"
-        component={StakingDashboardScreen}
-      />
-      <Stack.Screen
-        options={{
-          title: "Validator Details",
-        }}
-        name="Validator.Details"
-        component={ValidatorDetailsScreen}
-      />
-      <Stack.Screen
-        options={{
-          title: "All Active Validators",
-        }}
-        name="Validator.List"
-        component={ValidatorListScreen}
       />
     </Stack.Navigator>
   );
@@ -487,15 +448,15 @@ export const WalletNavigation: FunctionComponent = () => {
           // title: intl.formatMessage({ id: "validator.details.new.title" }),
           headerShown: false,
         }}
-        name="Validator.Details.New"
-        component={NewValidatorDetailsScreen}
+        name="Validator.Details"
+        component={ValidatorDetailsScreen}
       />
       <Stack.Screen
         options={{
           title: intl.formatMessage({ id: "validator.list.new.title" }),
         }}
-        name="Validator.List.New"
-        component={NewValidatorListScreen}
+        name="Validator.List"
+        component={ValidatorListScreen}
       />
       <Stack.Screen
         options={{

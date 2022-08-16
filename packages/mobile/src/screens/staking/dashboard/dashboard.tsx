@@ -5,7 +5,7 @@ import { DashboardHeader } from "./header";
 import { RewardsItem } from "./rewards";
 import { DelegationsItem } from "./delegate";
 import { View } from "react-native";
-export const NewStakingDashboardScreen: FunctionComponent = () => {
+export const StakingDashboardScreen: FunctionComponent = () => {
   const style = useStyle();
 
   return (
