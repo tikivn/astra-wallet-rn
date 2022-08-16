@@ -56,7 +56,6 @@ import { NewLedgerScreen } from "./screens/register/ledger";
 import { PageScrollPositionProvider } from "./providers/page-scroll-position";
 import {
   BlurredHeaderScreenOptionsPreset,
-  HeaderLeftButton,
   HeaderRightButton,
   WalletHeaderScreenOptionsPreset,
 } from "./components/header";

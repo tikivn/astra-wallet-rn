@@ -8,7 +8,7 @@ import { useStyle } from "../../../styles";
 import { AllIcon, NetworkIcon } from "../../../components/icon";
 import { useIntl } from "react-intl";
 export const AccountNetworkItem: FunctionComponent<{
-  accountItemProps?: object;
+  accountItemProps?: Record<string, unknown>;
 }> = observer(({ accountItemProps }) => {
   const { chainStore } = useStore();
 

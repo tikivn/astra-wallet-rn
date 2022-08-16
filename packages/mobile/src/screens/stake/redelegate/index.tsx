@@ -7,16 +7,16 @@ import { Staking } from "@keplr-wallet/stores";
 import { useRedelegateTxConfig } from "@keplr-wallet/hooks";
 import { PageWithScrollView } from "../../../components/page";
 import { Text, View } from "react-native";
-import {
-  AmountInput,
-  SelectorButtonWithoutModal,
-  ValidatorItem,
-} from "../../../components/input";
+import { AmountInput, ValidatorItem } from "../../../components/input";
 import { Button } from "../../../components/button";
 import { useSmartNavigation } from "../../../navigation-util";
-import { ItemRow, AlignItems } from "../../../components/foundation-view/item-row";
+import {
+  ItemRow,
+  AlignItems,
+} from "../../../components/foundation-view/item-row";
 import { TextAlign } from "../../../components/foundation-view/text-style";
 import { FormattedMessage, useIntl } from "react-intl";
+import { SelectValidatorItem } from "./select-validator";
 
 export const RedelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -35,7 +35,13 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
 
   const smartNavigation = useSmartNavigation();
 
-  const { chainStore, accountStore, queriesStore, analyticsStore, transactionStore } = useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    analyticsStore,
+    transactionStore,
+  } = useStore();
 
   const style = useStyle();
   const intl = useIntl();
@@ -103,8 +109,8 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.gasConfig.error ??
     sendConfigs.feeConfig.error;
   const txStateIsValid = sendConfigError == null;
-  sendConfigs.feeConfig.setFeeType('high');
-  sendConfigs.gasConfig.setGas(200000);
+  sendConfigs.feeConfig.setFeeType("average");
+  sendConfigs.gasConfig.setGas(400000);
   const fee = sendConfigs.feeConfig.fee?.trim(true).toString() ?? "";
   return (
     <PageWithScrollView
@@ -114,7 +120,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     >
       <View style={style.flatten(["height-page-pad"])} />
       <Text style={style.flatten(["color-gray-30", "subtitle2"])}>
-        <FormattedMessage  id="stake.redelegate.from" />
+        <FormattedMessage id="stake.redelegate.from" />
       </Text>
       <ValidatorItem
         containerStyle={style.flatten(["margin-bottom-16"])}
@@ -122,30 +128,19 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
         thumbnail={srcValidatorThumbnail}
         value={staked.trim(true).shrink(true).maxDecimals(6).toString()}
       />
-
-      <SelectorButtonWithoutModal
-        label={intl.formatMessage({ id: "stake.redelegate.to" })}
-        placeHolder={intl.formatMessage({ id: "stake.redelegate.selectValidator" })}
-        selected={
-          dstValidator
-            ? {
-                key: dstValidatorAddress,
-                label: dstValidator.description.moniker || dstValidatorAddress,
-              }
-            : undefined
-        }
-        onPress={() => {
-          smartNavigation.pushSmart("Validator.List.New", {
-            validatorSelector: (validatorAddress: string) => {
-              setDstValidatorAddress(validatorAddress);
-            },
-          });
+      <SelectValidatorItem
+        currentValidator={validatorAddress}
+        onSelectedValidator={(address) => {
+          setDstValidatorAddress(address);
         }}
       />
-      <AmountInput label={intl.formatMessage({ id: "stake.redelegate.amountLabel" })} 
-        amountConfig={sendConfigs.amountConfig} 
+
+      <AmountInput
+        label={intl.formatMessage({ id: "stake.redelegate.amountLabel" })}
+        amountConfig={sendConfigs.amountConfig}
       />
-      <ItemRow style={{ marginHorizontal: 0, paddingHorizontal: 0, }}
+      <ItemRow
+        style={{ marginHorizontal: 0, paddingHorizontal: 0 }}
         alignItems={AlignItems.center}
         itemSpacing={12}
         columns={[
@@ -159,8 +154,10 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
             textAlign: TextAlign.right,
             flex: 1,
           },
-        ]} />
-      <ItemRow style={{ marginHorizontal: 0, paddingHorizontal: 0, }}
+        ]}
+      />
+      <ItemRow
+        style={{ marginHorizontal: 0, paddingHorizontal: 0 }}
         alignItems={AlignItems.center}
         itemSpacing={12}
         columns={[
@@ -174,7 +171,8 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
             textAlign: TextAlign.right,
             flex: 1,
           },
-        ]} />
+        ]}
+      />
       <View style={style.flatten(["flex-1"])} />
       <Button
         text={intl.formatMessage({ id: "stake.redelegate.redelagate" })}

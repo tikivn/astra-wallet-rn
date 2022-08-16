@@ -44,7 +44,7 @@ export const NewValidatorListScreen: FunctionComponent = observer(() => {
   const intl = useIntl();
 
   const data = useMemo(() => {
-    let data = bondedValidators.validators;
+    const data = bondedValidators.validators;
 
     switch (sort) {
       case "APY":
