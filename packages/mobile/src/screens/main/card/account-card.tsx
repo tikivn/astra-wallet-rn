@@ -4,7 +4,7 @@ import { ViewStyle, Text, View } from "react-native";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { Card, CardBody } from "../../../components/card";
-import { AddressCopyableItem } from "../../../components/address-copyable-new";
+import { AddressCopyableItem } from "../../../components/address-copyable";
 
 export const AccountCardNew: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -33,10 +33,24 @@ export const AccountCardNew: FunctionComponent<{
         ])}
       >
         <View style={style.flatten(["flex-row", "padding-bottom-4"])}>
-          <Text style={style.flatten(["color-white", "text-4x-large-semi-bold", "margin-right-4"])}>
-            {new Number(stakable.toDec()).toLocaleString("vi-VN", { maximumFractionDigits: 2 })}
+          <Text
+            style={style.flatten([
+              "color-white",
+              "text-4x-large-semi-bold",
+              "margin-right-4",
+            ])}
+          >
+            {new Number(stakable.toDec()).toLocaleString("vi-VN", {
+              maximumFractionDigits: 2,
+            })}
           </Text>
-          <Text style={style.flatten(["color-white", "text-base-regular", "margin-top-4"])}>
+          <Text
+            style={style.flatten([
+              "color-white",
+              "text-base-regular",
+              "margin-top-4",
+            ])}
+          >
             {chainStore.current.stakeCurrency.coinDenom.toUpperCase()}
           </Text>
         </View>
@@ -47,8 +61,12 @@ export const AccountCardNew: FunctionComponent<{
             : stakable.shrink(true).maxDecimals(6).toString()}
         </Text>
       </CardBody>
-      <View style={{ alignItems: "center" }} >
-        <AddressCopyableItem style={{ width: 200, marginTop: 4 }} address={account.hexAddress} maxCharacters={22} />
+      <View style={{ alignItems: "center" }}>
+        <AddressCopyableItem
+          style={{ width: 200, marginTop: 4 }}
+          address={account.hexAddress}
+          maxCharacters={22}
+        />
       </View>
     </Card>
   );

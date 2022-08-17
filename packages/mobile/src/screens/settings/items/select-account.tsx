@@ -3,7 +3,7 @@ import React, { FunctionComponent } from "react";
 import { Text } from "react-native";
 import { useSmartNavigation } from "../../../navigation-util";
 import { useStyle } from "../../../styles";
-import { AddressCopyableItem } from "../../../components/address-copyable-new";
+import { AddressCopyableItem } from "../../../components/address-copyable";
 import { RectButton } from "../../../components/rect-button";
 import { useStore } from "../../../stores";
 import { useIntl } from "react-intl";
