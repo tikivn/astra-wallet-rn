@@ -1,5 +1,4 @@
 import React, { FunctionComponent, useState } from "react";
-import { PageWithScrollView } from "../../../components/page";
 import { observer } from "mobx-react-lite";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { RegisterConfig } from "@keplr-wallet/hooks";
@@ -7,13 +6,14 @@ import { useStyle } from "../../../styles";
 import { useSmartNavigation } from "../../../navigation-util";
 import { Controller, useForm } from "react-hook-form";
 import { TextInput } from "../../../components/input";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { Button } from "../../../components/button";
 import Clipboard from "expo-clipboard";
 import { Buffer } from "buffer/";
 import { useBIP44Option } from "../bip44";
 import { useNewMnemonicConfig } from "./hook";
 import { useIntl } from "react-intl";
+import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
@@ -64,6 +64,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
   >();
 
   const style = useStyle();
+  const intl = useIntl();
 
   const smartNavigation = useSmartNavigation();
 
@@ -81,7 +82,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
   } = useForm<FormData>();
 
   const [isCreating, setIsCreating] = useState(false);
-  const intl = useIntl();
+
   const submit = handleSubmit(async () => {
     setIsCreating(true);
 
@@ -92,32 +93,30 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
       bip44HDPath: bip44Option.bip44HDPath,
       mnemonic: newMnemonicConfig.mnemonic,
     });
+    setIsCreating(false);
   });
 
   return (
-    <PageWithScrollView
-      backgroundColor={style.get("color-background").color}
-      contentContainerStyle={style.get("flex-grow-1")}
-      style={style.flatten(["padding-x-page"])}
-    >
+    <View style={style.flatten(["flex-1", "padding-x-page", "background-color-background"])}>
+      <View style={{ height: 32 }} />
       <Controller
         control={control}
         rules={{
-          required: "Mnemonic is required",
+          required: intl.formatMessage({ id: "common.text.mnemonic.isRequired" }),
           validate: (value: string) => {
             value = trimWordsStr(value);
             if (!isPrivateKey(value)) {
               if (value.split(" ").length < 8) {
-                return "Too short mnemonic";
+                return intl.formatMessage({ id: "common.text.mnemonic.tooShort" });
               }
 
               if (!bip39.validateMnemonic(value)) {
-                return "Invalid mnemonic";
+                return intl.formatMessage({ id: "common.text.mnemonic.invalid" });
               }
             } else {
               value = value.replace("0x", "");
               if (value.length !== 64) {
-                return "Invalid length of private key";
+                return intl.formatMessage({ id: "common.text.privateKey.invalidLength" });
               }
 
               try {
@@ -125,10 +124,10 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                   Buffer.from(value, "hex").toString("hex").toLowerCase() !==
                   value.toLowerCase()
                 ) {
-                  return "Invalid private key";
+                  return intl.formatMessage({ id: "common.text.privateKey.invalid" });
                 }
               } catch {
-                return "Invalid private key";
+                return intl.formatMessage({ id: "common.text.privateKey.invalid" });
               }
             }
           },
@@ -137,10 +136,15 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
           return (
             <TextInput
               labelStyle={style.flatten(["color-text-black-low", "body3"])}
-              label="Khôi phục tài khoản đã có bằng cách nhập cụm từ bí mật vào ô bên dưới"
-              returnKeyType="next"
+              label={intl.formatMessage({ id: "recover.wallet.mnemonicInput.label" })}
+              returnKeyType="done"
+              blurOnSubmit={true}
+              autoCapitalize="none"
+              autoCorrect={false}
+              autoFocus={true}
               multiline={true}
               numberOfLines={4}
+              containerStyle={{ paddingBottom: errors.mnemonic?.message ? 28 : 0 }}
               inputContainerStyle={style.flatten([
                 "padding-x-20",
                 "padding-y-16",
@@ -156,7 +160,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                     containerStyle={style.flatten(["height-36"])}
                     style={style.flatten(["padding-x-12"])}
                     mode="text"
-                    text="Paste"
+                    text={intl.formatMessage({ id: "common.text.paste" })}
                     onPress={async () => {
                       const text = await Clipboard.getStringAsync();
                       if (text) {
@@ -195,17 +199,24 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
         name="mnemonic"
         defaultValue=""
       />
-      <View style={style.flatten(["flex-1"])} />
-      <Button
-        containerStyle={style.flatten(["border-radius-4", "height-44"])}
-        textStyle={style.flatten(["subtitle2"])}
-        text={intl.formatMessage({ id: "common.text.verify" })}
-        size="large"
-        loading={isCreating}
-        onPress={submit}
-      />
-      {/* Mock element for bottom padding */}
-      <View style={style.flatten(["height-page-pad"])} />
-    </PageWithScrollView>
+      <Text style={style.flatten([
+        "text-small-regular",
+        "color-gray-30",
+        "margin-top-8"
+      ])}>
+        {intl.formatMessage({ id: "recover.wallet.mnemonicInput.info" })}
+      </Text>
+      <View style={style.flatten(["flex-1", "justify-end", "margin-bottom-12"])}>
+        <Button
+          containerStyle={style.flatten(["border-radius-4", "height-44"])}
+          textStyle={style.flatten(["subtitle2"])}
+          text={intl.formatMessage({ id: "common.text.verify" })}
+          size="large"
+          loading={isCreating}
+          onPress={submit}
+        />
+        <AvoidingKeyboardBottomView />
+      </View>
+    </View>
   );
 });

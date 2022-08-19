@@ -7,6 +7,7 @@ import { TextInput } from "./input";
 
 interface NormalInputProps {
   value?: string;
+  placeholder?: string;
   label?: string;
   info?: string;
   error?: string;
@@ -22,6 +23,7 @@ interface NormalInputProps {
 
 export const NormalInput: FunctionComponent<NormalInputProps> = observer(({
   value,
+  placeholder,
   label,
   info,
   error,
@@ -136,6 +138,7 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(({
   return <View style={style}>
     <TextInput
       value={value}
+      placeholder={placeholder}
       label={label}
       labelStyle={labelStyle}
       error={errorText || info}

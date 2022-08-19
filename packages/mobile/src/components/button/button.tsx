@@ -1,6 +1,6 @@
 import React, { FunctionComponent, ReactElement, useState } from "react";
 import { useStyle } from "../../styles";
-import { Text, StyleSheet, TextStyle, View, ViewStyle } from "react-native";
+import { Text, StyleSheet, TextStyle, View, ViewStyle, OpaqueColorValue } from "react-native";
 import { LoadingSpinner } from "../spinner";
 import { RectButton } from "../rect-button";
 
@@ -38,193 +38,195 @@ export const Button: FunctionComponent<{
   rippleColor: propRippleColor,
   underlayColor: propUnderlayColor,
 }) => {
-  const style = useStyle();
+    const style = useStyle();
 
-  const [isPressed, setIsPressed] = useState(false);
+    const [isPressed, setIsPressed] = useState(false);
 
-  const backgroundColorDefinition = (() => {
-    switch (mode) {
-      case "fill":
-        return `background-color-button-${color}${disabled ? "-disabled" : ""}`;
-      case "light":
-        if (disabled) {
-          return `background-color-button-${color}-disabled`;
-        }
-        return `background-color-button-${color}-light`;
-      case "outline":
-        return "background-color-white";
-      default:
-        return "background-color-transparent";
-    }
-  })();
+    const backgroundColorDefinition = (() => {
+      switch (mode) {
+        case "fill":
+          return `background-color-button-${color}`;
+        case "light":
+          if (disabled) {
+            return `background-color-button-${color}-disabled`;
+          }
+          return `background-color-button-${color}-light`;
+        case "outline":
+          return "background-color-white";
+        default:
+          return "background-color-transparent";
+      }
+    })();
 
-  const textDefinition = (() => {
-    switch (size) {
-      case "large":
-        return "text-button1";
-      case "small":
-        return "text-button3";
-      default:
-        return "text-button2";
-    }
-  })();
+    const textDefinition = (() => {
+      switch (size) {
+        case "large":
+          return "text-button1";
+        case "small":
+          return "text-button3";
+        default:
+          return "text-button2";
+      }
+    })();
 
-  const textColorDefinition = (() => {
-    switch (mode) {
-      case "fill":
-        return "color-white";
-      case "light":
-        if (disabled) {
+    const textColorDefinition = (() => {
+      switch (mode) {
+        case "fill":
           return "color-white";
-        }
-        if (isPressed) {
-          return `color-button-${color}-text-pressed`;
-        }
-        return `color-${color}`;
-      case "outline":
-      case "text":
-        if (disabled) {
-          return `color-button-${color}-disabled`;
-        }
-        if (isPressed) {
-          return `color-button-${color}-text-pressed`;
-        }
-        return `color-button-${color}`;
-    }
-  })();
+        case "light":
+          if (disabled) {
+            return "color-white";
+          }
+          if (isPressed) {
+            return `color-button-${color}-text-pressed`;
+          }
+          return `color-${color}`;
+        case "outline":
+        case "text":
+          if (disabled) {
+            return `color-button-${color}-disabled`;
+          }
+          if (isPressed) {
+            return `color-button-${color}-text-pressed`;
+          }
+          return `color-button-${color}`;
+      }
+    })();
 
-  const rippleColor = (() => {
-    if (propRippleColor) {
-      return propRippleColor;
-    }
+    const rippleColor = (() => {
+      if (propRippleColor) {
+        return propRippleColor;
+      }
 
-    switch (mode) {
-      case "fill":
-        return style.get(`color-button-${color}-fill-ripple` as any).color;
-      case "light":
-        return style.get(`color-button-${color}-light-ripple` as any).color;
-      default:
-        return style.get(`color-button-${color}-outline-ripple` as any).color;
-    }
-  })();
+      switch (mode) {
+        case "fill":
+          return style.get(`color-button-${color}-fill-ripple` as any).color;
+        case "light":
+          return style.get(`color-button-${color}-light-ripple` as any).color;
+        default:
+          return style.get(`color-button-${color}-outline-ripple` as any).color;
+      }
+    })();
 
-  const underlayColor = (() => {
-    if (propUnderlayColor) {
-      return propUnderlayColor;
-    }
+    const underlayColor = (() => {
+      if (propUnderlayColor) {
+        return propUnderlayColor;
+      }
 
-    switch (mode) {
-      case "fill":
-        return style.get(`color-button-${color}-fill-underlay` as any).color;
-      case "light":
-        return style.get(`color-button-${color}-light-underlay` as any).color;
-      default:
-        return style.get(`color-button-${color}-outline-underlay` as any).color;
-    }
-  })();
+      switch (mode) {
+        case "fill":
+          return style.get(`color-button-${color}-fill-underlay` as any).color;
+        case "light":
+          return style.get(`color-button-${color}-light-underlay` as any).color;
+        default:
+          return style.get(`color-button-${color}-outline-underlay` as any).color;
+      }
+    })();
 
-  const outlineBorderDefinition = (() => {
-    if (mode !== "outline") {
-      return undefined;
-    }
+    const outlineBorderDefinition = (() => {
+      if (mode !== "outline") {
+        return undefined;
+      }
 
-    if (disabled) {
-      return `border-color-button-${color}-disabled`;
-    }
-    if (isPressed) {
-      return `border-color-button-${color}-text-pressed`;
-    }
-    return `border-color-button-${color}`;
-  })();
+      if (disabled) {
+        return `border-color-button-${color}-disabled`;
+      }
+      if (isPressed) {
+        return `border-color-button-${color}-text-pressed`;
+      }
+      return `border-color-button-${color}`;
+    })();
 
-  return (
-    <View
-      style={StyleSheet.flatten([
-        style.flatten(
-          [
-            backgroundColorDefinition as any,
-            `height-button-${size}` as any,
-            "border-radius-8",
-            "overflow-hidden",
-            "height-44"
-          ],
-          [
-            mode === "outline" && "border-width-1",
-            outlineBorderDefinition as any,
-          ]
-        ),
-        containerStyle,
-      ])}
-    >
-      <RectButton
-        style={StyleSheet.flatten([
-          style.flatten([
-            "flex-row",
-            "justify-center",
-            "items-center",
-            "height-full",
-            "padding-x-8",
-          ]),
-          buttonStyle,
-        ])}
-        onPress={onPress}
-        onActiveStateChange={(active) => setIsPressed(active)}
-        enabled={!loading && !disabled}
-        rippleColor={rippleColor}
-        underlayColor={underlayColor}
-        activeOpacity={1}
-      >
-        <View
-          style={style.flatten(
-            ["height-1", "justify-center"],
-            [loading && "opacity-transparent"]
-          )}
-        >
-          <View>{leftIcon}</View>
-        </View>
-        <Text
-          style={StyleSheet.flatten([
+    return (
+      <View
+        style={{
+          ...StyleSheet.flatten([
             style.flatten(
-              ["subtitle2"],
-              [textDefinition, "text-center", textColorDefinition as any],
-              [loading && "opacity-transparent"]
+              [
+                backgroundColorDefinition as any,
+                `height-button-${size}` as any,
+                "border-radius-8",
+                "overflow-hidden",
+                "height-44"
+              ],
+              [
+                mode === "outline" && "border-width-1",
+                outlineBorderDefinition as any,
+              ]
             ),
-            textStyle,
-          ])}
-        >
-          {text}
-        </Text>
-        <View
-          style={style.flatten(
-            ["height-1", "justify-center"],
-            [loading && "opacity-transparent"]
-          )}
-        >
-          <View>{rightIcon}</View>
-        </View>
-        {loading ? (
-          <View
-            style={style.flatten([
-              "absolute-fill",
+            containerStyle,
+          ]),
+          opacity: mode === "fill" && disabled ? 0.4 : 1
+        }}
+      >
+        <RectButton
+          style={StyleSheet.flatten([
+            style.flatten([
+              "flex-row",
               "justify-center",
               "items-center",
+              "height-full",
+              "padding-x-8",
+            ]),
+            buttonStyle,
+          ])}
+          onPress={onPress}
+          onActiveStateChange={(active) => setIsPressed(active)}
+          enabled={!loading && !disabled}
+          rippleColor={rippleColor}
+          underlayColor={underlayColor}
+          activeOpacity={1}
+        >
+          <View
+            style={style.flatten(
+              ["height-1", "justify-center"],
+              [loading && "opacity-transparent"]
+            )}
+          >
+            <View>{leftIcon}</View>
+          </View>
+          <Text
+            style={StyleSheet.flatten([
+              style.flatten(
+                ["subtitle2"],
+                [textDefinition, "text-center", textColorDefinition as any],
+                [loading && "opacity-transparent"]
+              ),
+              textStyle,
             ])}
           >
-            <LoadingSpinner
-              color={
-                mode === "fill" || (mode === "light" && disabled)
-                  ? style.get("color-white").color
-                  : style.get(
-                      `color-button-${color}${
-                        disabled ? "-disabled" : ""
+            {text}
+          </Text>
+          <View
+            style={style.flatten(
+              ["height-1", "justify-center"],
+              [loading && "opacity-transparent"]
+            )}
+          >
+            <View>{rightIcon}</View>
+          </View>
+          {loading ? (
+            <View
+              style={style.flatten([
+                "absolute-fill",
+                "justify-center",
+                "items-center",
+              ])}
+            >
+              <LoadingSpinner
+                color={
+                  mode === "fill" || (mode === "light" && disabled)
+                    ? style.get("color-white").color
+                    : style.get(
+                      `color-button-${color}${disabled ? "-disabled" : ""
                       }` as any
                     ).color
-              }
-              size={20}
-            />
-          </View>
-        ) : null}
-      </RectButton>
-    </View>
-  );
-};
+                }
+                size={20}
+              />
+            </View>
+          ) : null}
+        </RectButton>
+      </View>
+    );
+  };

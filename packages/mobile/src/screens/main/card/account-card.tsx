@@ -5,7 +5,6 @@ import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { Card, CardBody } from "../../../components/card";
 import { AddressCopyableItem } from "../../../components/address-copyable";
-import { useIntl } from "react-intl";
 
 export const AccountCardNew: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -13,7 +12,6 @@ export const AccountCardNew: FunctionComponent<{
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
   const style = useStyle();
-  const intl = useIntl();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
@@ -41,7 +39,7 @@ export const AccountCardNew: FunctionComponent<{
               "margin-right-4",
             ])}
           >
-            {new Number(stakable.toDec()).toLocaleString(intl.locale, {
+            {new Number(stakable.toDec()).toLocaleString("vi-VN", {
               maximumFractionDigits: 2,
             })}
           </Text>

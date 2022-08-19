@@ -9,6 +9,11 @@ const SmallTypos = {
 };
 
 const BaseTypos = {
+  "text-base-light": {
+    fontSize: 14,
+    lineHeight: 20,
+    ...getPlatformFontWeight("300"),
+  },
   "text-base-regular": {
     fontSize: 14,
     lineHeight: 20,
