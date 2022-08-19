@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
+import React, { FunctionComponent, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { RegisterConfig } from "@keplr-wallet/hooks";
@@ -6,15 +6,14 @@ import { useStyle } from "../../../styles";
 import { useSmartNavigation } from "../../../navigation-util";
 import { Controller, useForm } from "react-hook-form";
 import { TextInput } from "../../../components/input";
-import { Keyboard, KeyboardEvent, Platform, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { Button } from "../../../components/button";
 import Clipboard from "expo-clipboard";
 import { Buffer } from "buffer/";
 import { useBIP44Option } from "../bip44";
 import { useNewMnemonicConfig } from "./hook";
 import { useIntl } from "react-intl";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Animated, { Easing } from "react-native-reanimated";
+import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
@@ -51,20 +50,6 @@ interface FormData {
   confirmPassword: string;
 }
 
-const useAnimatedValueSet = () => {
-  const [state] = useState(() => {
-    return {
-      clock: new Animated.Clock(),
-      finished: new Animated.Value(0),
-      time: new Animated.Value(0),
-      frameTime: new Animated.Value(0),
-      value: new Animated.Value(0),
-    };
-  });
-
-  return state;
-};
-
 export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
   const route = useRoute<
     RouteProp<
@@ -80,8 +65,6 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
 
   const style = useStyle();
   const intl = useIntl();
-  const safeAreaInsets = useSafeAreaInsets();
-  const animatedValueSet = useAnimatedValueSet();
 
   const smartNavigation = useSmartNavigation();
 
@@ -99,82 +82,6 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
   } = useForm<FormData>();
 
   const [isCreating, setIsCreating] = useState(false);
-
-  const [
-    softwareKeyboardBottomPadding,
-    setSoftwareKeyboardBottomPadding,
-  ] = useState(0);
-
-  useEffect(() => {
-    const onKeyboarFrame = (e: KeyboardEvent) => {
-      setSoftwareKeyboardBottomPadding(
-        e.endCoordinates.height - safeAreaInsets.bottom
-      );
-    };
-    const onKeyboardClearFrame = () => {
-      setSoftwareKeyboardBottomPadding(0);
-    };
-
-    // No need to do this on android
-    if (Platform.OS !== "android") {
-      Keyboard.addListener("keyboardWillShow", onKeyboarFrame);
-      Keyboard.addListener("keyboardWillChangeFrame", onKeyboarFrame);
-      Keyboard.addListener("keyboardWillHide", onKeyboardClearFrame);
-
-      return () => {
-        Keyboard.removeListener("keyboardWillShow", onKeyboarFrame);
-        Keyboard.removeListener("keyboardWillChangeFrame", onKeyboarFrame);
-        Keyboard.removeListener("keyboardWillHide", onKeyboardClearFrame);
-      };
-    }
-  }, [safeAreaInsets.bottom]);
-
-  const animatedKeyboardPaddingBottom = useMemo(() => {
-    return Animated.block([
-      Animated.cond(
-        Animated.and(
-          Animated.neq(animatedValueSet.value, softwareKeyboardBottomPadding),
-          Animated.not(Animated.clockRunning(animatedValueSet.clock))
-        ),
-        [
-          Animated.debug(
-            "start clock for keyboard avoiding",
-            animatedValueSet.value
-          ),
-          Animated.set(animatedValueSet.finished, 0),
-          Animated.set(animatedValueSet.time, 0),
-          Animated.set(animatedValueSet.frameTime, 0),
-          Animated.startClock(animatedValueSet.clock),
-        ]
-      ),
-      Animated.timing(
-        animatedValueSet.clock,
-        {
-          finished: animatedValueSet.finished,
-          position: animatedValueSet.value,
-          time: animatedValueSet.time,
-          frameTime: animatedValueSet.frameTime,
-        },
-        {
-          toValue: softwareKeyboardBottomPadding,
-          duration: 175,
-          easing: Easing.linear,
-        }
-      ),
-      Animated.cond(
-        animatedValueSet.finished,
-        Animated.stopClock(animatedValueSet.clock)
-      ),
-      animatedValueSet.value,
-    ]);
-  }, [
-    animatedValueSet.clock,
-    animatedValueSet.finished,
-    animatedValueSet.frameTime,
-    animatedValueSet.time,
-    animatedValueSet.value,
-    softwareKeyboardBottomPadding,
-  ]);
 
   const submit = handleSubmit(async () => {
     setIsCreating(true);
@@ -299,29 +206,16 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
       ])}>
         {intl.formatMessage({ id: "recover.wallet.mnemonicInput.info" })}
       </Text>
-      <View style={style.flatten(["flex-1", "justify-end"])}>
+      <View style={style.flatten(["flex-1", "justify-end", "margin-bottom-12"])}>
         <Button
-          containerStyle={style.flatten(["border-radius-4", "height-44", "margin-bottom-12"])}
+          containerStyle={style.flatten(["border-radius-4", "height-44"])}
           textStyle={style.flatten(["subtitle2"])}
           text={intl.formatMessage({ id: "common.text.verify" })}
           size="large"
           loading={isCreating}
           onPress={submit}
         />
-        {/* <SafeAreaView /> */}
-        <Animated.View
-          style={StyleSheet.flatten([
-            style.flatten([
-              "overflow-hidden",
-            ]),
-            {
-              paddingBottom: Animated.add(
-                safeAreaInsets.bottom,
-                animatedKeyboardPaddingBottom
-              ),
-            },
-          ])}
-        />
+        <AvoidingKeyboardBottomView />
       </View>
     </View>
   );

@@ -392,7 +392,7 @@ export const WalletNavigation: FunctionComponent = () => {
 
       <Stack.Screen
         options={{
-          title: intl.formatMessage({ id: "changePassword.title" }),
+          title: "",
         }}
         name="Settings.PasswordInput"
         component={PasswordInputScreen}

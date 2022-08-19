@@ -12,7 +12,6 @@ import {
   StyleSheet,
   View,
   Text,
-  KeyboardAvoidingView,
   Platform,
   SafeAreaView,
 } from "react-native";
@@ -23,7 +22,6 @@ import * as SplashScreen from "expo-splash-screen";
 import { Button } from "../../components/button";
 import delay from "delay";
 import { useStore } from "../../stores";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { StackActions, useNavigation } from "@react-navigation/native";
 import { KeyRingStatus } from "@keplr-wallet/background";
 import { KeychainStore } from "../../stores/keychain";
@@ -36,6 +34,7 @@ import { RectButton, TouchableOpacity } from "react-native-gesture-handler";
 import { useRegisterConfig } from "@keplr-wallet/hooks";
 import { useBIP44Option } from "../register/bip44";
 import { BIOMETRY_TYPE } from "react-native-keychain";
+import { AvoidingKeyboardBottomView } from "../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 
 let splashScreenHided = false;
 async function hideSplashScreen() {
@@ -305,9 +304,8 @@ export const UnlockScreen: FunctionComponent = observer(() => {
           source={require("../../assets/logo/splash-screen-background.png")}
         />
       </View>
-      <KeyboardAvoidingView
+      <View
         style={style.flatten(["flex-1", "padding-x-page", "background-color-transparent"])}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <SafeAreaView style={{ paddingTop: Platform.OS === "android" ? 25 : 0 }} />
         <View style={{ height: 44, marginBottom: 32 }} />
@@ -349,7 +347,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
           </Text>
         </RectButton>
 
-        <View style={{ flex: 1, justifyContent: "flex-end" }}>
+        <View style={{ flex: 1, justifyContent: "flex-end", marginBottom: 12 }}>
           {keychainStore.isBiometryOn ? (
             <TouchableOpacity
               onPress={tryBiometric}
@@ -386,10 +384,6 @@ export const UnlockScreen: FunctionComponent = observer(() => {
           ) : null}
 
           <Button
-            textStyle={style.flatten(["subtitle2"])}
-            containerStyle={style.flatten([
-              "margin-bottom-12",
-            ])}
             text={intl.formatMessage({ id: "unlock.button.login.text" })}
             color="primary"
             mode="fill"
@@ -397,9 +391,9 @@ export const UnlockScreen: FunctionComponent = observer(() => {
             onPress={tryUnlock}
             disabled={password.length < cellCount}
           />
-          <SafeAreaView />
+          <AvoidingKeyboardBottomView />
         </View>
-      </KeyboardAvoidingView>
+      </View>
       <Animated.View
         style={StyleSheet.flatten([
           style.flatten(["absolute-fill"]),

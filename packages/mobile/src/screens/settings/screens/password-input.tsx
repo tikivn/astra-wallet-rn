@@ -2,13 +2,13 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { useStyle } from "../../../styles";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { NormalInput } from "../../../components/input/normal-input";
-import { Button } from "../../../components";
+import { AlertInline, Button } from "../../../components";
 import { useSmartNavigation } from "../../../navigation-util";
-import { RouteProp, useRoute, useNavigation } from "@react-navigation/native";
+import { RouteProp, useRoute } from "@react-navigation/native";
 import { useStore } from "../../../stores";
 import { useIntl } from "react-intl";
+import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 
 export declare type PasswordInputScreenType =
   | "updatePassword"
@@ -18,7 +18,6 @@ export declare type PasswordInputScreenType =
 export const PasswordInputScreen: FunctionComponent = observer(() => {
   const MIN_LENGTH_PASSWORD = 8;
 
-  const navigation = useNavigation();
   const route = useRoute<
     RouteProp<
       Record<
@@ -77,22 +76,40 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
   };
 
   const getTopView = () => {
-    if (type !== "deleteWallet") {
-      return null;
+    var title = "";
+    switch (type) {
+      case "updatePassword":
+        title = intl.formatMessage({ id: "changePassword.title" });
+        break;
+      case "viewMnemonic":
+        title = intl.formatMessage({ id: "viewPassphase.title" });
+        break;
+      case "deleteWallet":
+        title = intl.formatMessage({ id: "deleteAccount.title" });
+        break;
+      default:
+        break;
     }
 
     return (
-      <Text
-        style={style.flatten([
-          "color-gray-30",
-          "text-caption",
+      <View style={style.flatten([
+        "margin-y-24",
+      ])}>
+        <Text style={style.flatten([
+          "color-gray-10",
+          "text-x-large-semi-bold",
           "text-center",
-          "padding-y-32",
-          "margin-bottom-32",
-        ])}
-      >
-        {intl.formatMessage({ id: "deleteAccount.top.title" })}
-      </Text>
+          "margin-bottom-12",
+        ])}>
+          {title}
+        </Text>
+        {type === "deleteWallet" && (
+          <AlertInline
+            type="warning"
+            content={intl.formatMessage({ id: "deleteAccount.top.title" })}
+          />
+        )}
+      </View>
     );
   };
 
@@ -152,29 +169,6 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     validateInputData();
   }, [password]);
-
-  useEffect(() => {
-    updateNavigationTitle();
-  });
-
-  function updateNavigationTitle() {
-    let textId;
-    switch (type) {
-      case "updatePassword":
-        textId = "changePassword.title";
-        break;
-      case "viewMnemonic":
-        textId = "viewPassphase.title";
-        break;
-      case "deleteWallet":
-        textId = "deleteAccount.title";
-        break;
-    }
-
-    navigation.setOptions({
-      title: intl.formatMessage({ id: textId }),
-    });
-  }
 
   function validateInputData() {
     if (password.length >= MIN_LENGTH_PASSWORD) {
@@ -240,30 +234,22 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
 
   return (
     <React.Fragment>
-      <View
-        style={style.flatten(["absolute-fill", "background-color-background"])}
-      ></View>
-      <View style={style.flatten(["flex-1", "background-color-transparent"])}>
-        <KeyboardAwareScrollView
-          contentContainerStyle={style.flatten([
-            "flex-grow-1",
-            "padding-x-page",
-          ])}
-        >
-          <View style={{ height: 32 }} />
-          {getTopView()}
-          <NormalInput
-            value={password}
-            label={getInputLabel()}
-            error={error}
-            secureTextEntry={true}
-            showPassword={showPassword}
-            onShowPasswordChanged={setShowPassword}
-            onChangeText={setPassword}
-            onBlur={validateInputData}
-            style={{ marginBottom: 24, paddingBottom: 24 }}
-          />
-
+      <View style={style.flatten(["absolute-fill", "background-color-background"])} />
+      <View style={style.flatten(["flex-1", "padding-x-page", "background-color-transparent"])}>
+        {getTopView()}
+        <NormalInput
+          value={password}
+          placeholder={getInputLabel()}
+          // label={getInputLabel()}
+          error={error}
+          secureTextEntry={true}
+          showPassword={showPassword}
+          onShowPasswordChanged={setShowPassword}
+          onChangeText={setPassword}
+          onBlur={validateInputData}
+          style={{ marginBottom: 24, paddingBottom: 24 }}
+        />
+        <View style={style.flatten(["flex-1", "justify-end", "margin-bottom-12"])}>
           <Button
             containerStyle={style.flatten(["border-radius-4", "height-44"])}
             textStyle={style.flatten(["subtitle2"])}
@@ -273,8 +259,8 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
             disabled={!inputDataValid}
             color={type === "deleteWallet" ? "danger" : "primary"}
           />
-          <View style={style.get("flex-5")} />
-        </KeyboardAwareScrollView>
+        </View>
+        <AvoidingKeyboardBottomView />
       </View>
     </React.Fragment>
   );
