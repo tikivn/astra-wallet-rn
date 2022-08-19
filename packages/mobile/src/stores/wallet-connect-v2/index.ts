@@ -17,6 +17,7 @@ import { SessionTypes, SignClientTypes } from "@walletconnect/types";
 import { Keplr } from "@keplr-wallet/provider";
 import { RNMessageRequesterInternal } from "../../router";
 import { AminoSignResponse, makeSignDoc } from "@cosmjs/launchpad";
+import { EthSignType } from "@keplr-wallet/types";
 
 export type SessionConnectInfor = {
   name: string;
@@ -234,6 +235,24 @@ export class SignClientStore extends SignClientManager {
       } else {
         console.log("Missing data");
       }
+    } else if (params.request.method === "signEth") {
+      const requestParams = JSON.stringify({
+        ...params.request.params,
+      });
+      console.log("__DEBUG__ signEthereum params: ", requestParams);
+      await this.waitInitStores();
+      const keplr = this.createKeplrAPI();
+      const key = await keplr.getKey(this.chainStore.current.chainId);
+      const result = await keplr.signEthereum(
+        this.chainStore.current.chainId,
+        key.bech32Address,
+        requestParams,
+        EthSignType.TRANSACTION
+      );
+      const buffer = Buffer.from(result);
+      const hexResult = `0x${buffer.toString("hex")}`;
+      console.log("__DEBUG__ hexResult: ", hexResult);
+      await this.approveRequest(request, hexResult);
     }
   }
 
@@ -274,53 +293,67 @@ export class SignClientStore extends SignClientManager {
 
   async approveProposal() {
     if (this.client && this.pendingProposal) {
-      await this.waitInitStores();
-      const keplr = this.createKeplrAPI();
-      const key = await keplr.getKey(this.chainStore.current.chainId);
-      const { id, params } = this.pendingProposal;
-      const { relays, requiredNamespaces } = params;
+      try {
+        await this.waitInitStores();
+        const keplr = this.createKeplrAPI();
+        const key = await keplr.getKey(this.chainStore.current.chainId);
+        const { id, params } = this.pendingProposal;
+        const { relays, requiredNamespaces } = params;
+        const buffer = Buffer.from(key.address);
+        const address = `0x${buffer.toString("hex")}`;
 
-      const address = key.bech32Address;
-      const namespaces: SessionTypes.Namespaces = {};
-      Object.keys(requiredNamespaces).forEach((key) => {
-        const accounts: string[] = [];
-        requiredNamespaces[key].chains.map((chain) => {
-          accounts.push(`${chain}:${address}`);
+        // const address = key.bech32Address;
+        const namespaces: SessionTypes.Namespaces = {};
+        Object.keys(requiredNamespaces).forEach((key) => {
+          const accounts: string[] = [];
+          requiredNamespaces[key].chains.map((chain) => {
+            accounts.push(`${chain}:${address}`);
+          });
+          namespaces[key] = {
+            accounts,
+            methods: requiredNamespaces[key].methods,
+            events: requiredNamespaces[key].events,
+          };
         });
-        namespaces[key] = {
-          accounts,
-          methods: requiredNamespaces[key].methods,
-          events: requiredNamespaces[key].events,
+
+        const approvePayload = {
+          id,
+          relayProtocol: relays[0].protocol,
+          namespaces,
         };
-      });
-
-      const approvePayload = {
-        id,
-        relayProtocol: relays[0].protocol,
-        namespaces,
-      };
-      const { acknowledged } = await this.client.approve(approvePayload);
-      await acknowledged();
-      runInAction(() => {
-        this._s = Math.random();
-        this._onSessionChange({
-          name: this._pendingProposal?.params.proposer.metadata.name ?? "",
-          isConnect: true,
+        const { acknowledged } = await this.client.approve(approvePayload);
+        await acknowledged();
+        runInAction(() => {
+          this._s = Math.random();
+          this._onSessionChange({
+            name: this._pendingProposal?.params.proposer.metadata.name ?? "",
+            isConnect: true,
+          });
+          this._pendingProposal = undefined;
         });
-        this._pendingProposal = undefined;
-      });
+      } catch (e: any) {
+        console.log("__DEBUG__ approveProposal: ", e.message);
+        runInAction(() => {
+          this._pendingProposal = undefined;
+        });
+      }
     }
   }
 
   async rejectProposal() {
     if (this.client && this._pendingProposal) {
-      await this.client.reject({
-        id: this._pendingProposal?.id,
-        reason: getSdkError("USER_REJECTED_METHODS"),
-      });
-      runInAction(() => {
-        this._pendingProposal = undefined;
-      });
+      try {
+        await this.client.reject({
+          id: this._pendingProposal?.id,
+          reason: getSdkError("USER_REJECTED_METHODS"),
+        });
+      } catch (e: any) {
+        console.log("__DEBUG__ rejectProposal: ", e.message);
+      } finally {
+        runInAction(() => {
+          this._pendingProposal = undefined;
+        });
+      }
     }
   }
 
@@ -343,7 +376,7 @@ export class SignClientStore extends SignClientManager {
 
   async approveRequest(
     request: SignClientTypes.EventArguments["session_request"],
-    result: AminoSignResponse
+    result: any
   ) {
     if (this.client) {
       await this.client?.respond({
