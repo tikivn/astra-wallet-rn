@@ -23,6 +23,7 @@ export interface AppChainInfo extends ChainInfo {
       readonly icons: [string];
     };
   };
+  readonly chainIdNum?: number;
 }
 
 export const EmbedChainInfos: AppChainInfo[] = [
@@ -30,6 +31,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     rpc: "https://rpc.astranaut.dev",
     rest: "https://api.astranaut.dev",
     chainId: "astra_11115-1",
+    chainIdNum: 11115,
     chainName: "Testnet",
     stakeCurrency: {
       coinDenom: "ASA",
@@ -51,6 +53,14 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: "aastra",
         coinImageUrl:
           "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
+      },
+      {
+        coinDenom: "USDT",
+        coinMinimalDenom: "usdt",
+        coinDecimals: 18,
+        coinImageUrl:
+          "https://pancakeswap.finance/images/tokens/0x55d398326f99059fF775485246999027B3197955.png",
+        contractAddress: "0xeAcA2EF350DDFD56423B0bcd24d26Edeb0656E3F",
       },
     ],
     feeCurrencies: [
@@ -93,6 +103,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     rpc: "https://evm.astranaut.network",
     rest: "https://api.astranaut.network",
     chainId: "astra_11112-1",
+    chainIdNum: 11112,
     chainName: "Testnet (Deprecated)",
     stakeCurrency: {
       coinDenom: "ASA",
@@ -114,6 +125,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: "aastra",
         coinImageUrl:
           "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
+        contractAddress: "0x4fDC1FB9C36c855316bA66aAF2dc34aEfd680533",
       },
       {
         coinDenom: "USDT",

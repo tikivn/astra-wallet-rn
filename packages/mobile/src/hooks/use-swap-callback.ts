@@ -1,20 +1,19 @@
 import {
   ChainId,
-  JSBI,
-  Percent,
   Router,
   SwapParameters,
   Trade,
   TradeType,
-} from "@astradefi/sdk";
+} from "@solarswap/sdk";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import IRouterPancakeABI from "../contracts/abis/IPancakeRouter02.json";
+import ISolardexRouter02 from "../contracts/abis/ISolardexRouter02.json";
+import { ADDRESSES } from "../contracts/addresses";
 import { useStore } from "../stores";
 import {
+  calculateSlippagePercent,
   GAS_PRICE_GWEI,
   INITIAL_ALLOWED_SLIPPAGE,
   isZero,
-  ROUTER_ADDRESS,
   TX_DEADLINE,
 } from "../utils/for-swap";
 import { useWeb3 } from "./use-web3";
@@ -58,7 +57,6 @@ function useTransactionDeadline() {
 }
 // returns a function that will execute a swap, if the parameters are all valid
 // and the user has approved the slippage adjusted input amount for the trade
-const BIPS_BASE = JSBI.BigInt(10000);
 
 export function useSwapCallArguments(
   trade: Trade | undefined, // trade to execute, required
@@ -71,9 +69,10 @@ export function useSwapCallArguments(
     web3Instance,
   } = useWeb3();
 
+  const chain = chainId || ChainId.TESTNET;
+
   const recipient = account;
   const deadline = useTransactionDeadline();
-
   return useMemo(() => {
     if (
       !trade ||
@@ -87,18 +86,18 @@ export function useSwapCallArguments(
       return [];
 
     const contract = new web3Instance.eth.Contract(
-      IRouterPancakeABI as any,
-      ROUTER_ADDRESS[chainId as ChainId]
+      ISolardexRouter02 as any,
+      ADDRESSES.ROUTER[chain]
     );
     if (!contract) {
       return [];
     }
     const swapMethods = [];
-
+    const allowedSlippagePercent = calculateSlippagePercent(allowedSlippage);
     swapMethods.push(
       Router.swapCallParameters(trade, {
         feeOnTransfer: false,
-        allowedSlippage: new Percent(JSBI.BigInt(allowedSlippage), BIPS_BASE),
+        allowedSlippage: allowedSlippagePercent,
         recipient,
         deadline,
       })
@@ -108,7 +107,7 @@ export function useSwapCallArguments(
       swapMethods.push(
         Router.swapCallParameters(trade, {
           feeOnTransfer: true,
-          allowedSlippage: new Percent(JSBI.BigInt(allowedSlippage), BIPS_BASE),
+          allowedSlippage: allowedSlippagePercent,
           recipient,
           deadline,
         })
@@ -119,6 +118,7 @@ export function useSwapCallArguments(
   }, [
     account,
     allowedSlippage,
+    chain,
     chainId,
     deadline,
     library,
@@ -143,6 +143,7 @@ export function useSwapCallback(
     accountHex,
     web3Instance,
   } = useWeb3();
+  const chain = chainId || ChainId.TESTNET;
   const gasPrice = GAS_PRICE_GWEI.testnet;
   const { keyRingStore } = useStore();
   const swapCalls = useSwapCallArguments(trade, allowedSlippage);
@@ -166,7 +167,7 @@ export function useSwapCallback(
           .then((_nonce) => {
             const txParams = {
               gasPrice,
-              to: ROUTER_ADDRESS[11112],
+              to: ADDRESSES.ROUTER[chain],
               data: functionAbi,
               from: accountSign.address,
               nonce: web3Instance.utils.toHex(_nonce),
@@ -186,7 +187,7 @@ export function useSwapCallback(
           });
       });
     },
-    [accountSignAsync, gasPrice, web3Instance]
+    [accountSignAsync, chain, gasPrice, web3Instance]
   );
 
   return useMemo(() => {
@@ -210,10 +211,10 @@ export function useSwapCallback(
               contract,
             } = call;
 
-            const options = !value || isZero(value) ? {} : { value };
+            const options =
+              !value || isZero(value) ? {} : { value, from: accountHex };
             const contractFunction = contract.methods[methodName](...args);
             const functionAbi = contractFunction.encodeABI();
-
             return contractFunction
               .estimateGas(options)
               .then((gasEstimate: any) => {
@@ -226,7 +227,7 @@ export function useSwapCallback(
               .catch((gasError: any) => {
                 console.error(
                   "Gas estimate failed, trying eth_call to extract error",
-                  gasError
+                  { gasError, call }
                 );
                 return {
                   error: gasError,

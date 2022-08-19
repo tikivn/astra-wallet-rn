@@ -123,9 +123,8 @@
     "fast-text-encoding": "^1.0.4",
     "@nartc/react-native-barcode-mask": "^1.2.0",
     "@react-native-masked-view/masked-view": "0.2.6",
-    "react-native-select-dropdown": "^2.0.4",
     "bech32-converting": "^1.0.9",
-    "@astradefi/sdk": "1.0.1-beta.0",
+    "@solarswap/sdk": "1.0.3",
     "@ethersproject/abi": "^5.5.0",
     "@ethersproject/address": "^5.5.0",
     "@ethersproject/bignumber": "^5.5.0",
@@ -136,7 +135,8 @@
     "@ethersproject/providers": "^5.5.2",
     "@ethersproject/strings": "^5.5.0",
     "@ethersproject/units": "^5.5.0",
-    "web3": "^1.7.4"
+    "web3": "^1.7.4",
+    "react-native-cache": "2.0.2"
   },
   "devDependencies": {
     "@ethersproject/solidity": "^5.0.2",

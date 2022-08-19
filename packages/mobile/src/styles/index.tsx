@@ -240,6 +240,12 @@ export const { StyleProvider, useStyle } = createStyleProvider({
       letterSpacing: 0.3,
       ...getPlatformFontWeight("400"),
     },
+    "text-caption-center": {
+      fontSize: 14,
+      lineHeight: 0,
+      letterSpacing: 0.3,
+      ...getPlatformFontWeight("400"),
+    },
     "text-caption1": {
       fontSize: 13,
       lineHeight: 18,
@@ -267,6 +273,18 @@ export const { StyleProvider, useStyle } = createStyleProvider({
       lineHeight: 32,
       letterSpacing: 0.3,
       ...getPlatformFontWeight("400"),
+    },
+    "text-amount-input-center": {
+      fontSize: 24,
+      lineHeight: 32,
+      letterSpacing: 0.3,
+      ...getPlatformFontWeight("400"),
+    },
+    "text-success": {
+      fontSize: 24,
+      lineHeight: 32,
+      letterSpacing: 0.3,
+      ...getPlatformFontWeight("500"),
     },
     // This style is for the text input and aims to mock the body2 style.
     // In IOS, it is hard to position the input text to the middle vertically.

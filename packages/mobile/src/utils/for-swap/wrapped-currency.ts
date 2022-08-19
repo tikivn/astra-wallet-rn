@@ -6,7 +6,7 @@ import {
   Token,
   TokenAmount,
   WETH,
-} from "@astradefi/sdk";
+} from "@solarswap/sdk";
 
 export function wrappedCurrency(
   currency: Currency | undefined,

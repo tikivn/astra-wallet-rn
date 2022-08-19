@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Text,
   TextStyle,
+  TouchableOpacity,
   View,
   ViewStyle,
 } from "react-native";
@@ -14,14 +15,16 @@ export const Tooltip: FunctionComponent<{
   textStyle?: TextStyle;
   containerStyle?: ViewStyle;
   text: string;
-}> = observer(({ textStyle, containerStyle, text }) => {
+  onPress?: (_?: any) => void;
+}> = observer(({ textStyle, containerStyle, text, onPress }) => {
   const style = useStyle();
   return (
-    <View
+    <TouchableOpacity
       style={StyleSheet.flatten([
         style.flatten(["flex-row", "justify-start", "items-center"]),
         containerStyle,
       ])}
+      onPress={() => onPress && onPress()}
     >
       <Text
         style={StyleSheet.flatten([
@@ -38,6 +41,6 @@ export const Tooltip: FunctionComponent<{
           source={require("../../../assets/image/icon_tooltip_2.png")}
         />
       </View>
-    </View>
+    </TouchableOpacity>
   );
 });

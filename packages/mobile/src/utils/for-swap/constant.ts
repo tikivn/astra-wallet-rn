@@ -1,4 +1,4 @@
-import { ChainId } from "@astradefi/sdk";
+import { ChainId, JSBI, Percent } from "@solarswap/sdk";
 import { parseUnits } from "@ethersproject/units";
 
 export enum GAS_PRICE {
@@ -14,11 +14,30 @@ export const GAS_PRICE_GWEI = {
   instant: parseUnits(GAS_PRICE.instant, "gwei").toString(),
   testnet: parseUnits(GAS_PRICE.testnet, "gwei").toString(),
 };
-export const INITIAL_ALLOWED_SLIPPAGE = 50; // 50/1000
 
 export const TX_DEADLINE = 20 * 60; // 20p
 
-export const ROUTER_ADDRESS = {
-  [ChainId.MAINNET]: "0x10ED43C718714eb63d5aA57B78B54704E256024E",
-  [ChainId.TESTNET]: "0xf6a7620F4fFF8197127a1C1c05CB5866bfC5a7CE",
+export const SLIPPAGE_TOLERANCE = [100, 200, 500];
+export const INITIAL_ALLOWED_SLIPPAGE = SLIPPAGE_TOLERANCE[1]; // 50/1000
+
+export const BIPS_BASE = JSBI.BigInt(10000);
+
+export const BASE_FEE = new Percent(JSBI.BigInt(25), BIPS_BASE);
+
+export const INTERNAL_DELAY = 5 * 1000; // 5s
+
+//interval stop time when value does not change
+export const INTERVAL_STOP = 20 * 1000; // 20s
+
+export const FIXED_DECIMAL_PLACES = 4;
+
+export const RPC_ENPOINT = {
+  [ChainId.TESTNET as number]: "https://rpc.astranaut.dev",
 };
+
+export const TIME_DEBOUNCE = 300;
+
+export enum ERROR_KEY {
+  INSUFFICIENT_BALANCE = "InsufficientBalances",
+  INVALID_INPUT = "InvalidInput",
+}

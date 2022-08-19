@@ -1,43 +1,60 @@
+import { ChainId, Token } from "@solarswap/sdk";
 import { Web3Provider } from "@ethersproject/providers";
 import converter from "bech32-converting";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import Web3 from "web3";
+import { AppChainInfo } from "../config";
+import { ADDRESSES } from "../contracts/addresses";
 
 import { useStore } from "../stores";
+import { RPC_ENPOINT } from "../utils/for-swap";
 
 export const useWeb3 = () => {
-  const web3Ref = useRef<Web3>();
-  const etherProviderRef = useRef<Web3Provider>();
   const { chainStore, accountStore } = useStore();
+  const {
+    bech32Config,
+    chainId: chainIdStr,
+    chainIdNum: chainId,
+  } = useMemo(() => chainStore.current as AppChainInfo, [chainStore]);
 
-  const { rpc, bech32Config, chainId: chainIdStr } = chainStore.current;
-  const [chainId, setChainId] = useState<number>();
+  const web3Ref = useRef<Web3>(
+    new Web3(new Web3.providers.HttpProvider(RPC_ENPOINT[chainId as number]))
+  );
+
+  const etherProviderRef = useRef<Web3Provider>(
+    new Web3Provider(web3Ref.current.currentProvider as any)
+  );
 
   const account = useMemo(() => {
-    return accountStore.getAccount(chainStore.current.chainId);
-  }, [accountStore, chainStore]);
+    return accountStore.getAccount(chainIdStr);
+  }, [accountStore, chainIdStr]);
+
   const accountHex = useMemo(() => {
     const prefix = bech32Config.bech32PrefixAccAddr;
     const address = converter(prefix).toHex(account.bech32Address);
     return address;
   }, [account.bech32Address, bech32Config.bech32PrefixAccAddr]);
 
-  useEffect(() => {
-    if (rpc) {
-      const web3 = new Web3(new Web3.providers.HttpProvider(rpc));
-      web3Ref.current = web3;
-      etherProviderRef.current = new Web3Provider(
-        new Web3.providers.HttpProvider(rpc) as any
-      );
+  const wasaImg = useMemo(() => chainStore.current.stakeCurrency.coinImageUrl, [
+    chainStore,
+  ]);
 
-      (async () => {
-        if (etherProviderRef.current) {
-          const chain = (await etherProviderRef.current.getNetwork()).chainId;
-          setChainId(chain);
-        }
-      })();
-    }
-  }, [rpc]);
+  const WASA = useMemo(
+    () =>
+      new Token(
+        chainId || ChainId.TESTNET,
+        ADDRESSES.WASA[chainId || ChainId.TESTNET],
+        18,
+        "ASA",
+        "Wrap ASA",
+        wasaImg
+      ),
+    [chainId, wasaImg]
+  );
+
+  const getStore = useCallback(() => {
+    return { chainStore, accountStore };
+  }, [accountStore, chainStore]);
 
   return {
     web3Instance: web3Ref.current,
@@ -46,5 +63,7 @@ export const useWeb3 = () => {
     account,
     accountHex,
     chainIdStr,
+    WASA,
+    getStore,
   };
 };

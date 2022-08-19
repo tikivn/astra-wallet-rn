@@ -1,4 +1,4 @@
-import { JSBI, Percent, Trade } from "@astradefi/sdk";
+import { JSBI, Percent, Trade } from "@solarswap/sdk";
 import { AppCurrency } from "@keplr-wallet/types";
 import React, { FunctionComponent, useMemo, useState } from "react";
 import { Text, View } from "react-native";
@@ -14,8 +14,8 @@ export const ConfirmSwapModal: FunctionComponent<{
   close: () => void;
   title: string;
   onConfirmSwap: () => void;
-  inputCurrency: AppCurrency;
-  outputCurrency: AppCurrency;
+  inputCurrency: AppCurrency | null;
+  outputCurrency: AppCurrency | null;
   trade?: Trade;
   lpFee?: string;
   pricePerInputCurrency?: string;

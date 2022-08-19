@@ -1,87 +1,70 @@
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useCallback, useState } from "react";
-import { useIntl } from "react-intl";
-import { StyleSheet, Text, View } from "react-native";
-import { Button } from "../../../components";
+import React, { FunctionComponent, useMemo, useState } from "react";
+import { FormattedMessage, useIntl } from "react-intl";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Button, SlippageDescribe, SlippageInput } from "../../../components";
 import { ChangeTokenIcon } from "../../../components/icon/change-token";
 import { PageWithScrollView } from "../../../components/page";
 import { RectButton } from "../../../components/rect-button";
-import { useSwap, useSwapCallback } from "../../../hooks";
-import { ConfirmSwapModal } from "../../../modals/confirm-swap";
-import { useToastModal } from "../../../providers/toast-modal";
+import { useSwapActions } from "../../../hooks";
+import { useSmartNavigation } from "../../../navigation-util";
+import { useDataSwapContext } from "../../../providers/swap/use-data-swap-context";
 import { Colors, useStyle } from "../../../styles";
 import {
-  AmountSwapInput,
-  AmountSwapOutput,
-  Dropdown,
-  Tooltip,
-} from "../components";
-
-const DATA_SLIPPAGE_TOLERANCE = [10, 50, 100];
+  getExchangeRateString,
+  getSlippageTolaranceString,
+  getTransactionFee,
+  SwapField,
+} from "../../../utils/for-swap";
+import { AmountSwap, Tooltip } from "../components";
 
 export const SwapScreen: FunctionComponent = observer(() => {
   const {
-    inputBalance,
-    inputCurrency,
-    setSwapValue,
-    handleSwapAll,
-    outputCurrency,
-    outputSwapValue,
-    pricePerInputCurrency,
+    swapInfos,
+    dispatch,
+    tokenBalances,
+    values,
     lpFee,
+    pricePerInputCurrency,
     isReadyToSwap,
-    handleSetSlippageTolerance,
-    trade,
-    slippageTolerance,
-  } = useSwap();
-  console.log(
-    "🚀 -> constSwapScreen:FunctionComponent=observer -> slippageTolerance",
-    slippageTolerance
-  );
+  } = useDataSwapContext();
 
-  const { callback: swapCallback } = useSwapCallback(trade, slippageTolerance);
-  const [isOpenConfirm, setIsOpenConfirm] = useState<boolean>(false);
+  const { currencies } = useMemo(() => swapInfos, [swapInfos]);
+
+  const {
+    onUserInput,
+    onSetSlippageTolerance,
+    onReverseCurrencies,
+    onSwapAll,
+  } = useSwapActions({
+    tokenBalances,
+    dispatch,
+  });
+  const [isOpenSlippageInput, setIsOpenSlippageInput] = useState<boolean>(
+    false
+  );
+  const [isOpenSlippageDescribe, setIsOpenSlippageDescribe] = useState<boolean>(
+    false
+  );
   const style = useStyle();
   const intl = useIntl();
-  const [loading, setLoading] = useState<boolean>();
-  const toastModal = useToastModal();
-  const handleSwap = useCallback(() => {
-    if (loading) {
-      return;
-    }
-    setLoading(true);
-
-    if (swapCallback) {
-      swapCallback()
-        .then((hash) => {
-          toastModal.makeToast({
-            title: "Swap Successful!",
-            type: "success",
-            displayTime: 2000,
-          });
-        })
-        .catch((error) => {
-          toastModal.makeToast({
-            title: "Swap Failed!",
-            type: "error",
-            displayTime: 2000,
-          });
-        })
-        .finally(() => setLoading(false));
-    }
-  }, [loading, swapCallback, toastModal]);
+  const smartNavigation = useSmartNavigation();
 
   return (
     <PageWithScrollView
       style={style.flatten(["margin-top-16", "padding-x-16"])}
       backgroundColor={style.get("color-background").color}
     >
-      {/* <View style={style.get("height-12")} /> */}
-      <AmountSwapInput
-        setSwapValue={setSwapValue}
-        currency={inputCurrency}
-        balance={inputBalance}
-        onSwapAll={handleSwapAll}
+      <View style={style.get("height-12")} />
+      {/* <MulticallUpdater />s */}
+
+      <AmountSwap
+        currency={currencies[SwapField.Input]}
+        balance={tokenBalances[SwapField.Input]}
+        onSwapAll={onSwapAll}
+        field={SwapField.Input}
+        onUserInput={onUserInput}
+        value={values[SwapField.Input]}
       />
 
       <View
@@ -111,7 +94,7 @@ export const SwapScreen: FunctionComponent = observer(() => {
               },
               style.flatten(["items-center", "justify-center"]),
             ])}
-            // onPress={}
+            onPress={onReverseCurrencies}
             // rippleColor={rippleColor}
             // underlayColor={underlayColor}
             activeOpacity={1}
@@ -121,7 +104,14 @@ export const SwapScreen: FunctionComponent = observer(() => {
         </View>
       </View>
 
-      <AmountSwapOutput currency={outputCurrency} value={outputSwapValue} />
+      <AmountSwap
+        currency={currencies[SwapField.Output]}
+        balance={tokenBalances[SwapField.Output]}
+        showSwapAll={false}
+        field={SwapField.Output}
+        onUserInput={onUserInput}
+        value={values[SwapField.Output]}
+      />
 
       <View style={style.get("height-12")} />
 
@@ -135,9 +125,15 @@ export const SwapScreen: FunctionComponent = observer(() => {
           "margin-bottom-16",
         ])}
       >
-        <Tooltip text={intl.formatMessage({ id: "swap.exchangeRate" })} />
+        <Text
+          style={StyleSheet.flatten([
+            style.flatten(["color-gray-30", "text-caption"]),
+          ])}
+        >
+          {intl.formatMessage({ id: "swap.exchangeRate" })}
+        </Text>
         <Text style={style.flatten(["color-gray-10", "body3"])}>
-          {`1 ${inputCurrency.denom} ≈ ${pricePerInputCurrency} ${outputCurrency?.coinDenom}`}
+          {getExchangeRateString(swapInfos, pricePerInputCurrency)}
         </Text>
       </View>
       <View
@@ -148,42 +144,75 @@ export const SwapScreen: FunctionComponent = observer(() => {
           "margin-bottom-16",
         ])}
       >
-        <Tooltip text={intl.formatMessage({ id: "swap.transactionFee" })} />
+        <Text
+          style={StyleSheet.flatten([
+            style.flatten(["color-gray-30", "text-caption"]),
+          ])}
+        >
+          {intl.formatMessage({ id: "swap.transactionFee" })}
+        </Text>
         <Text style={style.flatten(["color-gray-10", "body3"])}>
-          {lpFee} ASA
+          {getTransactionFee(swapInfos, lpFee)}
         </Text>
       </View>
       <View
         style={style.flatten(["flex-row", "items-center", "justify-between"])}
       >
-        <Tooltip text={intl.formatMessage({ id: "swap.priceSlippage" })} />
-        <Dropdown
-          data={DATA_SLIPPAGE_TOLERANCE}
-          onSelect={handleSetSlippageTolerance}
+        <Tooltip
+          text={intl.formatMessage({ id: "swap.priceSlippage" })}
+          onPress={() => setIsOpenSlippageDescribe(true)}
         />
+        <TouchableOpacity
+          style={style.flatten(["flex-row", "items-center"])}
+          onPress={() => setIsOpenSlippageInput((o) => !o)}
+        >
+          <Text style={style.flatten(["color-gray-10", "body3"])}>
+            <FormattedMessage
+              id="swap.slipageTolarance"
+              values={{
+                // eslint-disable-next-line react/display-name
+                b: () => (
+                  <Text style={{ fontWeight: "bold" }}>
+                    {getSlippageTolaranceString(swapInfos)}
+                  </Text>
+                ),
+              }}
+            />
+          </Text>
+          <Image
+            style={StyleSheet.flatten([
+              {
+                width: 11,
+                height: 5,
+                marginLeft: 5,
+              },
+            ])}
+            resizeMode="contain"
+            source={require("../../../assets/image/icon_dropdown.png")}
+          />
+        </TouchableOpacity>
       </View>
       {/* end describe */}
 
       <Button
-        text={intl.formatMessage({ id: "swap.buttonText" })}
+        text={intl.formatMessage({ id: "swap.buttonText" + swapInfos.error })}
         size="large"
         containerStyle={style.flatten(["border-radius-4", "margin-top-34"])}
         textStyle={style.flatten(["subtitle2"])}
-        disabled={!isReadyToSwap}
-        // loading={account.txTypeInProgress === "send"}
-        onPress={() => setIsOpenConfirm(true)}
+        disabled={!isReadyToSwap || !!swapInfos.error}
+        onPress={() => smartNavigation.navigateSmart("Swap.Confirm", {})}
       />
-      <ConfirmSwapModal
-        isOpen={isOpenConfirm}
-        close={() => setIsOpenConfirm(false)}
-        title={"Confirm Swap"}
-        onConfirmSwap={handleSwap}
-        inputCurrency={inputCurrency.currency}
-        outputCurrency={outputCurrency}
-        trade={trade}
-        lpFee={lpFee}
-        pricePerInputCurrency={pricePerInputCurrency}
-        slippageTolerance={slippageTolerance}
+      <SlippageDescribe
+        isOpen={isOpenSlippageDescribe}
+        label={intl.formatMessage({ id: "swap.titleSlippageDescribe" })}
+        close={() => setIsOpenSlippageDescribe(false)}
+      />
+
+      <SlippageInput
+        isOpen={isOpenSlippageInput}
+        label={intl.formatMessage({ id: "swap.titleSlippageInput" })}
+        close={() => setIsOpenSlippageInput(false)}
+        onSelectValue={onSetSlippageTolerance}
       />
     </PageWithScrollView>
   );

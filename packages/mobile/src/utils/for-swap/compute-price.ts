@@ -5,9 +5,9 @@ import {
   TokenAmount,
   Trade,
   JSBI,
-} from "@astradefi/sdk";
+} from "@solarswap/sdk";
+import { BASE_FEE } from "./constant";
 
-const BASE_FEE = new Percent(JSBI.BigInt(25), JSBI.BigInt(10000));
 const ONE_HUNDRED_PERCENT = new Percent(JSBI.BigInt(10000), JSBI.BigInt(10000));
 const INPUT_FRACTION_AFTER_FEE = ONE_HUNDRED_PERCENT.subtract(BASE_FEE);
 

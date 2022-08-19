@@ -4,3 +4,4 @@ export * from "./icon";
 export * from "./page";
 export * from "./vector-character";
 export * from "./alert-inline";
+export * from "./swap";
