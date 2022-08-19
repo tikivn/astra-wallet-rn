@@ -21,7 +21,7 @@ import {
 import { ChainStore } from "../chain";
 import { ChainInfo } from "@keplr-wallet/types";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { computed, makeObservable, observable } from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 
 export type TxType =
   | "send"
@@ -139,7 +139,7 @@ export class TransactionStore {
       this._txTime?.toLocaleDateString()
     );
   }
-
+  @action
   protected setAmount() {
     const amount = this._txData?.amount;
     if (amount) {
@@ -152,26 +152,26 @@ export class TransactionStore {
         .upperCase(true);
     }
   }
-
+  @action
   protected setFee() {
     const fee = this._txData?.fee;
     if (fee && fee.fee) {
       this._txFee = fee.fee.trim(true).maxDecimals(6).upperCase(true);
     }
   }
-
+  @action
   updateTxType(txType: TxType) {
     if (this._txType != txType) {
       this._txType = txType;
     }
   }
-
+  @action
   updateTxState(txState: TxState) {
     if (this._txState != txState) {
       this._txState = txState;
     }
   }
-
+  @action
   updateTxData(txData: TxData) {
     this._txData = txData;
     this._txTime = new Date();
@@ -179,12 +179,13 @@ export class TransactionStore {
     this.setFee();
   }
 
+  @action
   updateTxHash(txHash: Uint8Array | undefined) {
     if (this._txHash != txHash) {
       this._txHash = txHash;
     }
   }
-
+  @action
   updateSignDocHelper(signDocHelper: SignDocHelper | undefined) {
     this._signDocHelper = signDocHelper;
   }
@@ -201,6 +202,7 @@ export class TransactionStore {
     }
   }
 
+  @action
   rejectTransaction() {
     this._txType = undefined;
     this._txState = undefined;

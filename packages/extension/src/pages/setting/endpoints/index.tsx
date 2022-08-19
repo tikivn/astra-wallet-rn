@@ -116,7 +116,7 @@ export const SettingEndpointsPage: FunctionComponent = observer(() => {
 
                   // To avoid confusion when the user returns to the main page, select the chain if the rpc/lcd endpoints have changed.
                   chainStore.selectChain(selectedChainId);
-                } catch (e) {
+                } catch (e: any) {
                   console.log(e);
                 } finally {
                   setIsLoading(false);
@@ -139,7 +139,7 @@ export const SettingEndpointsPage: FunctionComponent = observer(() => {
                   data.rpc,
                   data.lcd
                 );
-              } catch (e) {
+              } catch (e: any) {
                 if (
                   // Note the implementation of `ChainUpdaterService.checkEndpointsConnectivity`.
                   // In the case of this error, the chain version is different.
@@ -178,7 +178,7 @@ export const SettingEndpointsPage: FunctionComponent = observer(() => {
               chainStore.selectChain(selectedChainId);
 
               history.push("/");
-            } catch (e) {
+            } catch (e: any) {
               notification.push({
                 type: "warning",
                 placement: "top-center",

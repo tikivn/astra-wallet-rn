@@ -4,7 +4,8 @@ import { ViewStyle, Text, View } from "react-native";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { Card, CardBody } from "../../../components/card";
-import { AddressCopyableItem } from "../../../components/address-copyable-new";
+import { AddressCopyableItem } from "../../../components/address-copyable";
+import { useIntl } from "react-intl";
 
 export const AccountCardNew: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -12,6 +13,7 @@ export const AccountCardNew: FunctionComponent<{
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
   const style = useStyle();
+  const intl = useIntl();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
@@ -31,34 +33,42 @@ export const AccountCardNew: FunctionComponent<{
           "items-center",
         ])}
       >
-        <View style={style.flatten(["flex-row", "padding-bottom-12"])}>
+        <View style={style.flatten(["flex-row", "padding-bottom-4"])}>
           <Text
-            style={style.flatten(["color-white", "title1", "margin-right-4"])}
+            style={style.flatten([
+              "color-white",
+              "text-4x-large-semi-bold",
+              "margin-right-4",
+            ])}
           >
-            {stakable
-              .maxDecimals(6)
-              .trim(true)
-              .shrink(true)
-              .hideDenom(true)
-              .toString()}
+            {new Number(stakable.toDec()).toLocaleString(intl.locale, {
+              maximumFractionDigits: 2,
+            })}
           </Text>
-          <Text style={style.flatten(["color-white", "body3"])}>
+          <Text
+            style={style.flatten([
+              "color-white",
+              "text-base-regular",
+              "margin-top-4",
+            ])}
+          >
             {chainStore.current.stakeCurrency.coinDenom.toUpperCase()}
           </Text>
         </View>
-        <Text style={style.flatten(["color-white", "body3"])}>
+        <Text style={style.flatten(["color-white", "text-base-regular"])}>
           ≈{" "}
           {totalPrice
             ? totalPrice.toString()
             : stakable.shrink(true).maxDecimals(6).toString()}
         </Text>
       </CardBody>
-      <CardBody style={style.flatten(["padding-bottom-0"])}>
+      <View style={{ alignItems: "center" }}>
         <AddressCopyableItem
-          address={account.bech32Address}
+          style={{ width: 200, marginTop: 4 }}
+          address={account.hexAddress}
           maxCharacters={22}
         />
-      </CardBody>
+      </View>
     </Card>
   );
 });

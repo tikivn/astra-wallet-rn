@@ -1,9 +1,5 @@
 import React, { FunctionComponent, useRef } from "react";
-import {
-  ScrollView,
-  Text,
-  View,
-} from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import { useStyle } from "../../styles";
 import { registerModal } from "../../modals/base";
 import { RectButton } from "../rect-button";
@@ -103,7 +99,16 @@ export const BottomSheet: FunctionComponent<{
 
     return (
       <View style={style.flatten(["padding-0"])}>
-        <View style={style.flatten(["background-color-gray-10", "width-48", "height-6", "margin-bottom-12", "self-center", "border-radius-16"])} />
+        <View
+          style={style.flatten([
+            "background-color-gray-10",
+            "width-48",
+            "height-6",
+            "margin-bottom-12",
+            "self-center",
+            "border-radius-16",
+          ])}
+        />
         <View
           style={style.flatten([
             "border-radius-8",
@@ -119,65 +124,66 @@ export const BottomSheet: FunctionComponent<{
             persistentScrollbar={true}
             onLayout={onInit}
           >
-            <View style={style.flatten([
-              "height-60",
-              "justify-center"
-            ]
-            )}>
-              <Text style={style.flatten([
-                "subtitle2",
-                "color-gray-10",
-                "text-center",
-              ])}>{label}</Text>
-
+            <View style={style.flatten(["height-60", "justify-center"])}>
+              <Text
+                style={style.flatten([
+                  "subtitle2",
+                  "color-gray-10",
+                  "text-center",
+                ])}
+              >
+                {label}
+              </Text>
             </View>
             {items.map((item, index) => {
               return (
                 <View key={index}>
-                <View style={style.flatten([
-                "height-1",
-                "margin-x-0",
-                "background-color-gray-70",
-                "margin-top-0"], [index > 0 && "margin-x-16"]
-              )} />
-                <RectButton
-                  key={item.key}
-                  style={style.flatten(
-                    [
+                  <View
+                    style={style.flatten(
+                      [
+                        "height-1",
+                        "margin-x-0",
+                        "background-color-gray-70",
+                        "margin-top-0",
+                      ],
+                      [index > 0 && "margin-x-16"]
+                    )}
+                  />
+                  <RectButton
+                    key={item.key}
+                    style={style.flatten([
                       "height-64",
                       "padding-left-16",
                       "padding-right-28",
                       "flex-row",
                       "items-center",
-                    ]
-                  )}
-                  onPress={() => {
-                    setSelectedKey(item.key);
-                    if (!modalPersistent) {
-                      close();
-                    }
-                  }}
-                >
-                  {renderBall(item.key === selectedKey)}
-                  <Text
-                    style={style.flatten([
-                      "body3",
-                      "color-gray-10",
-                      "flex-0",
-                      "margin-left-12",
                     ])}
+                    onPress={() => {
+                      setSelectedKey(item.key);
+                      if (!modalPersistent) {
+                        close();
+                      }
+                    }}
                   >
-                    {item.label}
-                  </Text>
-                </RectButton>
+                    {renderBall(item.key === selectedKey)}
+                    <Text
+                      style={style.flatten([
+                        "body3",
+                        "color-gray-10",
+                        "flex-0",
+                        "margin-left-12",
+                      ])}
+                    >
+                      {item.label}
+                    </Text>
+                  </RectButton>
                 </View>
               );
             })}
           </ScrollView>
-          <View style={style.get("height-24")}/>
+          <View style={style.get("height-24")} />
         </View>
       </View>
-      
     );
   },
   {

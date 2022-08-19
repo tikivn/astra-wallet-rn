@@ -17,7 +17,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import { ValidatorHeaderCard } from "./header-card";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-export const NewValidatorDetailsScreen: FunctionComponent = observer(() => {
+export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
   const route = useRoute<
     RouteProp<
       Record<

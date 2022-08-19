@@ -11,9 +11,8 @@ import {
   ImageBackground,
   RefreshControl,
   ScrollView,
-  View,
-  SafeAreaView,
   Text,
+  View,
 } from "react-native";
 import { useStore } from "../../stores";
 import { useStyle } from "../../styles";
@@ -104,7 +103,6 @@ export const MainScreen: FunctionComponent = observer(() => {
 
   const onRefresh = React.useCallback(async () => {
     const account = accountStore.getAccount(chainStore.current.chainId);
-    console.log("account: ", account, account.evmosHexAddress);
     const queries = queriesStore.get(chainStore.current.chainId);
 
     // Because the components share the states related to the queries,
@@ -131,15 +129,6 @@ export const MainScreen: FunctionComponent = observer(() => {
     setRefreshing(false);
   }, [accountStore, chainStore, priceStore, queriesStore]);
 
-  const queryBalances = queriesStore
-    .get(chainStore.current.chainId)
-    .queryBalances.getQueryBech32Address(
-      accountStore.getAccount(chainStore.current.chainId).bech32Address
-    );
-
-  const tokens = queryBalances.positiveNativeUnstakables.concat(
-    queryBalances.nonNativeBalances
-  );
   const smartNavigation = useSmartNavigation();
 
   function showAccessTestnetToast() {
@@ -156,7 +145,7 @@ export const MainScreen: FunctionComponent = observer(() => {
       <ImageBackground
         style={style.flatten(["width-full", "height-full"])}
         source={require("../../assets/logo/main_background.png")}
-        resizeMode="contain"
+        resizeMode="cover"
       >
         <PageWithScrollViewInBottomTabView
           style={style.flatten(["margin-top-44"])}
@@ -166,9 +155,18 @@ export const MainScreen: FunctionComponent = observer(() => {
           }
           ref={scrollViewRef}
         >
-          <View style={style.flatten(["height-44", "width-44", "self-end"])}>
+          <View style={style.flatten([
+            "flex-row",
+            "height-44",
+            "justify-center",
+            "items-center",
+          ])}>
+            <View style={{ width: 44, }} />
+            <Text style={style.flatten(["text-large-bold", "color-white", "flex-1", "text-center"])}>
+              {intl.formatMessage({ id: "register.intro.appName" })}
+            </Text>
             <TouchableOpacity
-              style={style.flatten(["width-32", "height-32"])}
+              style={style.flatten(["width-44", "height-44", "justify-center"])}
               onPress={() => {
                 smartNavigation.navigateSmart("Camera", {});
               }}

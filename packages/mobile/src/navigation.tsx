@@ -1,76 +1,93 @@
 /* eslint-disable react/display-name */
+import React, { FunctionComponent, useEffect, useRef } from "react";
+import { View } from "react-native";
 import { KeyRingStatus } from "@keplr-wallet/background";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createDrawerNavigator } from "@react-navigation/drawer";
 import {
-  DrawerActions,
   NavigationContainer,
   NavigationContainerRef,
   useNavigation,
 } from "@react-navigation/native";
+import { useStore } from "./stores";
+import { observer } from "mobx-react-lite";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import {
   createStackNavigator,
   TransitionPresets,
 } from "@react-navigation/stack";
-import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useEffect, useRef } from "react";
-import { Text, View } from "react-native";
-import { BorderlessButton } from "react-native-gesture-handler";
-import { DrawerContent } from "./components/drawer";
+import { SendScreen } from "./screens/send";
 import {
   GovernanceDetailsScreen,
   GovernanceScreen,
 } from "./screens/governance";
-import { HomeScreen } from "./screens/home";
+import { useStyle } from "./styles";
+import { BorderlessButton } from "react-native-gesture-handler";
+import { SettingsScreen } from "./screens/settings";
+import { ViewPrivateDataScreen } from "./screens/settings/screens/view-private-data";
+import { SettingChainListScreen } from "./screens/setting/screens/chain-list";
+import { WebScreen } from "./screens/web";
 import { RegisterIntroScreen } from "./screens/register";
-import { RegisterEndScreen } from "./screens/register/end";
 import {
   NewMnemonicScreen,
   RecoverMnemonicScreen,
   VerifyMnemonicScreen,
 } from "./screens/register/mnemonic";
+import { RegisterEndScreen } from "./screens/register/end";
 import { RegisterNewUserScreen } from "./screens/register/new-user";
 import { RegisterNotNewUserScreen } from "./screens/register/not-new-user";
-import { SendScreen } from "./screens/send";
-import { SettingScreen } from "./screens/setting";
-import { SettingChainListScreen } from "./screens/setting/screens/chain-list";
-import { SettingSelectAccountScreen } from "./screens/setting/screens/select-account";
-import { ViewPrivateDataScreen } from "./screens/setting/screens/view-private-data";
-import { SettingsScreen } from "./screens/settings";
-import { WebScreen } from "./screens/web";
-import { useStore } from "./stores";
-import { useStyle } from "./styles";
 
-import Bugsnag from "@bugsnag/react-native";
-import { useIntl } from "react-intl";
-import { BlurredBottomTabBar } from "./components/bottom-tabbar";
 import {
-  BlurredHeaderScreenOptionsPreset,
-  getPlainHeaderScreenOptionsPresetWithBackgroundColor,
-  HeaderLeftButton,
-  HeaderRightButton,
-  PlainHeaderScreenOptionsPreset,
-  WalletHeaderScreenOptionsPreset,
-} from "./components/header";
-import { HeaderAddIcon } from "./components/header/icon";
+  DelegateScreen,
+  UndelegateScreen,
+  RedelegateScreen,
+  StakingDashboardScreen,
+  ValidatorDetailsScreen,
+  ValidatorListScreen,
+  StakingRewardScreen,
+  UnbondingScreen,
+} from "./screens/staking";
 import {
   ConnectIcon,
   HistoryTabbarIcon,
   HomeTabbarIcon,
-  OpenDrawerIcon,
-  ScanIcon,
   SettingTabbarIcon,
   StakeTabbarIcon,
 } from "./components/icon";
-import { SmartNavigatorProvider } from "./navigation-util";
 import {
-  FocusedScreenProvider,
-  useFocusedScreen,
-} from "./providers/focused-screen";
+  AddAddressBookScreen,
+  AddressBookScreen,
+} from "./screens/setting/screens/address-book";
+import { NewLedgerScreen } from "./screens/register/ledger";
 import { PageScrollPositionProvider } from "./providers/page-scroll-position";
-import { SwapProvider } from "./providers/swap/provider";
+import {
+  BlurredHeaderScreenOptionsPreset,
+  HeaderRightButton,
+  NormalHeaderScreenOptions,
+} from "./components/header";
+import { TokensScreen } from "./screens/tokens";
 import { CameraScreen } from "./screens/camera";
-import { HistoryScreen } from "./screens/history";
+import { FocusedScreenProvider } from "./providers/focused-screen";
+import { TxResultScreen } from "./screens/tx-result";
+import { TorusSignInScreen } from "./screens/register/torus";
+import { HeaderAddIcon } from "./components/header/icon";
+import { BlurredBottomTabBar } from "./components/bottom-tabbar";
+import { UnlockScreen } from "./screens/unlock";
+
+import {
+  SettingAddTokenScreen,
+  SettingManageTokensScreen,
+} from "./screens/setting/screens/token";
+import { ManageWalletConnectScreen } from "./screens/manage-wallet-connect";
+import {
+  ImportFromExtensionIntroScreen,
+  ImportFromExtensionScreen,
+  ImportFromExtensionSetPasswordScreen,
+} from "./screens/register/import-from-extension";
+import {
+  AstranautWebpageScreen,
+  AstraDefiWebpageScreen,
+} from "./screens/web/webpages";
+import { WebpageScreenScreenOptionsPreset } from "./screens/web/components/webpage-screen";
+import Bugsnag from "@bugsnag/react-native";
 import { MainScreen } from "./screens/main";
 import {
   ReceiveScreen,
@@ -78,147 +95,27 @@ import {
   SendTokenScreen,
   SwapScreen,
 } from "./screens/main/screens";
-import { SwapConfirmScreen } from "./screens/main/screens/swap-confirm";
-import { ManageWalletConnectScreen } from "./screens/manage-wallet-connect";
-import {
-  ImportFromExtensionIntroScreen,
-  ImportFromExtensionScreen,
-  ImportFromExtensionSetPasswordScreen,
-} from "./screens/register/import-from-extension";
-import { NewLedgerScreen } from "./screens/register/ledger";
-import { NewPincodeScreen } from "./screens/register/pincode";
-import { TorusSignInScreen } from "./screens/register/torus";
 import { RegisterTutorialcreen } from "./screens/register/tutorial";
+import { NewPincodeScreen } from "./screens/register/pincode";
 import {
-  AddAddressBookScreen,
-  AddressBookScreen,
-} from "./screens/setting/screens/address-book";
-import {
-  SettingAddTokenScreen,
-  SettingManageTokensScreen,
-} from "./screens/setting/screens/token";
-import { KeplrVersionScreen } from "./screens/setting/screens/version";
-import {
-  DeleteWalletScreen,
-  EnterPincodeScreen,
-  NewPasswordInputScreen,
   PasswordInputScreen,
+  NewPasswordInputScreen,
 } from "./screens/settings/screens";
-import {
-  DelegateScreen,
-  StakingDashboardScreen,
-  ValidatorDetailsScreen,
-  ValidatorListScreen,
-} from "./screens/stake";
-import { RedelegateScreen } from "./screens/stake/redelegate";
-import { UndelegateScreen } from "./screens/stake/undelegate";
-import {
-  NewStakingDashboardScreen,
-  NewValidatorDetailsScreen,
-  NewValidatorListScreen,
-} from "./screens/staking";
-import { StakingRewardScreen } from "./screens/staking/rewards";
-import { UnbondingScreen } from "./screens/staking/unbonding";
-import { TokensScreen } from "./screens/tokens";
-import { TxResultScreen } from "./screens/tx-result";
-import { UnlockScreen } from "./screens/unlock";
-import { SessionProposalScreen } from "./screens/wallet-connect";
-import { WebpageScreenScreenOptionsPreset } from "./screens/web/components/webpage-screen";
+
+import { HistoryScreen } from "./screens/history";
 import { WebViewScreen } from "./screens/web/default";
-import {
-  AstranautWebpageScreen,
-  JunoswapWebpageScreen,
-  OsmosisFrontierWebpageScreen,
-  OsmosisWebpageScreen,
-  StargazeWebpageScreen,
-  UmeeWebpageScreen,
-} from "./screens/web/webpages";
-import { SwapSuccessScreen } from "./screens/main/screens/swap-success";
+import { SessionProposalScreen } from "./screens/wallet-connect";
+import { useIntl } from "react-intl";
+import { SmartNavigatorProvider } from "./navigation-util";
+import { RegisterCreateEntryScreen } from "./screens/register/create-entry";
 
 const Stack = createStackNavigator();
-const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
 
-const HomeScreenHeaderLeft: FunctionComponent = observer(() => {
-  const { chainStore } = useStore();
-
-  const style = useStyle();
-
-  const navigation = useNavigation();
-
-  return (
-    <HeaderLeftButton
-      onPress={() => {
-        navigation.dispatch(DrawerActions.toggleDrawer());
-      }}
-    >
-      <View style={style.flatten(["flex-row", "items-center"])}>
-        <OpenDrawerIcon size={28} color={style.get("color-primary").color} />
-        <Text
-          style={style.flatten([
-            "h4",
-            "color-text-black-high",
-            "margin-left-4",
-          ])}
-        >
-          {chainStore.current.chainName}
-        </Text>
-      </View>
-    </HeaderLeftButton>
-  );
-});
-
-const HomeScreenHeaderRight: FunctionComponent = observer(() => {
-  const style = useStyle();
-
-  const navigation = useNavigation();
-
-  return (
-    <React.Fragment>
-      <HeaderRightButton
-        onPress={() => {
-          navigation.navigate("Others", {
-            screen: "Camera",
-          });
-        }}
-      >
-        <ScanIcon size={28} color={style.get("color-primary").color} />
-      </HeaderRightButton>
-    </React.Fragment>
-  );
-});
-
-export const MainNavigation: FunctionComponent = () => {
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        ...BlurredHeaderScreenOptionsPreset,
-        headerTitle: "",
-      }}
-      initialRouteName="Home"
-      headerMode="screen"
-    >
-      <Stack.Screen
-        options={{
-          headerLeft: () => <HomeScreenHeaderLeft />,
-          headerRight: () => <HomeScreenHeaderRight />,
-        }}
-        name="Home"
-        component={HomeScreen}
-      />
-    </Stack.Navigator>
-  );
-};
-
 export const NewMainNavigation: FunctionComponent = () => {
-  const style = useStyle();
   return (
     <Stack.Navigator
-      screenOptions={{
-        ...WalletHeaderScreenOptionsPreset,
-        headerStyle: style.get("background-color-background"),
-        headerTitleStyle: style.flatten(["title2", "color-white"]),
-      }}
+      screenOptions={NormalHeaderScreenOptions}
       initialRouteName="NewHome"
       headerMode="screen"
     >
@@ -234,25 +131,17 @@ export const NewMainNavigation: FunctionComponent = () => {
 };
 
 export const HistoryNavigation: FunctionComponent = () => {
-  const style = useStyle();
   const intl = useIntl();
   return (
     <Stack.Navigator
-      screenOptions={{
-        ...WalletHeaderScreenOptionsPreset,
-        headerStyle: style.get("background-color-background"),
-        headerTitleStyle: style.flatten(["title2", "color-white"]),
-        headerTitle: intl.formatMessage({ id: "history.headerTitle" }),
-      }}
+      screenOptions={NormalHeaderScreenOptions}
       initialRouteName="History"
       headerMode="screen"
     >
       <Stack.Screen
-        options={
-          {
-            // headerRight: () => <HomeScreenHeaderRight />,
-          }
-        }
+        options={{
+          title: intl.formatMessage({ id: "history.headerTitle" })
+        }}
         name="History"
         component={HistoryScreen}
       />
@@ -261,16 +150,10 @@ export const HistoryNavigation: FunctionComponent = () => {
 };
 
 export const RegisterNavigation: FunctionComponent = () => {
-  const style = useStyle();
   const intl = useIntl();
-
   return (
     <Stack.Navigator
-      screenOptions={{
-        ...WalletHeaderScreenOptionsPreset,
-        headerStyle: style.get("background-color-background"),
-        headerTitleStyle: style.flatten(["title2", "color-white"]),
-      }}
+      screenOptions={NormalHeaderScreenOptions}
       initialRouteName="Register.Intro"
       headerMode="screen"
     >
@@ -369,20 +252,21 @@ export const RegisterNavigation: FunctionComponent = () => {
         name="Register.SetPincode"
         component={NewPincodeScreen}
       />
+      <Stack.Screen
+        options={{
+          title: intl.formatMessage({ id: "register.createEntry.nav.title" }),
+        }}
+        name="Register.CreateEntry"
+        component={RegisterCreateEntryScreen}
+      />
     </Stack.Navigator>
   );
 };
 
 export const TransactionNavigation: FunctionComponent = () => {
-  const style = useStyle();
-
   return (
     <Stack.Navigator
-      screenOptions={{
-        ...WalletHeaderScreenOptionsPreset,
-        headerStyle: style.get("background-color-background"),
-        headerTitleStyle: style.flatten(["title2", "color-white"]),
-      }}
+      screenOptions={NormalHeaderScreenOptions}
       headerMode="screen"
       initialRouteName="Tx.Result"
     >
@@ -398,38 +282,29 @@ export const TransactionNavigation: FunctionComponent = () => {
 };
 
 export const StakingNavigation: FunctionComponent = () => {
-  const style = useStyle();
   const intl = useIntl();
   return (
     <Stack.Navigator
-      screenOptions={{
-        ...WalletHeaderScreenOptionsPreset,
-        headerStyle: style.get("background-color-background"),
-        headerTitleStyle: style.flatten(["title2", "color-white"]),
-        headerTitle: intl.formatMessage({ id: "staking.headerTitle" }),
-      }}
-      initialRouteName="Staking.Dashboard.New"
+      screenOptions={NormalHeaderScreenOptions}
+      initialRouteName="Staking.Dashboard"
       headerMode="screen"
     >
       <Stack.Screen
-        name="Staking.Dashboard.New"
-        component={NewStakingDashboardScreen}
+        options={{
+          title: intl.formatMessage({ id: "staking.headerTitle" })
+        }}
+        name="Staking.Dashboard"
+        component={StakingDashboardScreen}
       />
     </Stack.Navigator>
   );
 };
 
 export const OtherNavigation: FunctionComponent = () => {
-  const style = useStyle();
   const intl = useIntl();
-
   return (
     <Stack.Navigator
-      screenOptions={{
-        ...WalletHeaderScreenOptionsPreset,
-        headerStyle: style.get("background-color-background"),
-        headerTitleStyle: style.flatten(["title2", "color-white"]),
-      }}
+      screenOptions={NormalHeaderScreenOptions}
       headerMode="screen"
     >
       <Stack.Screen
@@ -455,20 +330,6 @@ export const OtherNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          title: "Validator List",
-        }}
-        name="Validator List"
-        component={ValidatorListScreen}
-      />
-      <Stack.Screen
-        options={{
-          title: "Validator Details",
-        }}
-        name="Validator Details"
-        component={ValidatorDetailsScreen}
-      />
-      <Stack.Screen
-        options={{
           title: "Governance",
         }}
         name="Governance"
@@ -481,78 +342,16 @@ export const OtherNavigation: FunctionComponent = () => {
         name="Governance Details"
         component={GovernanceDetailsScreen}
       />
-      <Stack.Screen
-        options={{
-          title: "Staking Dashboard",
-        }}
-        name="Staking.Dashboard"
-        component={StakingDashboardScreen}
-      />
-      <Stack.Screen
-        options={{
-          title: "Validator Details",
-        }}
-        name="Validator.Details"
-        component={ValidatorDetailsScreen}
-      />
-      <Stack.Screen
-        options={{
-          title: "All Active Validators",
-        }}
-        name="Validator.List"
-        component={ValidatorListScreen}
-      />
     </Stack.Navigator>
   );
 };
 
-export const SwapNavigation: FunctionComponent = () => {
-  const style = useStyle();
-  const intl = useIntl();
-  return (
-    <SwapProvider>
-      <Stack.Navigator
-        screenOptions={{
-          ...WalletHeaderScreenOptionsPreset,
-          headerStyle: style.get("background-color-background"),
-          headerTitleStyle: style.flatten(["title2", "color-white"]),
-        }}
-        headerMode="screen"
-      >
-        <Stack.Screen
-          options={{
-            title: intl.formatMessage({ id: "wallet.swap.title" }),
-          }}
-          name="Swap.Home"
-          component={SwapScreen}
-        />
-        <Stack.Screen
-          options={{
-            title: intl.formatMessage({ id: "wallet.swapConfirm.title" }),
-          }}
-          name="Swap.Confirm"
-          component={SwapConfirmScreen}
-        />
-        <Stack.Screen
-          options={{ title: "" }}
-          name="Swap.Success"
-          component={SwapSuccessScreen}
-        />
-      </Stack.Navigator>
-    </SwapProvider>
-  );
-};
 export const WalletNavigation: FunctionComponent = () => {
-  const style = useStyle();
   const navigation = useNavigation();
   const intl = useIntl();
   return (
     <Stack.Navigator
-      screenOptions={{
-        ...WalletHeaderScreenOptionsPreset,
-        headerStyle: style.get("background-color-background"),
-        headerTitleStyle: style.flatten(["title2", "color-white"]),
-      }}
+      screenOptions={NormalHeaderScreenOptions}
       headerMode="screen"
     >
       <Stack.Screen
@@ -578,19 +377,19 @@ export const WalletNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
+          title: intl.formatMessage({ id: "wallet.swap.title" }),
+        }}
+        name="Swap"
+        component={SwapScreen}
+      />
+      <Stack.Screen
+        options={{
           title: "",
         }}
         name="Setting.ViewPrivateData"
         component={ViewPrivateDataScreen}
       />
 
-      <Stack.Screen
-        options={{
-          title: intl.formatMessage({ id: "viewPassphase.title" }),
-        }}
-        name="Settings.EnterPincode"
-        component={EnterPincodeScreen}
-      />
       <Stack.Screen
         options={{
           title: intl.formatMessage({ id: "changePassword.title" }),
@@ -607,25 +406,18 @@ export const WalletNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          title: intl.formatMessage({ id: "deleteAccount.title" }),
-        }}
-        name="Settings.DeleteWallet"
-        component={DeleteWalletScreen}
-      />
-      <Stack.Screen
-        options={{
           // title: intl.formatMessage({ id: "validator.details.new.title" }),
           headerShown: false,
         }}
-        name="Validator.Details.New"
-        component={NewValidatorDetailsScreen}
+        name="Validator.Details"
+        component={ValidatorDetailsScreen}
       />
       <Stack.Screen
         options={{
           title: intl.formatMessage({ id: "validator.list.new.title" }),
         }}
-        name="Validator.List.New"
-        component={NewValidatorListScreen}
+        name="Validator.List"
+        component={ValidatorListScreen}
       />
       <Stack.Screen
         options={{
@@ -669,7 +461,13 @@ export const WalletNavigation: FunctionComponent = () => {
         name="Wallet.History"
         component={HistoryScreen}
       />
-      <Stack.Screen name="WebView" component={WebViewScreen} />
+      <Stack.Screen
+        name="WebView"
+        options={{
+          title: "",
+        }}
+        component={WebViewScreen}
+      />
       <Stack.Screen
         name="Camera"
         options={{
@@ -711,78 +509,14 @@ export const WalletNavigation: FunctionComponent = () => {
   );
 };
 
-export const SettingStackScreen: FunctionComponent = () => {
-  const style = useStyle();
-
-  const navigation = useNavigation();
-
-  const { analyticsStore } = useStore();
-
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        ...PlainHeaderScreenOptionsPreset,
-        headerTitleStyle: style.flatten(["h5", "color-text-black-high"]),
-      }}
-      headerMode="screen"
-    >
-      <Stack.Screen
-        options={{
-          title: "Settings",
-          ...getPlainHeaderScreenOptionsPresetWithBackgroundColor(
-            style.get("color-setting-screen-background").color
-          ),
-          headerTitleStyle: style.flatten(["h3", "color-text-black-high"]),
-        }}
-        name="Setting"
-        component={SettingScreen}
-      />
-      <Stack.Screen
-        name="SettingSelectAccount"
-        options={{
-          title: "Select Account",
-          headerRight: () => (
-            <HeaderRightButton
-              onPress={() => {
-                analyticsStore.logEvent("Add additional account started");
-                navigation.navigate("Register", {
-                  screen: "Register.Intro",
-                });
-              }}
-            >
-              <HeaderAddIcon />
-            </HeaderRightButton>
-          ),
-          ...BlurredHeaderScreenOptionsPreset,
-        }}
-        component={SettingSelectAccountScreen}
-      />
-
-      <Stack.Screen
-        options={{
-          title: "Version",
-        }}
-        name="Setting.Version"
-        component={KeplrVersionScreen}
-      />
-    </Stack.Navigator>
-  );
-};
-
 export const SettingsStackScreen: FunctionComponent = () => {
-  const style = useStyle();
   return (
     <Stack.Navigator
-      screenOptions={{
-        ...WalletHeaderScreenOptionsPreset,
-        headerStyle: style.get("background-color-background"),
-        headerTitleStyle: style.flatten(["title2", "color-white"]),
-      }}
+      screenOptions={NormalHeaderScreenOptions}
       headerMode="screen"
     >
       <Stack.Screen
         options={{
-          title: "Settings",
           headerShown: false,
         }}
         name="Setting"
@@ -852,20 +586,9 @@ export const WebNavigation: FunctionComponent = () => {
       }}
       headerMode="screen"
     >
-      <Stack.Screen
-        options={{ headerShown: false }}
-        name="Web.Intro"
-        component={WebScreen}
-      />
-      <Stack.Screen name="Web.Osmosis" component={OsmosisWebpageScreen} />
-      <Stack.Screen
-        name="Web.OsmosisFrontier"
-        component={OsmosisFrontierWebpageScreen}
-      />
-      <Stack.Screen name="Web.Stargaze" component={StargazeWebpageScreen} />
+      <Stack.Screen name="Web.Intro" component={WebScreen} />
       <Stack.Screen name="Web.Astranaut" component={AstranautWebpageScreen} />
-      <Stack.Screen name="Web.Umee" component={UmeeWebpageScreen} />
-      <Stack.Screen name="Web.Junoswap" component={JunoswapWebpageScreen} />
+      <Stack.Screen name="Web.AstraDefi" component={AstraDefiWebpageScreen} />
     </Stack.Navigator>
   );
 };
@@ -976,28 +699,6 @@ export const MainTabNavigation: FunctionComponent = () => {
   );
 };
 
-export const MainTabNavigationWithDrawer: FunctionComponent = () => {
-  const focused = useFocusedScreen();
-
-  return (
-    <Drawer.Navigator
-      drawerType="slide"
-      drawerContent={(props) => <DrawerContent {...props} />}
-      screenOptions={{
-        // If the focused screen is not "Home" screen,
-        // disable the gesture to open drawer.
-        swipeEnabled: focused.name === "Home",
-        gestureEnabled: focused.name === "Home",
-      }}
-      gestureHandlerProps={{
-        hitSlop: {},
-      }}
-    >
-      <Drawer.Screen name="MainTab" component={MainTabNavigation} />
-    </Drawer.Navigator>
-  );
-};
-
 const BugsnagNavigationContainerPlugin = Bugsnag.getPlugin("reactNavigation");
 // The returned BugsnagNavigationContainer has exactly the same usage
 // except now it tracks route information to send with your error reports
@@ -1093,8 +794,6 @@ export const AppNavigation: FunctionComponent = observer(() => {
               <Stack.Screen name="Others" component={OtherNavigation} />
               <Stack.Screen name="Wallet" component={WalletNavigation} />
               <Stack.Screen name="Tx" component={TransactionNavigation} />
-              <Stack.Screen name="Swap" component={SwapNavigation} />
-
               <Stack.Screen
                 name="AddressBooks"
                 component={AddressBookStackScreen}

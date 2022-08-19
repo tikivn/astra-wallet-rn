@@ -14,7 +14,9 @@ import {
   RequestSignDirectMsg,
   LockKeyRingMsg,
   DeleteKeyRingMsg,
+  ForceDeleteKeyRingMsg,
   UpdateNameKeyRingMsg,
+  UpdatePasswordKeyRingMsg,
   ShowKeyRingMsg,
   AddMnemonicKeyMsg,
   AddPrivateKeyMsg,
@@ -43,10 +45,17 @@ export const getHandler: (service: KeyRingService) => Handler = (
         return handleRestoreKeyRingMsg(service)(env, msg as RestoreKeyRingMsg);
       case DeleteKeyRingMsg:
         return handleDeleteKeyRingMsg(service)(env, msg as DeleteKeyRingMsg);
+      case ForceDeleteKeyRingMsg:
+        return handleForceDeleteKeyRingMsg(service)(env, msg as ForceDeleteKeyRingMsg);
       case UpdateNameKeyRingMsg:
         return handleUpdateNameKeyRingMsg(service)(
           env,
           msg as UpdateNameKeyRingMsg
+        );
+      case UpdatePasswordKeyRingMsg:
+        return handleUpdatePasswordKeyRingMsg(service)(
+          env,
+          msg as UpdatePasswordKeyRingMsg
         );
       case ShowKeyRingMsg:
         return handleShowKeyRingMsg(service)(env, msg as ShowKeyRingMsg);
@@ -143,11 +152,27 @@ const handleDeleteKeyRingMsg: (
   };
 };
 
+const handleForceDeleteKeyRingMsg: (
+  service: KeyRingService
+) => InternalHandler<ForceDeleteKeyRingMsg> = (service) => {
+  return async (_, msg) => {
+    return await service.forceDeleteKeyRing(msg.index);
+  };
+};
+
 const handleUpdateNameKeyRingMsg: (
   service: KeyRingService
 ) => InternalHandler<UpdateNameKeyRingMsg> = (service) => {
   return async (_, msg) => {
     return await service.updateNameKeyRing(msg.index, msg.name);
+  };
+};
+
+const handleUpdatePasswordKeyRingMsg: (
+  service: KeyRingService
+) => InternalHandler<UpdatePasswordKeyRingMsg> = (service) => {
+  return async (_, msg) => {
+    return await service.updatePasswordKeyRing(msg.index, msg.password, msg.newPassword);
   };
 };
 

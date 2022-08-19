@@ -1,7 +1,13 @@
 /* eslint-disable react/display-name */
 
 import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
-import { CoinUtils, Coin, IntPretty, Dec, CoinPretty } from "@keplr-wallet/unit";
+import {
+  CoinUtils,
+  Coin,
+  IntPretty,
+  Dec,
+  CoinPretty,
+} from "@keplr-wallet/unit";
 import { AppCurrency, Currency } from "@keplr-wallet/types";
 import yaml from "js-yaml";
 import { CoinPrimitive } from "@keplr-wallet/stores";
@@ -17,8 +23,15 @@ import { Buffer } from "buffer/";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
 import { Colors, useStyle } from "../../../styles";
-import { AlignItems, buildLeftColumn, buildRightColumn, IRow, RowType } from "../../../components";
+import {
+  AlignItems,
+  buildLeftColumn,
+  buildRightColumn,
+  IRow,
+  RowType,
+} from "../../../components";
 import { useIntl } from "react-intl";
+import converter from "bech32-converting";
 
 const h = new Hypher(english);
 
@@ -180,9 +193,9 @@ export function renderUnknownMessage(msg: object) {
 }
 
 const common: {
-  type: RowType,
-  alignItems?: AlignItems,
-  itemSpacing?: number,
+  type: RowType;
+  alignItems?: AlignItems;
+  itemSpacing?: number;
 } = {
   type: "items",
   alignItems: AlignItems.center,
@@ -197,6 +210,14 @@ export function renderMsgSend(
 ): IRow[] {
   const intl = useIntl();
   const receives: CoinPrimitive[] = [];
+  let _toAddress = toAddress;
+  if (_toAddress.startsWith("astra")) {
+    try {
+      _toAddress = converter("astra").toHex(toAddress);
+      console.log("toAddress: ", _toAddress);
+    } catch {}
+  }
+
   for (const coinPrimitive of amount) {
     const coin = new Coin(coinPrimitive.denom, coinPrimitive.amount);
     const parsed = CoinUtils.parseDecAndDenomFromCoin(currencies, coin);
@@ -208,35 +229,49 @@ export function renderMsgSend(
   }
 
   const separatorRow: IRow = { type: "separator" };
-  const rows: IRow[] = join([
-    {
-      ...common,
-      alignItems: AlignItems.top,
-      cols: [
-        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgSend.reveiver" }), flex: 3, }),
-        buildRightColumn({ text: toAddress, flex: 7, })
-      ],
-    },
-    ...receives.map((coin) => {
-      return {
+  const rows: IRow[] = join(
+    [
+      {
+        ...common,
+        alignItems: AlignItems.top,
+        cols: [
+          buildLeftColumn({
+            text: intl.formatMessage({
+              id: "tx.result.models.msgSend.reveiver",
+            }),
+            flex: 3,
+          }),
+          buildRightColumn({ text: _toAddress, flex: 7 }),
+        ],
+      },
+      ...receives.map((coin) => {
+        return {
+          ...common,
+          cols: [
+            buildLeftColumn({
+              text: intl.formatMessage(
+                { id: "tx.result.models.msgSend.amount" },
+                { coin: "Astra" }
+              ),
+              flex: 3,
+            }),
+            buildRightColumn({ text: `${coin.amount} ${coin.denom}`, flex: 7 }),
+          ],
+        };
+      }),
+      {
         ...common,
         cols: [
-          buildLeftColumn({ 
-            text: intl.formatMessage({ id: "tx.result.models.msgSend.amount" }, { coin: "Astra" }), 
-            flex: 3 
+          buildLeftColumn({
+            text: intl.formatMessage({ id: "tx.result.models.msgSend.fee" }),
+            flex: 3,
           }),
-          buildRightColumn({ text: `${coin.amount} ${coin.denom}`, flex: 7, })
+          buildRightColumn({ text: fee, flex: 7 }),
         ],
-      };
-    }),
-    {
-      ...common,
-      cols: [
-        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgSend.fee" }), flex: 3, }),
-        buildRightColumn({ text: fee, flex: 7, })
-      ],
-    },
-  ], separatorRow);
+      },
+    ],
+    separatorRow
+  );
 
   return rows;
 }
@@ -257,39 +292,66 @@ export function renderMsgTransfer(
   };
 
   const separatorRow: IRow = { type: "separator" };
-  const rows: IRow[] = join([
-    {
-      ...common,
-      alignItems: AlignItems.top,
-      cols: [
-        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgTransfer.type" }), flex: 3, }),
-        buildRightColumn({ text: "", flex: 7, })
-      ],
-    },
-    {
-      ...common,
-      alignItems: AlignItems.top,
-      cols: [
-        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgTransfer.from" }), flex: 3, }),
-        buildRightColumn({ text: hyphen(`${amount.amount} ${amount.denom}`), flex: 7, })
-      ],
-    },
-    {
-      ...common,
-      alignItems: AlignItems.top,
-      cols: [
-        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgTransfer.to" }), flex: 3, }),
-        buildRightColumn({ text: hyphen(Bech32Address.shortenAddress(receiver, 20)), flex: 7, })
-      ],
-    },
-    {
-      ...common,
-      cols: [
-        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgTransfer.channelLabel" }), flex: 3, }),
-        buildRightColumn({ text: channelId, flex: 7, })
-      ],
-    },
-  ], separatorRow);
+  const rows: IRow[] = join(
+    [
+      {
+        ...common,
+        alignItems: AlignItems.top,
+        cols: [
+          buildLeftColumn({
+            text: intl.formatMessage({
+              id: "tx.result.models.msgTransfer.type",
+            }),
+            flex: 3,
+          }),
+          buildRightColumn({ text: "", flex: 7 }),
+        ],
+      },
+      {
+        ...common,
+        alignItems: AlignItems.top,
+        cols: [
+          buildLeftColumn({
+            text: intl.formatMessage({
+              id: "tx.result.models.msgTransfer.from",
+            }),
+            flex: 3,
+          }),
+          buildRightColumn({
+            text: hyphen(`${amount.amount} ${amount.denom}`),
+            flex: 7,
+          }),
+        ],
+      },
+      {
+        ...common,
+        alignItems: AlignItems.top,
+        cols: [
+          buildLeftColumn({
+            text: intl.formatMessage({ id: "tx.result.models.msgTransfer.to" }),
+            flex: 3,
+          }),
+          buildRightColumn({
+            text: hyphen(Bech32Address.shortenAddress(receiver, 20)),
+            flex: 7,
+          }),
+        ],
+      },
+      {
+        ...common,
+        cols: [
+          buildLeftColumn({
+            text: intl.formatMessage({
+              id: "tx.result.models.msgTransfer.channelLabel",
+            }),
+            flex: 3,
+          }),
+          buildRightColumn({ text: channelId, flex: 7 }),
+        ],
+      },
+    ],
+    separatorRow
+  );
 
   return rows;
 }
@@ -299,84 +361,124 @@ export function renderMsgBeginRedelegate(
   amount: CoinPrimitive,
   validatorSrcAddress: string,
   validatorDstAddress: string,
-  fee: string,
+  fee: string
 ) {
   const intl = useIntl();
   const { transactionStore } = useStore();
-  const validatorSrc = transactionStore.getValidator({ validatorAddress: validatorSrcAddress })
-  const validatorDst = transactionStore.getValidator({ validatorAddress: validatorDstAddress })
+  const validatorSrc = transactionStore.getValidator({
+    validatorAddress: validatorSrcAddress,
+  });
+  const validatorDst = transactionStore.getValidator({
+    validatorAddress: validatorDstAddress,
+  });
 
   const date = new Date();
-  const dateString = date.toLocaleTimeString("vi-VN") + ", " + date.toLocaleDateString("vi-VN");
+  const dateString =
+    date.toLocaleTimeString("vi-VN") + ", " + date.toLocaleDateString("vi-VN");
 
-  const rows: IRow[] = join([
-    {
-      ...common,
-      cols: [
-        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgBeginRedelegate.from" }) }),
-        buildRightColumn({ text: validatorSrc?.description.moniker ?? "" })
-      ],
-    },
-    {
-      ...common,
-      cols: [
-        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgBeginRedelegate.to" }) }),
-        buildRightColumn({ text: validatorDst?.description.moniker ?? "" })
-      ],
-    },
-    {
-      ...common,
-      cols: [
-        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgBeginRedelegate.time" }) }),
-        buildRightColumn({ text: dateString })
-      ],
-    },
-    {
-      ...common,
-      cols: [
-        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgBeginRedelegate.fee" }) }),
-        buildRightColumn({ text: fee })
-      ],
-    },
-  ], { type: "separator" });
+  const rows: IRow[] = join(
+    [
+      {
+        ...common,
+        cols: [
+          buildLeftColumn({
+            text: intl.formatMessage({
+              id: "tx.result.models.msgBeginRedelegate.from",
+            }),
+          }),
+          buildRightColumn({ text: validatorSrc?.description.moniker ?? "" }),
+        ],
+      },
+      {
+        ...common,
+        cols: [
+          buildLeftColumn({
+            text: intl.formatMessage({
+              id: "tx.result.models.msgBeginRedelegate.to",
+            }),
+          }),
+          buildRightColumn({ text: validatorDst?.description.moniker ?? "" }),
+        ],
+      },
+      {
+        ...common,
+        cols: [
+          buildLeftColumn({
+            text: intl.formatMessage({
+              id: "tx.result.models.msgBeginRedelegate.time",
+            }),
+          }),
+          buildRightColumn({ text: dateString }),
+        ],
+      },
+      {
+        ...common,
+        cols: [
+          buildLeftColumn({
+            text: intl.formatMessage({
+              id: "tx.result.models.msgBeginRedelegate.fee",
+            }),
+          }),
+          buildRightColumn({ text: fee }),
+        ],
+      },
+    ],
+    { type: "separator" }
+  );
 
   return rows;
 }
 
 export function renderMsgUndelegate(
   validatorAddress: string,
-  fee: string,
+  fee: string
 ): IRow[] {
   const intl = useIntl();
   const { transactionStore } = useStore();
-  const validator = transactionStore.getValidator({ validatorAddress })
+  const validator = transactionStore.getValidator({ validatorAddress });
 
   const date = new Date();
-  const dateString = date.toLocaleTimeString("vi-VN") + ", " + date.toLocaleDateString("vi-VN");
+  const dateString =
+    date.toLocaleTimeString("vi-VN") + ", " + date.toLocaleDateString("vi-VN");
 
-  const rows: IRow[] = join([
-    {
-      ...common,
-      cols: [
-        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgUndelegate.from" }) }),
-        buildRightColumn({ text: validator?.description.moniker ?? "" })
-      ],
-    },
-    {
-      ...common,
-      cols: [
-        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgUndelegate.time" }) }),
-        buildRightColumn({ text: dateString })
-      ],
-    },
-    {
-      ...common,
-      cols: [
-        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgUndelegate.fee" }) }),
-        buildRightColumn({ text: fee })
-      ],
-    },
-  ], { type: "separator" });
+  const rows: IRow[] = join(
+    [
+      {
+        ...common,
+        cols: [
+          buildLeftColumn({
+            text: intl.formatMessage({
+              id: "tx.result.models.msgUndelegate.from",
+            }),
+          }),
+          buildRightColumn({ text: validator?.description.moniker ?? "" }),
+        ],
+      },
+      {
+        ...common,
+        cols: [
+          buildLeftColumn({
+            text: intl.formatMessage({
+              id: "tx.result.models.msgUndelegate.time",
+            }),
+          }),
+          buildRightColumn({ text: dateString }),
+        ],
+      },
+      {
+        ...common,
+        cols: [
+          buildLeftColumn({
+            text: intl.formatMessage({
+              id: "tx.result.models.msgUndelegate.fee",
+            }),
+          }),
+          buildRightColumn({ text: fee }),
+        ],
+      },
+    ],
+    { type: "separator" }
+  );
 
   return rows;
 }
@@ -389,13 +491,12 @@ export function renderMsgDelegate(
 ) {
   const intl = useIntl();
   const { transactionStore } = useStore();
-  const validator = transactionStore.getValidator({ validatorAddress })
-  const commission = new IntPretty(
-    new Dec(validator?.commission.commission_rates.rate || 0)
-  )
-    .maxDecimals(2)
-    .trim(true)
-    .toString() + "%";
+  const validator = transactionStore.getValidator({ validatorAddress });
+  const commission =
+    new IntPretty(new Dec(validator?.commission.commission_rates.rate || 0))
+      .maxDecimals(2)
+      .trim(true)
+      .toString() + "%";
 
   const parsed = CoinUtils.parseDecAndDenomFromCoin(
     currencies,
@@ -408,47 +509,67 @@ export function renderMsgDelegate(
   };
 
   const date = new Date();
-  const dateString = date.toLocaleTimeString("vi-VN") + ", " + date.toLocaleDateString("vi-VN");
+  const dateString =
+    date.toLocaleTimeString("vi-VN") + ", " + date.toLocaleDateString("vi-VN");
 
-  const rows: IRow[] = join([
-    {
-      ...common,
-      cols: [
-        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgDelegate.validator" }) }),
-        buildRightColumn({ text: validator?.description.moniker ?? "" })
-      ],
-    },
-    {
-      ...common,
-      cols: [
-        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgDelegate.commission" }) }),
-        buildRightColumn({
-          text: commission
-        })
-      ],
-    },
-    {
-      ...common,
-      cols: [
-        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgDelegate.time" }) }),
-        buildRightColumn({ text: dateString })
-      ],
-    },
-    {
-      ...common,
-      cols: [
-        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgDelegate.fee" }) }),
-        buildRightColumn({ text: fee })
-      ],
-    },
-  ], { type: "separator" });
+  const rows: IRow[] = join(
+    [
+      {
+        ...common,
+        cols: [
+          buildLeftColumn({
+            text: intl.formatMessage({
+              id: "tx.result.models.msgDelegate.validator",
+            }),
+          }),
+          buildRightColumn({ text: validator?.description.moniker ?? "" }),
+        ],
+      },
+      {
+        ...common,
+        cols: [
+          buildLeftColumn({
+            text: intl.formatMessage({
+              id: "tx.result.models.msgDelegate.commission",
+            }),
+          }),
+          buildRightColumn({
+            text: commission,
+          }),
+        ],
+      },
+      {
+        ...common,
+        cols: [
+          buildLeftColumn({
+            text: intl.formatMessage({
+              id: "tx.result.models.msgDelegate.time",
+            }),
+          }),
+          buildRightColumn({ text: dateString }),
+        ],
+      },
+      {
+        ...common,
+        cols: [
+          buildLeftColumn({
+            text: intl.formatMessage({
+              id: "tx.result.models.msgDelegate.fee",
+            }),
+          }),
+          buildRightColumn({ text: fee }),
+        ],
+      },
+    ],
+    { type: "separator" }
+  );
 
   return rows;
 }
 
 export function renderMsgWithdrawDelegatorReward(
   addresses: MsgWithdrawDelegatorReward["value"][],
-  fee: string,
+  fee: string
 ): IRow[] {
   const { chainStore, transactionStore } = useStore();
   const intl = useIntl();
@@ -457,15 +578,23 @@ export function renderMsgWithdrawDelegatorReward(
     {
       ...common,
       cols: [
-        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgWithdrawDelegatorReward.withdraw" }) }),
-        buildRightColumn({ text: "" })
+        buildLeftColumn({
+          text: intl.formatMessage({
+            id: "tx.result.models.msgWithdrawDelegatorReward.withdraw",
+          }),
+        }),
+        buildRightColumn({ text: "" }),
       ],
     },
   ];
 
   addresses.map((address) => {
-    const validator = transactionStore.getValidator({ validatorAddress: address.validator_address });
-    const delegations = transactionStore.getDelegations({ validatorAddress: address.validator_address });
+    const validator = transactionStore.getValidator({
+      validatorAddress: address.validator_address,
+    });
+    const delegations = transactionStore.getDelegations({
+      validatorAddress: address.validator_address,
+    });
 
     delegations?.forEach((del) => {
       const currencies = chainStore.current.currencies.filter((currency) => {
@@ -484,8 +613,11 @@ export function renderMsgWithdrawDelegatorReward(
           {
             ...common,
             cols: [
-              buildLeftColumn({ text: validator?.description.moniker ?? "", textColor: Colors["gray-10"] }),
-              buildRightColumn({ text: amount })
+              buildLeftColumn({
+                text: validator?.description.moniker ?? "",
+                textColor: Colors["gray-10"],
+              }),
+              buildRightColumn({ text: amount }),
             ],
           },
         ];
@@ -494,7 +626,8 @@ export function renderMsgWithdrawDelegatorReward(
   });
 
   const date = new Date();
-  const dateString = date.toLocaleTimeString("vi-VN") + ", " + date.toLocaleDateString("vi-VN");
+  const dateString =
+    date.toLocaleTimeString("vi-VN") + ", " + date.toLocaleDateString("vi-VN");
 
   rows = [
     ...rows,
@@ -502,16 +635,24 @@ export function renderMsgWithdrawDelegatorReward(
     {
       ...common,
       cols: [
-        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgWithdrawDelegatorReward.time" }) }),
-        buildRightColumn({ text: dateString })
+        buildLeftColumn({
+          text: intl.formatMessage({
+            id: "tx.result.models.msgWithdrawDelegatorReward.time",
+          }),
+        }),
+        buildRightColumn({ text: dateString }),
       ],
     },
     { type: "separator" },
     {
       ...common,
       cols: [
-        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgWithdrawDelegatorReward.fee" }) }),
-        buildRightColumn({ text: fee })
+        buildLeftColumn({
+          text: intl.formatMessage({
+            id: "tx.result.models.msgWithdrawDelegatorReward.fee",
+          }),
+        }),
+        buildRightColumn({ text: fee }),
       ],
     },
   ];
@@ -519,7 +660,10 @@ export function renderMsgWithdrawDelegatorReward(
   return rows;
 }
 
-export function renderMsgVote(proposalId: string, option: string | number): IRow[] {
+export function renderMsgVote(
+  proposalId: string,
+  option: string | number
+): IRow[] {
   const intl = useIntl();
   const textualOption = (() => {
     if (typeof option === "string") {
@@ -527,39 +671,68 @@ export function renderMsgVote(proposalId: string, option: string | number): IRow
     }
 
     switch (option) {
-      case 0: return intl.formatMessage({ id: "tx.result.models.msgVote.option.empty" });
-      case 1: return intl.formatMessage({ id: "tx.result.models.msgVote.option.yes" });
-      case 2: return intl.formatMessage({ id: "tx.result.models.msgVote.option.abstain" });
-      case 3: return intl.formatMessage({ id: "tx.result.models.msgVote.option.no" });
-      case 4: return intl.formatMessage({ id: "tx.result.models.msgVote.option.noWithVeto" });
-      default: return intl.formatMessage({ id: "tx.result.models.msgVote.option.unspecified" });
+      case 0:
+        return intl.formatMessage({
+          id: "tx.result.models.msgVote.option.empty",
+        });
+      case 1:
+        return intl.formatMessage({
+          id: "tx.result.models.msgVote.option.yes",
+        });
+      case 2:
+        return intl.formatMessage({
+          id: "tx.result.models.msgVote.option.abstain",
+        });
+      case 3:
+        return intl.formatMessage({ id: "tx.result.models.msgVote.option.no" });
+      case 4:
+        return intl.formatMessage({
+          id: "tx.result.models.msgVote.option.noWithVeto",
+        });
+      default:
+        return intl.formatMessage({
+          id: "tx.result.models.msgVote.option.unspecified",
+        });
     }
   })();
 
   const separatorRow: IRow = { type: "separator" };
-  const rows: IRow[] = join([
-    {
-      ...common,
-      alignItems: AlignItems.top,
-      cols: [
-        buildLeftColumn({ text: intl.formatMessage({ id: "tx.result.models.msgVote.option.vote" }), flex: 3, }),
-        buildRightColumn({ text: textualOption, flex: 7, })
-      ],
-    },
-    {
-      ...common,
-      cols: [
-        buildLeftColumn({ 
-          text: intl.formatMessage({ id: "tx.result.models.msgVote.option.proposalLabel" }), 
-          flex: 3, 
-        }),
-        buildRightColumn({ 
-          text: intl.formatMessage({ id: "tx.result.models.msgVote.option.proposalValue" }, { proposalId }), 
-          flex: 7, 
-        })
-      ],
-    },
-  ], separatorRow);
+  const rows: IRow[] = join(
+    [
+      {
+        ...common,
+        alignItems: AlignItems.top,
+        cols: [
+          buildLeftColumn({
+            text: intl.formatMessage({
+              id: "tx.result.models.msgVote.option.vote",
+            }),
+            flex: 3,
+          }),
+          buildRightColumn({ text: textualOption, flex: 7 }),
+        ],
+      },
+      {
+        ...common,
+        cols: [
+          buildLeftColumn({
+            text: intl.formatMessage({
+              id: "tx.result.models.msgVote.option.proposalLabel",
+            }),
+            flex: 3,
+          }),
+          buildRightColumn({
+            text: intl.formatMessage(
+              { id: "tx.result.models.msgVote.option.proposalValue" },
+              { proposalId }
+            ),
+            flex: 7,
+          }),
+        ],
+      },
+    ],
+    separatorRow
+  );
 
   return rows;
 }
@@ -885,7 +1058,7 @@ export function join<T extends any>(items: T[], separtor?: T): T[] {
     newItems = [
       ...newItems,
       item,
-      ...(index < items.length - 1 && separtor) ? [separtor] : [],
+      ...(index < items.length - 1 && separtor ? [separtor] : []),
     ];
   });
   return newItems;

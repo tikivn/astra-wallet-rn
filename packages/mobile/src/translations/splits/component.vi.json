@@ -6,5 +6,6 @@
   "component.amount.input.sendAll": "Gửi hết",
   "component.amount.input.sendindAmount": "Số Astra muốn gửi",
   "component.text.copied": "Đã sao chép",
-  "component.text.copy": "Sao chép"
+  "component.text.copy": "Sao chép",
+  "component.amount.input.max": "Tối đa"
 }

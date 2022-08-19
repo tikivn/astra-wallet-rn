@@ -1,0 +1,16 @@
+{
+  "register.alert.socialLogin.existedAccount": "Bạn đã đăng nhập vào tài khoản đã tồn tại",
+  "register.alert.socialLogin.newAccount": "Đăng nhập bằng {provider} thành công",
+  "register.createEntry.item.desc.mnemonic": "Tạo cụm từ gồm 12 từ và lưu trữ ở một nơi an toàn",
+  "register.createEntry.item.title.apple": "Đăng nhập với tài khoản Apple",
+  "register.createEntry.item.title.google": "Đăng nhập với tài khoản Google",
+  "register.createEntry.item.title.mnemonic": "Cụm từ bí mật",
+  "register.createEntry.item.title.tiki": "Đăng nhập với tài khoản Tiki",
+  "register.createEntry.nav.title": "Tạo tài khoản mới",
+  "register.createEntry.section.convenient": "Cách tiện lợi nhất",
+  "register.createEntry.section.safe": "Cách an toàn nhất",
+  "register.intro.appDesc": "Nơi an toàn để lưu giữ Astra của bạn",
+  "register.intro.appName": "Astra Hub",
+  "register.intro.button.create": "Tạo ví mới",
+  "register.intro.button.recover": "Khôi phục tài khoản đã có"
+}

@@ -1,18 +1,17 @@
 import React, { FunctionComponent } from "react";
-import { StyleSheet, Text, ViewStyle, View } from "react-native";
-import { useStyle } from "../../styles";
-import { Bech32Address } from "@keplr-wallet/cosmos";
-import Clipboard from "expo-clipboard";
-import { RectButton } from "../rect-button";
-import { CopyIcon } from "../icon";
+import { ViewStyle, StyleSheet, Text, View } from "react-native";
 import { useSimpleTimer } from "../../hooks";
+import { useStyle } from "../../styles";
+import Clipboard from "expo-clipboard";
 import LottieView from "lottie-react-native";
+import { RectButton } from "../rect-button";
+import { CopyIconNew } from "../icon";
 
-export const AddressCopyable: FunctionComponent<{
+export const AddressCopyableItem: FunctionComponent<{
   style?: ViewStyle;
   address: string;
   maxCharacters: number;
-}> = ({ style: propStyle, address, maxCharacters }) => {
+}> = ({ style: propStyle, address }) => {
   const style = useStyle();
   const { isTimedOut, setTimer } = useSimpleTimer();
 
@@ -22,11 +21,10 @@ export const AddressCopyable: FunctionComponent<{
         style.flatten([
           "padding-left-12",
           "padding-right-8",
-          "padding-y-2",
-          "border-radius-12",
-          "background-color-primary-10",
+          "background-color-transparent",
           "flex-row",
           "items-center",
+          "justify-center",
         ]),
         propStyle,
       ])}
@@ -34,12 +32,16 @@ export const AddressCopyable: FunctionComponent<{
         Clipboard.setString(address);
         setTimer(2000);
       }}
-      rippleColor={style.get("color-button-primary-outline-ripple").color}
-      underlayColor={style.get("color-button-primary-outline-underlay").color}
+      rippleColor={style.get("color-transparent").color}
+      underlayColor={style.get("color-transparent").color}
       activeOpacity={1}
     >
-      <Text style={style.flatten(["subtitle3", "color-primary-400"])}>
-        {Bech32Address.shortenAddress(address, maxCharacters)}
+      <Text
+        numberOfLines={1}
+        ellipsizeMode="middle"
+        style={style.flatten(["text-base-regular", "color-white", "flex-1"])}
+      >
+        {address}
       </Text>
       <View style={style.flatten(["margin-left-4", "width-20"])}>
         {isTimedOut ? (
@@ -67,11 +69,12 @@ export const AddressCopyable: FunctionComponent<{
             </View>
           </View>
         ) : (
-          <CopyIcon color={style.get("color-primary").color} size={19} />
+          <CopyIconNew
+            color={style.get("color-white").color}
+            size={17}
+          />
         )}
       </View>
     </RectButton>
   );
 };
-
-

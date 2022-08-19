@@ -110,7 +110,7 @@
   "setting.token.add.secret20.checkbox.use-suggested-viewing-key": "Use webpage suggested viewing key",
   "setting.token.add.secret20.viewing-key": "Viewing Key",
 
-  "setting.token.manage.confirm.remove-token": "Are you sure you’d like to disable this token? You wil not be able to see your balance or transfer until you register a viewing key.",
+  "setting.token.manage.confirm.remove-token": "Are you sure you’d like to disable this token? You wil not be able to see your balance or transfer until you register again.",
   "setting.token.manage.notification.viewing-key.copy": "Viewing key copied!",
 
   "setting.endpoints": "Endpoints",
@@ -133,6 +133,7 @@
   "register.intro.sub-content": "All sensitive information is stored only on your device.{br}This process does not require an internet connection.",
 
   "register.recover.title": "Input your seed",
+  "register.recover.alt.private-key.title": "Input your private key",
 
   "register.create.title": "Mnemonic Seed",
   "register.create.toggle.word12": "12 words",

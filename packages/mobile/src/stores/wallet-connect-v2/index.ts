@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import SignClient from "@walletconnect/sign-client";
-import { ERROR } from "@walletconnect/utils";
+import { getSdkError } from "@walletconnect/utils";
 import { KeyRingStore, PermissionStore } from "@keplr-wallet/stores";
 import {
   action,
@@ -153,7 +153,7 @@ export class SignClientStore extends SignClientManager {
     if (this.client) {
       await this.client.disconnect({
         topic: session.topic,
-        reason: ERROR.DELETED.format(),
+        reason: getSdkError("USER_DISCONNECTED"),
       });
       runInAction(() => {
         this._s = Math.random();
@@ -313,7 +313,11 @@ export class SignClientStore extends SignClientManager {
   }
 
   async rejectProposal() {
-    if (this.client) {
+    if (this.client && this._pendingProposal) {
+      await this.client.reject({
+        id: this._pendingProposal?.id,
+        reason: getSdkError("USER_REJECTED_METHODS"),
+      });
       runInAction(() => {
         this._pendingProposal = undefined;
       });
@@ -327,10 +331,7 @@ export class SignClientStore extends SignClientManager {
         response: {
           jsonrpc: "2.0",
           id: this.pendingRequest.id,
-          error: {
-            code: 0,
-            message: ERROR.JSONRPC_REQUEST_METHOD_REJECTED.format().message,
-          },
+          error: getSdkError("USER_REJECTED_METHODS"),
         },
       });
       runInAction(() => {

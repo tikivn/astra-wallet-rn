@@ -14,7 +14,7 @@
   "common.text.disconnect": "Disconnect",
   "common.text.inputVerifyNewPassword": "Input new password",
   "common.text.inputVerifyPassword": "Confirm",
-  "common.text.minimumCharacters": "Input minimun {number} characters",
+  "common.text.minimumCharacters": "Input minimum {number} characters",
   "common.text.newPassword": "New password",
   "common.text.password": "Password",
   "common.text.passwordNotMatching": "Password is not the same. Please check",
@@ -23,5 +23,6 @@
   "common.text.securePassword": "Secured password",
   "common.text.updateWalletName": "Change wallet's name",
   "common.text.verify": "Verify",
+  "common.text.view": "View",
   "common.text.wrongPassword": "Wrong password"
 }

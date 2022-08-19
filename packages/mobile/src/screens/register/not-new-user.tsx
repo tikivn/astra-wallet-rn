@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from "react";
 import { useHeaderHeight } from "@react-navigation/stack";
 import { PageWithScrollView } from "../../components/page";
-import { KeplrLogo } from "../../components/svg";
+import { AstraLogo } from "../../components/svg";
 import { GoogleIcon, AppleIcon } from "../../components/icon";
 import { useStyle } from "../../styles";
 import { View, Text, Dimensions, Platform, StyleSheet } from "react-native";
@@ -40,7 +40,7 @@ export const RegisterNotNewUserScreen: FunctionComponent = observer(() => {
       <View
         style={style.flatten(["flex-grow-1", "items-center", "padding-x-18"])}
       >
-        <KeplrLogo width="100%" />
+        <AstraLogo width="100%" />
       </View>
       {Platform.OS === "ios" ? (
         <Button

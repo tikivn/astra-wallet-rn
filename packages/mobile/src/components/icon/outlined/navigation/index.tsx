@@ -1,1 +1,1 @@
-export * from "./close-large"
+export * from "./close-large";

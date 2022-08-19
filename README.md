@@ -10,7 +10,7 @@
 
 You can find the latest versions of the official managed releases on these links:
 - [Browser Extension](https://chrome.google.com/webstore/detail/keplr/dmkamcknogkgcdfhhbddcghachkejeap)
-- [IOS App](https://apps.apple.com/us/app/keplr-wallet/id1567851089)
+- [iOS App](https://apps.apple.com/us/app/keplr-wallet/id1567851089)
 - [Android App](https://play.google.com/store/apps/details?id=com.chainapsis.keplr)
 
 For help using Keplr Wallet, Visit our [User Support Site](https://keplr.crunch.help).
@@ -26,7 +26,7 @@ yarn bootstrap
 yarn build
 ```
 
-Browser extension's build output is placed in `packages/extension/prod`, and you can check out [this page](https://developer.chrome.com/extensions/getstarted) for installing the developing version.
+Browser extension's build output is placed in `packages/extension/build/chrome`, and you can check out [this page](https://developer.chrome.com/extensions/getstarted) for installing the developing version.
 
 This repo contains submodules that are not open sourced and are only available through the Chainapsis’ official Keplr Browser Extension release. However, all primary features of the extension will work without the closed sourced submodules.
 
@@ -34,6 +34,11 @@ Source code for moblie app is also placed in `packages/mobile`.
 
 ### Example
 Refer to the [Keplr Example repository](https://github.com/chainapsis/keplr-example) for examples of how to integrate Keplr signing support for your web interface/application.
+
+### Disclaimer
+Usage of any other packages besides @keplr-wallet/types is not recommended.
+ - Any other packages besides @keplr-wallet/types are actively being developed, backward compatibility is not in the scope of support.
+ - Since there are active changes being made, documentation is not being updated to the most recent version of the package as of right now. Documentations would be updated as packages get stable.
 
 ## Author
 👤 **Chainapsis**
@@ -43,5 +48,5 @@ Refer to the [Keplr Example repository](https://github.com/chainapsis/keplr-exam
 ## License
 ### Browser Extension 
 Apache 2.0
-### IOS / Android App
+### iOS / Android App
 Copyright (c) 2021 Chainapsis Inc. All rights reserved.

@@ -24,6 +24,8 @@ import {
 } from "@keplr-wallet/hooks";
 import { ADR36SignDocDetailsTab } from "./adr-36";
 import { ChainIdHelper } from "@keplr-wallet/cosmos";
+import { unescapeHTML } from "@keplr-wallet/common";
+import { EthSignType } from "@keplr-wallet/types";
 
 enum Tab {
   Details,
@@ -50,6 +52,7 @@ export const SignPage: FunctionComponent = observer(() => {
   const [isADR36WithString, setIsADR36WithString] = useState<
     boolean | undefined
   >();
+  const [ethSignType, setEthSignType] = useState<EthSignType | undefined>();
 
   const current = chainStore.current;
   // There are services that sometimes use invalid tx to sign arbitrary data on the sign page.
@@ -81,6 +84,9 @@ export const SignPage: FunctionComponent = observer(() => {
       if (data.data.signDocWrapper.isADR36SignDoc) {
         setIsADR36WithString(data.data.isADR36WithString);
       }
+      if (data.data.ethSignType) {
+        setEthSignType(data.data.ethSignType);
+      }
       setOrigin(data.data.msgOrigin);
       if (
         !data.data.signDocWrapper.isADR36SignDoc &&
@@ -92,7 +98,15 @@ export const SignPage: FunctionComponent = observer(() => {
       }
       signDocHelper.setSignDocWrapper(data.data.signDocWrapper);
       gasConfig.setGas(data.data.signDocWrapper.gas);
-      memoConfig.setMemo(data.data.signDocWrapper.memo);
+      let memo = data.data.signDocWrapper.memo;
+      if (data.data.signDocWrapper.mode === "amino") {
+        // For amino-json sign doc, the memo is escaped by default behavior of golang's json marshaller.
+        // For normal users, show the escaped characters with unescaped form.
+        // Make sure that the actual sign doc's memo should be escaped.
+        // In this logic, memo should be escaped from account store or background's request signing function.
+        memo = unescapeHTML(memo);
+      }
+      memoConfig.setMemo(memo);
       if (
         data.data.signOptions.preferNoSetFee &&
         data.data.signDocWrapper.fees[0]
@@ -174,7 +188,8 @@ export const SignPage: FunctionComponent = observer(() => {
 
     if (
       signDocHelper.signDocWrapper &&
-      signDocHelper.signDocWrapper.isADR36SignDoc
+      signDocHelper.signDocWrapper.isADR36SignDoc &&
+      !ethSignType
     ) {
       return "Prove Ownership";
     }
@@ -262,6 +277,7 @@ export const SignPage: FunctionComponent = observer(() => {
                   <ADR36SignDocDetailsTab
                     signDocWrapper={signDocHelper.signDocWrapper}
                     isADR36WithString={isADR36WithString}
+                    ethSignType={ethSignType}
                     origin={origin}
                   />
                 ) : (

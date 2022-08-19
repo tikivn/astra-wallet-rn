@@ -13,7 +13,13 @@ export const TransactionDetailsView: FunctionComponent<{
 }> = observer(({ style }) => {
   const { chainStore, transactionStore } = useStore();
 
-  const [hasData, setHasData] = useState(false);
+  const [hasData] = useState(() => {
+    if (transactionStore.txMsgsMode && transactionStore.txMsgs) {
+      return true;
+    }
+    return false;
+  });
+
   const mode = transactionStore.txMsgsMode;
   const chainId =
     transactionStore.txData?.chainInfo?.chainId ?? chainStore.current.chainId;
@@ -22,16 +28,16 @@ export const TransactionDetailsView: FunctionComponent<{
   const intl = useIntl();
   const smartNavigation = useSmartNavigation();
 
-  useEffect(() => {
-    if (transactionStore.txMsgsMode && transactionStore.txMsgs) {
-      setHasData(true);
-    }
-    console.log(
-      "__MODE__",
-      transactionStore.txMsgsMode,
-      transactionStore.txMsgs
-    );
-  }, [transactionStore.txMsgs, transactionStore.txMsgsMode]);
+  // useEffect(() => {
+  //   if (transactionStore.txMsgsMode && transactionStore.txMsgs) {
+  //     setHasData(true);
+  //     console.log(
+  //       "__MODE__",
+  //       transactionStore.txMsgsMode,
+  //       transactionStore.txMsgs
+  //     );
+  //   }
+  // }, [transactionStore.txMsgs, transactionStore.txMsgsMode]);
 
   let rows: IRow[] = [];
 
@@ -49,7 +55,10 @@ export const TransactionDetailsView: FunctionComponent<{
       {chainInfo && chainInfo.raw.txExplorer && transactionStore.txHash && (
         <Button
           size="default"
-          text={intl.formatMessage({ id: "tx.result.viewDetails" }, { page: "Astra Scan" })}
+          text={intl.formatMessage(
+            { id: "tx.result.viewDetails" },
+            { page: "Astra Scan" }
+          )}
           mode="text"
           containerStyle={{ marginTop: 16 }}
           onPress={() => {
@@ -57,10 +66,13 @@ export const TransactionDetailsView: FunctionComponent<{
               const txHash = Buffer.from(transactionStore.txHash)
                 .toString("hex")
                 .toUpperCase();
-              const url = chainInfo.raw.txExplorer.txUrl.replace("{txHash}", txHash)
+              const url = chainInfo.raw.txExplorer.txUrl.replace(
+                "{txHash}",
+                txHash
+              );
               smartNavigation.navigateSmart("WebView", {
-                url: url
-              });  
+                url: url,
+              });
             }
           }}
         />

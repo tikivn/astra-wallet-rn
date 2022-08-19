@@ -3,7 +3,7 @@ import { AppCurrency, Keplr, KeplrSignOptions } from "@keplr-wallet/types";
 import { ChainGetter } from "../common";
 import { DenomHelper, toGenerator } from "@keplr-wallet/common";
 import { StdFee } from "@cosmjs/launchpad";
-import { evmosToEth } from "@tharsis/address-converter";
+import { MakeTxResponse } from "./types";
 
 export enum WalletStatus {
   NotInit = "NotInit",
@@ -43,6 +43,12 @@ export class AccountSetBase {
 
   @observable
   protected _bech32Address: string = "";
+  
+  @observable
+  protected _bech32Prefix: string = "";
+
+  @observable
+  protected _hexAddress: string = "";
 
   @observable
   protected _txTypeInProgress: string = "";
@@ -66,6 +72,12 @@ export class AccountSetBase {
           onFulfill?: (tx: any) => void;
         }
   ) => Promise<boolean>)[] = [];
+
+  protected makeSendTokenTxFns: ((
+    amount: string,
+    currency: AppCurrency,
+    recipient: string
+  ) => MakeTxResponse | undefined)[] = [];
 
   constructor(
     protected readonly eventListener: {
@@ -108,9 +120,19 @@ export class AccountSetBase {
     this.sendTokenFns.push(fn);
   }
 
+  registerMakeSendTokenFn(
+    fn: (
+      amount: string,
+      currency: AppCurrency,
+      recipient: string
+    ) => MakeTxResponse | undefined
+  ) {
+    this.makeSendTokenTxFns.push(fn);
+  }
+
   protected async enable(keplr: Keplr, chainId: string): Promise<void> {
     const chainInfo = this.chainGetter.getChain(chainId);
-
+    this._bech32Prefix = chainInfo.bech32Config.bech32PrefixAccAddr;
     if (this.opts.suggestChain) {
       if (this.opts.suggestChainFn) {
         await this.opts.suggestChainFn(keplr, chainInfo);
@@ -160,7 +182,7 @@ export class AccountSetBase {
 
     try {
       yield this.enable(keplr, this.chainId);
-    } catch (e) {
+    } catch (e: any) {
       console.log(e);
       this._walletStatus = WalletStatus.Rejected;
       this._rejectionReason = e;
@@ -170,16 +192,19 @@ export class AccountSetBase {
     try {
       const key = yield* toGenerator(keplr.getKey(this.chainId));
       this._bech32Address = key.bech32Address;
+      const buffer = Buffer.from(key.address);
+      this._hexAddress = `0x${buffer.toString("hex")}`;
       this._name = key.name;
       this.pubKey = key.pubKey;
 
       // Set the wallet status as loaded after getting all necessary infos.
       this._walletStatus = WalletStatus.Loaded;
-    } catch (e) {
+    } catch (e: any) {
       console.log(e);
       // Caught error loading key
       // Reset properties, and set status to Rejected
       this._bech32Address = "";
+      this._hexAddress = "";
       this._name = "";
       this.pubKey = new Uint8Array(0);
 
@@ -202,6 +227,7 @@ export class AccountSetBase {
       this.handleInit
     );
     this._bech32Address = "";
+    this._hexAddress = "";
     this._name = "";
     this.pubKey = new Uint8Array(0);
   }
@@ -225,6 +251,25 @@ export class AccountSetBase {
     return (
       this.walletStatus === WalletStatus.Loaded && this.bech32Address !== ""
     );
+  }
+
+  makeSendTokenTx(
+    amount: string,
+    currency: AppCurrency,
+    recipient: string
+  ): MakeTxResponse {
+    for (let i = 0; i < this.makeSendTokenTxFns.length; i++) {
+      const fn = this.makeSendTokenTxFns[i];
+
+      const res = fn(amount, currency, recipient);
+      if (res) {
+        return res;
+      }
+    }
+
+    const denomHelper = new DenomHelper(currency.coinMinimalDenom);
+
+    throw new Error(`Unsupported type of currency (${denomHelper.type})`);
   }
 
   async sendToken(
@@ -296,11 +341,15 @@ export class AccountSetBase {
   }
 
   get hasEvmosHexAddress(): boolean {
-    return this.bech32Address.startsWith("evmos");
+    return this._bech32Prefix === "evmos";
   }
 
   get evmosHexAddress(): string {
-    return evmosToEth(this.bech32Address);
+    return this._hexAddress;
+  }
+
+  get hexAddress(): string {
+    return this._hexAddress;
   }
 }
 

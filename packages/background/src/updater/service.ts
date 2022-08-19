@@ -260,6 +260,32 @@ export class ChainUpdaterService {
       }
     } catch {}
 
+    let querySpendableBalances = false;
+    try {
+      if (
+        !chainInfo.features ||
+        !chainInfo.features.includes(
+          "query:/cosmos/bank/v1beta1/spendable_balances"
+        )
+      ) {
+        // It is difficult to decide which account to test on each chain.
+        // So it simply sends a query that fails unconditionally.
+        // However, if 400 bad request instead of 501 occurs, the url itself exists.
+        // In this case, it is assumed that we can query /cosmos/bank/v1beta1/spendable_balances/{account}
+        const result = await restInstance.get(
+          "/cosmos/bank/v1beta1/spendable_balances/test",
+          {
+            validateStatus: (status) => {
+              return status === 400 || status === 501;
+            },
+          }
+        );
+        if (result.status === 400) {
+          querySpendableBalances = true;
+        }
+      }
+    } catch {}
+
     const features: string[] = [];
     if (ibcGoUpdates) {
       features.push("ibc-go");
@@ -269,6 +295,9 @@ export class ChainUpdaterService {
     }
     if (wasmd24Update) {
       features.push("wasmd_0.24+");
+    }
+    if (querySpendableBalances) {
+      features.push("query:/cosmos/bank/v1beta1/spendable_balances");
     }
 
     return {
@@ -349,7 +378,7 @@ export class ChainUpdaterService {
           };
         };
       }>("/status");
-    } catch (e) {
+    } catch (e: any) {
       console.log(e);
       throw new Error("Failed to get response /status from rpc endpoint");
     }
@@ -418,7 +447,7 @@ export class ChainUpdaterService {
           network: string;
         };
       }>("/cosmos/base/tendermint/v1beta1/node_info");
-    } catch (e) {
+    } catch (e: any) {
       console.log(e);
       throw new Error(
         "Failed to get response /cosmos/base/tendermint/v1beta1/node_info from lcd endpoint"

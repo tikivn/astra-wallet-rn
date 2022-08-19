@@ -11,7 +11,7 @@ import {
   Animated as NativeAnimated,
 } from "react-native";
 import { PanGestureHandler } from "react-native-gesture-handler";
-import Animated, { EasingNode } from "react-native-reanimated";
+import Animated, { Easing } from "react-native-reanimated";
 import { stableSort } from "../../utils/stable-sort";
 
 interface MemoizedItem<Item extends { key: string }> {
@@ -518,7 +518,7 @@ const FixedHeightSortableListItem: FunctionComponent<{
               Animated.multiply(itemHeight, virtualIndex),
               gapTop
             ),
-            easing: EasingNode.out(EasingNode.cubic),
+            easing: Easing.out(Easing.cubic),
           }),
 
           Animated.cond(animatedState.finished, [

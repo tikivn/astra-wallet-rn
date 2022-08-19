@@ -9,6 +9,7 @@ import LottieView from "lottie-react-native";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import delay from "delay";
+import { useIntl } from "react-intl";
 
 export const RegisterEndScreen: FunctionComponent = observer(() => {
   const { keyRingStore } = useStore();
@@ -18,6 +19,8 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
   const smartNavigation = useSmartNavigation();
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const intl = useIntl();
 
   return (
     <View
@@ -43,7 +46,7 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
             "color-gray-10",
           ])}
         >
-          Tạo tài khoản mới thành công
+          {intl.formatMessage({ id: "wallet.create.success" })}
         </Text>
       </View>
       <View style={style.get("flex-1")} />

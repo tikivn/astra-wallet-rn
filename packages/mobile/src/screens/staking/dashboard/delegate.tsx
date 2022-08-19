@@ -21,10 +21,6 @@ export const DelegationsItem: FunctionComponent<{
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
-  const staked = queries.cosmos.queryDelegations.getQueryBech32Address(
-    account.bech32Address
-  ).total;
-
   const queryDelegations = queries.cosmos.queryDelegations.getQueryBech32Address(
     account.bech32Address
   );
@@ -115,7 +111,7 @@ export const DelegationsItem: FunctionComponent<{
                   "border-color-gray-60",
                 ])}
                 onPress={() => {
-                  smartNavigation.navigateSmart("Validator.Details.New", {
+                  smartNavigation.navigateSmart("Validator.Details", {
                     validatorAddress: del.delegation.validator_address,
                   });
                 }}
@@ -165,7 +161,9 @@ export const DelegationsItem: FunctionComponent<{
                   ])}
                 >
                   <PropertyView
-                    label={intl.formatMessage({ id: "staking.delegate.invested" })}
+                    label={intl.formatMessage({
+                      id: "staking.delegate.invested",
+                    })}
                     value={amount
                       .maxDecimals(6)
                       .trim(true)
@@ -178,7 +176,9 @@ export const DelegationsItem: FunctionComponent<{
                     }`}
                   />
                   <PropertyView
-                    label={intl.formatMessage({ id: "staking.delegate.profit" })}
+                    label={intl.formatMessage({
+                      id: "staking.delegate.profit",
+                    })}
                     value={rewards
                       .maxDecimals(6)
                       .trim(true)
@@ -196,7 +196,7 @@ export const DelegationsItem: FunctionComponent<{
             );
           })}
         </CardBody>
-      ) : ( 
+      ) : (
         <DelegationsEmptyItem
           label={intl.formatMessage({ id: "staking.delegate.empty" })}
           containerStyle={style.flatten([
@@ -221,7 +221,7 @@ export const DelegationsEmptyItem: FunctionComponent<{
           source={require("../../../assets/image/empty-order-list.png")}
           resizeMode="contain"
           style={style.flatten(["height-60"])}
-        ></Image>
+        />
         <Text
           style={style.flatten([
             "text-center",

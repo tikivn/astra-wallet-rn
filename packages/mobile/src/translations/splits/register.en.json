@@ -1,0 +1,16 @@
+{
+  "register.alert.socialLogin.existedAccount": "",
+  "register.alert.socialLogin.newAccount": "",
+  "register.createEntry.item.desc.mnemonic": "",
+  "register.createEntry.item.title.apple": "Login with Apple account",
+  "register.createEntry.item.title.google": "Login with Google account",
+  "register.createEntry.item.title.mnemonic": "",
+  "register.createEntry.item.title.tiki": "Login with Tiki account",
+  "register.createEntry.nav.title": "",
+  "register.createEntry.section.convenient": "",
+  "register.createEntry.section.safe": "",
+  "register.intro.appDesc": "",
+  "register.intro.appName": "Astra Hub",
+  "register.intro.button.create": "Create new wallet",
+  "register.intro.button.recover": "Restore existing wallet"
+}

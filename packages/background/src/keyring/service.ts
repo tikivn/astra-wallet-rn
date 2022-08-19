@@ -13,11 +13,16 @@ import {
 } from "@keplr-wallet/cosmos";
 import { BIP44HDPath, CommonCrypto, ExportKeyRingData } from "./types";
 
-import { KVStore } from "@keplr-wallet/common";
+import { escapeHTML, KVStore } from "@keplr-wallet/common";
 
 import { ChainsService } from "../chains";
 import { LedgerService } from "../ledger";
-import { BIP44, ChainInfo, KeplrSignOptions } from "@keplr-wallet/types";
+import {
+  BIP44,
+  ChainInfo,
+  EthSignType,
+  KeplrSignOptions,
+} from "@keplr-wallet/types";
 import { APP_PORT, Env, KeplrError, WEBPAGE_PORT } from "@keplr-wallet/router";
 import { InteractionService } from "../interaction";
 import { PermissionService } from "../permission";
@@ -28,6 +33,7 @@ import {
   AminoSignResponse,
   StdSignDoc,
   StdSignature,
+  encodeSecp256k1Pubkey,
 } from "@cosmjs/launchpad";
 import { DirectSignResponse, makeSignBytes } from "@cosmjs/proto-signing";
 
@@ -64,7 +70,13 @@ export class KeyRingService {
       ledgerService,
       this.crypto
     );
+
+    this.chainsService.addChainRemovedHandler(this.onChainRemoved);
   }
+
+  protected readonly onChainRemoved = (chainId: string) => {
+    this.keyRing.removeAllKeyStoreCoinType(chainId);
+  };
 
   async restore(): Promise<{
     status: KeyRingStatus;
@@ -125,6 +137,30 @@ export class KeyRingService {
     }
   }
 
+  async forceDeleteKeyRing(index: number): Promise<{
+    multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
+    status: KeyRingStatus;
+  }> {
+    let keyStoreChanged = false;
+
+    try {
+      const result = await this.keyRing.forceDeleteKeyRing(index);
+      keyStoreChanged = result.keyStoreChanged;
+      return {
+        multiKeyStoreInfo: result.multiKeyStoreInfo,
+        status: this.keyRing.status,
+      };
+    } finally {
+      if (keyStoreChanged) {
+        this.interactionService.dispatchEvent(
+          WEBPAGE_PORT,
+          "keystore-changed",
+          {}
+        );
+      }
+    }
+  }
+
   async updateNameKeyRing(
     index: number,
     name: string
@@ -132,6 +168,23 @@ export class KeyRingService {
     multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
   }> {
     const multiKeyStoreInfo = await this.keyRing.updateNameKeyRing(index, name);
+    return {
+      multiKeyStoreInfo,
+    };
+  }
+
+  async updatePasswordKeyRing(
+    index: number,
+    password: string,
+    newPassword: string
+  ): Promise<{
+    multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
+  }> {
+    const multiKeyStoreInfo = await this.keyRing.updatePasswordKeyRing(
+      index,
+      password,
+      newPassword
+    );
     return {
       multiKeyStoreInfo,
     };
@@ -228,12 +281,17 @@ export class KeyRingService {
     signOptions: KeplrSignOptions & {
       // Hack option field to detect the sign arbitrary for string
       isADR36WithString?: boolean;
+      ethSignType?: EthSignType;
     }
   ): Promise<AminoSignResponse> {
+    signDoc = {
+      ...signDoc,
+      memo: escapeHTML(signDoc.memo),
+    };
+
     const coinType = await this.chainsService.getChainCoinType(chainId);
-    const ethereumKeyFeatures = await this.chainsService.getChainEthereumKeyFeatures(
-      chainId
-    );
+    const ethereumKeyFeatures =
+      await this.chainsService.getChainEthereumKeyFeatures(chainId);
 
     const key = await this.keyRing.getKey(
       chainId,
@@ -265,7 +323,13 @@ export class KeyRingService {
       );
     }
 
-    const newSignDoc = (await this.interactionService.waitApprove(
+    if (signOptions.ethSignType && !isADR36SignDoc) {
+      throw new Error(
+        "Eth sign type can be requested with only ADR-36 amino sign doc"
+      );
+    }
+    
+    let newSignDoc = (await this.interactionService.waitApprove(
       env,
       "/sign",
       "request-sign",
@@ -278,8 +342,14 @@ export class KeyRingService {
         signOptions,
         isADR36SignDoc,
         isADR36WithString: signOptions.isADR36WithString,
+        ethSignType: signOptions.ethSignType,
       }
     )) as StdSignDoc;
+
+    newSignDoc = {
+      ...newSignDoc,
+      memo: escapeHTML(newSignDoc.memo),
+    };
 
     if (isADR36SignDoc) {
       // Validate the new sign doc, if it was for ADR-36.
@@ -297,6 +367,35 @@ export class KeyRingService {
           237,
           "Signing request was for ADR-36. But, accidentally, new sign doc is not for ADR-36"
         );
+      }
+    }
+
+    // Handle Ethereum signing
+    if (signOptions.ethSignType) {
+      if (newSignDoc.msgs.length !== 1) {
+        // Validate number of messages
+        throw new Error("Invalid number of messages for Ethereum sign request");
+      }
+
+      const signBytes = Buffer.from(newSignDoc.msgs[0].value.data, "base64");
+
+      try {
+        const signatureBytes = await this.keyRing.signEthereum(
+          chainId,
+          coinType,
+          signBytes,
+          signOptions.ethSignType
+        );
+
+        return {
+          signed: newSignDoc, // Included to match return type
+          signature: {
+            pub_key: encodeSecp256k1Pubkey(key.pubKey), // Included to match return type
+            signature: Buffer.from(signatureBytes).toString("base64"), // No byte limit
+          },
+        };
+      } finally {
+        this.interactionService.dispatchEvent(APP_PORT, "request-sign-end", {});
       }
     }
 
@@ -327,9 +426,8 @@ export class KeyRingService {
     signOptions: KeplrSignOptions
   ): Promise<DirectSignResponse> {
     const coinType = await this.chainsService.getChainCoinType(chainId);
-    const ethereumKeyFeatures = await this.chainsService.getChainEthereumKeyFeatures(
-      chainId
-    );
+    const ethereumKeyFeatures =
+      await this.chainsService.getChainEthereumKeyFeatures(chainId);
 
     const key = await this.keyRing.getKey(
       chainId,
@@ -393,9 +491,8 @@ export class KeyRingService {
     signature: StdSignature
   ): Promise<boolean> {
     const coinType = await this.chainsService.getChainCoinType(chainId);
-    const ethereumKeyFeatures = await this.chainsService.getChainEthereumKeyFeatures(
-      chainId
-    );
+    const ethereumKeyFeatures =
+      await this.chainsService.getChainEthereumKeyFeatures(chainId);
 
     const key = await this.keyRing.getKey(
       chainId,
@@ -477,9 +574,7 @@ export class KeyRingService {
     return this.keyRing.addLedgerKey(env, kdf, meta, bip44HDPath);
   }
 
-  public async changeKeyStoreFromMultiKeyStore(
-    index: number
-  ): Promise<{
+  public async changeKeyStoreFromMultiKeyStore(index: number): Promise<{
     multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
   }> {
     try {
@@ -536,7 +631,9 @@ export class KeyRingService {
     for (const path of paths) {
       const key = await this.keyRing.getKeyFromCoinType(
         path.coinType,
-        (await this.chainsService.getChainEthereumKeyFeatures(chainId)).address
+        (
+          await this.chainsService.getChainEthereumKeyFeatures(chainId)
+        ).address
       );
       const bech32Address = new Bech32Address(key.address).toBech32(
         chainInfo.bech32Config.bech32PrefixAccAddr

@@ -119,7 +119,10 @@ export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
       return new EmptyAddressError("Address is empty");
     }
 
-    if (this.bech32Prefix === "evmos" && rawRecipient.startsWith("0x")) {
+    if (
+      (this.bech32Prefix === "evmos" || this.bech32Prefix === "astra") &&
+      rawRecipient.startsWith("0x")
+    ) {
       if (isAddress(rawRecipient)) {
         return;
       }
@@ -151,7 +154,7 @@ export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
 
     try {
       Bech32Address.validate(this.recipient, this.bech32Prefix);
-    } catch (e) {
+    } catch (e: any) {
       return new InvalidBech32Error(
         `Invalid bech32: ${e.message || e.toString()}`
       );

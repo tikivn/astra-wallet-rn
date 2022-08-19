@@ -2,16 +2,17 @@ import React, { FunctionComponent } from "react";
 import { useHeaderHeight } from "@react-navigation/stack";
 import { PageWithScrollView } from "../../components/page";
 import { useStyle } from "../../styles";
-import { View, Dimensions, ImageBackground, Image, Text } from "react-native";
+import { View, Dimensions, ImageBackground, Image, Text, SafeAreaView } from "react-native";
 import { Button } from "../../components/button";
 import { useSmartNavigation } from "../../navigation-util";
 import { useRegisterConfig } from "@keplr-wallet/hooks";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useIntl } from "react-intl";
 
 export const RegisterIntroScreen: FunctionComponent = observer(() => {
-  const { keyRingStore } = useStore();
+  const { keyRingStore, remoteConfigStore } = useStore();
 
   const style = useStyle();
 
@@ -22,13 +23,14 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
   const safeAreaInsets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const actualHeightHeight = headerHeight - safeAreaInsets.top;
+  const intl = useIntl();
 
   return (
     <View style={style.get("background-color-background")}>
       <ImageBackground
         style={style.flatten(["width-full", "height-full"])}
         source={require("../../assets/logo/main_background.png")}
-        resizeMode="contain"
+        resizeMode="cover"
       >
         <PageWithScrollView
           backgroundColor={style.get("color-transparent").color}
@@ -54,7 +56,7 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
             <Text
               style={style.flatten(["color-white", "title3", "text-center"])}
             >
-              Astra Hub
+              {intl.formatMessage({ id: "register.intro.appName" })}
             </Text>
             <Text
               style={style.flatten([
@@ -64,7 +66,7 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
                 "text-center",
               ])}
             >
-              Nơi an toàn để lưu giữ Astra của bạn
+              {intl.formatMessage({ id: "register.intro.appDesc" })}
             </Text>
           </View>
           <Button
@@ -73,10 +75,15 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
               "margin-bottom-16",
               "border-radius-52",
             ])}
-            text="Bắt đầu"
+            text={intl.formatMessage({ id: "register.intro.button.create" })}
             size="large"
             mode="light"
             onPress={() => {
+              const socialLoginEnabled = remoteConfigStore.getBool("feature_socialLogin_enabled");
+              if (socialLoginEnabled) {
+                smartNavigation.navigateSmart("Register.CreateEntry", {});
+                return;
+              }
               smartNavigation.navigateSmart("Register.Tutorial", {});
             }}
           />
@@ -88,7 +95,7 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
               "background-color-transparent",
               "border-color-border-white",
             ])}
-            text="Khôi phục tài khoản đã có"
+            text={intl.formatMessage({ id: "register.intro.button.recover" })}
             size="large"
             mode="outline"
             onPress={() => {
@@ -97,6 +104,7 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
               });
             }}
           />
+          <SafeAreaView />
         </PageWithScrollView>
       </ImageBackground>
     </View>

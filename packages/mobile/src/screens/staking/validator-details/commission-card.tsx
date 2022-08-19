@@ -16,7 +16,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 export const CommissionsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
   validatorAddress: string;
-  showStake: Boolean;
+  showStake: boolean;
 }> = observer(({ containerStyle, validatorAddress, showStake }) => {
   const { chainStore, queriesStore } = useStore();
   const intl = useIntl();
@@ -46,7 +46,7 @@ export const CommissionsCard: FunctionComponent<{
     validatorAddress,
   ]);
 
-  var f = "";
+  let f = "";
   if (validator) {
     const date = new Date(validator.commission.update_time);
     f =
@@ -81,7 +81,11 @@ export const CommissionsCard: FunctionComponent<{
             ])}
           >
             <View style={style.flatten(["items-center"])}>
-              <TooltipLabel text={intl.formatMessage({ id: "validator.details.totalShares" })} />
+              <TooltipLabel
+                text={intl.formatMessage({
+                  id: "validator.details.totalShares",
+                })}
+              />
               <Text
                 style={style.flatten([
                   "color-gray-10",
@@ -96,10 +100,17 @@ export const CommissionsCard: FunctionComponent<{
                   .maxDecimals(6)
                   .toString()}
               </Text>
-              <TooltipLabel text={intl.formatMessage({ id: "validator.details.votingPower" }, { percent: 6.51 } )} />
+              <TooltipLabel
+                text={intl.formatMessage(
+                  { id: "validator.details.votingPower" },
+                  { percent: 6.51 }
+                )}
+              />
             </View>
             <View style={style.flatten(["items-center"])}>
-              <TooltipLabel text={intl.formatMessage({ id: "validator.details.uptime" })} />
+              <TooltipLabel
+                text={intl.formatMessage({ id: "validator.details.uptime" })}
+              />
               <Text
                 style={style.flatten([
                   "color-gray-10",
@@ -131,7 +142,7 @@ export const CommissionsCard: FunctionComponent<{
 
           <CardDivider
             style={style.flatten(["background-color-gray-70", "margin-x-0"])}
-          ></CardDivider>
+          />
           <View
             style={style.flatten([
               "flex-row",
@@ -140,15 +151,20 @@ export const CommissionsCard: FunctionComponent<{
               "margin-y-8",
             ])}
           >
-            <TooltipLabel text={intl.formatMessage({ id: "validator.details.maxRate" })} />
+            <TooltipLabel
+              text={intl.formatMessage({ id: "validator.details.maxRate" })}
+            />
             <Text style={style.flatten(["color-gray-10", "body3"])}>
-              <FormattedMessage id="validator.details.percentValue"
+              <FormattedMessage
+                id="validator.details.percentValue"
                 values={{
-                  percent: new IntPretty(new Dec(validator.commission.commission_rates.max_rate))
+                  percent: new IntPretty(
+                    new Dec(validator.commission.commission_rates.max_rate)
+                  )
                     .moveDecimalPointRight(2)
                     .maxDecimals(2)
                     .trim(true)
-                    .toString()
+                    .toString(),
                 }}
               />
             </Text>
@@ -161,15 +177,24 @@ export const CommissionsCard: FunctionComponent<{
               "margin-bottom-8",
             ])}
           >
-            <TooltipLabel text={intl.formatMessage({ id: "validator.details.maxChangeRate" })} />
+            <TooltipLabel
+              text={intl.formatMessage({
+                id: "validator.details.maxChangeRate",
+              })}
+            />
             <Text style={style.flatten(["color-gray-10", "body3"])}>
-              <FormattedMessage id="validator.details.percentValue"
+              <FormattedMessage
+                id="validator.details.percentValue"
                 values={{
-                  percent: new IntPretty(new Dec(validator.commission.commission_rates.max_change_rate))
+                  percent: new IntPretty(
+                    new Dec(
+                      validator.commission.commission_rates.max_change_rate
+                    )
+                  )
                     .moveDecimalPointRight(2)
                     .maxDecimals(2)
                     .trim(true)
-                    .toString()
+                    .toString(),
                 }}
               />
             </Text>
@@ -181,7 +206,9 @@ export const CommissionsCard: FunctionComponent<{
               "justify-between",
             ])}
           >
-            <TooltipLabel text={intl.formatMessage({ id: "validator.details.updateTime" })} />
+            <TooltipLabel
+              text={intl.formatMessage({ id: "validator.details.updateTime" })}
+            />
             <Text style={style.flatten(["color-gray-10", "body3"])}>{f}</Text>
           </View>
         </CardBody>

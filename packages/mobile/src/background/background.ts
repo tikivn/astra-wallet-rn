@@ -26,11 +26,8 @@ init(
   EmbedChainInfos,
   [
     "http://192.168.50.49:3000",
-    "http://192.168.50.49:8800",
-    "https://app.stargaze.zone",
-    "https://app.umee.cc",
-    "https://junoswap.com",
-    "https://frontier.osmosis.zone",
+    "https://defi.astranaut.dev",
+    "https://app.astranaut.dev",
   ],
   {
     rng: getRandomBytesAsync,

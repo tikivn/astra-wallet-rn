@@ -14,7 +14,7 @@ export const useWeb3 = () => {
   const {
     bech32Config,
     chainId: chainIdStr,
-    chainIdNum: chainId,
+    chainIdNumber: chainId,
   } = useMemo(() => chainStore.current as AppChainInfo, [chainStore]);
 
   const web3Ref = useRef<Web3>(

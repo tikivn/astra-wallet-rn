@@ -2,7 +2,22 @@ import { polyfillWebCrypto } from "react-native-crypto-polyfill";
 
 polyfillWebCrypto();
 // crypto is now globally defined
-
+if (typeof BigInt === "undefined") {
+  const bigInteger = require("big-integer");
+  // FIXME
+  console.log(`FIXME  ${bigInteger.Integer}`);
+  global.BigInt = (value) => {
+    if (typeof value === "string") {
+      if (value.startsWith("0x")) {
+        return bigInteger(value.substring(2), 16);
+      } else {
+        return bigInteger(value);
+      }
+    } else {
+      return bigInteger(value);
+    }
+  };
+}
 if (typeof __dirname === "undefined") global.__dirname = "/";
 if (typeof __filename === "undefined") global.__filename = "";
 if (typeof process === "undefined") {

@@ -4,7 +4,7 @@ import { useSmartNavigation } from "../../navigation-util";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { useStyle } from "../../styles";
-import { View, SafeAreaView, ImageBackground } from "react-native";
+import { View, SafeAreaView, ImageBackground, Linking } from "react-native";
 import {
   AllIcon,
   KeyIcon,
@@ -58,7 +58,9 @@ export const SettingsScreen: FunctionComponent = observer(() => {
     >
   >();
 
-  const [isBiometricOn, setIsBiometricOn] = useState(keychainStore.isBiometryOn && keychainStore.isBiometrySupported);
+  const [isBiometricOn, setIsBiometricOn] = useState(
+    keychainStore.isBiometryOn && keychainStore.isBiometrySupported
+  );
   const floatAlert =
     route.params && route.params.floatAlert ? route.params.floatAlert : null;
   const [displayFloatAlert, setDisplayFloatAlert] = useState(floatAlert);
@@ -78,15 +80,22 @@ export const SettingsScreen: FunctionComponent = observer(() => {
     try {
       if (isBiometricOn) {
         await keychainStore.turnOffBiometryWithoutReset();
-      }
-      else {
+      } else {
         await keychainStore.turnOnBiometryWithoutPassword();
       }
       setIsBiometricOn(!isBiometricOn);
-    }
-    catch (error) {
+    } catch (error) {
       console.log("__DEBUG__", error);
     }
+  }
+
+  async function lock() {
+    await keyRingStore.lock();
+
+    smartNavigation.reset({
+      index: 0,
+      routes: [{ name: "Unlock" }],
+    });
   }
 
   return (
@@ -94,7 +103,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
       <ImageBackground
         style={style.flatten(["width-full", "height-full"])}
         source={require("../../assets/logo/main_background.png")}
-        resizeMode="contain"
+        resizeMode="cover"
       >
         <SafeAreaView />
         <View style={style.get("height-64")} />
@@ -111,8 +120,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
             right={<AllIcon color={style.get("color-white").color} />}
             onPress={() => {
               smartNavigation.navigateSmart("Settings.PasswordInput", {
-                nextScreen: "Settings.NewPasswordInput",
-                forwardPassword: true,
+                type: "updatePassword",
               });
             }}
           />
@@ -123,7 +131,9 @@ export const SettingsScreen: FunctionComponent = observer(() => {
             right={<AllIcon color={style.get("color-white").color} />}
             left={<KeyIcon />}
             onPress={() => {
-              smartNavigation.navigateSmart("Settings.EnterPincode", {});
+              smartNavigation.navigateSmart("Settings.PasswordInput", {
+                type: "viewMnemonic",
+              });
             }}
           />
           {keychainStore.isBiometrySupported && (
@@ -133,10 +143,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
                 label={intl.formatMessage({ id: "settings.unlockBiometrics" })}
                 right={
                   <View style={{ marginRight: 12 }}>
-                    <Toggle
-                      on={isBiometricOn}
-                      onChange={tryUnlock}
-                    />
+                    <Toggle on={isBiometricOn} onChange={tryUnlock} />
                   </View>
                 }
                 left={<BiometricsIcon />}
@@ -152,7 +159,8 @@ export const SettingsScreen: FunctionComponent = observer(() => {
             left={<FaqIcon />}
             onPress={() => {
               smartNavigation.navigateSmart("WebView", {
-                url: "https://google.com",
+                url:
+                  "https://hotro.tiki.vn/s/article/chuong-trinh-sep-mua-sam-co-loi",
               });
             }}
           />
@@ -163,9 +171,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
             right={<AllIcon color={style.get("color-white").color} />}
             left={<SocialIcon />}
             onPress={() => {
-              smartNavigation.navigateSmart("WebView", {
-                url: "https://tiki.vn/sep/home",
-              });
+              Linking.openURL("https://t.me/AstraOfficialChannel");
             }}
           />
           <View style={style.get("height-32")} />
@@ -188,24 +194,16 @@ export const SettingsScreen: FunctionComponent = observer(() => {
           <AccountItem
             containerStyle={accountItemProps.containerStyle}
             label={intl.formatMessage({ id: "settings.lockScreen" })}
-            onPress={async () => {
-              keyRingStore.lock();
-              smartNavigation.reset({
-                index: 0,
-                routes: [
-                  {
-                    name: "Unlock",
-                  },
-                ],
-              });
-            }}
+            onPress={lock}
           />
           <View style={style.get("height-8")} />
           <AccountItem
             {...accountItemProps}
             label={intl.formatMessage({ id: "settings.deleteAccount" })}
             onPress={() => {
-              smartNavigation.navigateSmart("Settings.DeleteWallet", {});
+              smartNavigation.navigateSmart("Settings.PasswordInput", {
+                type: "deleteWallet",
+              });
             }}
             labelStyle={style.flatten(["body3", "color-danger"])}
           />

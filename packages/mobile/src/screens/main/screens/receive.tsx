@@ -8,20 +8,30 @@ import { useStore } from "../../../stores";
 import { useIntl } from "react-intl";
 
 export const ReceiveScreen: FunctionComponent = observer(() => {
-    const { chainStore, accountStore } = useStore();
-    const account = accountStore.getAccount(chainStore.current.chainId);
-    const style = useStyle();
-    const intl = useIntl();
+  const { chainStore, accountStore } = useStore();
+  const account = accountStore.getAccount(chainStore.current.chainId);
+  const style = useStyle();
+  const intl = useIntl();
 
-    return (
-        <PageWithScrollView
-            style={style.flatten(["margin-top-16"])}
-            backgroundColor={style.get("color-background").color}
-        >
-            <Text style={style.flatten(["color-text-black-low", "text-left", "padding-16", "body3"])}>
-                {intl.formatMessage({id: "wallet.receive.address.guide"})}
-            </Text>
-            <AddressQRCodeItem style={style.flatten(["self-center"])} address={account.bech32Address}></AddressQRCodeItem>
-        </PageWithScrollView>
-    );
+  return (
+    <PageWithScrollView
+      style={style.flatten(["margin-top-8"])}
+      backgroundColor={style.get("color-background").color}
+    >
+      <Text
+        style={style.flatten([
+          "color-text-black-low",
+          "text-center",
+          "padding-16",
+          "body3",
+        ])}
+      >
+        {intl.formatMessage({ id: "wallet.receive.address.guide" })}
+      </Text>
+      <AddressQRCodeItem
+        bech32Address={account.bech32Address}
+        hexAddress={account.hexAddress}
+      />
+    </PageWithScrollView>
+  );
 });

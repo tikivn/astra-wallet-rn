@@ -9,6 +9,7 @@ import {
 import { SignClientTypes } from "@walletconnect/types";
 import { createSmartNavigatorProvider, SmartNavigator } from "./hooks";
 import { NewMnemonicConfig } from "./screens/register/mnemonic";
+import { PasswordInputScreenType } from "./screens/settings/screens";
 
 const {
   SmartNavigatorProvider,
@@ -57,7 +58,7 @@ const {
     "Register.SetPincode": {
       upperScreenName: "Register",
     },
-    "Register.VerifyPincode": {
+    "Register.CreateEntry": {
       upperScreenName: "Register",
     },
     Home: {
@@ -90,17 +91,7 @@ const {
     Tokens: {
       upperScreenName: "Others",
     },
-
     ManageWalletConnect: {
-      upperScreenName: "Others",
-    },
-    "Staking.Dashboard": {
-      upperScreenName: "Others",
-    },
-    "Validator.Details": {
-      upperScreenName: "Others",
-    },
-    "Validator.List": {
       upperScreenName: "Others",
     },
     Delegate: {
@@ -127,9 +118,6 @@ const {
     "Setting.ViewPrivateData": {
       upperScreenName: "Wallet",
     },
-    "Setting.Version": {
-      upperScreenName: "Settings",
-    },
     "Setting.ChainList": {
       upperScreenName: "ChainList",
     },
@@ -151,20 +139,11 @@ const {
     "Web.Intro": {
       upperScreenName: "Web",
     },
-    "Web.Osmosis": {
-      upperScreenName: "Web",
-    },
-    "Web.OsmosisFrontier": {
-      upperScreenName: "Web",
-    },
-    "Web.Stargaze": {
-      upperScreenName: "Web",
-    },
     "Web.Astranaut": {
       upperScreenName: "Web",
     },
-    "Settings.EnterPincode": {
-      upperScreenName: "Wallet",
+    "Web.AstraDefi": {
+      upperScreenName: "Web",
     },
     "Settings.PasswordInput": {
       upperScreenName: "Wallet",
@@ -172,16 +151,13 @@ const {
     "Settings.NewPasswordInput": {
       upperScreenName: "Wallet",
     },
-    "Settings.DeleteWallet": {
-      upperScreenName: "Wallet",
-    },
-    "Staking.Dashboard.New": {
+    "Staking.Dashboard": {
       upperScreenName: "Stake",
     },
-    "Validator.Details.New": {
+    "Validator.Details": {
       upperScreenName: "Wallet",
     },
-    "Validator.List.New": {
+    "Validator.List": {
       upperScreenName: "Wallet",
     },
     "Staking.Rewards": {
@@ -208,12 +184,6 @@ const {
     SessionProposal: {
       upperScreenName: "Wallet",
     },
-    "Web.Umee": {
-      upperScreenName: "Web",
-    },
-    "Web.Junoswap": {
-      upperScreenName: "Web",
-    },
   }).withParams<{
     "Register.NewMnemonic": {
       registerConfig: RegisterConfig;
@@ -225,16 +195,8 @@ const {
     };
     "Register.SetPincode": {
       registerConfig: RegisterConfig;
-      newMnemonicConfig: NewMnemonicConfig;
       bip44HDPath: BIP44HDPath;
-      type: "new" | "restore";
-    };
-    "Register.VerifyPincode": {
-      registerConfig: RegisterConfig;
-      newMnemonicConfig: NewMnemonicConfig;
-      bip44HDPath: BIP44HDPath;
-      password: string;
-      type: "new" | "restore";
+      mnemonic?: string;
     };
     "Register.RecoverMnemonic": {
       registerConfig: RegisterConfig;
@@ -260,6 +222,7 @@ const {
     "Register.End": {
       password?: string;
     };
+    "Register.CreateEntry": {};
     Send: {
       chainId?: string;
       currency?: string;
@@ -268,13 +231,7 @@ const {
     "Validator.Details": {
       validatorAddress: string;
     };
-    "Validator.Details.New": {
-      validatorAddress: string;
-    };
     "Validator.List": {
-      validatorSelector?: (validatorAddress: string) => void;
-    };
-    "Validator.List.New": {
       validatorSelector?: (validatorAddress: string) => void;
     };
     Delegate: {
@@ -294,8 +251,7 @@ const {
       privateDataType: string;
     };
     "Settings.PasswordInput": {
-      nextScreen: string;
-      forwardPassword: boolean;
+      type: PasswordInputScreenType;
     };
     "Settings.NewPasswordInput": {
       currentPassword: string;

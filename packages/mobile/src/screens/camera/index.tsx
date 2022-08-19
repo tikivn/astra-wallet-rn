@@ -16,6 +16,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useToastModal } from "../../providers/toast-modal";
 import { useIntl } from "react-intl";
 import { View, Text } from "react-native";
+import { isAddress } from "@ethersproject/address";
 
 export const CameraScreen: FunctionComponent = observer(() => {
   const { chainStore, signClientStore } = useStore();
@@ -66,15 +67,12 @@ export const CameraScreen: FunctionComponent = observer(() => {
                     // If this is not valid bech32 address, it will throw an error.
                     Bech32Address.validate(data);
                   } catch {
-                    toastModal.makeToast({
-                      title: intl.formatMessage({ id: "camera.qrcode.error" }),
-                      type: "error",
-                      displayTime: 2000,
-                    });
                     return false;
                   }
                   return true;
                 })();
+
+                const isHexAddress = isAddress(data);
 
                 if (isBech32Address) {
                   const prefix = data.slice(0, data.indexOf("1"));
@@ -94,6 +92,16 @@ export const CameraScreen: FunctionComponent = observer(() => {
                       displayTime: 2000,
                     });
                   }
+                } else if (isHexAddress) {
+                  smartNavigation.pushSmart("Wallet.Send", {
+                    recipient: data,
+                  });
+                } else {
+                  toastModal.makeToast({
+                    title: intl.formatMessage({ id: "camera.qrcode.error" }),
+                    type: "error",
+                    displayTime: 2000,
+                  });
                 }
               }
               setIsCompleted(true);

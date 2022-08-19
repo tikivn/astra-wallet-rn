@@ -41,19 +41,24 @@ export const StakingRewardScreen: FunctionComponent = () => {
   const validatorAddresses = queryReward.getDescendingPendingRewardValidatorAddresses(
     8
   );
-  const gas = Math.max(100000 * validatorAddresses.length, 200000);
-  sendConfigs.gasConfig.setGas(gas);
+  sendConfigs.feeConfig.setFeeType("average");
 
   const withdrawAllRewards = async () => {
     try {
       transactionStore.updateTxData({
         chainInfo: chainStore.current,
       });
-      await account.cosmos.sendWithdrawDelegationRewardMsgs(
-        validatorAddresses,
-        "",
-        sendConfigs.feeConfig.toStdFee(),
-        {},
+
+      const tx = account.cosmos.makeWithdrawDelegationRewardTx(
+        validatorAddresses
+      );
+      await tx.simulateAndSend(
+        { gasAdjustment: 1.5 },
+        sendConfigs.memoConfig.memo,
+        {
+          preferNoSetMemo: true,
+          preferNoSetFee: true,
+        },
         {
           onBroadcasted: (txHash) => {
             analyticsStore.logEvent("Claim reward tx broadcasted", {
@@ -64,7 +69,7 @@ export const StakingRewardScreen: FunctionComponent = () => {
           },
         }
       );
-    } catch (e) {
+    } catch (e: any) {
       if (e?.message === "Request rejected") {
         return;
       }

@@ -31,7 +31,7 @@ export const PropertyView: FunctionComponent<{
       >
         <Text
           style={StyleSheet.flatten([
-            style.flatten(["color-gray-80", "subtitle4", "margin-top-0"]),
+            style.flatten(["color-gray-30", "subtitle4", "margin-top-0"]),
             labelStyle,
           ])}
         >
@@ -47,7 +47,7 @@ export const PropertyView: FunctionComponent<{
         </Text>
         <Text
           style={StyleSheet.flatten([
-            style.flatten(["color-gray-80", "subtitle4", "margin-bottom-0"]),
+            style.flatten(["color-gray-30", "subtitle4", "margin-bottom-0"]),
             subValueStyle,
           ])}
         >

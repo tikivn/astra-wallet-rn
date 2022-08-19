@@ -344,7 +344,7 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
 
       // Should not wait.
       this.saveResponse(response);
-    } catch (e) {
+    } catch (e: any) {
       // If canceld, do nothing.
       if (Axios.isCancel(e)) {
         return;

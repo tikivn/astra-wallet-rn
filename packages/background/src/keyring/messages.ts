@@ -11,7 +11,8 @@ import {
   Bech32Address,
   checkAndValidateADR36AminoSignDoc,
 } from "@keplr-wallet/cosmos";
-import { BIP44, KeplrSignOptions, Key } from "@keplr-wallet/types";
+
+import { BIP44, EthSignType, KeplrSignOptions, Key } from "@keplr-wallet/types";
 
 import { StdSignDoc, AminoSignResponse, StdSignature } from "@cosmjs/launchpad";
 
@@ -74,6 +75,33 @@ export class DeleteKeyRingMsg extends Message<{
   }
 }
 
+export class ForceDeleteKeyRingMsg extends Message<{
+  status: KeyRingStatus;
+  multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
+}> {
+  public static type() {
+    return "force-delete-keyring";
+  }
+
+  constructor(public readonly index: number) {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!Number.isInteger(this.index)) {
+      throw new KeplrError("keyring", 201, "Invalid index");
+    }
+  }
+
+  route(): string {
+    return ROUTE;
+  }
+
+  type(): string {
+    return ForceDeleteKeyRingMsg.type();
+  }
+}
+
 export class UpdateNameKeyRingMsg extends Message<{
   multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
 }> {
@@ -101,6 +129,36 @@ export class UpdateNameKeyRingMsg extends Message<{
 
   type(): string {
     return UpdateNameKeyRingMsg.type();
+  }
+}
+
+export class UpdatePasswordKeyRingMsg extends Message<{
+  multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
+}> {
+  public static type() {
+    return "update-password-keyring";
+  }
+
+  constructor(public readonly index: number, public readonly password: string, public readonly newPassword: string) {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!Number.isInteger(this.index)) {
+      throw new KeplrError("keyring", 201, "Invalid index");
+    }
+
+    if (!this.password) {
+      throw new KeplrError("keyring", 274, "password not set");
+    }
+  }
+
+  route(): string {
+    return ROUTE;
+  }
+
+  type(): string {
+    return UpdatePasswordKeyRingMsg.type();
   }
 }
 
@@ -172,7 +230,7 @@ export class CreateMnemonicKeyMsg extends Message<{
     // Keeper should handle the case of invalid checksome.
     try {
       bip39.mnemonicToEntropy(this.mnemonic);
-    } catch (e) {
+    } catch (e: any) {
       if (e.message !== "Invalid mnemonic checksum") {
         throw e;
       }
@@ -224,7 +282,7 @@ export class AddMnemonicKeyMsg extends Message<{
     // Keeper should handle the case of invalid checksome.
     try {
       bip39.mnemonicToEntropy(this.mnemonic);
-    } catch (e) {
+    } catch (e: any) {
       if (e.message !== "Invalid mnemonic checksum") {
         throw e;
       }
@@ -496,6 +554,7 @@ export class RequestSignAminoMsg extends Message<AminoSignResponse> {
     public readonly signOptions: KeplrSignOptions & {
       // Hack option field to detect the sign arbitrary for string
       isADR36WithString?: boolean;
+      ethSignType?: EthSignType;
     } = {}
   ) {
     super();
@@ -516,6 +575,12 @@ export class RequestSignAminoMsg extends Message<AminoSignResponse> {
     // Check and validate the ADR-36 sign doc.
     // ADR-36 sign doc doesn't have the chain id
     if (!checkAndValidateADR36AminoSignDoc(this.signDoc)) {
+      if (this.signOptions.ethSignType) {
+        throw new Error(
+          "Eth sign type can be requested with only ADR-36 amino sign doc"
+        );
+      }
+
       if (this.signDoc.chain_id !== this.chainId) {
         throw new KeplrError(
           "keyring",
