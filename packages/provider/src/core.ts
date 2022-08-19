@@ -171,6 +171,7 @@ export class Keplr implements IKeplr {
     data: string | Uint8Array,
     type: EthSignType
   ): Promise<Uint8Array> {
+    console.log("__signEthereum__ ", chainId, signer, data, type);
     if (type !== EthSignType.MESSAGE && type !== EthSignType.TRANSACTION) {
       throw new Error(
         "Unsupported Ethereum signing type: expected 'message' or 'transaction.'"
@@ -189,6 +190,7 @@ export class Keplr implements IKeplr {
       isADR36WithString,
       ethSignType: type,
     });
+    console.log("__signEthereum__ msg: ", chainId, signer, data, type);
     const signature = (await this.requester.sendMessage(BACKGROUND_PORT, msg))
       .signature;
     return Buffer.from(signature.signature, "base64");
