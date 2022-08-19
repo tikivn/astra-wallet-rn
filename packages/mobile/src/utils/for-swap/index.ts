@@ -140,7 +140,7 @@ export const getTransactionFee = (
   { currencies }: SwapInfoState,
   lpFee?: string
 ) => {
-  return `${lpFee} ${currencies[SwapField.Input]?.symbol}`;
+  return `${lpFee || 0} ${currencies[SwapField.Input]?.symbol}`;
 };
 
 export const getSlippageTolaranceString = ({

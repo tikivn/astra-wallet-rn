@@ -394,9 +394,9 @@ PODS:
     - React
   - RNSVG (12.1.1):
     - React
-  - SDWebImage (5.12.6):
-    - SDWebImage/Core (= 5.12.6)
-  - SDWebImage/Core (5.12.6)
+  - SDWebImage (5.13.0):
+    - SDWebImage/Core (= 5.13.0)
+  - SDWebImage/Core (5.13.0)
   - SDWebImageWebPCoder (0.6.1):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.7)
@@ -705,7 +705,7 @@ SPEC CHECKSUMS:
   RNScreens: f7ad633b2e0190b77b6a7aab7f914fad6f198d8d
   RNScrypt: 95fdef077b482e9fdf8a761120cb69d129ef4016
   RNSVG: 551acb6562324b1d52a4e0758f7ca0ec234e278f
-  SDWebImage: a47aea9e3d8816015db4e523daff50cfd294499d
+  SDWebImage: 0327043dbb9533e75f2eff8445b3df0f2ceca6ac
   SDWebImageWebPCoder: d0dac55073088d24b2ac1b191a71a8f8d0adac21
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
   UMAppLoader: 21af63390e55c82e037fb9752d93114a80ecf16e
