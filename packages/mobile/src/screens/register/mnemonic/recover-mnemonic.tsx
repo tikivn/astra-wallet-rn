@@ -1,5 +1,4 @@
-import React, { FunctionComponent, useState } from "react";
-import { PageWithScrollView } from "../../../components/page";
+import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { RegisterConfig } from "@keplr-wallet/hooks";
@@ -7,13 +6,15 @@ import { useStyle } from "../../../styles";
 import { useSmartNavigation } from "../../../navigation-util";
 import { Controller, useForm } from "react-hook-form";
 import { TextInput } from "../../../components/input";
-import { StyleSheet, View } from "react-native";
+import { Keyboard, KeyboardEvent, Platform, StyleSheet, Text, View } from "react-native";
 import { Button } from "../../../components/button";
 import Clipboard from "expo-clipboard";
 import { Buffer } from "buffer/";
 import { useBIP44Option } from "../bip44";
 import { useNewMnemonicConfig } from "./hook";
 import { useIntl } from "react-intl";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Animated, { Easing } from "react-native-reanimated";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
@@ -50,6 +51,20 @@ interface FormData {
   confirmPassword: string;
 }
 
+const useAnimatedValueSet = () => {
+  const [state] = useState(() => {
+    return {
+      clock: new Animated.Clock(),
+      finished: new Animated.Value(0),
+      time: new Animated.Value(0),
+      frameTime: new Animated.Value(0),
+      value: new Animated.Value(0),
+    };
+  });
+
+  return state;
+};
+
 export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
   const route = useRoute<
     RouteProp<
@@ -64,6 +79,9 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
   >();
 
   const style = useStyle();
+  const intl = useIntl();
+  const safeAreaInsets = useSafeAreaInsets();
+  const animatedValueSet = useAnimatedValueSet();
 
   const smartNavigation = useSmartNavigation();
 
@@ -81,7 +99,83 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
   } = useForm<FormData>();
 
   const [isCreating, setIsCreating] = useState(false);
-  const intl = useIntl();
+
+  const [
+    softwareKeyboardBottomPadding,
+    setSoftwareKeyboardBottomPadding,
+  ] = useState(0);
+
+  useEffect(() => {
+    const onKeyboarFrame = (e: KeyboardEvent) => {
+      setSoftwareKeyboardBottomPadding(
+        e.endCoordinates.height - safeAreaInsets.bottom
+      );
+    };
+    const onKeyboardClearFrame = () => {
+      setSoftwareKeyboardBottomPadding(0);
+    };
+
+    // No need to do this on android
+    if (Platform.OS !== "android") {
+      Keyboard.addListener("keyboardWillShow", onKeyboarFrame);
+      Keyboard.addListener("keyboardWillChangeFrame", onKeyboarFrame);
+      Keyboard.addListener("keyboardWillHide", onKeyboardClearFrame);
+
+      return () => {
+        Keyboard.removeListener("keyboardWillShow", onKeyboarFrame);
+        Keyboard.removeListener("keyboardWillChangeFrame", onKeyboarFrame);
+        Keyboard.removeListener("keyboardWillHide", onKeyboardClearFrame);
+      };
+    }
+  }, [safeAreaInsets.bottom]);
+
+  const animatedKeyboardPaddingBottom = useMemo(() => {
+    return Animated.block([
+      Animated.cond(
+        Animated.and(
+          Animated.neq(animatedValueSet.value, softwareKeyboardBottomPadding),
+          Animated.not(Animated.clockRunning(animatedValueSet.clock))
+        ),
+        [
+          Animated.debug(
+            "start clock for keyboard avoiding",
+            animatedValueSet.value
+          ),
+          Animated.set(animatedValueSet.finished, 0),
+          Animated.set(animatedValueSet.time, 0),
+          Animated.set(animatedValueSet.frameTime, 0),
+          Animated.startClock(animatedValueSet.clock),
+        ]
+      ),
+      Animated.timing(
+        animatedValueSet.clock,
+        {
+          finished: animatedValueSet.finished,
+          position: animatedValueSet.value,
+          time: animatedValueSet.time,
+          frameTime: animatedValueSet.frameTime,
+        },
+        {
+          toValue: softwareKeyboardBottomPadding,
+          duration: 175,
+          easing: Easing.linear,
+        }
+      ),
+      Animated.cond(
+        animatedValueSet.finished,
+        Animated.stopClock(animatedValueSet.clock)
+      ),
+      animatedValueSet.value,
+    ]);
+  }, [
+    animatedValueSet.clock,
+    animatedValueSet.finished,
+    animatedValueSet.frameTime,
+    animatedValueSet.time,
+    animatedValueSet.value,
+    softwareKeyboardBottomPadding,
+  ]);
+
   const submit = handleSubmit(async () => {
     setIsCreating(true);
 
@@ -92,32 +186,30 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
       bip44HDPath: bip44Option.bip44HDPath,
       mnemonic: newMnemonicConfig.mnemonic,
     });
+    setIsCreating(false);
   });
 
   return (
-    <PageWithScrollView
-      backgroundColor={style.get("color-background").color}
-      contentContainerStyle={style.get("flex-grow-1")}
-      style={style.flatten(["padding-x-page"])}
-    >
+    <View style={style.flatten(["flex-1", "padding-x-page", "background-color-background"])}>
+      <View style={{ height: 32 }} />
       <Controller
         control={control}
         rules={{
-          required: "Mnemonic is required",
+          required: intl.formatMessage({ id: "common.text.mnemonic.isRequired" }),
           validate: (value: string) => {
             value = trimWordsStr(value);
             if (!isPrivateKey(value)) {
               if (value.split(" ").length < 8) {
-                return "Too short mnemonic";
+                return intl.formatMessage({ id: "common.text.mnemonic.tooShort" });
               }
 
               if (!bip39.validateMnemonic(value)) {
-                return "Invalid mnemonic";
+                return intl.formatMessage({ id: "common.text.mnemonic.invalid" });
               }
             } else {
               value = value.replace("0x", "");
               if (value.length !== 64) {
-                return "Invalid length of private key";
+                return intl.formatMessage({ id: "common.text.privateKey.invalidLength" });
               }
 
               try {
@@ -125,10 +217,10 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                   Buffer.from(value, "hex").toString("hex").toLowerCase() !==
                   value.toLowerCase()
                 ) {
-                  return "Invalid private key";
+                  return intl.formatMessage({ id: "common.text.privateKey.invalid" });
                 }
               } catch {
-                return "Invalid private key";
+                return intl.formatMessage({ id: "common.text.privateKey.invalid" });
               }
             }
           },
@@ -137,10 +229,15 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
           return (
             <TextInput
               labelStyle={style.flatten(["color-text-black-low", "body3"])}
-              label="Khôi phục tài khoản đã có bằng cách nhập cụm từ bí mật vào ô bên dưới"
-              returnKeyType="next"
+              label={intl.formatMessage({ id: "recover.wallet.mnemonicInput.label" })}
+              returnKeyType="done"
+              blurOnSubmit={true}
+              autoCapitalize="none"
+              autoCorrect={false}
+              autoFocus={true}
               multiline={true}
               numberOfLines={4}
+              containerStyle={{ paddingBottom: errors.mnemonic?.message ? 28 : 0 }}
               inputContainerStyle={style.flatten([
                 "padding-x-20",
                 "padding-y-16",
@@ -156,7 +253,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                     containerStyle={style.flatten(["height-36"])}
                     style={style.flatten(["padding-x-12"])}
                     mode="text"
-                    text="Paste"
+                    text={intl.formatMessage({ id: "common.text.paste" })}
                     onPress={async () => {
                       const text = await Clipboard.getStringAsync();
                       if (text) {
@@ -195,17 +292,37 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
         name="mnemonic"
         defaultValue=""
       />
-      <View style={style.flatten(["flex-1"])} />
-      <Button
-        containerStyle={style.flatten(["border-radius-4", "height-44"])}
-        textStyle={style.flatten(["subtitle2"])}
-        text={intl.formatMessage({ id: "common.text.verify" })}
-        size="large"
-        loading={isCreating}
-        onPress={submit}
-      />
-      {/* Mock element for bottom padding */}
-      <View style={style.flatten(["height-page-pad"])} />
-    </PageWithScrollView>
+      <Text style={style.flatten([
+        "text-small-regular",
+        "color-gray-30",
+        "margin-top-8"
+      ])}>
+        {intl.formatMessage({ id: "recover.wallet.mnemonicInput.info" })}
+      </Text>
+      <View style={style.flatten(["flex-1", "justify-end"])}>
+        <Button
+          containerStyle={style.flatten(["border-radius-4", "height-44", "margin-bottom-12"])}
+          textStyle={style.flatten(["subtitle2"])}
+          text={intl.formatMessage({ id: "common.text.verify" })}
+          size="large"
+          loading={isCreating}
+          onPress={submit}
+        />
+        {/* <SafeAreaView /> */}
+        <Animated.View
+          style={StyleSheet.flatten([
+            style.flatten([
+              "overflow-hidden",
+            ]),
+            {
+              paddingBottom: Animated.add(
+                safeAreaInsets.bottom,
+                animatedKeyboardPaddingBottom
+              ),
+            },
+          ])}
+        />
+      </View>
+    </View>
   );
 });

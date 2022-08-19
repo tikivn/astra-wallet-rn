@@ -1,4 +1,6 @@
 {
+  "recover.wallet.mnemonicInput.label": "Khôi phục tài khoản đã có bằng cách nhập cụm từ bí mật vào ô bên dưới",
+  "recover.wallet.mnemonicInput.info": "Là chuỗi gồm 12 hoặc 24 từ được phân cách bằng khoảng trống.",
   "register.alert.socialLogin.existedAccount": "Bạn đã đăng nhập vào tài khoản đã tồn tại",
   "register.alert.socialLogin.newAccount": "Đăng nhập bằng {provider} thành công",
   "register.createEntry.item.desc.mnemonic": "Tạo cụm từ gồm 12 từ và lưu trữ ở một nơi an toàn",
@@ -12,5 +14,8 @@
   "register.intro.appDesc": "Nơi an toàn để lưu giữ Astra của bạn",
   "register.intro.appName": "Astra Hub",
   "register.intro.button.create": "Tạo ví mới",
-  "register.intro.button.recover": "Khôi phục tài khoản đã có"
+  "register.intro.button.recover": "Khôi phục tài khoản đã có",
+  "unlock.button.forgotPassword.text": "Quên mật khẩu?",
+  "unlock.button.login.text": "Đăng nhập",
+  "unlock.title": "Nhập mật khẩu"
 }

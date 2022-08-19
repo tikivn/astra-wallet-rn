@@ -12,6 +12,9 @@ import {
   StyleSheet,
   View,
   Text,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
 } from "react-native";
 import Animated, { Easing } from "react-native-reanimated";
 import { observer } from "mobx-react-lite";
@@ -29,9 +32,10 @@ import { autorun } from "mobx";
 import { NormalInput } from "../../components/input/normal-input";
 import { useIntl } from "react-intl";
 import { BiometricsIcon } from "../../components";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { RectButton, TouchableOpacity } from "react-native-gesture-handler";
 import { useRegisterConfig } from "@keplr-wallet/hooks";
 import { useBIP44Option } from "../register/bip44";
+import { BIOMETRY_TYPE } from "react-native-keychain";
 
 let splashScreenHided = false;
 async function hideSplashScreen() {
@@ -245,6 +249,15 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     }
   };
 
+  const forgotPasswordHandler = () => {
+    navigation.navigate("Register", {
+      screen: "Register.RecoverMnemonic",
+      params: {
+        registerConfig,
+      }
+    });
+  };
+
   const routeToRegisterOnce = useRef(false);
   useEffect(() => {
     // If the keyring is empty,
@@ -252,7 +265,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     if (
       !routeToRegisterOnce.current &&
       isSplashEnd &&
-      (keyRingStore.status === KeyRingStatus.EMPTY 
+      (keyRingStore.status === KeyRingStatus.EMPTY
         && !(userLoginStore.socialLoginData && userLoginStore.isSocialLoginActive))
     ) {
       (async () => {
@@ -277,6 +290,10 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   }, [keyRingStore.status, navigateToHome]);
   const cellCount = 8;
 
+  useEffect(() => {
+    setIsFailed(false);
+  }, [password]);
+
   return (
     <React.Fragment>
       <View
@@ -288,80 +305,101 @@ export const UnlockScreen: FunctionComponent = observer(() => {
           source={require("../../assets/logo/splash-screen-background.png")}
         />
       </View>
-      <View style={style.flatten(["flex-1", "background-color-transparent"])}>
-        <KeyboardAwareScrollView
-          contentContainerStyle={style.flatten(["flex-grow-1"])}
+      <KeyboardAvoidingView
+        style={style.flatten(["flex-1", "padding-x-page", "background-color-transparent"])}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <SafeAreaView style={{ paddingTop: Platform.OS === "android" ? 25 : 0 }} />
+        <View style={{ height: 44, marginBottom: 32 }} />
+
+        <Text
+          style={style.flatten([
+            "color-gray-10",
+            "text-medium-regular",
+            "text-center",
+            "margin-bottom-16",
+          ])}
         >
-          <View style={style.get("flex-3")} />
+          {intl.formatMessage({ id: "unlock.title" })}
+        </Text>
 
-          <View style={style.flatten(["padding-x-page"])}>
-            <Text
-              style={style.flatten([
-                "color-white",
-                "h4",
-                "text-center",
-                "margin-bottom-64",
-              ])}
+        <NormalInput
+          value={password}
+          error={
+            isFailed
+              ? intl.formatMessage({ id: "common.text.wrongPassword" })
+              : ""
+          }
+          secureTextEntry={true}
+          showPassword={showPassword}
+          onShowPasswordChanged={setShowPassword}
+          onChangeText={setPassword}
+          style={{ marginBottom: isFailed ? 24 : 0 }}
+        />
+
+        <RectButton onPress={forgotPasswordHandler}>
+          <Text style={style.flatten([
+            "text-base-light",
+            "color-blue-70",
+            "text-underline",
+            "text-center",
+            "margin-y-16"
+          ])}>
+            {intl.formatMessage({ id: "unlock.button.forgotPassword.text" })}
+          </Text>
+        </RectButton>
+
+        <View style={{ flex: 1, justifyContent: "flex-end" }}>
+          {keychainStore.isBiometryOn ? (
+            <TouchableOpacity
+              onPress={tryBiometric}
+              style={{
+                flexDirection: "row",
+                alignContent: "stretch",
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: 24,
+              }}
             >
-              Nhập mật khẩu
-            </Text>
-
-            <NormalInput
-              value={password}
-              error={
-                isFailed
-                  ? intl.formatMessage({ id: "common.text.wrongPassword" })
-                  : ""
-              }
-              secureTextEntry={true}
-              showPassword={showPassword}
-              onShowPasswordChanged={setShowPassword}
-              onChangeText={setPassword}
-              style={{ marginBottom: 24, paddingBottom: 24 }}
-            />
-
-            <Button
-              textStyle={style.flatten(["subtitle2", "color-background"])}
-              containerStyle={style.flatten([
-                "margin-bottom-16",
-                "border-radius-52",
-                "margin-top-16",
-              ])}
-              text="Đăng nhập"
-              size="large"
-              mode="light"
-              loading={isLoading}
-              onPress={tryUnlock}
-              disabled={password.length < cellCount}
-            />
-
-            {keychainStore.isBiometryOn ? (
-              <TouchableOpacity
-                onPress={tryBiometric}
-                style={{
-                  flexDirection: "row",
-                  alignContent: "stretch",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginVertical: 16,
-                }}
+              <BiometricsIcon
+                type={
+                  keychainStore.isBiometryType === BIOMETRY_TYPE.FACE
+                    || keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
+                    ? "face"
+                    : "touch"
+                } />
+              <Text
+                style={style.flatten([
+                  "text-base-medium",
+                  "color-gray-10",
+                  "margin-left-8",
+                ])}
               >
-                <BiometricsIcon />
-                <Text
-                  style={style.flatten([
-                    "text-base-medium",
-                    "color-gray-10",
-                    "margin-left-8",
-                  ])}
-                >
-                  {intl.formatMessage({ id: "settings.unlockBiometrics" })}
-                </Text>
-              </TouchableOpacity>
-            ) : null}
-          </View>
-          <View style={style.get("flex-7")} />
-        </KeyboardAwareScrollView>
-      </View>
+                {intl.formatMessage({
+                  id: keychainStore.isBiometryType === BIOMETRY_TYPE.FACE
+                    || keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
+                    ? "settings.unlockBiometrics.face"
+                    : "settings.unlockBiometrics.touch"
+                })}
+              </Text>
+            </TouchableOpacity>
+          ) : null}
+
+          <Button
+            textStyle={style.flatten(["subtitle2"])}
+            containerStyle={style.flatten([
+              "margin-bottom-12",
+            ])}
+            text={intl.formatMessage({ id: "unlock.button.login.text" })}
+            color="primary"
+            mode="fill"
+            loading={isLoading}
+            onPress={tryUnlock}
+            disabled={password.length < cellCount}
+          />
+          <SafeAreaView />
+        </View>
+      </KeyboardAvoidingView>
       <Animated.View
         style={StyleSheet.flatten([
           style.flatten(["absolute-fill"]),
@@ -403,9 +441,9 @@ export const SplashContinuityEffectView: FunctionComponent<{
   const [isBackgroundLoaded, setIsBackgroundLoaded] = useState(false);
   const [logoSize, setLogoSize] = useState<
     | {
-        width: number;
-        height: number;
-      }
+      width: number;
+      height: number;
+    }
     | undefined
   >();
 
@@ -619,7 +657,7 @@ export const SplashContinuityEffectView: FunctionComponent<{
                 inputRange: [0, 1],
                 outputRange: [
                   Dimensions.get("window").height +
-                    (StatusBar.currentHeight ?? 0),
+                  (StatusBar.currentHeight ?? 0),
                   expectedLogoSize,
                 ],
               }),
@@ -645,7 +683,7 @@ export const SplashContinuityEffectView: FunctionComponent<{
                   inputRange: [0, 1],
                   outputRange: [
                     Dimensions.get("window").height +
-                      (StatusBar.currentHeight ?? 0),
+                    (StatusBar.currentHeight ?? 0),
                     expectedLogoSize,
                   ],
                 }),

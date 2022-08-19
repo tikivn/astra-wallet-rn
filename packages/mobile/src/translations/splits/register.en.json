@@ -1,4 +1,6 @@
 {
+  "recover.wallet.mnemonicInput.label": "",
+  "recover.wallet.mnemonicInput.info": "",
   "register.alert.socialLogin.existedAccount": "",
   "register.alert.socialLogin.newAccount": "",
   "register.createEntry.item.desc.mnemonic": "",
@@ -12,5 +14,8 @@
   "register.intro.appDesc": "",
   "register.intro.appName": "Astra Hub",
   "register.intro.button.create": "Create new wallet",
-  "register.intro.button.recover": "Restore existing wallet"
+  "register.intro.button.recover": "Restore existing wallet",
+  "unlock.button.forgotPassword.text": "Forgot password?",
+  "unlock.button.login.text": "Login",
+  "unlock.title": "Input password"
 }

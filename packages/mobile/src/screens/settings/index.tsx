@@ -23,6 +23,7 @@ import { useIntl } from "react-intl";
 import { AlertInline } from "../../components";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { Toggle } from "../../components/toggle";
+import { BIOMETRY_TYPE } from "react-native-keychain";
 
 export const SettingsScreen: FunctionComponent = observer(() => {
   const { keyRingStore, signClientStore, keychainStore } = useStore();
@@ -140,13 +141,28 @@ export const SettingsScreen: FunctionComponent = observer(() => {
             <View style={style.get("margin-top-8")}>
               <AccountItem
                 {...accountItemProps}
-                label={intl.formatMessage({ id: "settings.unlockBiometrics" })}
+                label={
+                  intl.formatMessage({
+                    id: keychainStore.isBiometryType === BIOMETRY_TYPE.FACE
+                      || keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
+                      ? "settings.unlockBiometrics.face"
+                      : "settings.unlockBiometrics.touch"
+                  })
+                }
                 right={
                   <View style={{ marginRight: 12 }}>
                     <Toggle on={isBiometricOn} onChange={tryUnlock} />
                   </View>
                 }
-                left={<BiometricsIcon />}
+                left={
+                  <BiometricsIcon
+                    type={
+                      keychainStore.isBiometryType === BIOMETRY_TYPE.FACE
+                        || keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
+                        ? "face"
+                        : "touch"
+                    } />
+                }
               />
             </View>
           )}

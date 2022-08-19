@@ -14,6 +14,7 @@ import { BiometricsIcon } from "../../../components";
 import { Toggle } from "../../../components/toggle";
 import { useStore } from "../../../stores";
 import { useToastModal } from "../../../providers/toast-modal";
+import { BIOMETRY_TYPE } from "react-native-keychain";
 
 // Social Login
 enum SocialLoginUserState {
@@ -254,8 +255,21 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
 
           {keychainStore.isBiometrySupported && (
             <View style={{ flexDirection: "row", alignContent: "stretch", alignItems: "center", marginBottom: 16, }}>
-              <BiometricsIcon />
-              <Text style={style.flatten(["text-base-medium", "color-gray-10", "flex-1", "margin-left-8"])}>{intl.formatMessage({ id: "settings.unlockBiometrics" })}</Text>
+              <BiometricsIcon
+                type={
+                  keychainStore.isBiometryType === BIOMETRY_TYPE.FACE
+                    || keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
+                    ? "face"
+                    : "touch"
+                } />
+              <Text style={style.flatten(["text-base-medium", "color-gray-10", "flex-1", "margin-left-8"])}>
+                {intl.formatMessage({
+                  id: keychainStore.isBiometryType === BIOMETRY_TYPE.FACE
+                    || keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
+                    ? "settings.unlockBiometrics.face"
+                    : "settings.unlockBiometrics.touch"
+                })}
+              </Text>
               <Toggle
                 on={isBiometricOn}
                 onChange={(value) => setIsBiometricOn(value)}
