@@ -51,5 +51,8 @@
   "tx.result.state.withdraw.failure": "Chuyển tiền lãi thất bại",
   "tx.result.state.withdraw.pending": "Đang chuyển tiền lãi",
   "tx.result.state.withdraw.success": "Tiền lãi đã được chuyển đến bạn",
-  "tx.result.viewDetails": "Xem chi tiết trên {page}"
+  "tx.result.viewDetails": "Xem chi tiết trên {page}",
+  "tx.result.state.swap.pending": "Đang chuyển đổi",
+  "tx.result.state.swap.success": "Chuyển đổi thành công",
+  "tx.result.state.swap.failure": "Chuyển đổi thất bại"
 }

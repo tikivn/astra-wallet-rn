@@ -1,16 +1,7 @@
-import React, { useCallback, useState } from "react";
+import React from "react";
 import { useIntl } from "react-intl";
-import {
-  Image,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import { useStyle } from "../../styles";
-import { SLIPPAGE_TOLERANCE } from "../../utils/for-swap";
-import { Button } from "../button";
 import { BottomSheetSwap, BottomSheetSwapProps } from "./bottom-sheet-swap";
 
 export type SlippageDescribeProps = BottomSheetSwapProps;

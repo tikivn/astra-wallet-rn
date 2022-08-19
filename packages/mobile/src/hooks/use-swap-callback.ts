@@ -1,3 +1,4 @@
+import { EthSignType } from "@keplr-wallet/types";
 import {
   ChainId,
   Router,
@@ -6,6 +7,7 @@ import {
   TradeType,
 } from "@solarswap/sdk";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import Web3 from "web3";
 import ISolardexRouter02 from "../contracts/abis/ISolardexRouter02.json";
 import { ADDRESSES } from "../contracts/addresses";
 import { useStore } from "../stores";
@@ -140,12 +142,19 @@ export function useSwapCallback(
   const {
     etherProvider: library,
     chainId,
+    chainIdStr,
     accountHex,
+    account,
     web3Instance,
   } = useWeb3();
   const chain = chainId || ChainId.TESTNET;
   const gasPrice = GAS_PRICE_GWEI.testnet;
-  const { keyRingStore } = useStore();
+  const {
+    keyRingStore,
+    accountStore,
+    transactionStore,
+    chainStore,
+  } = useStore();
   const swapCalls = useSwapCallArguments(trade, allowedSlippage);
   const accountSignAsync = useMemo(async () => {
     if (!web3Instance) return;
@@ -154,6 +163,57 @@ export function useSwapCallback(
   }, [keyRingStore, web3Instance]);
 
   const recipient = accountHex;
+
+  // const signEthereum = useCallback(
+  //   async (functionAbi: any, opts: { gas: any; value: any }) => {
+  //     const keplr = await accountStore
+  //       .getAccount(account.bech32Address)
+  //       .getKeplr();
+  //     const txParams = {
+  //       gasPrice: Web3.utils.stringToHex(gasPrice),
+  //       to: ADDRESSES.ROUTER[chain],
+  //       data: functionAbi,
+  //       from: accountHex,
+  //       chainId: chain,
+  //       nonce: Web3.utils.numberToHex(Math.floor(Math.random() * 1000)),
+  //       gas: Web3.utils.numberToHex(opts.gas),
+  //       value: opts.value,
+  //     };
+  //     transactionStore.updateTxType("swap");
+  //     const sign = await keplr?.signEthereum(
+  //       chainIdStr,
+  //       account.bech32Address,
+  //       JSON.stringify(txParams),
+  //       EthSignType.TRANSACTION
+  //     );
+  //     // if (sign) {
+  //     //   console.log("🚀 -> sign", sign);
+  //     //   const hex = Buffer.from(sign).toString("hex");
+  //     //   web3Instance.eth
+  //     //     .sendSignedTransaction("0x" + hex)
+  //     //     .on("transactionHash", (hash) => {
+  //     //       console.log("🚀 -> .on -> hash", hash);
+  //     //     })
+  //     //     .on("error", (err) => {
+  //     //       console.log("🚀 -> err", err);
+  //     //     });
+  //     // }
+
+  //     transactionStore.updateTxHash(sign);
+  //     // await transactionStore.startTransaction();
+  //     // return sign;
+  //   },
+  //   [
+  //     account.bech32Address,
+  //     accountHex,
+  //     accountStore,
+  //     chain,
+  //     chainIdStr,
+  //     chainStore,
+  //     gasPrice,
+  //     transactionStore,
+  //   ]
+  // );
 
   const signTransaction = useCallback(
     async (functionAbi: any, opts: { gas: any; value: any }) => {
@@ -255,7 +315,6 @@ export function useSwapCallback(
         }
 
         const { functionAbi, gasEstimate, value } = successfulEstimation;
-
         return signTransaction(functionAbi, {
           gas: gasEstimate,
           value,

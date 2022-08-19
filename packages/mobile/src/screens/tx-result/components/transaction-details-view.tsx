@@ -11,7 +11,7 @@ import { useSmartNavigation } from "../../../navigation-util";
 export const TransactionDetailsView: FunctionComponent<{
   style?: ViewStyle;
 }> = observer(({ style }) => {
-  const { chainStore, transactionStore } = useStore();
+  const { chainStore, transactionStore, accountStore } = useStore();
 
   const [hasData] = useState(() => {
     if (transactionStore.txMsgsMode && transactionStore.txMsgs) {
@@ -40,10 +40,13 @@ export const TransactionDetailsView: FunctionComponent<{
   // }, [transactionStore.txMsgs, transactionStore.txMsgsMode]);
 
   let rows: IRow[] = [];
-
   if (hasData) {
     if (mode === "amino") {
-      rows = renderAminoMessages();
+      rows = renderAminoMessages({
+        chainStore,
+        transactionStore,
+        accountStore,
+      });
     } else if (mode === "direct") {
       rows = renderDirectMessages();
     }

@@ -54,14 +54,26 @@ export const TransactionStateView: FunctionComponent<{
         failure: intl.formatMessage({ id: "tx.result.state.delegate.failure" }),
       },
       undelegate: {
-        pending: intl.formatMessage({ id: "tx.result.state.undelegate.pending" }),
-        success: intl.formatMessage({ id: "tx.result.state.undelegate.success" }),
-        failure: intl.formatMessage({ id: "tx.result.state.undelegate.failure" }),
+        pending: intl.formatMessage({
+          id: "tx.result.state.undelegate.pending",
+        }),
+        success: intl.formatMessage({
+          id: "tx.result.state.undelegate.success",
+        }),
+        failure: intl.formatMessage({
+          id: "tx.result.state.undelegate.failure",
+        }),
       },
       redelegate: {
-        pending: intl.formatMessage({ id: "tx.result.state.redelegate.pending" }),
-        success: intl.formatMessage({ id: "tx.result.state.redelegate.success" }),
-        failure: intl.formatMessage({ id: "tx.result.state.redelegate.failure" }),
+        pending: intl.formatMessage({
+          id: "tx.result.state.redelegate.pending",
+        }),
+        success: intl.formatMessage({
+          id: "tx.result.state.redelegate.success",
+        }),
+        failure: intl.formatMessage({
+          id: "tx.result.state.redelegate.failure",
+        }),
       },
       withdraw: {
         pending: intl.formatMessage({ id: "tx.result.state.withdraw.pending" }),
@@ -69,9 +81,9 @@ export const TransactionStateView: FunctionComponent<{
         failure: intl.formatMessage({ id: "tx.result.state.withdraw.failure" }),
       },
       swap: {
-        pending: "",
-        success: "",
-        failure: "",
+        pending: intl.formatMessage({ id: "tx.result.state.swap.pending" }),
+        success: intl.formatMessage({ id: "tx.result.state.swap.success" }),
+        failure: intl.formatMessage({ id: "tx.result.state.swap.failure" }),
       },
     };
 
@@ -99,11 +111,13 @@ export const TransactionStateView: FunctionComponent<{
     marginTop: isFailure ? 8 : 4,
   };
 
-  var initialStepText = intl.formatMessage({ id: "tx.result.state.initialized" });
-  var finalStepText = intl.formatMessage({ id: "tx.result.state.processing" });
-  var lineState: StepViewState = "inactive";
-  var type: StepViewType = "dot";
-  var stateColors: StepViewStateColors = StepViewStateColorsBlue;
+  const initialStepText = intl.formatMessage({
+    id: "tx.result.state.initialized",
+  });
+  let finalStepText = intl.formatMessage({ id: "tx.result.state.processing" });
+  let lineState: StepViewState = "inactive";
+  let type: StepViewType = "dot";
+  let stateColors: StepViewStateColors = StepViewStateColorsBlue;
 
   if (txState == "success") {
     finalStepText = intl.formatMessage({ id: "tx.result.state.sucess" });
@@ -113,7 +127,7 @@ export const TransactionStateView: FunctionComponent<{
   }
 
   function animationSource() {
-    var anim = require("../../../assets/lottie/tx-loading.json");
+    let anim = require("../../../assets/lottie/tx-loading.json");
     switch (txState) {
       case "success":
         anim = require("../../../assets/lottie/tx-loading-complete.json");
