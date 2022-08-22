@@ -341,7 +341,11 @@ export class AccountSetBase {
   }
 
   get hasEvmosHexAddress(): boolean {
-    return this._bech32Prefix === "evmos";
+    return (
+      this.chainGetter
+        .getChain(this.chainId)
+        .features?.includes("eth-address-gen") ?? false
+    );
   }
 
   get evmosHexAddress(): string {

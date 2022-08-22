@@ -81,7 +81,7 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
   protected async fetchResponse(
     cancelToken: CancelToken
   ): Promise<{ response: QueryResponse<CoinGeckoSimplePrice>; headers: any }> {
-      const response = await super.fetchResponse(cancelToken);
+    const response = await super.fetchResponse(cancelToken);
     return response;
   }
 
@@ -102,7 +102,7 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
 
   getPriceChangePercent(): string {
     const percent = this.response?.data?.ticker?.price_change_percent;
-    return String(percent || '0%');
+    return String(percent || "0%");
   }
 
   calculatePrice(
