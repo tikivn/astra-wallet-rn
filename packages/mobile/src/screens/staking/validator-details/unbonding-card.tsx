@@ -52,6 +52,29 @@ export const UnbondingCard: FunctionComponent<{
   const style = useStyle();
 
   const intl = useIntl();
+  const chainInfo = chainStore.getChain(chainStore.current.chainId).raw;
+  const unbondingTime = chainInfo.unbondingTime ?? 86400000;
+  const unbondingTimeText = (() => {
+    const relativeEndTime = unbondingTime / 1000;
+    const relativeEndTimeDays = Math.floor(relativeEndTime / (3600 * 24));
+    const relativeEndTimeHours = Math.ceil(relativeEndTime / 3600);
+
+    if (relativeEndTimeDays) {
+      return intl
+        .formatRelativeTime(relativeEndTimeDays, "days", {
+          numeric: "always",
+        })
+        .replace("days", intl.formatMessage({ id: "staking.unbonding.days" }));
+    } else if (relativeEndTimeHours) {
+      return intl
+        .formatRelativeTime(relativeEndTimeHours, "hours", {
+          numeric: "always",
+        })
+        .replace("hours", "h");
+    }
+
+    return "";
+  })();
 
   return unbonding ? (
     <Card style={containerStyle}>
@@ -66,7 +89,7 @@ export const UnbondingCard: FunctionComponent<{
           >
             <FormattedMessage
               id="validator.details.unbonding.noticeWithdrawalPeroid"
-              values={{ coin: "ASA" }}
+              values={{ coin: "ASA", days: unbondingTimeText }}
             />
             <Text
               style={style.flatten(["text-underline", "color-primary"])}

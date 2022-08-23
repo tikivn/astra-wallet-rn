@@ -18,8 +18,8 @@
   "staking.unbonding.days": "ngày",
   "staking.unbonding.history": "lịch sử",
   "staking.unbonding.nameAndAmount": "Hoạt động",
-  "staking.unbonding.noticeWithdrawalPeriod": "Bạn sẽ nhận được {amount} {coin} bạn rút sau 14 ngày",
+  "staking.unbonding.noticeWithdrawalPeriod": "Sau khi rút {coin}, bạn sẽ nhận được số tiền đó {days}",
   "staking.unbonding.receiveAfter": "Sẽ nhận được sau",
   "staking.unbonding.totalAmount": "Thưởng đang rút",
-  "staking.unbonding.viewHistoryGuide": "Xem số ASA đã rút thành công ở mục {lịch sử} "
+  "staking.unbonding.viewHistoryGuide": "Xem số ASA đã rút thành công ở mục "
 }

@@ -23,6 +23,7 @@ export interface AppChainInfo extends ChainInfo {
       readonly icons: [string];
     };
   };
+  readonly unbondingTime?: number;
 }
 
 export const EmbedChainInfos: AppChainInfo[] = [
@@ -88,6 +89,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         ],
       },
     },
+    unbondingTime: 172800000,
   },
 ];
 
