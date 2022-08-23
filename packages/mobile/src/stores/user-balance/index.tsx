@@ -36,12 +36,16 @@ export class UserBalanceStore {
   }
 
   getBalanceString(chainId?: string): string {
-    return this.getBalance(chainId)
-      .trim(true)
-      .shrink(true)
-      .maxDecimals(6)
-      .upperCase(true)
-      .toString();
+    const balance = this.getBalance(chainId);
+    return Number(balance.toDec()).toLocaleString("vi-VN", {
+      maximumFractionDigits: 2
+    }) + " " + balance.denom.toUpperCase();
+    // return this.getBalance(chainId)
+    //   .trim(true)
+    //   .shrink(true)
+    //   .maxDecimals(6)
+    //   .upperCase(true)
+    //   .toString();
   }
 
   getRewards(chainId?: string): CoinPretty {

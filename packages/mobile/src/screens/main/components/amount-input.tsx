@@ -1,104 +1,75 @@
-import React, { FunctionComponent, useMemo } from "react";
+import React, { FunctionComponent, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { Text, View, TextInput } from "react-native";
 import { useStyle } from "../../../styles";
 import { Button } from "../../../components/button";
 import {
-    EmptyAmountError,
-    IAmountConfig,
-    InsufficientAmountError,
-    InvalidNumberAmountError,
-    NegativeAmountError,
-    ZeroAmountError,
+  IAmountConfig,
 } from "@keplr-wallet/hooks";
+import { useIntl } from "react-intl";
+import { NormalInput } from "../../../components/input/normal-input";
 import { useStore } from "../../../stores";
-import { FormattedMessage, useIntl } from "react-intl";
+import { Dec } from "@keplr-wallet/unit";
 
 export const AmountInput: FunctionComponent<{
-    amountConfig: IAmountConfig;
+  amountConfig: IAmountConfig;
 }> = observer(
-    ({
-        amountConfig,
-    }) => {
-        const { chainStore, accountStore, queriesStore } = useStore();
-  
-        const style = useStyle();
-        const intl = useIntl();
-      
-      
-        const account = accountStore.getAccount(chainStore.current.chainId);
-        const queries = queriesStore.get(chainStore.current.chainId);
-      
-        const queryStakable = queries.queryBalances.getQueryBech32Address(
-          account.bech32Address
-        ).stakable;
-        const stakable = queryStakable.balance;
+  ({
+    amountConfig,
+  }) => {
+    const style = useStyle();
+    const intl = useIntl();
+    const { userBalanceStore } = useStore();
 
-        const error = amountConfig.error;
-        const errorText: string | undefined = useMemo(() => {
-            if (error) {
-                switch (error.constructor) {
-                    case EmptyAmountError:
-                        // No need to show the error to user.
-                        return;
-                    case InvalidNumberAmountError:
-                        return "Invalid number";
-                    case ZeroAmountError:
-                        return "Amount is zero";
-                    case NegativeAmountError:
-                        return "Amount is negative";
-                    case InsufficientAmountError:
-                        return "Insufficient fund";
-                    default:
-                        return "Unknown error";
-                }
-            }
-        }, [error]);
+    const [errorText, setErrorText] = useState("");
 
-        return (
-            <React.Fragment>
-                <View style={
-                    style.flatten(["padding-x-16", "padding-y-12", "flex-0", "background-color-background-secondary", "overflow-hidden", "border-radius-12", "justify-between"])}>
-                    <View style={style.flatten(["flex-row", "justify-between"])}>
-                        <Text style={style.flatten(["color-text-black-low", "text-caption2"])}><FormattedMessage id="component.amount.input.sendindAmount"/></Text>
-                        <View style={style.flatten(["flex-row"])}>
-                            <Text style={style.flatten(["color-text-black-low", "text-caption2"])}>
-                                <FormattedMessage id="component.amount.input.available" values={{
-                                        amount: stakable.trim(true)
-                                            .shrink(true)
-                                            .maxDecimals(6)
-                                            .upperCase(true)
-                                            .hideDenom(true)
-                                            .toString()
-                                }} />
-                            </Text>
-                        </View>
-                    </View>
-                    <View style={style.flatten(["flex-row", "margin-top-8", "justify-between"])}>
-                        <TextInput
-                            style={style.flatten(["self-center", "flex-1", "margin-right-12", "color-white", "text-amount-input"])}
-                            value={amountConfig.amount}
-                            onChangeText={(text) => {
-                                amountConfig.setAmount(text);
-                            }}
-                            keyboardType="numeric" />
-                        <Button text={intl.formatMessage({id: "component.amount.input.sendAll"})}
-                            style={style.flatten(["self-center"])}
-                            size="small"
-                            textStyle={style.flatten(["color-white", "subtitle5"])}
-                            containerStyle={style.flatten(["height-24", "border-radius-4"])}
-                            onPress={() => {
-                                console.log("DucNN--Debug", amountConfig.amount);
-                                amountConfig.setFraction(amountConfig.fraction === 1 ? 0 : 1);
-                            }} />
+    function onChangeTextHandler(text: string) {
+      const formattedText = text.replace(",", ".");
+      amountConfig.setAmount(formattedText);
 
-                    </View>
-                </View>
-                <View style={style.flatten(["flex-row", "padding-y-16", "justify-between"])}>
-                    <Text style={style.flatten(["color-text-black-low", "body3"])}><FormattedMessage id="component.amount.input.fee"/></Text>
-                    <Text style={style.flatten(["color-text-black-low", "body3", "text-right"])}>1 ASA</Text>
-                </View>
-            </React.Fragment>
-        );
+      const amount = Number(formattedText);
+
+      if (0 < amount || formattedText.length != 0) {
+        if (amount < 10) {
+          setErrorText(intl.formatMessage({
+            id: "component.amount.input.error.minimum"
+          }, {
+            amount: "10"
+          }));
+        }
+        else if (userBalanceStore.getBalance().toDec().lt(new Dec(amount))) {
+          setErrorText(intl.formatMessage({ id: "component.amount.input.error.insufficient" }));
+        }
+        else {
+          setErrorText("");
+        }
+      }
+      else {
+        setErrorText("");
+      }
     }
+
+    return (
+      <NormalInput
+        value={amountConfig.amount}
+        label={intl.formatMessage({ id: "component.amount.input.sendindAmount" })}
+        error={errorText}
+        onChangeText={onChangeTextHandler}
+        placeholder="0"
+        keyboardType="numeric"
+        rightView={
+          <Button text={intl.formatMessage({ id: "component.amount.input.max" })}
+            size="small"
+            mode="text"
+            containerStyle={style.flatten(["height-24"])}
+            onPress={() => {
+              console.log("DucNN--Debug", amountConfig.amount);
+              amountConfig.setFraction(amountConfig.fraction === 1 ? 0 : 1);
+              onChangeTextHandler(amountConfig.amount)
+            }}
+          />
+        }
+        style={{ marginBottom: errorText ? 24 : 0 }}
+      />
+    );
+  }
 );
