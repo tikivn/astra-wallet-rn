@@ -9,7 +9,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { TooltipLabel } from "../component";
 import { CardDivider } from "../../../components/card";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
 
 export const ValidatorsBottomSheet: FunctionComponent<{
   label: string;
@@ -261,15 +261,18 @@ export const ValidatorsBottomSheet: FunctionComponent<{
                           "color-gray-30",
                         ])}
                       >
-                        {queries.cosmos.queryInflation.inflation
-                          .mul(
-                            new Dec(1).sub(
+                        {intl.formatMessage(
+                          { id: "validator.details.commission.percent" },
+                          {
+                            percent: new IntPretty(
                               new Dec(val.commission.commission_rates.rate)
                             )
-                          )
-                          .maxDecimals(2)
-                          .trim(true)
-                          .toString() + "%"}
+                              .moveDecimalPointRight(2)
+                              .maxDecimals(2)
+                              .trim(true)
+                              .toString(),
+                          }
+                        )}
                       </Text>
                     </View>
                   </RectButton>

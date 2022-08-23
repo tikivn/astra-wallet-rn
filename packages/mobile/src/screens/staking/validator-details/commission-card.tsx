@@ -100,16 +100,18 @@ export const CommissionsCard: FunctionComponent<{
                   .maxDecimals(6)
                   .toString()}
               </Text>
-              <TooltipLabel
+              {/* <TooltipLabel
                 text={intl.formatMessage(
                   { id: "validator.details.votingPower" },
                   { percent: 6.51 }
                 )}
-              />
+              /> */}
             </View>
             <View style={style.flatten(["items-center"])}>
               <TooltipLabel
-                text={intl.formatMessage({ id: "validator.details.uptime" })}
+                text={intl.formatMessage({
+                  id: "validator.details.commission",
+                })}
               />
               <Text
                 style={style.flatten([
@@ -118,7 +120,13 @@ export const CommissionsCard: FunctionComponent<{
                   "margin-y-2",
                 ])}
               >
-                100%
+                {new IntPretty(
+                  new Dec(validator.commission.commission_rates.rate)
+                )
+                  .moveDecimalPointRight(2)
+                  .maxDecimals(2)
+                  .trim(true)
+                  .toString() + "%"}
               </Text>
             </View>
           </View>
@@ -143,6 +151,20 @@ export const CommissionsCard: FunctionComponent<{
           <CardDivider
             style={style.flatten(["background-color-gray-70", "margin-x-0"])}
           />
+          <View
+            style={style.flatten([
+              "flex-row",
+              "items-center",
+              "justify-between",
+              "margin-top-8",
+            ])}
+          >
+            <Text style={style.flatten(["color-gray-10", "body3"])}>
+              {intl.formatMessage({
+                id: "validator.details.commission.details",
+              })}
+            </Text>
+          </View>
           <View
             style={style.flatten([
               "flex-row",

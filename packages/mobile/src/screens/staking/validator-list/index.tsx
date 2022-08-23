@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 
 import { Text, View } from "react-native";
 import { Staking } from "@keplr-wallet/stores";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { RectButton } from "react-native-gesture-handler";
 import { CardDivider } from "../../../components/card";
@@ -163,7 +163,7 @@ const ValidatorItem: FunctionComponent<{
   const validator = bondedValidators.getValidator(validatorAddress);
 
   const smartNavigation = useSmartNavigation();
-
+  const intl = useIntl();
   return validator ? (
     <RectButton
       style={style.flatten([
@@ -234,15 +234,18 @@ const ValidatorItem: FunctionComponent<{
           </View>
         </View>
         <Text style={style.flatten(["text-caption2", "color-gray-30"])}>
-          {queries.cosmos.queryInflation.inflation
-            .mul(
-              new Dec(1).sub(
+          {intl.formatMessage(
+            { id: "validator.details.commission.percent" },
+            {
+              percent: new IntPretty(
                 new Dec(validator.commission.commission_rates.rate)
               )
-            )
-            .maxDecimals(2)
-            .trim(true)
-            .toString() + "%"}
+                .moveDecimalPointRight(2)
+                .maxDecimals(2)
+                .trim(true)
+                .toString(),
+            }
+          )}
         </Text>
       </View>
     </RectButton>
