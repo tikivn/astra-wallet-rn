@@ -84,9 +84,10 @@ export const TxResultScreen: FunctionComponent = observer(() => {
       }
       signInteractionStore.rejectAll();
       toastModal.makeToast({
-        title: intl
-          .formatMessage({ id: "walletconnect.rejected" })
-          .replace("${name}", `${name}`),
+        title: intl.formatMessage(
+          { id: "walletconnect.rejected" },
+          { name: name }
+        ),
         type: "infor",
         displayTime: 2000,
       });
@@ -103,9 +104,10 @@ export const TxResultScreen: FunctionComponent = observer(() => {
     async (name) => {
       await transactionStore.startTransaction();
       toastModal.makeToast({
-        title: intl
-          .formatMessage({ id: "walletconnect.verified" })
-          .replace("${name}", `${name}`),
+        title: intl.formatMessage(
+          { id: "walletconnect.verified" },
+          { name: name }
+        ),
         type: "infor",
         displayTime: 2000,
       });

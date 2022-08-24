@@ -90,9 +90,10 @@ export const TransactionSignRequestView: FunctionComponent<{
           </View>
         </View>
         <Text style={style.flatten(["color-gray-10", "text-center", "h5"])}>
-          {intl
-            .formatMessage({ id: "walletconnect.text.verify" })
-            .replace("${name}", `${source}`)}
+          {intl.formatMessage(
+            { id: "walletconnect.text.verify" },
+            { name: source }
+            )}
         </Text>
         <Text
           style={style.flatten([

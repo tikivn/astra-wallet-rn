@@ -1,15 +1,18 @@
 {
   "walletconnect.action.disconnect.cancel": "Không huỷ",
-  "walletconnect.action.disconnect.title": "Huỷ liên kết ứng dụng ${name}?",
+  "walletconnect.action.disconnect.title": "Huỷ liên kết ứng dụng {name}?",
   "walletconnect.action.hide": "Ẩn dữ liệu",
   "walletconnect.action.show": "Xem dữ liệu",
   "walletconnect.action.text": "Liên kết ứng dụng",
-  "walletconnect.connected": "Ứng dụng ${name} đã được liên kết",
+  "walletconnect.connected": "Ứng dụng {name} đã được liên kết",
   "walletconnect.descriptions": "Kết nối ứng dụng DApps/DeFi với ví qua WalletConnect để thực hiện giao dịch của ứng dụng",
-  "walletconnect.disconnected": "Đã huỷ liên kết với ứng dụng ${name}",
+  "walletconnect.disconnected": "Đã huỷ liên kết với ứng dụng {name}",
   "walletconnect.empty.description": "Bạn chưa có ứng dụng liên kết nào",
-  "walletconnect.rejected": "Đã từ chối giao dịch từ ${name}",
-  "walletconnect.text.connect": "Liên kết ${name} với Astra Hub?",
-  "walletconnect.text.verify": "Xác nhận giao dịch từ ${name}",
-  "walletconnect.verified": "Đã xác nhận giao dịch từ ${name}"
+  "walletconnect.rejected": "Đã từ chối giao dịch từ {name}",
+  "walletconnect.text.connect": "Liên kết {name} với Astra Hub?",
+  "walletconnect.text.verify": "Xác nhận giao dịch từ {name}",
+  "walletconnect.verified": "Đã xác nhận giao dịch từ {name}",
+  "walletconnect.permission": "{name} sẽ có quyền",
+  "walletconnect.permission.showBalance": "Xem số dư và hoạt động trong ví của bạn",
+  "walletconnect.permission.requestTransaction": "Yêu cầu phê duyệt cho các giao dịch"
 }
