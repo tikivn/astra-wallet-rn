@@ -94,18 +94,18 @@ export const RewardsItem: FunctionComponent<{
           containerStyle={style.flatten([
             "self-center",
             "border-radius-4",
-            "border-color-gray-30",
-            "border-width-1",
+            // "border-color-gray-30",
+            // "border-width-1",
             "width-132",
           ])}
           onPress={() => {
             smartNavigation.navigateSmart("Validator.List", {});
           }}
           text={intl.formatMessage({ id: "staking.dashboard.rewards.invest" })}
-          mode="text"
+          mode="fill"
           size="small"
           underlayColor={style.get("color-background").color}
-          textStyle={style.flatten(["color-gray-10", "body3"])}
+          textStyle={style.flatten(["color-white", "subtitle3"])}
         />
       </View>
       <CardDivider style={style.flatten(["background-color-gray-70"])} />
@@ -153,7 +153,7 @@ export const RewardsItem: FunctionComponent<{
           mode="text"
           size="small"
           underlayColor={style.get("color-background").color}
-          textStyle={style.flatten(["color-gray-10", "body3"])}
+          textStyle={style.flatten(["color-gray-10", "subtitle3"])}
           disabled={!isRewardExist}
           onPress={() => {
             smartNavigation.navigateSmart("Staking.Rewards", {});
@@ -206,7 +206,7 @@ export const RewardsItem: FunctionComponent<{
               mode="text"
               size="small"
               underlayColor={style.get("color-background").color}
-              textStyle={style.flatten(["color-gray-10", "body3"])}
+              textStyle={style.flatten(["color-gray-10", "subtitle3"])}
               disabled={!isPending}
               onPress={() => {
                 smartNavigation.navigateSmart("Unbonding", {});
