@@ -3,7 +3,7 @@
   "component.address.input.receiver.label": "Địa chỉ người nhận",
   "component.address.input.warning": "Lưu ý: nhập chính xác để đảm bảo số Astra được gửi đến đúng địa chỉ.",
   "component.amount.input.available": "(Khả dụng: {amount})",
-  "component.amount.input.error.insufficient": "Insufficient amount",
+  "component.amount.input.error.insufficient": "Số dư không khả dụng",
   "component.amount.input.error.minimum": "Tối thiểu {amount} ASA",
   "component.amount.input.fee": "Phí giao dịch",
   "component.amount.input.max": "Tối đa",
