@@ -163,13 +163,13 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
       </KeyboardAwareScrollView>
       <View style={style.flatten(["flex-1", "justify-end", "margin-bottom-12"])}>
         <View style={style.flatten(["height-1", "background-color-gray-70"])} />
-        <View style={{ ...style.flatten(["background-color-background"]), height: 52 }}>
+        <View style={{ ...style.flatten(["background-color-background"]), height: 56 }}>
           <Button
             text={intl.formatMessage({ id: "wallet.send.continue" })}
             disabled={!account.isReadyToSendTx || !txStateIsValid}
             loading={account.txTypeInProgress === "send"}
             onPress={onSendHandler}
-            containerStyle={style.flatten(["margin-x-page", "margin-top-8"])}
+            containerStyle={style.flatten(["margin-x-page", "margin-top-12"])}
           />
         </View>
         <AvoidingKeyboardBottomView />

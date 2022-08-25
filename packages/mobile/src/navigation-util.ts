@@ -188,6 +188,7 @@ const {
       bip44HDPath: BIP44HDPath;
     };
     "Register.SetPincode": {
+      registerType?: "new" | "recover" | undefined;
       registerConfig: RegisterConfig;
       bip44HDPath: BIP44HDPath;
       mnemonic?: string;

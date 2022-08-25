@@ -3,15 +3,19 @@ import { TorusStorageLayer } from "@tkey/storage-layer-torus";
 import { ShareSerializationModule, SHARE_SERIALIZATION_MODULE_NAME } from "@tkey/share-serialization";
 import { SecurityQuestionsModule, SECURITY_QUESTIONS_MODULE_NAME } from "@tkey/security-questions";
 import { SeedPhraseModule, SEED_PHRASE_MODULE_NAME, MetamaskSeedPhraseFormat } from "@tkey/seed-phrase";
-import { action, computed, makeObservable, observable, runInAction } from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 import { ModuleMap } from "@tkey/common-types";
-import { Mnemonic, PrivKeySecp256k1 } from "@keplr-wallet/crypto";
+import { Mnemonic } from "@keplr-wallet/crypto";
 import ThresholdKey from "@tkey/default";
 import BN from "bn.js";
 import * as WebBrowser from "expo-web-browser";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SocialLoginConfigPROD, SocialLoginConfigUAT } from "./config";
 import { loginWithApple } from "./apple-service";
+
+export enum SocialLoginUserState {
+  new, recover, unknown
+}
 
 export declare type ServiceProviderType = "apple" | "google" | "tiki";
 
@@ -130,7 +134,7 @@ export class UserLoginStore {
     if (!this._socialLoginEnabledFunc || this._socialLoginEnabledFunc() !== true) {
       return undefined;
     }
-    
+
     return this._socialLoginData;
   }
 

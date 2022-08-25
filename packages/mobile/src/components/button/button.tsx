@@ -1,6 +1,6 @@
 import React, { FunctionComponent, ReactElement, useState } from "react";
 import { useStyle } from "../../styles";
-import { Text, StyleSheet, TextStyle, View, ViewStyle, OpaqueColorValue } from "react-native";
+import { Text, StyleSheet, TextStyle, View, ViewStyle } from "react-native";
 import { LoadingSpinner } from "../spinner";
 import { RectButton } from "../rect-button";
 
@@ -188,7 +188,7 @@ export const Button: FunctionComponent<{
           <Text
             style={StyleSheet.flatten([
               style.flatten(
-                ["subtitle2"],
+                ["text-medium-medium"],
                 [textDefinition, "text-center", textColorDefinition as any],
                 [loading && "opacity-transparent"]
               ),

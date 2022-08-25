@@ -266,19 +266,19 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
           onShowPasswordChanged={setShowPassword}
           onChangeText={setPassword}
           onBlur={validateInputData}
-          style={{ marginBottom: 24, paddingBottom: 24 }}
         />
-        <View style={style.flatten(["flex-1", "justify-end", "margin-bottom-12"])}>
-          <Button
-            containerStyle={style.flatten(["border-radius-4", "height-44"])}
-            textStyle={style.flatten(["subtitle2"])}
-            text={getButtonText()}
-            size="large"
-            onPress={onProceed}
-            disabled={!inputDataValid}
-            color={type === "deleteWallet" ? "danger" : "primary"}
-          />
-        </View>
+      </View>
+      <View style={style.flatten(["flex-1", "justify-end", "margin-bottom-12"])}>
+        <View style={style.flatten(["height-1", "background-color-gray-70", "margin-bottom-12"])} />
+        <Button
+          containerStyle={style.flatten(["border-radius-4", "height-44", "margin-x-page"])}
+          textStyle={style.flatten(["subtitle2"])}
+          text={getButtonText()}
+          size="large"
+          onPress={onProceed}
+          disabled={!inputDataValid}
+          color={type === "deleteWallet" ? "danger" : "primary"}
+        />
         <AvoidingKeyboardBottomView />
       </View>
     </React.Fragment>

@@ -26,6 +26,7 @@ import { useSmartNavigation } from "../../navigation-util";
 import { useToastModal } from "../../providers/toast-modal";
 import { useIntl } from "react-intl";
 import { TransactionSignRequestView } from "./components/transaction-sign-request";
+import { ScrollView, View, SafeAreaView } from "react-native";
 
 export const TxResultScreen: FunctionComponent = observer(() => {
   const {
@@ -200,10 +201,28 @@ export const TxResultScreen: FunctionComponent = observer(() => {
     signInteractionStore.waitingData,
   ]);
 
-  const renderedMsgs = (() => {
-    if (isInternal && !isPendingSignRequest) {
-      return (
-        <React.Fragment>
+  function getPendingSigningView(): React.ReactNode {
+    return (
+      <PageWithScrollView
+        backgroundColor={style.get("color-background").color}
+        contentContainerStyle={style.flatten([
+          "padding-y-16",
+          "flex-1",
+          "justify-between",
+        ])}
+      >
+        <TransactionSignRequestView
+          onApprove={onConfirmSignRequest}
+          onReject={onRejectSignRequest}
+        />
+      </PageWithScrollView>
+    );
+  }
+
+  function getResultView(): React.ReactNode {
+    return (
+      <View style={style.flatten(["flex-1", "background-color-background"])}>
+        <ScrollView style={style.flatten(["flex-1"])}>
           <TransactionStateView />
           <TransactionDetailsView
             style={{
@@ -213,33 +232,24 @@ export const TxResultScreen: FunctionComponent = observer(() => {
               flex: 1,
             }}
           />
-          <TransactionActionView />
-        </React.Fragment>
-      );
-    } else {
-      return (
-        <TransactionSignRequestView
-          onApprove={onConfirmSignRequest}
-          onReject={onRejectSignRequest}
-        />
-      );
-    }
-  })();
+        </ScrollView>
+        <TransactionActionView style={style.flatten(["margin-bottom-12"])} />
+        <SafeAreaView />
+      </View>
+    );
+  }
 
-  if (isInternal && !isPendingSignRequest) {
+  function isPendingSigning() {
+    return !isInternal || isPendingSignRequest;
+  }
+
+  if (!isPendingSigning()) {
     transactionStore.startTransaction();
   }
 
   return (
-    <PageWithScrollView
-      backgroundColor={style.get("color-background").color}
-      contentContainerStyle={style.flatten([
-        "padding-y-16",
-        "flex-1",
-        "justify-between",
-      ])}
-    >
-      {renderedMsgs}
-    </PageWithScrollView>
+    isPendingSigning()
+      ? getPendingSigningView()
+      : getResultView()
   );
 });
