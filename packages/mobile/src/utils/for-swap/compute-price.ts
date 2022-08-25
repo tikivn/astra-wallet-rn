@@ -1,3 +1,4 @@
+import { SwapField } from "./index";
 import {
   CurrencyAmount,
   Fraction,
@@ -6,6 +7,7 @@ import {
   Trade,
   JSBI,
 } from "@solarswap/sdk";
+import { calculateSlippagePercent } from ".";
 import { BASE_FEE } from "./constant";
 
 const ONE_HUNDRED_PERCENT = new Percent(JSBI.BigInt(10000), JSBI.BigInt(10000));
@@ -59,5 +61,16 @@ export function computeTradePriceBreakdown(
   return {
     priceImpactWithoutFee: priceImpactWithoutFeePercent,
     realizedLPFee: realizedLPFeeAmount,
+  };
+}
+
+export function computeSlippageAdjustedAmounts(
+  trade: Trade | undefined,
+  allowedSlippage: number
+): { [field in SwapField]?: CurrencyAmount } {
+  const pct = calculateSlippagePercent(allowedSlippage);
+  return {
+    [SwapField.Input]: trade?.maximumAmountIn(pct),
+    [SwapField.Output]: trade?.minimumAmountOut(pct),
   };
 }

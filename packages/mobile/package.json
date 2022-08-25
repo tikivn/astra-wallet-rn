@@ -137,7 +137,7 @@
     "@nartc/react-native-barcode-mask": "^1.2.0",
     "@react-native-masked-view/masked-view": "0.2.6",
     "bech32-converting": "^1.0.9",
-    "@solarswap/sdk": "1.0.3",
+    "@solarswap/sdk": "1.0.5",
     "@ethersproject/abi": "^5.5.0",
     "@ethersproject/address": "^5.6.1",
     "@ethersproject/bignumber": "^5.5.0",

@@ -1,4 +1,3 @@
-import { EthSignType } from "@keplr-wallet/types";
 import {
   ChainId,
   Router,
@@ -6,18 +5,17 @@ import {
   Trade,
   TradeType,
 } from "@solarswap/sdk";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import Web3 from "web3";
+import { useEffect, useMemo, useState } from "react";
 import ISolardexRouter02 from "../contracts/abis/ISolardexRouter02.json";
 import { ADDRESSES } from "../contracts/addresses";
-import { useStore } from "../stores";
 import {
+  calculateGasMargin,
   calculateSlippagePercent,
-  GAS_PRICE_GWEI,
   INITIAL_ALLOWED_SLIPPAGE,
   isZero,
   TX_DEADLINE,
 } from "../utils/for-swap";
+import { useSignTransaction } from "./use-sign-transaction";
 import { useWeb3 } from "./use-web3";
 
 export enum SwapCallbackState {
@@ -139,28 +137,9 @@ export function useSwapCallback(
   callback: null | (() => Promise<string>);
   error: string | null;
 } {
-  const {
-    etherProvider: library,
-    chainId,
-    chainIdStr,
-    accountHex,
-    account,
-    web3Instance,
-  } = useWeb3();
-  const chain = chainId || ChainId.TESTNET;
-  const gasPrice = GAS_PRICE_GWEI.testnet;
-  const {
-    keyRingStore,
-    accountStore,
-    transactionStore,
-    chainStore,
-  } = useStore();
+  const { etherProvider: library, chainId, accountHex } = useWeb3();
   const swapCalls = useSwapCallArguments(trade, allowedSlippage);
-  const accountSignAsync = useMemo(async () => {
-    if (!web3Instance) return;
-    const privateKey = await keyRingStore.exportPrivateKey();
-    return web3Instance.eth.accounts.privateKeyToAccount("0x" + privateKey);
-  }, [keyRingStore, web3Instance]);
+  const signTransaction = useSignTransaction();
 
   const recipient = accountHex;
 
@@ -213,42 +192,7 @@ export function useSwapCallback(
   //     gasPrice,
   //     transactionStore,
   //   ]
-  // );
-
-  const signTransaction = useCallback(
-    async (functionAbi: any, opts: { gas: any; value: any }) => {
-      const accountSign = await accountSignAsync;
-      if (!web3Instance || !accountSign)
-        return Promise.reject("An error occurred!");
-
-      return new Promise<string>((resolve, reject) => {
-        web3Instance.eth
-          .getTransactionCount(accountSign.address)
-          .then((_nonce) => {
-            const txParams = {
-              gasPrice,
-              to: ADDRESSES.ROUTER[chain],
-              data: functionAbi,
-              from: accountSign.address,
-              nonce: web3Instance.utils.toHex(_nonce),
-              ...opts,
-            };
-            accountSign
-              .signTransaction(txParams as any)
-              .then((signed) => {
-                web3Instance.eth
-                  .sendSignedTransaction(signed.rawTransaction || "")
-                  .on("transactionHash", (hash) => {
-                    resolve(hash);
-                  })
-                  .on("error", reject);
-              })
-              .catch(reject);
-          });
-      });
-    },
-    [accountSignAsync, chain, gasPrice, web3Instance]
-  );
+  // )
 
   return useMemo(() => {
     if (!trade || !library || !accountHex || !chainId) {
@@ -271,12 +215,12 @@ export function useSwapCallback(
               contract,
             } = call;
 
-            const options =
-              !value || isZero(value) ? {} : { value, from: accountHex };
+            const options = !value || isZero(value) ? {} : { value };
             const contractFunction = contract.methods[methodName](...args);
             const functionAbi = contractFunction.encodeABI();
+            const opts = { ...options, from: accountHex };
             return contractFunction
-              .estimateGas(options)
+              .estimateGas(opts)
               .then((gasEstimate: any) => {
                 return {
                   functionAbi,
@@ -316,13 +260,14 @@ export function useSwapCallback(
 
         const { functionAbi, gasEstimate, value } = successfulEstimation;
         return signTransaction(functionAbi, {
-          gas: gasEstimate,
+          gas: calculateGasMargin(gasEstimate),
           value,
         })
           .then((hash) => {
             return hash;
           })
           .catch((error) => {
+            console.log("🚀 -> onSwap -> error", error);
             console.log(
               `Swap failed: ${swapErrorToUserReadableMessage(error)}`
             );

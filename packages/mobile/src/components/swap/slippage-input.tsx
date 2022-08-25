@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useStyle } from "../../styles";
 import { SLIPPAGE_TOLERANCE } from "../../utils/for-swap";
+import { AvoidingKeyboardBottomView } from "../avoiding-keyboard/avoiding-keyboard-bottom";
 import { Button } from "../button";
 import { BottomSheetSwap, BottomSheetSwapProps } from "./bottom-sheet-swap";
 
@@ -205,6 +206,7 @@ export const SlippageInput = ({
           onPress={handleConfirm}
         />
       </View>
+      <AvoidingKeyboardBottomView />
     </BottomSheetSwap>
   );
 };

@@ -61,7 +61,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDecimals: 18,
         coinImageUrl:
           "https://pancakeswap.finance/images/tokens/0x55d398326f99059fF775485246999027B3197955.png",
-        contractAddress: "0xeAcA2EF350DDFD56423B0bcd24d26Edeb0656E3F",
+        contractAddress: "0x41591484aEB5FA3d1759f1cbA369dC8dc1281298",
       },
     ],
     feeCurrencies: [

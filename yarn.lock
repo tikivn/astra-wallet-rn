@@ -6470,10 +6470,10 @@
   resolved "https://registry.yarnpkg.com/@socket.io/component-emitter/-/component-emitter-3.1.0.tgz#96116f2a912e0c02817345b3c10751069920d553"
   integrity sha512-+9jVqKhRSpsc591z5vX+X5Yyw+he/HCB4iQ/RYxw35CEPaY1gnsNE43nf9n9AaYjAQrTiI/mOwKUKdUs9vf7Xg==
 
-"@solarswap/sdk@1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@solarswap/sdk/-/sdk-1.0.3.tgz#88e8cf42d906fc7d7004246ae447b7c6a1e37e10"
-  integrity sha512-+IJMN9wpOAk1YZS1K/rSSn7IF0gVBM05fyjl7Sltrf67cF4HoOIfYKaSxBCmf/hRQdZrFzbOl+z5vrNkl75UrQ==
+"@solarswap/sdk@1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@solarswap/sdk/-/sdk-1.0.5.tgz#08fc6198eda80266c2a3dd1b661aece1fa94b2e7"
+  integrity sha512-YF6BX7oh6kCsxcoRx/I7xb/5/s2yrJ1kuO0DqvK1IUkYNMEQbRRSv4CiCjwfqpm+JeM8UTq5KntniuNsLGtvkQ==
   dependencies:
     big.js "^5.2.2"
     decimal.js-light "^2.5.0"

@@ -1,12 +1,17 @@
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useMemo, useState } from "react";
+import React, { FunctionComponent, useCallback, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Button, SlippageDescribe, SlippageInput } from "../../../components";
+import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 import { ChangeTokenIcon } from "../../../components/icon/change-token";
-import { PageWithScrollView } from "../../../components/page";
 import { RectButton } from "../../../components/rect-button";
+import { Approval } from "../../../components/swap/approval";
 import { useSwapActions } from "../../../hooks";
+import {
+  ApprovalState,
+  useApproveCallbackFromTrade,
+} from "../../../hooks/use-approve";
 import { useSmartNavigation } from "../../../navigation-util";
 import { useDataSwapContext } from "../../../providers/swap/use-data-swap-context";
 import { Colors, useStyle } from "../../../styles";
@@ -27,9 +32,9 @@ export const SwapScreen: FunctionComponent = observer(() => {
     lpFee,
     pricePerInputCurrency,
     isReadyToSwap,
+    currencies,
+    trade,
   } = useDataSwapContext();
-
-  const { currencies } = useMemo(() => swapInfos, [swapInfos]);
 
   const {
     onUserInput,
@@ -46,16 +51,40 @@ export const SwapScreen: FunctionComponent = observer(() => {
   const [isOpenSlippageDescribe, setIsOpenSlippageDescribe] = useState<boolean>(
     false
   );
+  const [isOpenApproval, setIsOpenApproval] = useState<boolean>(false);
   const style = useStyle();
   const intl = useIntl();
   const smartNavigation = useSmartNavigation();
+  const [approvalState, onApproval, approve0] = useApproveCallbackFromTrade(
+    trade,
+    swapInfos.slippageTolerance
+  );
+
+  const handleClickContinue = useCallback(() => {
+    if (approvalState === ApprovalState.APPROVED) {
+      smartNavigation.navigateSmart("Swap.Confirm", {});
+    }
+
+    if (approvalState === ApprovalState.NOT_APPROVED) {
+      setIsOpenApproval(true);
+    }
+  }, [approvalState, smartNavigation]);
+
+  const handleApproval = useCallback(async () => {
+    await onApproval();
+    if (approvalState === ApprovalState.APPROVED) {
+      smartNavigation.navigateSmart("Swap.Confirm", {});
+    }
+  }, [approvalState, onApproval, smartNavigation]);
 
   return (
-    <PageWithScrollView
-      style={style.flatten(["margin-top-16", "padding-x-16"])}
-      backgroundColor={style.get("color-background").color}
+    <View
+      style={StyleSheet.flatten([
+        { borderTopWidth: 1, borderColor: Colors["gray-70"] },
+        style.flatten(["background-color-background", "flex-1"]),
+      ])}
     >
-      <View>
+      <View style={style.flatten(["padding-x-16"])}>
         <View style={style.get("height-12")} />
         {/* <MulticallUpdater />s */}
 
@@ -134,7 +163,11 @@ export const SwapScreen: FunctionComponent = observer(() => {
             {intl.formatMessage({ id: "swap.exchangeRate" })}
           </Text>
           <Text style={style.flatten(["color-gray-10", "body3"])}>
-            {getExchangeRateString(swapInfos, pricePerInputCurrency)}
+            {getExchangeRateString(
+              swapInfos,
+              currencies,
+              pricePerInputCurrency
+            )}
           </Text>
         </View>
         <View
@@ -153,7 +186,7 @@ export const SwapScreen: FunctionComponent = observer(() => {
             {intl.formatMessage({ id: "swap.transactionFee" })}
           </Text>
           <Text style={style.flatten(["color-gray-10", "body3"])}>
-            {getTransactionFee(swapInfos, lpFee)}
+            {getTransactionFee(currencies, lpFee)}
           </Text>
         </View>
         <View
@@ -207,15 +240,42 @@ export const SwapScreen: FunctionComponent = observer(() => {
           close={() => setIsOpenSlippageInput(false)}
           onSelectValue={onSetSlippageTolerance}
         />
+        <Approval
+          isOpen={isOpenApproval}
+          label={intl.formatMessage(
+            {
+              id: "swap.approvalSymbol",
+            },
+            { symbol: currencies[SwapField.Input]?.symbol }
+          )}
+          close={() => setIsOpenApproval(false)}
+          onConfirm={handleApproval}
+        />
       </View>
-      <Button
-        text={intl.formatMessage({ id: "swap.buttonText" + swapInfos.error })}
-        size="large"
-        containerStyle={style.flatten(["border-radius-4", "margin-top-34"])}
-        textStyle={style.flatten(["subtitle2"])}
-        disabled={!isReadyToSwap || !!swapInfos.error}
-        onPress={() => smartNavigation.navigateSmart("Swap.Confirm", {})}
-      />
-    </PageWithScrollView>
+
+      <View
+        style={style.flatten(["flex-1", "justify-end", "margin-bottom-12"])}
+      >
+        <View
+          style={StyleSheet.flatten([
+            { borderTopWidth: 1, borderColor: Colors["gray-70"] },
+            style.flatten(["height-12"]),
+          ])}
+        />
+        <View style={style.flatten(["padding-x-16"])}>
+          <Button
+            text={intl.formatMessage({
+              id: "swap.buttonText" + swapInfos.error,
+            })}
+            size="large"
+            containerStyle={style.flatten(["border-radius-4"])}
+            textStyle={style.flatten(["subtitle2"])}
+            disabled={!isReadyToSwap || !!swapInfos.error}
+            onPress={handleClickContinue}
+          />
+        </View>
+      </View>
+      <AvoidingKeyboardBottomView />
+    </View>
   );
 });

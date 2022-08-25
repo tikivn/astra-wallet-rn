@@ -26,7 +26,7 @@ interface UseSwapProps {
 export interface UseSwapAggregationValue {
   lpFee?: string | undefined;
   pricePerInputCurrency?: string | undefined;
-  maximumReceived?: string | undefined;
+  minimunReceived?: string | undefined;
   priceImpact?: string | undefined;
   trade?: Trade | undefined;
   isReadyToSwap: boolean;
@@ -51,7 +51,14 @@ export const useSwapState = ({
   const [
     aggregationValue,
     setAggregationValue,
-  ] = useState<UseSwapAggregationValue>();
+  ] = useState<UseSwapAggregationValue>({
+    lpFee: "",
+    pricePerInputCurrency: "",
+    minimunReceived: "",
+    priceImpact: "",
+    trade: undefined,
+    isReadyToSwap: false,
+  });
 
   const calculateValue = useCallback(
     (trade: Trade) => {
@@ -68,19 +75,19 @@ export const useSwapState = ({
         realizedLPFee,
         priceImpactWithoutFee,
       } = computeTradePriceBreakdown(trade);
-      const maximumReceived = trade
+      const minimunReceived = trade
         .minimumAmountOut(calculateSlippagePercent(slippageTolerance))
-        .toSignificant(6);
+        .toFixed(FIXED_DECIMAL_PLACES);
       const isPriceImpactTooHigh = priceImpactWithoutFee?.greaterThan(
         new Fraction(15, 100)
       );
 
       setOutputSwapValue(outputSwapValue);
       setAggregationValue({
-        lpFee: realizedLPFee?.toSignificant(6) || "",
-        priceImpact: priceImpactWithoutFee?.toSignificant(6) || "",
+        lpFee: realizedLPFee?.toFixed(FIXED_DECIMAL_PLACES) || "",
+        priceImpact: priceImpactWithoutFee?.toFixed(FIXED_DECIMAL_PLACES) || "",
         trade,
-        maximumReceived,
+        minimunReceived,
         pricePerInputCurrency,
         isReadyToSwap: !isPriceImpactTooHigh,
       });

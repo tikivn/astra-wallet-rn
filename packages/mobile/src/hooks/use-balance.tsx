@@ -6,7 +6,7 @@ import {
   Token,
   TokenAmount,
 } from "@solarswap/sdk";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Web3 from "web3";
 import erc20Abi from "../contracts/abis/erc20.json";
 import { CallProps, multicall } from "../providers/swap/multicall";
@@ -36,12 +36,16 @@ export const useTokenBalances = (
     inputs: [account],
   }));
 
-  useEffect(() => {
-    (async () => {
-      const bls = await multicall(erc20Abi, calls, web3Instance, chainId);
-      setBalances(bls as any);
-    })();
-  }, []);
+  useInterval(
+    () => {
+      (async () => {
+        const bls = await multicall(erc20Abi, calls, web3Instance, chainId);
+        setBalances(bls as any);
+      })();
+    },
+    INTERNAL_DELAY,
+    true
+  );
 
   return useMemo(
     () =>
@@ -62,7 +66,6 @@ export const useTokenBalances = (
 };
 
 export function useCurrencyBalances(
-  account?: string,
   currencies?: (Currency | undefined)[]
 ): (CurrencyAmount | undefined)[] {
   const { web3Instance, accountHex, WASA, chainId } = useWeb3();
@@ -76,7 +79,7 @@ export function useCurrencyBalances(
   );
 
   const tokenBalances = useTokenBalances(
-    account || "",
+    accountHex,
     tokens,
     web3Instance,
     chainId ?? ChainId.TESTNET
@@ -85,21 +88,21 @@ export function useCurrencyBalances(
   return useMemo(
     () =>
       currencies?.map((currency) => {
-        if (!account || !currency) return undefined;
+        if (!accountHex || !currency) return undefined;
         if (currency.symbol === WASA.symbol) return asaBalance;
         if (currency instanceof Token) return tokenBalances[currency.address];
         return undefined;
       }) ?? [],
-    [WASA.symbol, account, asaBalance, currencies, tokenBalances]
+    [WASA.symbol, accountHex, asaBalance, currencies, tokenBalances]
   );
 }
 
-export function useCurrencyBalance(
-  account?: string,
-  currency?: Currency
-): CurrencyAmount | undefined {
-  return useCurrencyBalances(account, [currency])[0];
-}
+// export function useCurrencyBalance(
+//   account?: string,
+//   currency?: Currency
+// ): CurrencyAmount | undefined {
+//   return useCurrencyBalances(account, [currency])[0];
+// }
 export const useASABalance = (
   accountHex: string,
   web3Instance: Web3,

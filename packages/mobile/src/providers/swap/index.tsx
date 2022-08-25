@@ -1,4 +1,4 @@
-import { CurrencyAmount } from "@solarswap/sdk";
+import { Currency, CurrencyAmount } from "@solarswap/sdk";
 import React from "react";
 import { UseSwapAggregationValue } from "../../hooks";
 import { SLIPPAGE_TOLERANCE, SwapField } from "../../utils/for-swap";
@@ -16,6 +16,10 @@ export interface SwapContextProps extends UseSwapAggregationValue {
   values: {
     [K: string]: string;
   };
+
+  currencies: {
+    [K in SwapField]: Currency | undefined;
+  };
 }
 // export const initialStateMulticalls: MulticallState = {
 //   callResults: {},
@@ -29,10 +33,6 @@ const swapInfos = {
   indexCurrency: {
     [SwapField.Input]: 0,
     [SwapField.Output]: 1,
-  },
-  currencies: {
-    [SwapField.Input]: undefined,
-    [SwapField.Output]: undefined,
   },
   dependentField: SwapField.Input,
   independentField: SwapField.Output,
@@ -56,9 +56,13 @@ export const SwapContext = React.createContext<SwapContextProps>({
     [SwapField.Input]: "",
     [SwapField.Output]: "",
   },
+  currencies: {
+    [SwapField.Input]: undefined,
+    [SwapField.Output]: undefined,
+  },
   lpFee: "",
   pricePerInputCurrency: "",
-  maximumReceived: "",
+  minimunReceived: "",
   priceImpact: "",
   trade: undefined,
   isReadyToSwap: false,

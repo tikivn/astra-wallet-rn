@@ -1,4 +1,3 @@
-import { Currency } from "@solarswap/sdk";
 import { SwapRootState } from ".";
 import { SwapField } from "../../utils/for-swap";
 
@@ -34,9 +33,6 @@ export interface SwapInfoState {
   slippageTolerance: number;
   swapValue: string;
   error: string;
-  currencies: {
-    [K in SwapField]: Currency | undefined;
-  };
 }
 export enum SwapType {
   REVERSE_TOKEN,
@@ -45,7 +41,6 @@ export enum SwapType {
   SET_SWAP_VALUE,
   SET_TOKEN_BALANCES,
   SET_ERROR,
-  SET_CURRENCIES,
   SWAP_ALL,
 }
 // ADD_MULTICALL_LISTENERS = "ADD_MULTICALL_LISTENERS",
@@ -244,11 +239,6 @@ export const handleSetError = (rootState: SwapRootState, error: string) => {
   return rootState;
 };
 
-export const handleSetCurrencies = (rootState: SwapRootState, payload: any) => {
-  rootState.swapInfos.currencies = { ...payload };
-  return rootState;
-};
-
 export const reducer = (
   state: SwapRootState,
   action: SwapAction
@@ -277,8 +267,6 @@ export const reducer = (
       return handleSetSwapValue(state, action.payload);
     case SwapType.SET_ERROR:
       return handleSetError(state, action.payload);
-    case SwapType.SET_CURRENCIES:
-      return handleSetCurrencies(state, action.payload);
     default:
       return state;
   }

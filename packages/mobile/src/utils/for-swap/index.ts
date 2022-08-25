@@ -1,5 +1,7 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { BN } from "bn.js";
 /* eslint-disable import/no-extraneous-dependencies */
-import { CurrencyAmount, JSBI, Percent } from "@solarswap/sdk";
+import { Currency, CurrencyAmount, JSBI, Percent } from "@solarswap/sdk";
 import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers";
 import Web3 from "web3";
 import { Contract, ContractOptions } from "web3-eth-contract";
@@ -24,11 +26,10 @@ export const truncateHash = (
 };
 
 // add 10%
-// export function calculateGasMargin(value: BigNumber): BigNumber {
-//   return value
-//     .mul(BigNumber.from(10000).add(BigNumber.from(1000)))
-//     .div(BigNumber.from(10000));
-// }
+export function calculateGasMargin(value: any) {
+  const bn = Web3.utils.toBN(value);
+  return bn.mul(new BN(10000)).add(new BN(1000)).div(new BN(10000));
+}
 
 /**
  * Returns true if the string value is zero in hex
@@ -128,7 +129,8 @@ export const isValueLessThanOrEqualBalance = (
 };
 
 export const getExchangeRateString = (
-  { currencies, dependentField, independentField }: SwapInfoState,
+  { dependentField, independentField }: SwapInfoState,
+  currencies: { [K in SwapField]: Currency | undefined },
   price?: string
 ) => {
   return `1 ${currencies[dependentField]?.symbol} ≈ ${price || ""} ${
@@ -137,7 +139,7 @@ export const getExchangeRateString = (
 };
 
 export const getTransactionFee = (
-  { currencies }: SwapInfoState,
+  currencies: { [K in SwapField]: Currency | undefined },
   lpFee?: string
 ) => {
   return `${lpFee || 0} ${currencies[SwapField.Input]?.symbol}`;

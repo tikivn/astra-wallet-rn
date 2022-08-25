@@ -1,5 +1,5 @@
-import { ChainId, Token } from "@solarswap/sdk";
 import { Web3Provider } from "@ethersproject/providers";
+import { ChainId, Token } from "@solarswap/sdk";
 import converter from "bech32-converting";
 import { useCallback, useMemo, useRef } from "react";
 import Web3 from "web3";
@@ -59,7 +59,7 @@ export const useWeb3 = () => {
   return {
     web3Instance: web3Ref.current,
     etherProvider: etherProviderRef.current,
-    chainId,
+    chainId: chainId || ChainId.TESTNET,
     account,
     accountHex,
     chainIdStr,

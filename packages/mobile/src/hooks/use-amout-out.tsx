@@ -1,24 +1,33 @@
-import { CurrencyAmount, Fetcher, Pair, Token, Trade } from "@solarswap/sdk";
+import {
+  Currency,
+  CurrencyAmount,
+  ETHER,
+  Fetcher,
+  Pair,
+  Token,
+  Trade,
+} from "@solarswap/sdk";
 import { useCallback, useState } from "react";
-import { SwapInfoState } from "../providers/swap/reducer";
 import { INTERNAL_DELAY, SwapField } from "../utils/for-swap";
 import { tryParseAmount } from "../utils/for-swap/try-parse-amount";
 import { useInterval } from "./use-interval";
 import { useWeb3 } from "./use-web3";
 
 interface UseAmountOutProps {
-  swapInfos: SwapInfoState;
+  currencies: {
+    [Key in SwapField]: Currency | undefined;
+  };
+  swapValue: string;
 }
-export const useAmountOut = ({ swapInfos }: UseAmountOutProps) => {
+export const useAmountOut = ({
+  currencies: {
+    [SwapField.Input]: inputCurrency,
+    [SwapField.Output]: outputCurrency,
+  },
+  swapValue,
+}: UseAmountOutProps) => {
   const { etherProvider, WASA } = useWeb3();
   const [pair, setPair] = useState<Pair>();
-  const {
-    currencies: {
-      [SwapField.Input]: inputCurrency,
-      [SwapField.Output]: outputCurrency,
-    },
-    swapValue,
-  } = swapInfos;
 
   const fetchPairData = useCallback(async () => {
     if (!etherProvider || !inputCurrency || !outputCurrency) return;
@@ -39,13 +48,13 @@ export const useAmountOut = ({ swapInfos }: UseAmountOutProps) => {
         return Trade.bestTradeExactIn(
           [pair],
           tokenInAmoutSwap as CurrencyAmount,
-          outputCurrency
+          outputCurrency.symbol === ETHER.symbol ? ETHER : outputCurrency
         );
       }
       const tokenOutAmoutSwap = tryParseAmount(valueSwap, outputCurrency, WASA);
       return Trade.bestTradeExactOut(
         [pair],
-        inputCurrency,
+        inputCurrency.symbol === ETHER.symbol ? ETHER : inputCurrency,
         tokenOutAmoutSwap as CurrencyAmount
       );
     },
@@ -56,8 +65,7 @@ export const useAmountOut = ({ swapInfos }: UseAmountOutProps) => {
       fetchPairData();
     },
     INTERNAL_DELAY,
-    true,
-    swapValue
+    true
   );
 
   return {
