@@ -1,0 +1,5 @@
+{
+  "auto-update.downloading": "Updating latest version...",
+  "auto-update.error.title": "Error",
+  "auto-update.error.message": "Please recheck your Intenet (Wifi/ Data) connection, then kill app and retry again"
+}

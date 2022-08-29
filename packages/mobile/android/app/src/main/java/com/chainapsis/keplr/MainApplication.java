@@ -52,8 +52,9 @@ public class MainApplication extends Application implements ReactApplication {
           return "index";
         }
 
-        @Override
+          @Override
         protected String getJSBundleFile() {
+          // check code push project tiki.mobile.team-tiki.vn/apps/Astra_Wallet_Android
             return CodePush.getJSBundleFile();
         }
       };

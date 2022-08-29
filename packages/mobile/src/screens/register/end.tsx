@@ -79,6 +79,7 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
             });
           } catch (e) {
             console.log(e);
+          } finally {
             setIsLoading(false);
           }
         }}

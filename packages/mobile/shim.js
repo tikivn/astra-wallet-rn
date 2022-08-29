@@ -4,8 +4,6 @@ polyfillWebCrypto();
 // crypto is now globally defined
 if (typeof BigInt === "undefined") {
   const bigInteger = require("big-integer");
-  // FIXME
-  console.log(`FIXME  ${bigInteger.Integer}`);
   global.BigInt = (value) => {
     if (typeof value === "string") {
       if (value.startsWith("0x")) {

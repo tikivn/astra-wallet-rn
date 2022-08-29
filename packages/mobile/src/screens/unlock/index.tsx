@@ -18,7 +18,6 @@ import {
 import Animated, { Easing } from "react-native-reanimated";
 import { observer } from "mobx-react-lite";
 import { useStyle } from "../../styles";
-import * as SplashScreen from "expo-splash-screen";
 import { Button } from "../../components/button";
 import delay from "delay";
 import { useStore } from "../../stores";
@@ -35,16 +34,9 @@ import { useRegisterConfig } from "@keplr-wallet/hooks";
 import { useBIP44Option } from "../register/bip44";
 import { BIOMETRY_TYPE } from "react-native-keychain";
 import { AvoidingKeyboardBottomView } from "../../components/avoiding-keyboard/avoiding-keyboard-bottom";
+import { hideSplashScreen } from "../splash";
 
-let splashScreenHided = false;
-async function hideSplashScreen() {
-  if (!splashScreenHided) {
-    console.log("Hide Splash screen");
-    if (await SplashScreen.hideAsync()) {
-      splashScreenHided = true;
-    }
-  }
-}
+
 
 async function waitAccountLoad(
   accountStore: IAccountStore,

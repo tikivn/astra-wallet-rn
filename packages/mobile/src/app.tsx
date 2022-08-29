@@ -1,11 +1,11 @@
-import React, { FunctionComponent } from "react";
+import * as React from "react";
+import { FunctionComponent }  from "react";
 import { StoreProvider } from "./stores";
 import { StyleProvider } from "./styles";
 import { AppNavigation } from "./navigation";
 import { ModalsProvider } from "./modals/base";
 import { Platform, StatusBar } from "react-native";
 
-import codePush from "react-native-code-push";
 import { InteractionModalsProvider } from "./providers/interaction-modals-provider";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { LoadingScreenProvider } from "./providers/loading-screen";
@@ -14,6 +14,7 @@ import { ConfirmModalProvider } from "./providers/confirm-modal";
 import { ToastModalProvider } from "./providers/toast-modal";
 import Bugsnag from "@bugsnag/react-native";
 import { AppIntlProvider } from "./translations";
+import { autoUpdateBody, withAutoDownloadUI } from "./providers/auto-update";
 
 if (Platform.OS === "android") {
   // https://github.com/web-ridge/react-native-paper-dates/releases/tag/v0.2.15
@@ -69,6 +70,8 @@ SplashScreen.preventAutoHideAsync()
   )
   .catch(console.warn);
 
+const AppNavigationWithAutoUI = withAutoDownloadUI(AppNavigation)
+
 const AppBody: FunctionComponent = () => {
   const additionalMessages = {}
   return (
@@ -104,7 +107,7 @@ const AppBody: FunctionComponent = () => {
                 <ConfirmModalProvider>
                   <ToastModalProvider>
                     <InteractionModalsProvider>
-                      <AppNavigation />
+                      <AppNavigationWithAutoUI />
                     </InteractionModalsProvider>
                   </ToastModalProvider>
                 </ConfirmModalProvider>
@@ -130,18 +133,17 @@ const ErrorBoundary = (() => {
   }
 })();
 
-const CodePushAppBody: FunctionComponent = __DEV__
-  ? AppBody
-  : codePush(AppBody);
+// should only use codePush in release version, 
+// other versions like dev and RC, UAT should use local code 
+// set below value = true to skip codePush
+const isSkipCodePush = __DEV__
+const CodePushAppBody = autoUpdateBody(AppBody, isSkipCodePush)
 
 export const App: FunctionComponent = () => {
-  if (ErrorBoundary) {
-    return (
-      <ErrorBoundary>
-        <CodePushAppBody />
-      </ErrorBoundary>
-    );
-  } else {
-    return <CodePushAppBody />;
-  }
+  return (ErrorBoundary ? 
+    <ErrorBoundary>
+      <CodePushAppBody />
+    </ErrorBoundary>
+    : <CodePushAppBody />
+  )
 };

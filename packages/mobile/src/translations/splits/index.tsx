@@ -1,3 +1,5 @@
+import AutoUpdateEnMsgs from "./auto-update.en.json";
+import AutoUpdateViMsgs from "./auto-update.vi.json";
 import ComponentEnMsgs from "./component.en.json";
 import ComponentViMsgs from "./component.vi.json";
 import HistoryEnMsgs from "./history.en.json";
@@ -20,6 +22,7 @@ import RegisterEnMsgs from "./register.en.json";
 import RegisterViMsgs from "./register.vi.json";
 
 export const ViMsgs = [
+  AutoUpdateViMsgs,
   ComponentViMsgs,
   HistoryViMsgs,
   StakeViMsgs,
@@ -33,6 +36,7 @@ export const ViMsgs = [
 ];
 
 export const EnMsgs = [
+  AutoUpdateEnMsgs,
   ComponentEnMsgs,
   HistoryEnMsgs,
   StakeEnMsgs,

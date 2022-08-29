@@ -24,7 +24,6 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
   const headerHeight = useHeaderHeight();
   const actualHeightHeight = headerHeight - safeAreaInsets.top;
   const intl = useIntl();
-
   return (
     <View style={style.get("background-color-background")}>
       <ImageBackground

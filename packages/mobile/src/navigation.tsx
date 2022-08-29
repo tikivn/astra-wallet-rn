@@ -779,7 +779,6 @@ export const AppNavigation: FunctionComponent = observer(() => {
       });
     }
   }, [signInteractionStore.waitingData, transactionStore]);
-
   return (
     <PageScrollPositionProvider>
       <FocusedScreenProvider>
@@ -810,7 +809,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
           >
             <Stack.Navigator
               initialRouteName={
-                keyRingStore.status !== KeyRingStatus.UNLOCKED
+                  keyRingStore.status !== KeyRingStatus.UNLOCKED
                   ? "Unlock"
                   : "MainTabDrawer"
               }
