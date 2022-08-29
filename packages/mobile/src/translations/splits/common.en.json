@@ -1,6 +1,6 @@
 {
-  "common.alert.content.notShareMnemonic": "Do not share this phrase with others. Everyone that has the phrase can log in to your account",
   "common.alert.content.accessTestnet": "You are connecting to Astra Testnet.",
+  "common.alert.content.notShareMnemonic": "Do not share this phrase with others. Everyone that has the phrase can log in to your account",
   "common.loading": "Loading...",
   "common.text.accountHolder": "Username",
   "common.text.approve": "Approve",

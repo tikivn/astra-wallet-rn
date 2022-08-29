@@ -125,6 +125,29 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     },
   ];
 
+  const chainInfo = chainStore.getChain(chainStore.current.chainId).raw;
+  const unbondingTime = chainInfo.unbondingTime ?? 86400000;
+  const unbondingTimeText = (() => {
+    const relativeEndTime = unbondingTime / 1000;
+    const relativeEndTimeDays = Math.floor(relativeEndTime / (3600 * 24));
+    const relativeEndTimeHours = Math.ceil(relativeEndTime / 3600);
+
+    if (relativeEndTimeDays) {
+      return intl
+        .formatRelativeTime(relativeEndTimeDays, "days", {
+          numeric: "always",
+        })
+        .replace("days", intl.formatMessage({ id: "staking.unbonding.days" }));
+    } else if (relativeEndTimeHours) {
+      return intl
+        .formatRelativeTime(relativeEndTimeHours, "hours", {
+          numeric: "always",
+        })
+        .replace("hours", "h");
+    }
+
+    return "";
+  })();
   return (
     <PageWithScrollView
       style={style.flatten(["padding-x-page"])}
@@ -134,7 +157,10 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       <View style={style.flatten(["height-page-pad"])} />
       <AlertInline
         type="warning"
-        content={intl.formatMessage({ id: "stake.delegate.warning" })}
+        content={intl.formatMessage(
+          { id: "stake.delegate.warning" },
+          { days: unbondingTimeText }
+        )}
       />
       <ValidatorInfo
         style={{ marginTop: 24 }}

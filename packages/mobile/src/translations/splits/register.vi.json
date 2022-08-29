@@ -1,6 +1,6 @@
 {
-  "recover.wallet.mnemonicInput.label": "Khôi phục tài khoản đã có bằng cách nhập cụm từ bí mật vào ô bên dưới",
-  "recover.wallet.mnemonicInput.info": "Là chuỗi gồm 12 hoặc 24 từ được phân cách bằng khoảng trống.",
+  "recover.wallet.mnemonicInput.label": "Cụm từ bí mật",
+  "recover.wallet.mnemonicInput.info": "12 hoặc 24 từ được phân cách bằng dấu cách",
   "register.alert.socialLogin.existedAccount": "Bạn đã đăng nhập vào tài khoản đã tồn tại",
   "register.alert.socialLogin.newAccount": "Đăng nhập bằng {provider} thành công",
   "register.createEntry.item.desc.mnemonic": "Tạo cụm từ gồm 12 từ và lưu trữ ở một nơi an toàn",

@@ -15,11 +15,8 @@ import { Toggle } from "../../../components/toggle";
 import { useStore } from "../../../stores";
 import { useToastModal } from "../../../providers/toast-modal";
 import { BIOMETRY_TYPE } from "react-native-keychain";
-
-// Social Login
-enum SocialLoginUserState {
-  new, existed, unknown
-}
+import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
+import { SocialLoginUserState } from "../../../stores/user-login";
 
 export const NewPincodeScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -27,6 +24,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
       Record<
         string,
         {
+          registerType?: "new" | "recover" | undefined;
           registerConfig: RegisterConfig;
           mnemonic?: string;
           bip44HDPath: BIP44HDPath;
@@ -139,7 +137,9 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
       toastModal.makeToast({
         title: intl.formatMessage({
           id: isNewSocialLoginUser == SocialLoginUserState.new ? "register.alert.socialLogin.newAccount" : "register.alert.socialLogin.existedAccount"
-        }).replace("{provider}", userLoginStore.selectedServiceProviderType?.toString() || ""),
+        }, {
+          provider: userLoginStore.selectedServiceProviderType?.toString() || ""
+        }),
         type: isNewSocialLoginUser == SocialLoginUserState.new ? "success" : "infor",
       });
     }
@@ -148,7 +148,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
   function updateNavigationTitle() {
     let textId;
 
-    if (isNewSocialLoginUser === SocialLoginUserState.existed) {
+    if (isNewSocialLoginUser === SocialLoginUserState.recover) {
       textId = "register.recoverMnemonic.title";
     }
     else {
@@ -185,7 +185,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
       userLoginStore.checkSocialLogin().then((info) => {
         setName(info.socialLoginData.email);
         setIsNewSocialLoginUser(
-          info.isNewUser ? SocialLoginUserState.new : SocialLoginUserState.existed
+          info.isNewUser ? SocialLoginUserState.new : SocialLoginUserState.recover
         );
       }).catch((e) => {
         console.log("__info__error", e);
@@ -194,100 +194,98 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
   }
 
   return (
-    <React.Fragment>
-      <View
-        style={style.flatten([
-          "absolute-fill",
-          "background-color-background",
-        ])}>
-      </View>
-      <View
-        style={style.flatten(["flex-1", "background-color-transparent"])}
+    <View style={style.flatten(["flex-1", "background-color-background"])}>
+      {route.params.registerType !== "recover" && (
+        <View style={style.flatten(["margin-top-32", "items-center"])}>
+          <Image style={style.flatten(["height-16"])} source={require('../../../assets/image/step-3.png')} resizeMode='contain' />
+        </View>
+      )}
+
+      <KeyboardAwareScrollView
+        contentContainerStyle={style.flatten(["flex-grow-1", "padding-x-page", "padding-top-32"])}
+        enableOnAndroid
       >
-        <KeyboardAwareScrollView
-          contentContainerStyle={style.flatten(["flex-grow-1", "padding-x-page"])}
-        >
-          <View style={style.flatten(["margin-y-32", "items-center"])}>
-            <Image style={style.flatten(["height-16"])} source={require('../../../assets/image/step-3.png')} resizeMode='contain' />
-          </View>
+        {(!userLoginStore.socialLoginData && !userLoginStore.isSocialLoginActive) && (
+          <NormalInput
+            value={name}
+            label={intl.formatMessage({ id: "common.text.accountHolder" })}
+            onChangeText={setName}
+            style={{ marginBottom: 24, }}
+          />
+        )}
 
-          {(!userLoginStore.socialLoginData && !userLoginStore.isSocialLoginActive) && (
-            <NormalInput
-              value={name}
-              label={intl.formatMessage({ id: "common.text.accountHolder" })}
-              onChangeText={setName}
-              style={{ marginBottom: 24, }}
+        <NormalInput
+          value={password}
+          label={intl.formatMessage({ id: "common.text.password" })}
+          error={passwordErrorText}
+          info={intl.formatMessage({
+            id: "common.text.minimumCharacters"
+          }, {
+            number: `${MIN_LENGTH_PASSWORD}`
+          })}
+          secureTextEntry={true}
+          showPassword={showPassword}
+          onShowPasswordChanged={setShowPassword}
+          onChangeText={setPassword}
+          onBlur={validateInputData}
+          style={{ marginBottom: 24, paddingBottom: 24, }}
+        />
+
+        <NormalInput
+          value={confirmPassword}
+          label={intl.formatMessage({ id: "common.text.inputVerifyPassword" })}
+          error={confirmPasswordErrorText}
+          secureTextEntry={true}
+          showPassword={showPassword}
+          onShowPasswordChanged={setShowPassword}
+          onChangeText={setConfirmPassword}
+          onBlur={validateInputData}
+          validations={[{
+            validateFunc: (value: string) => {
+              return value.length == 0 || value === password;
+            },
+            error: intl.formatMessage({ id: "common.text.passwordNotMatching" })
+          }]}
+          style={{ marginBottom: 24, paddingBottom: 24, }}
+        />
+
+        {keychainStore.isBiometrySupported && (
+          <View style={{ flexDirection: "row", alignContent: "stretch", alignItems: "center", marginBottom: 16, }}>
+            <BiometricsIcon
+              type={
+                keychainStore.isBiometryType === BIOMETRY_TYPE.FACE
+                  || keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
+                  ? "face"
+                  : "touch"
+              } />
+            <Text style={style.flatten(["text-base-medium", "color-gray-10", "flex-1", "margin-left-8"])}>
+              {intl.formatMessage({
+                id: keychainStore.isBiometryType === BIOMETRY_TYPE.FACE
+                  || keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
+                  ? "settings.unlockBiometrics.face"
+                  : "settings.unlockBiometrics.touch"
+              })}
+            </Text>
+            <Toggle
+              on={isBiometricOn}
+              onChange={(value) => setIsBiometricOn(value)}
             />
-          )}
-
-          <NormalInput
-            value={password}
-            label={intl.formatMessage({ id: "common.text.password" })}
-            error={passwordErrorText}
-            info={intl.formatMessage({
-              id: "common.text.minimumCharacters"
-            }).replace("{number}", `${MIN_LENGTH_PASSWORD}`)}
-            secureTextEntry={true}
-            showPassword={showPassword}
-            onShowPasswordChanged={setShowPassword}
-            onChangeText={setPassword}
-            onBlur={validateInputData}
-            style={{ marginBottom: 24, paddingBottom: 24, }}
-          />
-
-          <NormalInput
-            value={confirmPassword}
-            label={intl.formatMessage({ id: "common.text.inputVerifyPassword" })}
-            error={confirmPasswordErrorText}
-            secureTextEntry={true}
-            showPassword={showPassword}
-            onShowPasswordChanged={setShowPassword}
-            onChangeText={setConfirmPassword}
-            onBlur={validateInputData}
-            validations={[{
-              validateFunc: (value: string) => {
-                return value.length == 0 || value === password;
-              },
-              error: intl.formatMessage({ id: "common.text.passwordNotMatching" })
-            }]}
-            style={{ marginBottom: 24, paddingBottom: 24, }}
-          />
-
-          {keychainStore.isBiometrySupported && (
-            <View style={{ flexDirection: "row", alignContent: "stretch", alignItems: "center", marginBottom: 16, }}>
-              <BiometricsIcon
-                type={
-                  keychainStore.isBiometryType === BIOMETRY_TYPE.FACE
-                    || keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
-                    ? "face"
-                    : "touch"
-                } />
-              <Text style={style.flatten(["text-base-medium", "color-gray-10", "flex-1", "margin-left-8"])}>
-                {intl.formatMessage({
-                  id: keychainStore.isBiometryType === BIOMETRY_TYPE.FACE
-                    || keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
-                    ? "settings.unlockBiometrics.face"
-                    : "settings.unlockBiometrics.touch"
-                })}
-              </Text>
-              <Toggle
-                on={isBiometricOn}
-                onChange={(value) => setIsBiometricOn(value)}
-              />
-            </View>
-          )}
+          </View>
+        )}
+      </KeyboardAwareScrollView>
+      <View style={style.flatten(["flex-1", "justify-end", "margin-bottom-12"])}>
+        <View style={style.flatten(["height-1", "background-color-gray-70"])} />
+        <View style={{ ...style.flatten(["background-color-background"]), height: 56 }}>
           <Button
-            containerStyle={style.flatten(["border-radius-4", "height-44"])}
-            textStyle={style.flatten(["subtitle2"])}
             text={intl.formatMessage({ id: "register.button.createAccount" })}
-            size="large"
             loading={isCreating}
             onPress={onCreate}
             disabled={!inputDataValid}
+            containerStyle={style.flatten(["margin-x-page", "margin-top-12"])}
           />
-          <View style={style.get("flex-5")} />
-        </KeyboardAwareScrollView>
+        </View>
+        <AvoidingKeyboardBottomView />
       </View>
-    </React.Fragment>
+    </View>
   );
 });

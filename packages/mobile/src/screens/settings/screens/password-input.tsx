@@ -5,7 +5,7 @@ import { useStyle } from "../../../styles";
 import { NormalInput } from "../../../components/input/normal-input";
 import { AlertInline, Button } from "../../../components";
 import { useSmartNavigation } from "../../../navigation-util";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { useStore } from "../../../stores";
 import { useIntl } from "react-intl";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
@@ -18,6 +18,7 @@ export declare type PasswordInputScreenType =
 export const PasswordInputScreen: FunctionComponent = observer(() => {
   const MIN_LENGTH_PASSWORD = 8;
 
+  const navigation = useNavigation();
   const route = useRoute<
     RouteProp<
       Record<
@@ -42,58 +43,55 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
   const [inputDataValid, setInputDataValid] = useState(false);
 
   const getInputLabel = () => {
-    let textId;
+    let title;
     switch (type) {
       case "updatePassword":
-        textId = "common.text.currentPassword";
+        title = intl.formatMessage({ id: "common.text.currentPassword" });
         break;
       case "viewMnemonic":
-        textId = "common.text.securePassword";
-        break;
-      case "deleteWallet":
-        textId = "common.text.password";
-        break;
-    }
-
-    return intl.formatMessage({ id: textId });
-  };
-
-  const getButtonText = () => {
-    let textId;
-    switch (type) {
-      case "updatePassword":
-        textId = "common.text.continue";
-        break;
-      case "viewMnemonic":
-        textId = "common.text.view";
-        break;
-      case "deleteWallet":
-        textId = "deleteAccount.button.delete";
-        break;
-    }
-
-    return intl.formatMessage({ id: textId });
-  };
-
-  const getTopView = () => {
-    var title = "";
-    switch (type) {
-      case "updatePassword":
-        title = intl.formatMessage({ id: "changePassword.title" });
-        break;
-      case "viewMnemonic":
-        title = intl.formatMessage({ id: "viewPassphase.title" });
-        break;
-      case "deleteWallet":
-        title = intl.formatMessage({ id: "deleteAccount.title" });
+        title = intl.formatMessage({ id: "common.text.securePassword" });
         break;
       default:
         break;
     }
 
+    return title;
+  };
+
+  const getInputPlaceholder = () => {
+    let title;
+    if (type === "deleteWallet") {
+      title = intl.formatMessage({ id: "common.text.password" });
+    }
+
+    return title;
+  };
+
+  const getButtonText = () => {
+    let title;
+    switch (type) {
+      case "updatePassword":
+        title = "common.text.continue";
+        break;
+      case "viewMnemonic":
+        title = "common.text.view";
+        break;
+      case "deleteWallet":
+        title = "deleteAccount.button.delete";
+        break;
+    }
+
+    return intl.formatMessage({ id: title });
+  };
+
+  const getTopView = () => {
+    if (type !== "deleteWallet") {
+      return null;
+    }
+
     return (
       <View style={style.flatten([
-        "margin-y-24",
+        "margin-bottom-24",
       ])}>
         <Text style={style.flatten([
           "color-gray-10",
@@ -101,14 +99,12 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
           "text-center",
           "margin-bottom-12",
         ])}>
-          {title}
+          {intl.formatMessage({ id: "deleteAccount.title" })}
         </Text>
-        {type === "deleteWallet" && (
-          <AlertInline
-            type="warning"
-            content={intl.formatMessage({ id: "deleteAccount.top.title" })}
-          />
-        )}
+        <AlertInline
+          type="warning"
+          content={intl.formatMessage({ id: "deleteAccount.top.title" })}
+        />
       </View>
     );
   };
@@ -169,6 +165,28 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     validateInputData();
   }, [password]);
+
+  useEffect(() => {
+    updateNavigationTitle();
+  });
+
+  function updateNavigationTitle() {
+    let title = "";
+    switch (type) {
+      case "updatePassword":
+        title = intl.formatMessage({ id: "changePassword.title" });
+        break;
+      case "viewMnemonic":
+        title = intl.formatMessage({ id: "viewPassphase.title" });
+        break;
+      default:
+        break;
+    }
+
+    navigation.setOptions({
+      title
+    });
+  }
 
   function validateInputData() {
     if (password.length >= MIN_LENGTH_PASSWORD) {
@@ -236,30 +254,31 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
     <React.Fragment>
       <View style={style.flatten(["absolute-fill", "background-color-background"])} />
       <View style={style.flatten(["flex-1", "padding-x-page", "background-color-transparent"])}>
+        <View style={{ height: 24 }} />
         {getTopView()}
         <NormalInput
           value={password}
-          placeholder={getInputLabel()}
-          // label={getInputLabel()}
+          placeholder={getInputPlaceholder()}
+          label={getInputLabel()}
           error={error}
           secureTextEntry={true}
           showPassword={showPassword}
           onShowPasswordChanged={setShowPassword}
           onChangeText={setPassword}
           onBlur={validateInputData}
-          style={{ marginBottom: 24, paddingBottom: 24 }}
         />
-        <View style={style.flatten(["flex-1", "justify-end", "margin-bottom-12"])}>
-          <Button
-            containerStyle={style.flatten(["border-radius-4", "height-44"])}
-            textStyle={style.flatten(["subtitle2"])}
-            text={getButtonText()}
-            size="large"
-            onPress={onProceed}
-            disabled={!inputDataValid}
-            color={type === "deleteWallet" ? "danger" : "primary"}
-          />
-        </View>
+      </View>
+      <View style={style.flatten(["flex-1", "justify-end", "margin-bottom-12"])}>
+        <View style={style.flatten(["height-1", "background-color-gray-70", "margin-bottom-12"])} />
+        <Button
+          containerStyle={style.flatten(["border-radius-4", "height-44", "margin-x-page"])}
+          textStyle={style.flatten(["subtitle2"])}
+          text={getButtonText()}
+          size="large"
+          onPress={onProceed}
+          disabled={!inputDataValid}
+          color={type === "deleteWallet" ? "danger" : "primary"}
+        />
         <AvoidingKeyboardBottomView />
       </View>
     </React.Fragment>

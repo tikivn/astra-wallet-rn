@@ -97,6 +97,29 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
   const txStateIsValid = sendConfigError == null;
   sendConfigs.feeConfig.setFeeType("average");
   const fee = sendConfigs.feeConfig.fee?.trim(true).toString() ?? "";
+  const chainInfo = chainStore.getChain(chainStore.current.chainId).raw;
+  const unbondingTime = chainInfo.unbondingTime ?? 86400000;
+  const unbondingTimeText = (() => {
+    const relativeEndTime = unbondingTime / 1000;
+    const relativeEndTimeDays = Math.floor(relativeEndTime / (3600 * 24));
+    const relativeEndTimeHours = Math.ceil(relativeEndTime / 3600);
+
+    if (relativeEndTimeDays) {
+      return intl
+        .formatRelativeTime(relativeEndTimeDays, "days", {
+          numeric: "always",
+        })
+        .replace("days", intl.formatMessage({ id: "staking.unbonding.days" }));
+    } else if (relativeEndTimeHours) {
+      return intl
+        .formatRelativeTime(relativeEndTimeHours, "hours", {
+          numeric: "always",
+        })
+        .replace("hours", "h");
+    }
+
+    return "";
+  })();
   return (
     <PageWithScrollView
       backgroundColor={style.get("color-background").color}
@@ -108,7 +131,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         type="warning"
         content={intl.formatMessage(
           { id: "stake.undelegate.noticeWithdrawalPeriod" },
-          { coin: "ASA" }
+          { coin: "ASA", days: unbondingTimeText }
         )}
       />
       <ValidatorItem

@@ -1,11 +1,14 @@
 {
+  "component.address.input.error.invalid": "Invalid address",
   "component.address.input.receiver.label": "Recipient address",
   "component.address.input.warning": "Note: Double check to make sure you input the right address",
   "component.amount.input.available": "(Balance: {amount})",
+  "component.amount.input.error.insufficient": "Insufficient amount",
+  "component.amount.input.error.minimum": "Minimum {amount} ASA",
   "component.amount.input.fee": "Transaction fee",
+  "component.amount.input.max": "Max",
   "component.amount.input.sendAll": "Max",
   "component.amount.input.sendindAmount": "Input amount",
   "component.text.copied": "Copied",
-  "component.text.copy": "Copy",
-  "component.amount.input.max": "Max"
+  "component.text.copy": "Copy"
 }

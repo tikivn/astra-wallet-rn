@@ -75,7 +75,7 @@ export const ValidatorNameCard: FunctionComponent<{
             <TooltipLabel
               textStyle={style.flatten(["color-green-50"])}
               text={intl.formatMessage(
-                { id: "validator.details.namecard.commission" },
+                { id: "validator.details.commission.percent" },
                 {
                   percent: new IntPretty(
                     new Dec(validator.commission.commission_rates.rate)

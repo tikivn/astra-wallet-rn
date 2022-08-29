@@ -24,12 +24,12 @@ export interface AppChainInfo extends ChainInfo {
     };
   };
   readonly chainIdNumber?: number;
+  readonly unbondingTime?: number;
 }
 
 export const EmbedChainInfos: AppChainInfo[] = [
   {
-    // rpc: "https://cosmos.astranaut.dev",
-    rpc: "https://rpc.astranaut.dev",
+    rpc: "https://cosmos.astranaut.dev",
     rest: "https://api.astranaut.dev",
     chainId: "astra_11115-1",
     chainIdNumber: 11115,
@@ -99,6 +99,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         ],
       },
     },
+    unbondingTime: 172800000,
   },
 ];
 

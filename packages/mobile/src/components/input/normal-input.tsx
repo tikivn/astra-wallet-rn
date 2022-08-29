@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { Platform, TouchableOpacity, View, ViewStyle } from "react-native";
+import { KeyboardTypeOptions, Platform, TouchableOpacity, View, ViewStyle } from "react-native";
 import { Colors, useStyle } from "../../styles";
 import { EyeCloseIcon, EyeOpenIcon } from "../icon";
 import { TextInput } from "./input";
@@ -13,6 +13,10 @@ interface NormalInputProps {
   error?: string;
   secureTextEntry?: boolean;
   showPassword?: boolean;
+  multiline?: boolean;
+  numberOfLines?: number;
+  keyboardType?: KeyboardTypeOptions;
+  rightView?: React.ReactNode;
   onShowPasswordChanged?: (showPassword: boolean) => void;
   onChangeText?: (text: string) => void;
   onFocus?: () => void;
@@ -29,6 +33,10 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(({
   error,
   secureTextEntry = false,
   showPassword = false,
+  multiline,
+  numberOfLines,
+  keyboardType,
+  rightView,
   onShowPasswordChanged,
   onChangeText,
   onFocus,
@@ -112,7 +120,7 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(({
       }}>
         {showPassword ? <EyeCloseIcon /> : <EyeOpenIcon />}
       </TouchableOpacity>
-      : null;
+      : rightView;
   }
 
   function checkValidations() {
@@ -147,6 +155,9 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(({
       containerStyle={containerStyle}
       style={textInputStyle}
       secureTextEntry={secureTextEntry && !showPassword}
+      multiline={multiline}
+      numberOfLines={numberOfLines}
+      keyboardType={keyboardType}
       inputRight={inputRightView()}
       onChangeText={onChangeText}
       onFocus={() => {

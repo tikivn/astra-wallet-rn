@@ -128,9 +128,10 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
           </View>
         </View>
         <Text style={style.flatten(["color-gray-10", "text-center", "h5"])}>
-          {intl
-            .formatMessage({ id: "walletconnect.text.connect" })
-            .replace("${name}", `${proposer.metadata.name}`)}
+          {intl.formatMessage(
+            { id: "walletconnect.text.connect" },
+            { name: proposer.metadata.name }
+          )}
         </Text>
         <Text
           style={style.flatten([
@@ -154,7 +155,10 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
           ])}
         >
           <Text style={style.flatten(["color-gray-30", "subtitle3"])}>
-            {proposer.metadata.name} sẽ có quyền
+            {intl.formatMessage(
+              { id: "walletconnect.permission" },
+              { name: proposer.metadata.name }
+            )}
           </Text>
           <View
             style={style.flatten(["flex-row", "items-center", "margin-y-12"])}
@@ -166,7 +170,9 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
             <Text
               style={style.flatten(["color-gray-10", "body3", "margin-left-8"])}
             >
-              Xem số dư và hoạt động trong ví của bạn
+              {intl.formatMessage({
+                id: "walletconnect.permission.showBalance",
+              })}
             </Text>
           </View>
           <View style={style.flatten(["flex-row", "items-center"])}>
@@ -177,7 +183,9 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
             <Text
               style={style.flatten(["color-gray-10", "body3", "margin-left-8"])}
             >
-              Yêu cầu phê duyệt cho các giao dịch
+              {intl.formatMessage({
+                id: "walletconnect.permission.requestTransaction",
+              })}
             </Text>
           </View>
         </View>

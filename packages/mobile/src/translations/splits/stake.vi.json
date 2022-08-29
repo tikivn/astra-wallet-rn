@@ -5,7 +5,7 @@
   "stake.delegate.invest": "Gửi tiết kiệm",
   "stake.delegate.validator.totalShares": "Tổng số cổ phần",
   "stake.delegate.validator.uptime": "Thời gian hoạt động",
-  "stake.delegate.warning": "Sau khi đầu tư, nếu bạn muốn rút tiền, thì bạn sẽ nhận được tiền sau 14 ngày.",
+  "stake.delegate.warning": "Sau khi đầu tư, nếu bạn muốn rút tiền, thì bạn sẽ nhận được tiền {days}.",
   "stake.redelegate.amountLabel": "Số lượng",
   "stake.redelegate.available": "Khả dụng",
   "stake.redelegate.fee": "Phí",
@@ -16,6 +16,6 @@
   "stake.undelegate.amountLabel": "Số tiền rút (không bao gồm lãi)",
   "stake.undelegate.available": "Khả dụng",
   "stake.undelegate.fee": "Phí",
-  "stake.undelegate.noticeWithdrawalPeriod": "Bạn sẽ nhận được {amount} {coin} bạn rút sau 14 ngày",
+  "stake.undelegate.noticeWithdrawalPeriod": "Bạn sẽ nhận được số {coin} bạn rút {days}",
   "stake.undelegate.undelegate": "Rút"
 }

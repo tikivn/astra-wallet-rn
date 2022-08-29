@@ -15,11 +15,11 @@
   "staking.rewards.details.label": "Providers",
   "staking.rewards.totalProfit": "Total earned",
   "staking.rewards.withdrawRewards": "Claim",
-  "staking.unbonding.days": "Date",
-  "staking.unbonding.history": "History ",
+  "staking.unbonding.days": "days",
+  "staking.unbonding.history": "history ",
   "staking.unbonding.nameAndAmount": "Activities",
-  "staking.unbonding.noticeWithdrawalPeriod": "You will receive {amount} {coin} in 14 days",
+  "staking.unbonding.noticeWithdrawalPeriod": "You will receive {coin} {days}",
   "staking.unbonding.receiveAfter": "Receive in",
   "staking.unbonding.totalAmount": "Claiming amount",
-  "staking.unbonding.viewHistoryGuide": "View claimed ASA in history"
+  "staking.unbonding.viewHistoryGuide": "View claimed ASA in "
 }

@@ -8,6 +8,7 @@ import { Button } from "../../../components";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { useStore } from "../../../stores";
 import { useIntl } from "react-intl";
+import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 
 export const NewPasswordInputScreen: FunctionComponent = observer(() => {
   const MIN_LENGTH_PASSWORD = 8;
@@ -91,69 +92,66 @@ export const NewPasswordInputScreen: FunctionComponent = observer(() => {
   }
 
   return (
-    <React.Fragment>
-      <View
-        style={style.flatten([
-          "absolute-fill",
-          "background-color-background",
-        ])}>
-      </View>
-      <View
-        style={style.flatten(["flex-1", "background-color-transparent"])}
+    <View style={style.flatten(["flex-1", "background-color-background"])}>
+      <KeyboardAwareScrollView
+        contentContainerStyle={style.flatten(["padding-x-page"])}
+        enableOnAndroid
       >
-        <KeyboardAwareScrollView
-          contentContainerStyle={style.flatten(["flex-grow-1", "padding-x-page"])}
-        >
-          <NormalInput
-            value={password}
-            label={intl.formatMessage({ id: "common.text.newPassword" })}
-            info={intl.formatMessage({
+        <NormalInput
+          value={password}
+          label={intl.formatMessage({ id: "common.text.newPassword" })}
+          info={intl.formatMessage({
+            id: "common.text.minimumCharacters"
+          }, {
+            number: `${MIN_LENGTH_PASSWORD}`
+          })}
+          secureTextEntry={true}
+          showPassword={showPassword}
+          onShowPasswordChanged={setShowPassword}
+          onChangeText={setPassword}
+          onBlur={validateInputData}
+          validations={[{
+            minLength: MIN_LENGTH_PASSWORD,
+            error: intl.formatMessage({
               id: "common.text.minimumCharacters"
-            }).replace("{number}", `${MIN_LENGTH_PASSWORD}`)}
-            secureTextEntry={true}
-            showPassword={showPassword}
-            onShowPasswordChanged={setShowPassword}
-            onChangeText={setPassword}
-            onBlur={validateInputData}
-            validations={[{
-              minLength: MIN_LENGTH_PASSWORD,
-              error: intl.formatMessage({
-                id: "common.text.minimumCharacters"
-              }).replace("{number}", `${MIN_LENGTH_PASSWORD}`)
-            }]}
-            style={{ marginTop: 32, marginBottom: 24, paddingBottom: 24, }}
-          />
+            }, {
+              number: `${MIN_LENGTH_PASSWORD}`
+            })
+          }]}
+          style={{ marginTop: 32, marginBottom: 24, paddingBottom: 24, }}
+        />
 
-          <NormalInput
-            value={confirmPassword}
-            label={intl.formatMessage({ id: "common.text.inputVerifyNewPassword" })}
-            error={confirmPasswordErrorText}
-            secureTextEntry={true}
-            showPassword={showPassword}
-            onShowPasswordChanged={setShowPassword}
-            onChangeText={setConfirmPassword}
-            onBlur={validateInputData}
-            validations={[{
-              validateFunc: (value: string) => {
-                return value.length == 0 || value === password;
-              },
-              error: intl.formatMessage({ id: "common.text.passwordNotMatching" })
-            }]}
-            style={{ marginBottom: 24, paddingBottom: 24, }}
-          />
-
+        <NormalInput
+          value={confirmPassword}
+          label={intl.formatMessage({ id: "common.text.inputVerifyNewPassword" })}
+          error={confirmPasswordErrorText}
+          secureTextEntry={true}
+          showPassword={showPassword}
+          onShowPasswordChanged={setShowPassword}
+          onChangeText={setConfirmPassword}
+          onBlur={validateInputData}
+          validations={[{
+            validateFunc: (value: string) => {
+              return value.length == 0 || value === password;
+            },
+            error: intl.formatMessage({ id: "common.text.passwordNotMatching" })
+          }]}
+          style={{ marginBottom: 24, paddingBottom: 24, }}
+        />
+      </KeyboardAwareScrollView>
+      <View style={style.flatten(["flex-1", "justify-end", "margin-bottom-12"])}>
+        <View style={style.flatten(["height-1", "background-color-gray-70"])} />
+        <View style={{ ...style.flatten(["background-color-background"]), height: 56 }}>
           <Button
-            containerStyle={style.flatten(["border-radius-4", "height-44"])}
-            textStyle={style.flatten(["subtitle2"])}
+            containerStyle={style.flatten(["margin-x-page", "margin-top-12"])}
             text={intl.formatMessage({ id: "common.text.changePassword" })}
-            size="large"
             loading={isCreating}
             onPress={onCreate}
             disabled={!inputDataValid}
           />
-          <View style={style.get("flex-5")} />
-        </KeyboardAwareScrollView>
+        </View>
+        <AvoidingKeyboardBottomView />
       </View>
-    </React.Fragment>
+    </View>
   );
 });

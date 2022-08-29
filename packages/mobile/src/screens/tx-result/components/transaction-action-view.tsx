@@ -24,7 +24,7 @@ export const TransactionActionView: FunctionComponent<{
   return (
     <View style={style}>
       <View style={{ height: 1, backgroundColor: Colors["gray-70"], }} />
-      <View style={{ flexDirection: "row", marginTop: 8, marginHorizontal: 16, }}>
+      <View style={{ flexDirection: "row", marginTop: 12, marginHorizontal: 16, }}>
         <Button
           text={intl.formatMessage({ id: "tx.result.action.homepage" })}
           size="large"

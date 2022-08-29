@@ -137,7 +137,9 @@ export class KeyRingService {
     }
   }
 
-  async forceDeleteKeyRing(index: number): Promise<{
+  async forceDeleteKeyRing(
+    index: number
+  ): Promise<{
     multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
     status: KeyRingStatus;
   }> {
@@ -290,8 +292,9 @@ export class KeyRingService {
     };
 
     const coinType = await this.chainsService.getChainCoinType(chainId);
-    const ethereumKeyFeatures =
-      await this.chainsService.getChainEthereumKeyFeatures(chainId);
+    const ethereumKeyFeatures = await this.chainsService.getChainEthereumKeyFeatures(
+      chainId
+    );
 
     const key = await this.keyRing.getKey(
       chainId,
@@ -328,7 +331,7 @@ export class KeyRingService {
         "Eth sign type can be requested with only ADR-36 amino sign doc"
       );
     }
-    
+
     let newSignDoc = (await this.interactionService.waitApprove(
       env,
       "/sign",
@@ -426,8 +429,9 @@ export class KeyRingService {
     signOptions: KeplrSignOptions
   ): Promise<DirectSignResponse> {
     const coinType = await this.chainsService.getChainCoinType(chainId);
-    const ethereumKeyFeatures =
-      await this.chainsService.getChainEthereumKeyFeatures(chainId);
+    const ethereumKeyFeatures = await this.chainsService.getChainEthereumKeyFeatures(
+      chainId
+    );
 
     const key = await this.keyRing.getKey(
       chainId,
@@ -491,8 +495,9 @@ export class KeyRingService {
     signature: StdSignature
   ): Promise<boolean> {
     const coinType = await this.chainsService.getChainCoinType(chainId);
-    const ethereumKeyFeatures =
-      await this.chainsService.getChainEthereumKeyFeatures(chainId);
+    const ethereumKeyFeatures = await this.chainsService.getChainEthereumKeyFeatures(
+      chainId
+    );
 
     const key = await this.keyRing.getKey(
       chainId,
@@ -574,7 +579,9 @@ export class KeyRingService {
     return this.keyRing.addLedgerKey(env, kdf, meta, bip44HDPath);
   }
 
-  public async changeKeyStoreFromMultiKeyStore(index: number): Promise<{
+  public async changeKeyStoreFromMultiKeyStore(
+    index: number
+  ): Promise<{
     multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
   }> {
     try {
@@ -631,9 +638,7 @@ export class KeyRingService {
     for (const path of paths) {
       const key = await this.keyRing.getKeyFromCoinType(
         path.coinType,
-        (
-          await this.chainsService.getChainEthereumKeyFeatures(chainId)
-        ).address
+        (await this.chainsService.getChainEthereumKeyFeatures(chainId)).address
       );
       const bech32Address = new Bech32Address(key.address).toBech32(
         chainInfo.bech32Config.bech32PrefixAccAddr

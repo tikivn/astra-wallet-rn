@@ -28,13 +28,14 @@ export const ManageWalletConnectScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     signClientStore.onSessionChange((infor) => {
       toastModal.makeToast({
-        title: infor.isConnect
-          ? intl
-              .formatMessage({ id: "walletconnect.connected" })
-              .replace("${name}", `${infor.name}`)
-          : intl
-              .formatMessage({ id: "walletconnect.disconnected" })
-              .replace("${name}", `${infor.name}`),
+        title: intl.formatMessage(
+          {
+            id: infor.isConnect
+              ? "walletconnect.connected"
+              : "walletconnect.disconnected",
+          },
+          { name: infor.name }
+        ),
         type: infor.isConnect ? "success" : "infor",
         displayTime: 2000,
       });
@@ -143,11 +144,12 @@ export const ManageWalletConnectScreen: FunctionComponent = observer(() => {
                           if (
                             await confirmModal.confirm({
                               title: "",
-                              paragraph: intl
-                                .formatMessage({
+                              paragraph: intl.formatMessage(
+                                {
                                   id: "walletconnect.action.disconnect.title",
-                                })
-                                .replace("${name}", `${name}`),
+                                },
+                                { name: name }
+                              ),
                               yesButtonText: intl.formatMessage({
                                 id: "common.text.disconnect",
                               }),

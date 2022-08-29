@@ -16,6 +16,31 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
+  const chainInfo = chainStore.getChain(chainStore.current.chainId).raw;
+  const unbondingTime = chainInfo.unbondingTime ?? 86400000;
+  const intl = useIntl();
+
+  const unbondingTimeText = (() => {
+    const relativeEndTime = unbondingTime / 1000;
+    const relativeEndTimeDays = Math.floor(relativeEndTime / (3600 * 24));
+    const relativeEndTimeHours = Math.ceil(relativeEndTime / 3600);
+
+    if (relativeEndTimeDays) {
+      return intl
+        .formatRelativeTime(relativeEndTimeDays, "days", {
+          numeric: "always",
+        })
+        .replace("days", intl.formatMessage({ id: "staking.unbonding.days" }));
+    } else if (relativeEndTimeHours) {
+      return intl
+        .formatRelativeTime(relativeEndTimeHours, "hours", {
+          numeric: "always",
+        })
+        .replace("hours", "h");
+    }
+
+    return "";
+  })();
 
   const unbondingsQuery = queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
     account.bech32Address
@@ -35,8 +60,6 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
   );
 
   const style = useStyle();
-
-  const intl = useIntl();
 
   return (
     <PageWithScrollView
@@ -70,7 +93,7 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
           type="info"
           content={intl.formatMessage(
             { id: "staking.unbonding.noticeWithdrawalPeriod" },
-            { coin: "ASA" }
+            { coin: "ASA", days: unbondingTimeText }
           )}
         />
         <Text
@@ -147,6 +170,7 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
                       numeric: "always",
                     })
                     .replace("in ", "")
+                    .replace("sau ", "")
                     .replace(
                       "days",
                       intl.formatMessage({ id: "staking.unbonding.days" })
@@ -157,6 +181,7 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
                       numeric: "always",
                     })
                     .replace("in ", "")
+                    .replace("sau ", "")
                     .replace("hours", "h");
                 }
 
