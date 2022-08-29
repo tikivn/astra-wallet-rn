@@ -79,3 +79,4 @@ injected-provider.bundle.js
 
 android/keys/release/*
 .codePush/*
+android/app/src/main/assets/appcenter-config.json
