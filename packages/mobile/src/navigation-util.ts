@@ -73,8 +73,14 @@ const {
     "Wallet.SendConfirm": {
       upperScreenName: "Wallet",
     },
-    Swap: {
-      upperScreenName: "Wallet",
+    "Swap.Home": {
+      upperScreenName: "Swap",
+    },
+    "Swap.Confirm": {
+      upperScreenName: "Swap",
+    },
+    "Swap.Success": {
+      upperScreenName: "Swap",
     },
     NewHome: {
       upperScreenName: "NewMain",

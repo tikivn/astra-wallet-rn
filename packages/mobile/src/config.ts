@@ -23,6 +23,7 @@ export interface AppChainInfo extends ChainInfo {
       readonly icons: [string];
     };
   };
+  readonly chainIdNumber?: number;
   readonly unbondingTime?: number;
 }
 
@@ -31,6 +32,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     rpc: "https://cosmos.astranaut.dev",
     rest: "https://api.astranaut.dev",
     chainId: "astra_11115-1",
+    chainIdNumber: 11115,
     chainName: "Testnet",
     stakeCurrency: {
       coinDenom: "ASA",
@@ -52,6 +54,14 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: "aastra",
         coinImageUrl:
           "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
+      },
+      {
+        coinDenom: "USDT",
+        coinMinimalDenom: "usdt",
+        coinDecimals: 18,
+        coinImageUrl:
+          "https://pancakeswap.finance/images/tokens/0x55d398326f99059fF775485246999027B3197955.png",
+        contractAddress: "0x41591484aEB5FA3d1759f1cbA369dC8dc1281298",
       },
     ],
     feeCurrencies: [

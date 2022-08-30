@@ -1,12 +1,11 @@
+import { Msg as AminoMsg } from "@cosmjs/launchpad";
 import {
   CosmosMsgOpts,
   CosmwasmMsgOpts,
   SecretMsgOpts,
 } from "@keplr-wallet/stores";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { Msg as AminoMsg } from "@cosmjs/launchpad";
 import { IRow } from "../../../components";
-import { useStore } from "../../../stores";
 import {
   MessageObj,
   MsgBeginRedelegate,
@@ -25,9 +24,11 @@ import {
   renderMsgWithdrawDelegatorReward,
 } from "./messages";
 
-export function renderAminoMessages(): IRow[] {
-  const { accountStore, chainStore, transactionStore } = useStore();
-
+export function renderAminoMessages({
+  accountStore,
+  chainStore,
+  transactionStore,
+}): IRow[] {
   const msgs = transactionStore.txMsgs as readonly AminoMsg[];
   if (msgs.length == 0) {
     return [];
@@ -36,7 +37,8 @@ export function renderAminoMessages(): IRow[] {
   const chainId =
     transactionStore.signDocHelper?.signDocWrapper?.chainId ??
     chainStore.current.chainId;
-  const currencies = chainStore.getChain(chainId).currencies;
+  const currencies = chainStore.current.currencies;
+
   const msgOpts: {
     readonly cosmos: {
       readonly msgOpts: CosmosMsgOpts;
@@ -49,7 +51,7 @@ export function renderAminoMessages(): IRow[] {
     };
   } = accountStore.getAccount(chainId);
 
-  var feeString = transactionStore.txFee?.toString() ?? "";
+  let feeString = transactionStore.txFee?.toString() ?? "";
 
   const fees = transactionStore.signDocHelper?.signDocWrapper?.fees;
   if (feeString.length == 0 && fees && fees.length != 0) {

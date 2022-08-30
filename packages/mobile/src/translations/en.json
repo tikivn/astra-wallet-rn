@@ -70,5 +70,6 @@
   "wallet.send.continue": "Next",
   "wallet.send.title": "Send ASA",
   "wallet.sendConfirm.title": "Send",
-  "wallet.swap.title": "Swap"
+  "wallet.swap.title": "Swap",
+  "wallet.swapConfirm.title": "Confirm Swap"
 }

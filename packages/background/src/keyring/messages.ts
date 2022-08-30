@@ -899,3 +899,22 @@ export class ExportKeyRingDatasMsg extends Message<ExportKeyRingData[]> {
     return ExportKeyRingDatasMsg.type();
   }
 }
+export class ExportPrivateKeyMsg extends Message<string> {
+  public static type() {
+    return "export-private-key";
+  }
+
+  constructor(public readonly password?: string) {
+    super();
+  }
+
+  validateBasic(): void {}
+
+  route(): string {
+    return ROUTE;
+  }
+
+  type(): string {
+    return ExportPrivateKeyMsg.type();
+  }
+}

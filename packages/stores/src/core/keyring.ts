@@ -25,6 +25,7 @@ import {
   CheckPasswordMsg,
   ExportKeyRingData,
   ExportKeyRingDatasMsg,
+  ExportPrivateKeyMsg,
 } from "@keplr-wallet/background";
 
 import { computed, flow, makeObservable, observable, runInAction } from "mobx";
@@ -452,5 +453,11 @@ export class KeyRingStore {
     if (i >= 0) {
       this.keyStoreChangedListeners.splice(i, 1);
     }
+  }
+  async exportPrivateKey(password?: string): Promise<string> {
+    return await this.requester.sendMessage(
+      BACKGROUND_PORT,
+      new ExportPrivateKeyMsg(password)
+    );
   }
 }

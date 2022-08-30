@@ -20,7 +20,6 @@ export const AccountCardNew: FunctionComponent<{
     account.bech32Address
   ).stakable;
   const stakable = queryStakable.balance;
-
   const totalPrice = priceStore.calculatePrice(stakable);
 
   return (

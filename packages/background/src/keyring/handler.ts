@@ -30,6 +30,7 @@ import {
   CheckPasswordMsg,
   ExportKeyRingDatasMsg,
   RequestVerifyADR36AminoSignDoc,
+  ExportPrivateKeyMsg,
 } from "./messages";
 import { KeyRingService } from "./service";
 import { Bech32Address } from "@keplr-wallet/cosmos";
@@ -123,6 +124,11 @@ export const getHandler: (service: KeyRingService) => Handler = (
         return handleExportKeyRingDatasMsg(service)(
           env,
           msg as ExportKeyRingDatasMsg
+        );
+      case ExportPrivateKeyMsg:
+        return handleExportPrivateKeyMsg(service)(
+          env,
+          msg as ExportPrivateKeyMsg
         );
       default:
         throw new KeplrError("keyring", 221, "Unknown msg type");
@@ -420,5 +426,13 @@ const handleExportKeyRingDatasMsg: (
 ) => InternalHandler<ExportKeyRingDatasMsg> = (service) => {
   return async (_, msg) => {
     return await service.exportKeyRingDatas(msg.password);
+  };
+};
+
+const handleExportPrivateKeyMsg: (
+  service: KeyRingService
+) => InternalHandler<ExportPrivateKeyMsg> = (service) => {
+  return async (_, msg) => {
+    return await service.exportPrivateKey(msg.password);
   };
 };

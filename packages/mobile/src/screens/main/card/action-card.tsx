@@ -19,7 +19,8 @@ export const ActionsCard: FunctionComponent<{
   const intl = useIntl();
   const toastModal = useToastModal();
 
-  const swapEnabled = remoteConfigStore.getBool("feature_swap_enabled");
+  // const swapEnabled = remoteConfigStore.getBool("feature_swap_enabled");
+  const swapEnabled = true;
 
   return (
     <Card style={containerStyle}>
@@ -83,7 +84,9 @@ export const ActionsCard: FunctionComponent<{
               ])}
               text={intl.formatMessage({ id: "main.swap" })}
               leftIcon={
-                <View style={style.flatten(["margin-right-6", "margin-left-6"])}>
+                <View
+                  style={style.flatten(["margin-right-6", "margin-left-6"])}
+                >
                   <SwapIcon color={style.get("color-white").color} size={20} />
                 </View>
               }
@@ -93,11 +96,7 @@ export const ActionsCard: FunctionComponent<{
               size="default"
               mode="fill"
               onPress={() => {
-                toastModal.makeToast({
-                  title: "Coming soon",
-                  type: "infor",
-                });
-                // smartNavigation.navigateSmart("Swap", {});
+                smartNavigation.navigateSmart("Swap.Home", {});
               }}
             />
           )}

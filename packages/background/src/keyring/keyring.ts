@@ -1284,4 +1284,26 @@ export class KeyRing {
     await this.kvStore.set("incrementalNumber", num);
     return num;
   }
+  async exportPrivateKey(password?: string): Promise<string> {
+    const index = this.getMultiKeyStoreInfo().findIndex(
+      (keyStore) => keyStore.selected
+    );
+
+    if (index >= 0) {
+      const privateData = await this.showKeyRing(
+        index,
+        password || this.password
+      );
+      return Buffer.from(
+        new PrivKeySecp256k1(
+          Mnemonic.generateWalletFromMnemonic(
+            privateData,
+            `m/44'/60'/0'/0/0`,
+            ""
+          )
+        ).toBytes()
+      ).toString("hex");
+    }
+    return "";
+  }
 }

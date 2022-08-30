@@ -108,6 +108,9 @@ import { SessionProposalScreen } from "./screens/wallet-connect";
 import { useIntl } from "react-intl";
 import { SmartNavigatorProvider } from "./navigation-util";
 import { RegisterCreateEntryScreen } from "./screens/register/create-entry";
+import { SwapConfirmScreen } from "./screens/main/screens/swap-confirm";
+import { SwapSuccessScreen } from "./screens/main/screens/swap-success";
+import { SwapProvider } from "./providers/swap/provider";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -140,7 +143,7 @@ export const HistoryNavigation: FunctionComponent = () => {
     >
       <Stack.Screen
         options={{
-          title: intl.formatMessage({ id: "history.headerTitle" })
+          title: intl.formatMessage({ id: "history.headerTitle" }),
         }}
         name="History"
         component={HistoryScreen}
@@ -291,7 +294,7 @@ export const StakingNavigation: FunctionComponent = () => {
     >
       <Stack.Screen
         options={{
-          title: intl.formatMessage({ id: "staking.headerTitle" })
+          title: intl.formatMessage({ id: "staking.headerTitle" }),
         }}
         name="Staking.Dashboard"
         component={StakingDashboardScreen}
@@ -523,6 +526,38 @@ export const SettingsStackScreen: FunctionComponent = () => {
         component={SettingsScreen}
       />
     </Stack.Navigator>
+  );
+};
+
+export const SwapStackScreen: FunctionComponent = () => {
+  const intl = useIntl();
+  return (
+    <SwapProvider>
+      <Stack.Navigator
+        screenOptions={NormalHeaderScreenOptions}
+        headerMode="screen"
+      >
+        <Stack.Screen
+          options={{
+            title: intl.formatMessage({ id: "wallet.swap.title" }),
+          }}
+          name="Swap.Home"
+          component={SwapScreen}
+        />
+        <Stack.Screen
+          options={{
+            title: intl.formatMessage({ id: "wallet.swapConfirm.title" }),
+          }}
+          name="Swap.Confirm"
+          component={SwapConfirmScreen}
+        />
+        <Stack.Screen
+          options={{ headerShown: false }}
+          name="Swap.Success"
+          component={SwapSuccessScreen}
+        />
+      </Stack.Navigator>
+    </SwapProvider>
   );
 };
 
@@ -794,6 +829,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
               <Stack.Screen name="Others" component={OtherNavigation} />
               <Stack.Screen name="Wallet" component={WalletNavigation} />
               <Stack.Screen name="Tx" component={TransactionNavigation} />
+              <Stack.Screen name="Swap" component={SwapStackScreen} />
               <Stack.Screen
                 name="AddressBooks"
                 component={AddressBookStackScreen}

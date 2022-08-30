@@ -70,5 +70,6 @@
   "wallet.send.continue": "Tiếp tục",
   "wallet.send.title": "Gửi Astra",
   "wallet.sendConfirm.title": "Gửi Astra",
-  "wallet.swap.title": "Swap Astra"
+  "wallet.swap.title": "Chuyển đổi",
+  "wallet.swapConfirm.title": "Xác nhận chuyển đổi"
 }
