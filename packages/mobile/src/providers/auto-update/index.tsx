@@ -116,10 +116,15 @@ export const withAutoDownloadUI = (OriginBody: FunctionComponent) => () => {
     return (autoUpdateProgress.showDownLoad == true ? <AutoUpdateProgressScreen/> : <OriginBody />)
 }
 
-export const autoUpdateBody = (OriginBody: any, skipCodePush: any = false) => {
-    if (skipCodePush) return withAutoUpDateProgressContext(OriginBody)
+export const autoUpdateBody = (OriginBody: any, useCodePush: any = false) => {
+    if (!useCodePush) return withAutoUpDateProgressContext(OriginBody)
+    const codePushOpts = { 
+        checkFrequency: codePush.CheckFrequency.ON_APP_RESUME,
+        installMode: codePush.InstallMode.ON_NEXT_RESUME,
+        minimumBackgroundDuration: 600, // 600s = 10m
+    }
     const BodyWithCodePush: FunctionComponent<AutoUpdateProgressProp> = 
-      codePush({ checkFrequency: codePush.CheckFrequency.ON_APP_RESUME })(witnCodePushCustomBody(OriginBody))
+        codePush(codePushOpts)(witnCodePushCustomBody(OriginBody))
   
     const AutoUpdateWrapper: FunctionComponent = () => {
       const autoUpdateProgress = useAutoUpdateProgress();

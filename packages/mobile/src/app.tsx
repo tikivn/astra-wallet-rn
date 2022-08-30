@@ -9,7 +9,7 @@ import { Platform, StatusBar } from "react-native";
 import { InteractionModalsProvider } from "./providers/interaction-modals-provider";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { LoadingScreenProvider } from "./providers/loading-screen";
-import * as SplashScreen from "expo-splash-screen";
+import * as SplashScreen from "./screens/splash";
 import { ConfirmModalProvider } from "./providers/confirm-modal";
 import { ToastModalProvider } from "./providers/toast-modal";
 import Bugsnag from "@bugsnag/react-native";
@@ -63,12 +63,8 @@ if (Platform.OS === "android") {
 }
 
 // Prevent native splash screen from autohiding.
-// UnlockScreen will hide the splash screen
+// UnlockScreen/ AutoUpdate screen will hide the splash screen
 SplashScreen.preventAutoHideAsync()
-  .then((result) =>
-    console.log(`SplashScreen.preventAutoHideAsync() succeeded: ${result}`)
-  )
-  .catch(console.warn);
 
 const AppNavigationWithAutoUI = withAutoDownloadUI(AppNavigation)
 
@@ -135,9 +131,13 @@ const ErrorBoundary = (() => {
 
 // should only use codePush in release version, 
 // other versions like dev and RC, UAT should use local code 
-// set below value = true to skip codePush
-const isSkipCodePush = __DEV__
-const CodePushAppBody = autoUpdateBody(AppBody, isSkipCodePush)
+// set below value = true to use codePush from AppCenter
+const useCodePush = (() => {
+  // return false here if want to use local bundle instead of check for update in AppCenter
+  if (__DEV__) return false
+  return true
+})()
+const CodePushAppBody = autoUpdateBody(AppBody, useCodePush)
 
 export const App: FunctionComponent = () => {
   return (ErrorBoundary ? 

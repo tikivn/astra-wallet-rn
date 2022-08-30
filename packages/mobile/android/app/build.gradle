@@ -185,14 +185,30 @@ android {
     }
     buildTypes {
         debug {
+            resValue "string", "CodePushDeploymentKey", "\"${getProp('ASTRA_HUB_APP_CENTER_ANDROID_UAT')}\""
             signingConfig signingConfigs.debug
         }
+
         release {
+            // key for CodePush Prod
+            resValue "string", "CodePushDeploymentKey", "\"${getProp('ASTRA_HUB_APP_CENTER_ANDROID_PROD')}\""
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        }
+
+        releaseUAT {
+            // key for CodePush UAT 
+            resValue "string", "CodePushDeploymentKey", "\"${getProp('ASTRA_HUB_APP_CENTER_ANDROID_UAT')}\""
+            signingConfig signingConfigs.release
+            minifyEnabled enableProguardInReleaseBuilds
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+
+            // Note: It's a good idea to provide matchingFallbacks for the new buildType you create to prevent build issues
+            // Add the following line if not already there
+            matchingFallbacks = ['release']
         }
     }
 

@@ -8,6 +8,7 @@
     ]
   },
   "scripts": {
+    "setup": "sh ./scripts/setup.sh",
     "clean": "rm -rf node_modules build ios/build ios/Pods ios/Podfile.lock",
     "clean:app": "sh ./scripts/clean.sh",
     "android": "yarn build:provider && yarn build-and-run-android",
