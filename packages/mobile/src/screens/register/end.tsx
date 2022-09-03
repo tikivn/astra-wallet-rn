@@ -1,26 +1,35 @@
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent } from "react";
 import { useStyle } from "../../styles";
-import { View, Text } from "react-native";
+import { View, Text, SafeAreaView } from "react-native";
 import { Button } from "../../components/button";
 import { useSmartNavigation } from "../../navigation-util";
 import { observer } from "mobx-react-lite";
-import { useStore } from "../../stores";
 import LottieView from "lottie-react-native";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import delay from "delay";
 import { useIntl } from "react-intl";
+import { RouteProp, useRoute } from "@react-navigation/native";
 
 export const RegisterEndScreen: FunctionComponent = observer(() => {
-  const { keyRingStore } = useStore();
-
   const style = useStyle();
-
+  const intl = useIntl();
   const smartNavigation = useSmartNavigation();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const route = useRoute<
+    RouteProp<
+      Record<
+        string,
+        {
+          registerType?: "new" | "recover" | undefined;
+        }
+      >,
+      string
+    >
+  >();
 
-  const intl = useIntl();
+  const successText = route.params.registerType !== "recover"
+    ? intl.formatMessage({ id: "wallet.create.success" })
+    : intl.formatMessage({ id: "wallet.recover.success" })
 
   return (
     <View
@@ -46,44 +55,25 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
             "color-gray-10",
           ])}
         >
-          {intl.formatMessage({ id: "wallet.create.success" })}
+          {successText}
         </Text>
       </View>
       <View style={style.get("flex-1")} />
       <Button
-        containerStyle={style.flatten(["margin-bottom-44"])}
-        size="large"
-        text="Done"
-        loading={isLoading}
-        onPress={async () => {
-          setIsLoading(true);
-          try {
-            // Because javascript is synchronous language, the loadnig state change would not delivered to the UI thread
-            // So to make sure that the loading state changes, just wait very short time.
-            await delay(10);
-
-            // Definetly, the last key is newest keyring.
-            if (keyRingStore.multiKeyStoreInfo.length > 0) {
-              await keyRingStore.changeKeyRing(
-                keyRingStore.multiKeyStoreInfo.length - 1
-              );
-            }
-
-            smartNavigation.reset({
-              index: 0,
-              routes: [
-                {
-                  name: "MainTabDrawer",
-                },
-              ],
-            });
-          } catch (e) {
-            console.log(e);
-          } finally {
-            setIsLoading(false);
-          }
+        containerStyle={style.flatten(["margin-bottom-12"])}
+        text={intl.formatMessage({ id: "common.text.continue" })}
+        onPress={() => {
+          smartNavigation.reset({
+            index: 0,
+            routes: [
+              {
+                name: "MainTabDrawer",
+              },
+            ],
+          });
         }}
       />
+      <SafeAreaView />
     </View>
   );
 });

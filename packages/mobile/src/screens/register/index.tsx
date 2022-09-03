@@ -10,9 +10,10 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useIntl } from "react-intl";
+import { useLanguage } from "../../translations";
 
 export const RegisterIntroScreen: FunctionComponent = observer(() => {
-  const { keyRingStore, remoteConfigStore } = useStore();
+  const { keyRingStore, remoteConfigStore, chainStore, analyticsStore } = useStore();
 
   const style = useStyle();
 
@@ -24,6 +25,14 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
   const headerHeight = useHeaderHeight();
   const actualHeightHeight = headerHeight - safeAreaInsets.top;
   const intl = useIntl();
+  const language = useLanguage();
+
+  analyticsStore.setUserProperties({
+    astra_hub_chain_id: chainStore.current.chainId,
+    astra_hub_chain_name: chainStore.current.chainName,
+    astra_hub_app_lang: language.language,
+  });
+
   return (
     <View style={style.get("background-color-background")}>
       <ImageBackground

@@ -36,7 +36,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
 
   const MIN_LENGTH_PASSWORD = 8;
 
-  const { keychainStore, userLoginStore } = useStore();
+  const { keychainStore, userLoginStore, keyRingStore, analyticsStore } = useStore();
   const style = useStyle();
   const intl = useIntl();
 
@@ -100,13 +100,34 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
       await keychainStore.turnOnBiometry(confirmPassword);
     }
 
+    try {
+      // Definetly, the last key is newest keyring.
+      if (keyRingStore.multiKeyStoreInfo.length > 0) {
+        await keyRingStore.changeKeyRing(
+          keyRingStore.multiKeyStoreInfo.length - 1
+        );
+      }
+    }
+    catch (e: any) {
+      console.log(e);
+    }
+
+    const eventName = route.params.registerType !== "recover"
+      ? "astra_hub_create_account"
+      : "astra_hub_recover_account"
+
+    analyticsStore.logEvent(eventName, {
+      type: "mnemonic",
+      use_biometrics: keychainStore.isBiometrySupported && isBiometricOn,
+    });
+
     smartNavigation.reset({
       index: 0,
       routes: [
         {
           name: "Register.End",
           params: {
-            password: confirmPassword,
+            registerType: route.params.registerType,
           },
         },
       ],

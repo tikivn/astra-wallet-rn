@@ -10,7 +10,7 @@ import { useIntl } from "react-intl";
 export const AccountNetworkItem: FunctionComponent<{
   accountItemProps?: Record<string, unknown>;
 }> = observer(({ accountItemProps }) => {
-  const { chainStore } = useStore();
+  const { chainStore, analyticsStore } = useStore();
 
   const intl = useIntl();
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -24,6 +24,10 @@ export const AccountNetworkItem: FunctionComponent<{
     if (key) {
       chainStore.selectChain(key);
       chainStore.saveLastViewChainId();
+      analyticsStore.setUserProperties({
+        astra_hub_chain_id: chainStore.current.chainId,
+        astra_hub_chain_name: chainStore.current.chainId,
+      });
     }
   };
 

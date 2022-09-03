@@ -15,11 +15,9 @@ import {
 } from "@keplr-wallet/hooks";
 import { observer } from "mobx-react-lite";
 import { useUnmount } from "../../hooks";
-import { RouteProp, useRoute } from "@react-navigation/native";
 import { TendermintTxTracer } from "@keplr-wallet/cosmos";
 import { TransactionStateView } from "./components/transaction-state-view";
 import { TransactionDetailsView } from "./components/transaction-details-view";
-import { TxState } from "../../stores/transaction";
 import { TransactionActionView } from "./components/transaction-action-view";
 import { PageWithScrollView } from "../../components";
 import { useSmartNavigation } from "../../navigation-util";
@@ -44,18 +42,6 @@ export const TxResultScreen: FunctionComponent = observer(() => {
     signInteractionStore.rejectAll();
     transactionStore.rejectTransaction();
   });
-
-  const route = useRoute<
-    RouteProp<
-      Record<
-        string,
-        {
-          txState: TxState;
-        }
-      >,
-      string
-    >
-  >();
 
   const style = useStyle();
   const smartNavigation = useSmartNavigation();
@@ -172,7 +158,6 @@ export const TxResultScreen: FunctionComponent = observer(() => {
   const signDocHelper = useSignDocHelper(feeConfig, memoConfig);
   amountConfig.setSignDocHelper(signDocHelper);
   transactionStore.updateSignDocHelper(signDocHelper);
-  // transactionStore.updateTxAmount(amountConfig);
 
   useEffect(() => {
     if (signInteractionStore.waitingData) {
@@ -191,7 +176,6 @@ export const TxResultScreen: FunctionComponent = observer(() => {
         feeConfig.setFeeType("average");
       }
       setSigner(data.data.signer);
-      // transactionStore.updateSignDocHelper(signDocHelper);
     }
   }, [
     feeConfig,

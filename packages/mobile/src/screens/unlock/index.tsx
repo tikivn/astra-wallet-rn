@@ -35,8 +35,7 @@ import { useBIP44Option } from "../register/bip44";
 import { BIOMETRY_TYPE } from "react-native-keychain";
 import { AvoidingKeyboardBottomView } from "../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 import { hideSplashScreen } from "../splash";
-
-
+import { useLanguage } from "../../translations";
 
 async function waitAccountLoad(
   accountStore: IAccountStore,
@@ -106,10 +105,11 @@ const useAutoBiomtric = (keychainStore: KeychainStore, tryEnabled: boolean) => {
  * @constructor
  */
 export const UnlockScreen: FunctionComponent = observer(() => {
-  const { keyRingStore, keychainStore, accountStore, chainStore, userLoginStore } = useStore();
+  const { keyRingStore, keychainStore, accountStore, chainStore, userLoginStore, analyticsStore } = useStore();
 
   const style = useStyle();
   const intl = useIntl();
+  const language = useLanguage();
 
   const navigation = useNavigation();
   const registerConfig = useRegisterConfig(keyRingStore, []);
@@ -180,8 +180,19 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       await delay(10);
       await keychainStore.tryUnlockWithBiometry();
 
+      analyticsStore.logEvent("astra_hub_login_account", {
+        use_biometrics: true,
+        success: true,
+      });
+
       await hideSplashScreen();
     } catch (e) {
+      analyticsStore.logEvent("astra_hub_login_account", {
+        use_biometrics: true,
+        success: false,
+        error: JSON.stringify(e)
+      });
+
       console.log(e);
       setIsBiometricLoading(false);
     }
@@ -232,9 +243,20 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       await delay(10);
       await keyRingStore.unlock(password);
 
+      analyticsStore.logEvent("astra_hub_login_account", {
+        use_biometrics: false,
+        success: true,
+      });
+
       await hideSplashScreen();
-    } catch (e) {
-      console.log(e);
+    } catch (e: any) {
+      analyticsStore.logEvent("astra_hub_login_account", {
+        use_biometrics: false,
+        success: false,
+        error: JSON.stringify(e)
+      });
+
+      console.log(JSON.stringify(e));
       setIsLoading(false);
       setIsFailed(true);
     }
@@ -284,6 +306,12 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     setIsFailed(false);
   }, [password]);
+
+  analyticsStore.setUserProperties({
+    astra_hub_chain_id: chainStore.current.chainId,
+    astra_hub_chain_name: chainStore.current.chainName,
+    astra_hub_app_lang: language.language,
+  });
 
   return (
     <React.Fragment>

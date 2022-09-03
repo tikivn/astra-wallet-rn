@@ -19,7 +19,7 @@ import { View, Text } from "react-native";
 import { isAddress } from "@ethersproject/address";
 
 export const CameraScreen: FunctionComponent = observer(() => {
-  const { chainStore, signClientStore } = useStore();
+  const { chainStore, signClientStore, analyticsStore } = useStore();
   const toastModal = useToastModal();
   const smartNavigation = useSmartNavigation();
   const style = useStyle();
@@ -56,6 +56,9 @@ export const CameraScreen: FunctionComponent = observer(() => {
         isLoading={isLoading}
         onBarCodeRead={async ({ data }) => {
           if (!isLoading && !isCompleted) {
+            analyticsStore.logEvent("astra_hub_scan_qr_code", {
+              type: data.startsWith("wc:") ? "wallet_connect" : "address"
+            });
             setIsLoading(true);
             try {
               if (data.startsWith("wc:")) {

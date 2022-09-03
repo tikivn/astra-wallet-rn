@@ -12,16 +12,21 @@ import {
   StepViewType,
 } from "../../../components/foundation-view/step-view";
 import { useStore } from "../../../stores";
-import { TxState, TxType } from "../../../stores/transaction";
+import { TxState } from "../../../stores/transaction";
 import { Typos, Colors } from "../../../styles";
+import { Msg as AminoMsg } from "@cosmjs/launchpad";
+import {
+  CosmosMsgOpts,
+} from "@keplr-wallet/stores";
 
 export const TransactionStateView: FunctionComponent<{
   style?: ViewStyle;
 }> = observer(({ style }) => {
-  const { transactionStore } = useStore();
+  const { transactionStore, accountStore, chainStore } = useStore();
 
   const [txState, setTxState] = useState(transactionStore.txState);
   const [amountText, setAmountText] = useState("");
+  const msgs = transactionStore.txMsgs as readonly AminoMsg[];
 
   useEffect(() => {
     setTxState(transactionStore.txState);
@@ -35,65 +40,53 @@ export const TransactionStateView: FunctionComponent<{
 
   const intl = useIntl();
 
-  function getMainText(type: TxType, state: TxState): string {
-    // send:        Đang gửi - Đã gửi thành công
-    // delegate:    Đang chuyển tiền - Đầu tư thành công
-    // undelegate:  Đang rút tiền - Rút tiền thành công
-    // redelegate:  Đang chuyển đổi - Chuyển đổi thành công
-    // withdraw:    Đang chuyển tiền lãi - Tiền lãi đã được chuyển đến bạn
-    // swap:
+  function getMainText(type: string, state: TxState): string {
+    const msgOpts: {
+      readonly cosmos: {
+        readonly msgOpts: CosmosMsgOpts;
+      };
+    } = accountStore.getAccount(chainStore.current.chainId);
     const allMainText: Record<string, Record<string, string>> = {
-      send: {
+      [msgOpts.cosmos.msgOpts.send.native.type]: {
         pending: intl.formatMessage({ id: "tx.result.state.send.pending" }),
         success: intl.formatMessage({ id: "tx.result.state.send.success" }),
         failure: intl.formatMessage({ id: "tx.result.state.send.failure" }),
       },
-      delegate: {
+      [msgOpts.cosmos.msgOpts.delegate.type]: {
         pending: intl.formatMessage({ id: "tx.result.state.delegate.pending" }),
         success: intl.formatMessage({ id: "tx.result.state.delegate.success" }),
         failure: intl.formatMessage({ id: "tx.result.state.delegate.failure" }),
       },
-      undelegate: {
-        pending: intl.formatMessage({
-          id: "tx.result.state.undelegate.pending",
-        }),
-        success: intl.formatMessage({
-          id: "tx.result.state.undelegate.success",
-        }),
-        failure: intl.formatMessage({
-          id: "tx.result.state.undelegate.failure",
-        }),
+      [msgOpts.cosmos.msgOpts.undelegate.type]: {
+        pending: intl.formatMessage({ id: "tx.result.state.undelegate.pending", }),
+        success: intl.formatMessage({ id: "tx.result.state.undelegate.success", }),
+        failure: intl.formatMessage({ id: "tx.result.state.undelegate.failure", }),
       },
-      redelegate: {
-        pending: intl.formatMessage({
-          id: "tx.result.state.redelegate.pending",
-        }),
-        success: intl.formatMessage({
-          id: "tx.result.state.redelegate.success",
-        }),
-        failure: intl.formatMessage({
-          id: "tx.result.state.redelegate.failure",
-        }),
+      [msgOpts.cosmos.msgOpts.redelegate.type]: {
+        pending: intl.formatMessage({ id: "tx.result.state.redelegate.pending", }),
+        success: intl.formatMessage({ id: "tx.result.state.redelegate.success", }),
+        failure: intl.formatMessage({ id: "tx.result.state.redelegate.failure", }),
       },
-      withdraw: {
+      [msgOpts.cosmos.msgOpts.withdrawRewards.type]: {
         pending: intl.formatMessage({ id: "tx.result.state.withdraw.pending" }),
         success: intl.formatMessage({ id: "tx.result.state.withdraw.success" }),
         failure: intl.formatMessage({ id: "tx.result.state.withdraw.failure" }),
       },
-      swap: {
-        pending: intl.formatMessage({ id: "tx.result.state.swap.pending" }),
-        success: intl.formatMessage({ id: "tx.result.state.swap.success" }),
-        failure: intl.formatMessage({ id: "tx.result.state.swap.failure" }),
-      },
     };
 
-    const txTypeString = type?.toLocaleLowerCase() ?? "send";
-    const txStateString = state?.toLocaleLowerCase() ?? "pending";
+    console.log("__DEBUG__ tx type:", type);
+    const mainText = allMainText[type]// as Record<string, string>;
 
-    return allMainText[txTypeString][txStateString];
+    if (!mainText) {
+      return "";
+    }
+
+    const txStateString = state?.toLowerCase() ?? "";
+
+    return mainText[txStateString] ?? "";
   }
 
-  const mainText = getMainText(transactionStore.txType, txState);
+  const mainText = getMainText(msgs[0].type, txState);
   const errorText = intl.formatMessage({ id: "tx.result.state.error" });
   const subText = isFailure ? errorText : amountText;
 

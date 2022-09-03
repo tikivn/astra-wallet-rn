@@ -23,14 +23,6 @@ import { ChainInfo } from "@keplr-wallet/types";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { action, computed, makeObservable, observable } from "mobx";
 
-export type TxType =
-  | "send"
-  | "withdraw"
-  | "delegate"
-  | "undelegate"
-  | "redelegate"
-  | "swap"
-  | undefined;
 export type TxState = "pending" | "success" | "failure" | undefined;
 export type TxData = {
   chainInfo?: ChainInfo;
@@ -53,7 +45,6 @@ export class TransactionStore {
     makeObservable(this);
   }
 
-  protected _txType?: TxType = undefined;
   protected _txTime?: Date = undefined;
 
   @observable protected _txState: TxState = undefined;
@@ -64,11 +55,6 @@ export class TransactionStore {
   @observable protected _txFee?: CoinPretty = undefined;
 
   @observable protected _signDocHelper?: SignDocHelper = undefined;
-
-  @computed
-  get txType(): TxType {
-    return this._txType;
-  }
 
   @computed
   get txState(): TxState {
@@ -160,12 +146,6 @@ export class TransactionStore {
     }
   }
   @action
-  updateTxType(txType: TxType) {
-    if (this._txType != txType) {
-      this._txType = txType;
-    }
-  }
-  @action
   updateTxState(txState: TxState) {
     if (this._txState != txState) {
       this._txState = txState;
@@ -204,7 +184,6 @@ export class TransactionStore {
 
   @action
   rejectTransaction() {
-    this._txType = undefined;
     this._txState = undefined;
     this._txHash = undefined;
     this._txAmount = undefined;

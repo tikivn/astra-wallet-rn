@@ -66,6 +66,7 @@
   "wallet.history.title": "Transaction history",
   "wallet.receive.address.guide": "",
   "wallet.receive.title": "Receive ASA",
+  "wallet.recover.success": "Recover wallet successfully",
   "wallet.send.confirm": "Confirm",
   "wallet.send.continue": "Next",
   "wallet.send.title": "Send ASA",

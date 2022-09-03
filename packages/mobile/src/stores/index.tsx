@@ -2,6 +2,10 @@ import React, { FunctionComponent, useEffect, useState } from "react";
 
 import { createRootStore, RootStore } from "./root";
 
+export * from "./analytics"
+export * from "./chain"
+export * from "./transaction"
+
 const storeContext = React.createContext<RootStore | null>(null);
 
 /*

@@ -7,6 +7,7 @@ export class RemoteConfigStore {
   constructor() {
     remoteConfig()
       .setDefaults({
+        feature_stackity_env: "uat",
         feature_dapps_enabled: true,
         feature_swap_enabled: false,
         feature_socialLogin_enabled: false,

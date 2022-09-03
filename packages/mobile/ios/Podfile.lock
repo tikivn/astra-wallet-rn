@@ -388,12 +388,16 @@ PODS:
     - React-Core
   - RNReanimated (1.13.3):
     - React-Core
+  - RNRudderSdk (1.0.0):
+    - React
+    - Rudder (~> 1.6.0)
   - RNScreens (2.18.1):
     - React-Core
   - RNScrypt (1.2.1):
     - React
   - RNSVG (12.1.1):
     - React
+  - Rudder (1.6.3)
   - SDWebImage (5.13.0):
     - SDWebImage/Core (= 5.13.0)
   - SDWebImage/Core (5.13.0)
@@ -474,6 +478,7 @@ DEPENDENCIES:
   - RNKeychain (from `../node_modules/react-native-keychain`)
   - RNLocalize (from `../node_modules/react-native-localize`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
+  - "RNRudderSdk (from `../node_modules/@rudderstack/rudder-sdk-react-native`)"
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNScrypt (from `../node_modules/react-native-scrypt`)
   - RNSVG (from `../node_modules/react-native-svg`)
@@ -492,6 +497,7 @@ SPEC REPOS:
     - JWT
     - libwebp
     - MultiplatformBleAdapter
+    - Rudder
     - SDWebImage
     - SDWebImageWebPCoder
     - SSZipArchive
@@ -617,6 +623,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-localize"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
+  RNRudderSdk:
+    :path: "../node_modules/@rudderstack/rudder-sdk-react-native"
   RNScreens:
     :path: "../node_modules/react-native-screens"
   RNScrypt:
@@ -702,9 +710,11 @@ SPEC CHECKSUMS:
   RNKeychain: f75b8c8b2f17d3b2aa1f25b4a0ac5b83d947ff8f
   RNLocalize: 82a569022724d35461e2dc5b5d015a13c3ca995b
   RNReanimated: 514a11da3a2bcc6c3dfd9de32b38e2b9bf101926
+  RNRudderSdk: 14c176adb1557f3832cb385fcd14250f76a7e268
   RNScreens: f7ad633b2e0190b77b6a7aab7f914fad6f198d8d
   RNScrypt: 95fdef077b482e9fdf8a761120cb69d129ef4016
   RNSVG: 551acb6562324b1d52a4e0758f7ca0ec234e278f
+  Rudder: 59634aec6dd26a4672f74f40fc45bc17f91af3f0
   SDWebImage: 0327043dbb9533e75f2eff8445b3df0f2ceca6ac
   SDWebImageWebPCoder: d0dac55073088d24b2ac1b191a71a8f8d0adac21
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9

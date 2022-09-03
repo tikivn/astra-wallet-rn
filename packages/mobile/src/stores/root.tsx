@@ -26,16 +26,13 @@ import { ChainStore } from "./chain";
 import EventEmitter from "eventemitter3";
 import { Keplr } from "@keplr-wallet/provider";
 import { KeychainStore } from "./keychain";
-import { FeeType } from "@keplr-wallet/hooks";
 
-import { AnalyticsStore, NoopAnalyticsClient } from "@keplr-wallet/analytics";
-
-import { ChainIdHelper } from "@keplr-wallet/cosmos";
 import { UserBalanceStore } from "./user-balance";
 import { TransactionStore } from "./transaction";
 import { SignClientStore } from "./wallet-connect-v2";
 import { RemoteConfigStore } from "./remote-config";
 import { UserLoginStore } from "./user-login";
+import { initializeAnalyticsStore, StackityAnalyticsStore } from "./analytics";
 
 export class RootStore {
   public readonly chainStore: ChainStore;
@@ -60,33 +57,22 @@ export class RootStore {
 
   public readonly keychainStore: KeychainStore;
   public readonly signClientStore: SignClientStore;
-  public readonly analyticsStore: AnalyticsStore<
-    {
-      chainId?: string;
-      chainName?: string;
-      toChainId?: string;
-      toChainName?: string;
-      registerType?: "seed" | "google" | "apple" | "ledger" | "qr";
-      feeType?: FeeType | undefined;
-      isIbc?: boolean;
-      validatorName?: string;
-      toValidatorName?: string;
-      proposalId?: string;
-      proposalTitle?: string;
-    },
-    {
-      registerType?: "seed" | "google" | "ledger" | "qr" | "apple";
-      accountType?: "mnemonic" | "privateKey" | "ledger";
-      currency?: string;
-      language?: string;
-    }
+  public readonly analyticsStore: StackityAnalyticsStore<
+    Record<
+      string,
+      Readonly<string | number | boolean | undefined | null>
+    >,
+    Record<
+      string,
+      Readonly<string | number | boolean | undefined | null>
+    >
   >;
 
   public readonly userBalanceStore: UserBalanceStore;
   public readonly transactionStore: TransactionStore;
   public readonly remoteConfigStore: RemoteConfigStore;
   public readonly userLoginStore: UserLoginStore;
-  
+
   constructor() {
     const router = new RNRouterUI(RNEnv.produceEnv);
 
@@ -326,37 +312,6 @@ export class RootStore {
       this.permissionStore
     );
 
-    this.analyticsStore = new AnalyticsStore(
-      (() => {
-        return new NoopAnalyticsClient();
-      })(),
-      {
-        logEvent: (eventName, eventProperties) => {
-          if (eventProperties?.chainId || eventProperties?.toChainId) {
-            eventProperties = {
-              ...eventProperties,
-            };
-
-            if (eventProperties.chainId) {
-              eventProperties.chainId = ChainIdHelper.parse(
-                eventProperties.chainId
-              ).identifier;
-            }
-
-            if (eventProperties.toChainId) {
-              eventProperties.toChainId = ChainIdHelper.parse(
-                eventProperties.toChainId
-              ).identifier;
-            }
-          }
-
-          return {
-            eventName,
-            eventProperties,
-          };
-        },
-      }
-    );
     this.userBalanceStore = new UserBalanceStore(
       this.chainStore,
       this.accountStore,
@@ -374,6 +329,9 @@ export class RootStore {
         return this.remoteConfigStore.getBool("feature_socialLogin_enabled");
       }
     });
+
+    this.analyticsStore = initializeAnalyticsStore();
+    this.analyticsStore.setup(this.remoteConfigStore.getString("feature_stackity_env"));
   }
 }
 

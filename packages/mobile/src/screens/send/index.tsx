@@ -130,16 +130,31 @@ export const SendScreen: FunctionComponent = observer(() => {
                 },
                 {
                   onBroadcasted: (txHash) => {
-                    analyticsStore.logEvent("Send token tx broadcasted", {
-                      chainId: chainStore.current.chainId,
-                      chainName: chainStore.current.chainName,
-                      feeType: sendConfigs.feeConfig.feeType,
+                    analyticsStore.logEvent("astra_hub_transfer_token", {
+                      tx_hash: Buffer.from(txHash).toString("hex"),
+                      token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
+                      amount: Number(sendConfigs.amountConfig.amount),
+                      fee: Number(sendConfigs.feeConfig.fee?.trim(true).hideDenom(true).toString() ?? "0"),
+                      fee_type: sendConfigs.feeConfig.feeType,
+                      gas: sendConfigs.gasConfig.gas,
+                      receiver_address: sendConfigs.recipientConfig.recipient,
+                      success: true,
                     });
                     transactionStore.updateTxHash(txHash);
                   },
                 }
               );
-            } catch (e) {
+            } catch (e: any) {
+              analyticsStore.logEvent("astra_hub_transfer_token", {
+                token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
+                amount: Number(sendConfigs.amountConfig.amount),
+                fee: Number(sendConfigs.feeConfig.fee?.trim(true).hideDenom(true).toString() ?? "0"),
+                fee_type: sendConfigs.feeConfig.feeType,
+                gas: sendConfigs.gasConfig.gas,
+                receiver_address: sendConfigs.recipientConfig.recipient,
+                success: false,
+                error: e?.message,
+              });
               if (e?.message === "Request rejected") {
                 return;
               }

@@ -7,10 +7,12 @@ import { useStyle } from "../../../styles";
 import { AllIcon, LanguageIcon } from "../../../components/icon";
 import { useIntl } from "react-intl";
 import { useLanguage } from "../../../translations";
+import { useStore } from "../../../stores";
 
 export const AccountLanguageItem: FunctionComponent<{
   accountItemProps?: Record<string, unknown>;
 }> = observer(({ accountItemProps }) => {
+  const { analyticsStore } = useStore();
   const language = useLanguage();
   const intl = useIntl();
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -23,6 +25,15 @@ export const AccountLanguageItem: FunctionComponent<{
   });
   const selectedLang =
     languages.find(({ code }) => code == intl.locale) || languages[0];
+  const setSelectedKey = (key: string | undefined) => {
+    if (key) {
+      language.setLanguage(key)
+      analyticsStore.setUserProperties({
+        astra_hub_app_lang: key,
+      });
+    }
+  };
+
   return (
     <React.Fragment>
       <BottomSheet
@@ -31,7 +42,7 @@ export const AccountLanguageItem: FunctionComponent<{
         close={() => setIsOpenModal(false)}
         maxItemsToShow={4}
         selectedKey={selectedLang.code}
-        setSelectedKey={(code) => code && language.setLanguage(code)}
+        setSelectedKey={setSelectedKey}
         items={languages}
       />
       <AccountItem

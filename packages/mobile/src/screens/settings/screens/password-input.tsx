@@ -34,7 +34,7 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
 
   const style = useStyle();
   const intl = useIntl();
-  const { keyRingStore, keychainStore, userLoginStore } = useStore();
+  const { keyRingStore, keychainStore, userLoginStore, analyticsStore } = useStore();
   const smartNavigation = useSmartNavigation();
 
   const [password, setPassword] = useState("");
@@ -121,9 +121,19 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
     const isValidPassword = await checkPassword();
 
     if (!isValidPassword) {
+      analyticsStore.logEvent("astra_hub_input_password", {
+        screen: type,
+        success: false,
+        error: intl.formatMessage({ id: "common.text.wrongPassword" }),
+      });
       showError();
       return;
     }
+
+    analyticsStore.logEvent("astra_hub_input_password", {
+      screen: type,
+      success: true,
+    });
 
     switch (type) {
       case "updatePassword":
@@ -149,6 +159,10 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
             await userLoginStore.clearLoginData();
           }
 
+          analyticsStore.setUserProperties({
+            astra_hub_from_address: null,
+          });
+        
           smartNavigation.reset({
             index: 0,
             routes: [

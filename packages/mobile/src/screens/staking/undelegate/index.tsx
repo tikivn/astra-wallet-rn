@@ -61,14 +61,14 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
 
   const validatorThumbnail = validator
     ? queries.cosmos.queryValidators
-        .getQueryStatus(Staking.BondStatus.Bonded)
-        .getValidatorThumbnail(validatorAddress) ||
-      queries.cosmos.queryValidators
-        .getQueryStatus(Staking.BondStatus.Unbonding)
-        .getValidatorThumbnail(validatorAddress) ||
-      queries.cosmos.queryValidators
-        .getQueryStatus(Staking.BondStatus.Unbonded)
-        .getValidatorThumbnail(validatorAddress)
+      .getQueryStatus(Staking.BondStatus.Bonded)
+      .getValidatorThumbnail(validatorAddress) ||
+    queries.cosmos.queryValidators
+      .getQueryStatus(Staking.BondStatus.Unbonding)
+      .getValidatorThumbnail(validatorAddress) ||
+    queries.cosmos.queryValidators
+      .getQueryStatus(Staking.BondStatus.Unbonded)
+      .getValidatorThumbnail(validatorAddress)
     : undefined;
 
   const staked = queries.cosmos.queryDelegations
@@ -215,17 +215,35 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                 },
                 {
                   onBroadcasted: (txHash) => {
-                    analyticsStore.logEvent("Undelegate tx broadcasted", {
-                      chainId: chainStore.current.chainId,
-                      chainName: chainStore.current.chainName,
-                      validatorName: validator?.description.moniker,
-                      feeType: sendConfigs.feeConfig.feeType,
+                    analyticsStore.logEvent("astra_hub_undelegate_token", {
+                      tx_hash: Buffer.from(txHash).toString("hex"),
+                      token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
+                      amount: Number(sendConfigs.amountConfig.amount),
+                      fee: Number(sendConfigs.feeConfig.fee?.trim(true).hideDenom(true).toString() ?? "0"),
+                      fee_type: sendConfigs.feeConfig.feeType,
+                      gas: sendConfigs.gasConfig.gas,
+                      validator_address: validatorAddress,
+                      validator_name: validator?.description.moniker,
+                      commission: 100 * Number(validator?.commission.commission_rates.rate ?? "0"),
+                      success: true,
                     });
                     transactionStore.updateTxHash(txHash);
                   },
                 }
               );
             } catch (e: any) {
+              analyticsStore.logEvent("astra_hub_undelegate_token", {
+                token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
+                amount: Number(sendConfigs.amountConfig.amount),
+                fee: Number(sendConfigs.feeConfig.fee?.trim(true).hideDenom(true).toString() ?? "0"),
+                fee_type: sendConfigs.feeConfig.feeType,
+                gas: sendConfigs.gasConfig.gas,
+                validator_address: validatorAddress,
+                validator_name: validator?.description.moniker,
+                commission: 100 * Number(validator?.commission.commission_rates.rate ?? "0"),
+                success: false,
+                error: e?.message,
+              });
               if (e?.message === "Request rejected") {
                 return;
               }

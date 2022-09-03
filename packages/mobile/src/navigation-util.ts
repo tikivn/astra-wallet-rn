@@ -221,7 +221,7 @@ const {
       addressBooks: { [chainId: string]: AddressBookData[] | undefined };
     };
     "Register.End": {
-      password?: string;
+      registerType?: "new" | "recover" | undefined;
     };
     "Register.CreateEntry": {};
     Send: {

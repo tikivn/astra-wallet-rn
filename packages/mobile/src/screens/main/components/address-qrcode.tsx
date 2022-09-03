@@ -6,6 +6,7 @@ import { Button } from "../../../components/button";
 import QRCode from "react-native-qrcode-svg";
 import { useIntl } from "react-intl";
 import { useToastModal } from "../../../providers/toast-modal";
+import { useStore } from "../../../stores";
 export const AddressQRCodeItem: FunctionComponent<{
   style?: ViewStyle;
   bech32Address: string;
@@ -14,6 +15,7 @@ export const AddressQRCodeItem: FunctionComponent<{
   const style = useStyle();
   const intl = useIntl();
   const toast = useToastModal();
+  const { analyticsStore } = useStore();
 
   return (
     <View
@@ -68,6 +70,9 @@ export const AddressQRCodeItem: FunctionComponent<{
           id: "component.text.copy",
         })}
         onPress={() => {
+          analyticsStore.logEvent("astra_hub_select_copy_address", {
+            copy_address: hexAddress
+          });
           console.log("__DEBUG__ hexAddress: ", hexAddress);
           console.log("__DEBUG__ bech32Address: ", bech32Address);
           Clipboard.setString(hexAddress);

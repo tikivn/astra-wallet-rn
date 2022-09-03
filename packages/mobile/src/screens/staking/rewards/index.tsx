@@ -61,15 +61,31 @@ export const StakingRewardScreen: FunctionComponent = () => {
         },
         {
           onBroadcasted: (txHash) => {
-            analyticsStore.logEvent("Claim reward tx broadcasted", {
-              chainId: chainStore.current.chainId,
-              chainName: chainStore.current.chainName,
+            analyticsStore.logEvent("astra_hub_claim_reward", {
+              tx_hash: Buffer.from(txHash).toString("hex"),
+              token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
+              amount: Number(sendConfigs.amountConfig.amount),
+              fee: Number(sendConfigs.feeConfig.fee?.trim(true).hideDenom(true).toString() ?? "0"),
+              fee_type: sendConfigs.feeConfig.feeType,
+              gas: sendConfigs.gasConfig.gas,
+              validator_addresses: JSON.stringify(validatorAddresses),
+              success: true,
             });
             transactionStore.updateTxHash(txHash);
           },
         }
       );
     } catch (e: any) {
+      analyticsStore.logEvent("astra_hub_claim_reward", {
+        token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
+        amount: Number(sendConfigs.amountConfig.amount),
+        fee: Number(sendConfigs.feeConfig.fee?.trim(true).hideDenom(true).toString() ?? "0"),
+        fee_type: sendConfigs.feeConfig.feeType,
+        gas: sendConfigs.gasConfig.gas,
+        validator_addresses: JSON.stringify(validatorAddresses),
+        success: false,
+        error: e?.message,
+      });
       if (e?.message === "Request rejected") {
         return;
       }

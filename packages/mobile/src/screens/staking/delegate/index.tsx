@@ -205,17 +205,35 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                 },
                 {
                   onBroadcasted: (txHash) => {
-                    analyticsStore.logEvent("Delegate tx broadcasted", {
-                      chainId: chainStore.current.chainId,
-                      chainName: chainStore.current.chainName,
-                      validatorName: validator?.description.moniker,
-                      feeType: sendConfigs.feeConfig.feeType,
+                    analyticsStore.logEvent("astra_hub_delegate_token", {
+                      tx_hash: Buffer.from(txHash).toString("hex"),
+                      token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
+                      amount: Number(sendConfigs.amountConfig.amount),
+                      fee: Number(sendConfigs.feeConfig.fee?.trim(true).hideDenom(true).toString() ?? "0"),
+                      fee_type: sendConfigs.feeConfig.feeType,
+                      gas: sendConfigs.gasConfig.gas,
+                      validator_address: validatorAddress,
+                      validator_name: validator?.description.moniker,
+                      commission: 100 * Number(validator?.commission.commission_rates.rate ?? "0"),
+                      success: true,
                     });
                     transactionStore.updateTxHash(txHash);
                   },
                 }
               );
             } catch (e: any) {
+              analyticsStore.logEvent("astra_hub_delegate_token", {
+                token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
+                amount: Number(sendConfigs.amountConfig.amount),
+                fee: Number(sendConfigs.feeConfig.fee?.trim(true).hideDenom(true).toString() ?? "0"),
+                fee_type: sendConfigs.feeConfig.feeType,
+                gas: sendConfigs.gasConfig.gas,
+                validator_address: validatorAddress,
+                validator_name: validator?.description.moniker,
+                commission: 100 * Number(validator?.commission.commission_rates.rate ?? "0"),
+                success: false,
+                error: e?.message,
+              });
               if (e?.message === "Request rejected") {
                 return;
               }

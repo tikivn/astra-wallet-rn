@@ -12,7 +12,7 @@ import { EthereumEndpoint } from "../../../config";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useIntl } from "react-intl";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
-import { buildLeftColumn, buildRightColumn, IRow, ListRowView, ScanIcon } from "../../../components";
+import { buildLeftColumn, buildRightColumn, IRow, ListRowView } from "../../../components";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export const SendTokenScreen: FunctionComponent = observer(() => {
@@ -72,6 +72,8 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
   }, [route.params.recipient, sendConfigs.recipientConfig]);
 
   sendConfigs.gasConfig.setGas(200000);
+  sendConfigs.feeConfig.setFeeType("average");
+  const fee = sendConfigs.feeConfig.fee?.trim(true).toString() ?? "";
 
   const sendConfigError =
     sendConfigs.recipientConfig.error ??
@@ -97,7 +99,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
       type: "items",
       cols: [
         buildLeftColumn({ text: intl.formatMessage({ id: "component.amount.input.fee" }) }),
-        buildRightColumn({ text: "1 ASA" }),
+        buildRightColumn({ text: fee }),
       ]
     },
   ];
@@ -123,16 +125,31 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
           },
           {
             onBroadcasted: (txHash) => {
-              analyticsStore.logEvent("Send token tx broadcasted", {
-                chainId: chainStore.current.chainId,
-                chainName: chainStore.current.chainName,
-                feeType: sendConfigs.feeConfig.feeType,
+              analyticsStore.logEvent("astra_hub_transfer_token", {
+                tx_hash: Buffer.from(txHash).toString("hex"),
+                token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
+                amount: Number(sendConfigs.amountConfig.amount),
+                fee: Number(sendConfigs.feeConfig.fee?.trim(true).hideDenom(true).toString() ?? "0"),
+                fee_type: sendConfigs.feeConfig.feeType,
+                gas: sendConfigs.gasConfig.gas,
+                receiver_address: sendConfigs.recipientConfig.recipient,
+                success: true,
               });
               transactionStore.updateTxHash(txHash);
             },
           }
         );
       } catch (e: any) {
+        analyticsStore.logEvent("astra_hub_transfer_token", {
+          token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
+          amount: Number(sendConfigs.amountConfig.amount),
+          fee: Number(sendConfigs.feeConfig.fee?.trim(true).hideDenom(true).toString() ?? "0"),
+          fee_type: sendConfigs.feeConfig.feeType,
+          gas: sendConfigs.gasConfig.gas,
+          receiver_address: sendConfigs.recipientConfig.recipient,
+          success: false,
+          error: e?.message,
+        });
         if (e?.message === "Request rejected") {
           return;
         }

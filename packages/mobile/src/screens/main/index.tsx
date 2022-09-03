@@ -32,7 +32,7 @@ import { useIntl } from "react-intl";
 export const MainScreen: FunctionComponent = observer(() => {
   const [refreshing, setRefreshing] = React.useState(false);
 
-  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore, analyticsStore } = useStore();
 
   const style = useStyle();
   const intl = useIntl();
@@ -139,6 +139,11 @@ export const MainScreen: FunctionComponent = observer(() => {
       });
     }
   }
+
+  const account = accountStore.getAccount(chainStore.current.chainId);
+  analyticsStore.setUserProperties({
+    astra_hub_from_address: account.hexAddress,
+  });
 
   return (
     <View style={style.get("background-color-background")}>

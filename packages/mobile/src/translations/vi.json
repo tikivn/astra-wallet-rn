@@ -66,6 +66,7 @@
   "wallet.history.title": "Lịch sử giao dịch",
   "wallet.receive.address.guide": "Quét mã QR hoặc bấm sao chép để gửi Astra vào địa chỉ này từ ví khác",
   "wallet.receive.title": "Nhận Astra",
+  "wallet.recover.success": "Khôi phục ví thành công",
   "wallet.send.confirm": "Xác nhận",
   "wallet.send.continue": "Tiếp tục",
   "wallet.send.title": "Gửi Astra",

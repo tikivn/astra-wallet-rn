@@ -152,6 +152,7 @@
     "@ethersproject/units": "^5.5.0",
     "web3": "^1.7.4",
     "react-native-cache": "2.0.2",
+    "@rudderstack/rudder-sdk-react-native": "^1.5.1",
     "big-integer": "^1.6.48",
     "patch-package": "^6.4.7",
     "deprecated-react-native-prop-types": "^2.3.0",
