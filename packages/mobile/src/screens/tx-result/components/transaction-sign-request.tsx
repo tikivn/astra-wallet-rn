@@ -30,7 +30,7 @@ export const TransactionSignRequestView: FunctionComponent<{
   const waitingData = signInteractionStore.waitingData;
   const request = signClientStore.pendingRequest;
   const session = signClientStore.requestSession(request?.topic);
-  
+
   const metadata = session?.peer.metadata;
 
   const data = waitingData?.data;
@@ -46,7 +46,7 @@ export const TransactionSignRequestView: FunctionComponent<{
 
   const messsages = JSON.stringify(msgs, null, 2);
   const source = isWC ? session?.peer.metadata.name : data?.msgOrigin;
-  
+
   const intl = useIntl();
   return (
     <React.Fragment>
@@ -93,7 +93,7 @@ export const TransactionSignRequestView: FunctionComponent<{
           {intl.formatMessage(
             { id: "walletconnect.text.verify" },
             { name: source }
-            )}
+          )}
         </Text>
         <Text
           style={style.flatten([

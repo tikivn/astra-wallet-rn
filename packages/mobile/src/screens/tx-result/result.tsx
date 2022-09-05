@@ -231,9 +231,5 @@ export const TxResultScreen: FunctionComponent = observer(() => {
     transactionStore.startTransaction();
   }
 
-  return (
-    isPendingSigning()
-      ? getPendingSigningView()
-      : getResultView()
-  );
+  return isPendingSigning() ? getPendingSigningView() : getResultView();
 });

@@ -1,22 +1,25 @@
+import { AccountStore, QueriesStore } from "@keplr-wallet/stores";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { useIntl } from "react-intl";
-import { View, Text, ViewStyle } from "react-native";
+import { View } from "react-native";
 import { Button } from "../../../components/button";
 import { CardDivider } from "../../../components/card";
 import { useSmartNavigation } from "../../../navigation-util";
-import { useStore } from "../../../stores";
+import { ChainStore } from "../../../stores/chain";
 
 import { useStyle } from "../../../styles";
 import { PropertyView } from "../component/property";
 
 export const RewardsItem: FunctionComponent<{
-  containerStyle?: ViewStyle;
-}> = observer(({ containerStyle }) => {
+  chainStore: ChainStore;
+  accountStore: AccountStore;
+  queriesStore: QueriesStore;
+  priceStore: PriceStore;
+}> = observer(({ chainStore, accountStore, queriesStore, priceStore  }) => {
   const smartNavigation = useSmartNavigation();
   const style = useStyle();
   const intl = useIntl();
-  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);

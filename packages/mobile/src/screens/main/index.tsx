@@ -160,14 +160,23 @@ export const MainScreen: FunctionComponent = observer(() => {
           }
           ref={scrollViewRef}
         >
-          <View style={style.flatten([
-            "flex-row",
-            "height-44",
-            "justify-center",
-            "items-center",
-          ])}>
-            <View style={{ width: 44, }} />
-            <Text style={style.flatten(["text-large-bold", "color-white", "flex-1", "text-center"])}>
+          <View
+            style={style.flatten([
+              "flex-row",
+              "height-44",
+              "justify-center",
+              "items-center",
+            ])}
+          >
+            <View style={{ width: 44 }} />
+            <Text
+              style={style.flatten([
+                "text-large-bold",
+                "color-white",
+                "flex-1",
+                "text-center",
+              ])}
+            >
               {intl.formatMessage({ id: "register.intro.appName" })}
             </Text>
             <TouchableOpacity

@@ -327,7 +327,7 @@ export class RootStore {
     this.userLoginStore = new UserLoginStore({
       socialLoginEnabledFunc: () => {
         return this.remoteConfigStore.getBool("feature_socialLogin_enabled");
-      }
+      },
     });
 
     this.analyticsStore = initializeAnalyticsStore();
