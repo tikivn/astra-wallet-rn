@@ -23,6 +23,7 @@ import { Dec, IntPretty } from "@keplr-wallet/unit";
 import { PropertyView } from "../component/property";
 import { ValidatorItem } from "../../../components/input";
 import { FormattedMessage, useIntl } from "react-intl";
+import { formatCoin } from "../../../common/utils";
 
 export const DelegationsItem: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -106,13 +107,10 @@ export const DelegationsItem: FunctionComponent<{
               const amount = queryDelegations.getDelegationTo(
                 val.operator_address
               );
-              const total = priceStore.calculatePrice(amount);
 
               const rewards = queryRewards.getStakableRewardOf(
                 val.operator_address
               );
-
-              const totalRewards = priceStore.calculatePrice(rewards);
 
               return (
                 <RectButton
@@ -121,7 +119,6 @@ export const DelegationsItem: FunctionComponent<{
                     "flex",
                     "margin-x-16",
                     "margin-y-8",
-                    "height-148",
                     "border-radius-16",
                     "border-width-1",
                     "border-color-gray-60",
@@ -182,31 +179,13 @@ export const DelegationsItem: FunctionComponent<{
                       label={intl.formatMessage({
                         id: "staking.delegate.invested",
                       })}
-                      value={amount
-                        .maxDecimals(6)
-                        .trim(true)
-                        .shrink(true)
-                        .toString()}
-                      subValue={`~ ${
-                        total
-                          ? total.toString()
-                          : amount.shrink(true).maxDecimals(6).toString()
-                      }`}
+                      value={formatCoin(amount)}
                     />
                     <PropertyView
                       label={intl.formatMessage({
                         id: "staking.delegate.profit",
                       })}
-                      value={rewards
-                        .maxDecimals(6)
-                        .trim(true)
-                        .shrink(true)
-                        .toString()}
-                      subValue={`~ ${
-                        totalRewards
-                          ? totalRewards.toString()
-                          : rewards.shrink(true).maxDecimals(6).toString()
-                      }`}
+                      value={formatCoin(rewards)}
                       valueStyle={style.get("color-green-50")}
                     />
                   </View>

@@ -4,14 +4,17 @@ import { Text, ViewStyle } from "react-native";
 import { Staking } from "@keplr-wallet/stores";
 import { Card, CardBody, CardDivider } from "../../../components/card";
 import { useStore } from "../../../stores";
-import { useStyle } from "../../../styles";
+import { Colors, useStyle } from "../../../styles";
 import { DelegationsEmptyItem } from "../dashboard/delegate";
 import { ValidatorItem } from "../../../components/input";
 import { FormattedMessage, useIntl } from "react-intl";
+import { formatCoin } from "../../../common/utils";
+import { ItemRow, TextAlign } from "../../../components";
 
 export const RewardDetails: FunctionComponent<{
+  feeText?: string,
   containerStyle?: ViewStyle;
-}> = observer(({ containerStyle }) => {
+}> = observer(({ feeText, containerStyle }) => {
   const { chainStore, accountStore, queriesStore } = useStore();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -64,7 +67,7 @@ export const RewardDetails: FunctionComponent<{
     <Card style={containerStyle}>
       <CardDivider style={style.flatten(["background-color-gray-70"])} />
       {delegations && delegations.length > 0 ? (
-        <CardBody style={style.flatten(["padding-x-0", "padding-y-14"])}>
+        <CardBody style={style.flatten(["padding-x-0", "padding-y-0", "padding-top-24"])}>
           <Text
             style={style.flatten([
               "subtitle2",
@@ -95,11 +98,7 @@ export const RewardDetails: FunctionComponent<{
                 key={index}
                 thumbnail={thumbnail}
                 name={val.description.moniker}
-                value={rewards
-                  .maxDecimals(6)
-                  .trim(true)
-                  .shrink(true)
-                  .toString()}
+                value={formatCoin(rewards)}
                 containerStyle={style.flatten([
                   "margin-x-16",
                   "margin-bottom-8",
@@ -117,6 +116,21 @@ export const RewardDetails: FunctionComponent<{
           ])}
         />
       )}
+      <ItemRow
+        style={{ paddingVertical: 0, marginTop: 16, marginBottom: 24 }}
+        columns={[
+          {
+            text: intl.formatMessage({ id: "component.amount.input.fee" }),
+            textColor: Colors["gray-30"],
+          },
+          {
+            text: feeText,
+            textColor: Colors["gray-10"],
+            textAlign: TextAlign.right,
+            flex: 1,
+          },
+        ]}
+      />
     </Card>
   );
 });

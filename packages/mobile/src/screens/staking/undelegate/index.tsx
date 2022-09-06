@@ -17,6 +17,7 @@ import {
 } from "../../../components/foundation-view/item-row";
 import { TextAlign } from "../../../components/foundation-view/text-style";
 import { useIntl } from "react-intl";
+import { formatCoin } from "../../../common/utils";
 
 export const UndelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -96,7 +97,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.feeConfig.error;
   const txStateIsValid = sendConfigError == null;
   sendConfigs.feeConfig.setFeeType("average");
-  const fee = sendConfigs.feeConfig.fee?.trim(true).toString() ?? "";
+  const feeText = formatCoin(sendConfigs.feeConfig.fee);
   const chainInfo = chainStore.getChain(chainStore.current.chainId).raw;
   const unbondingTime = chainInfo.unbondingTime ?? 86400000;
   const unbondingTimeText = (() => {
@@ -138,7 +139,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         containerStyle={style.flatten(["margin-y-16"])}
         name={validator ? validator.description.moniker : "..."}
         thumbnail={validatorThumbnail}
-        value={staked.trim(true).shrink(true).maxDecimals(6).toString()}
+        value={formatCoin(staked)}
       />
       <AmountInput
         label={intl.formatMessage({ id: "stake.undelegate.amountLabel" })}
@@ -154,7 +155,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
             textColor: Colors["gray-30"],
           },
           {
-            text: staked.trim(true).shrink(true).maxDecimals(6).toString(),
+            text: formatCoin(staked),
             textColor: Colors["gray-10"],
             textAlign: TextAlign.right,
             flex: 1,
@@ -171,7 +172,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
             textColor: Colors["gray-30"],
           },
           {
-            text: fee,
+            text: feeText,
             textColor: Colors["gray-10"],
             textAlign: TextAlign.right,
             flex: 1,

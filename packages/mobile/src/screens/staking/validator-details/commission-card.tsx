@@ -12,6 +12,7 @@ import { useStyle } from "../../../styles";
 import { TooltipLabel } from "../component";
 import { useSmartNavigation } from "../../../navigation-util";
 import { FormattedMessage, useIntl } from "react-intl";
+import { formatCoin } from "../../../common/utils";
 
 export const CommissionsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -55,6 +56,15 @@ export const CommissionsCard: FunctionComponent<{
 
   const style = useStyle();
 
+  var totalStakingText = "";
+  if (validator) {
+    const total = new CoinPretty(
+      chainStore.current.stakeCurrency,
+      new Dec(validator.tokens)
+    );
+    totalStakingText = formatCoin(total);
+  }
+
   return (
     <Card style={containerStyle}>
       {validator ? (
@@ -93,12 +103,7 @@ export const CommissionsCard: FunctionComponent<{
                   "margin-y-2",
                 ])}
               >
-                {new CoinPretty(
-                  chainStore.current.stakeCurrency,
-                  new Dec(validator.tokens)
-                )
-                  .maxDecimals(6)
-                  .toString()}
+                {totalStakingText}
               </Text>
               {/* <TooltipLabel
                 text={intl.formatMessage(

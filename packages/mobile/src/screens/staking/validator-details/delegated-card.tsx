@@ -7,6 +7,7 @@ import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { RectButton } from "../../../components/rect-button";
 import { FormattedMessage } from "react-intl";
+import { formatCoin } from "../../../common/utils";
 
 export const DelegatedCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -25,18 +26,15 @@ export const DelegatedCard: FunctionComponent<{
     .getQueryBech32Address(account.bech32Address)
     .getDelegationTo(validatorAddress);
 
-  const totalStaked = priceStore.calculatePrice(staked);
-
   const rewards = queries.cosmos.queryRewards
     .getQueryBech32Address(account.bech32Address)
     .getStakableRewardOf(validatorAddress);
-  const totalRewards = priceStore.calculatePrice(rewards);
+
   return (
     <Card style={containerStyle}>
       <CardBody style={style.flatten(["padding-y-0"])}>
         <View
           style={style.flatten([
-            "height-208",
             "padding-0",
             "border-radius-16",
             "border-color-gray-60",
@@ -45,8 +43,6 @@ export const DelegatedCard: FunctionComponent<{
         >
           <View
             style={style.flatten([
-              "height-90",
-              "margin-x-16",
               "margin-y-0",
               "flex-row",
               "justify-center",
@@ -76,19 +72,7 @@ export const DelegatedCard: FunctionComponent<{
                   "margin-y-2",
                 ])}
               >
-                {staked.trim(true).shrink(true).maxDecimals(6).toString()}
-              </Text>
-              <Text
-                style={style.flatten([
-                  "color-gray-30",
-                  "subtitle4",
-                  "margin-bottom-0",
-                ])}
-              >
-                ~{" "}
-                {totalStaked
-                  ? totalStaked.toString()
-                  : staked.shrink(true).maxDecimals(6).toString()}
+                {formatCoin(staked)}
               </Text>
             </View>
             <View
@@ -122,19 +106,7 @@ export const DelegatedCard: FunctionComponent<{
                   "margin-y-2",
                 ])}
               >
-                {rewards.trim(true).shrink(true).maxDecimals(6).toString()}
-              </Text>
-              <Text
-                style={style.flatten([
-                  "color-gray-30",
-                  "subtitle4",
-                  "margin-bottom-0",
-                ])}
-              >
-                ~{" "}
-                {totalRewards
-                  ? totalRewards.toString()
-                  : rewards.shrink(true).maxDecimals(6).toString()}
+                {formatCoin(rewards)}
               </Text>
             </View>
           </View>
@@ -143,10 +115,10 @@ export const DelegatedCard: FunctionComponent<{
           />
           <View
             style={style.flatten([
-              "margin-y-12",
+              "margin-y-16",
               "flex-row",
               "justify-between",
-              "padding-16",
+              "padding-x-16",
             ])}
           >
             <RectButton
@@ -165,7 +137,7 @@ export const DelegatedCard: FunctionComponent<{
               <Text
                 style={style.flatten([
                   "color-gray-10",
-                  "margin-y-4",
+                  "margin-top-8",
                   "text-caption2",
                   "text-center",
                 ])}
@@ -190,7 +162,7 @@ export const DelegatedCard: FunctionComponent<{
               <Text
                 style={style.flatten([
                   "color-gray-10",
-                  "margin-y-4",
+                  "margin-top-8",
                   "text-caption2",
                   "text-center",
                 ])}
@@ -215,7 +187,7 @@ export const DelegatedCard: FunctionComponent<{
               <Text
                 style={style.flatten([
                   "color-gray-10",
-                  "margin-y-4",
+                  "margin-top-8",
                   "text-caption2",
                   "text-center",
                 ])}

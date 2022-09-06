@@ -23,6 +23,7 @@ import {
 } from "../../../components/foundation-view/list-row-view";
 import { AlertInline } from "../../../components";
 import { useIntl } from "react-intl";
+import { formatCoin } from "../../../common/utils";
 
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -103,7 +104,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     .toString();
 
   sendConfigs.feeConfig.setFeeType("average");
-  const fee = sendConfigs.feeConfig.fee?.trim(true).toString() ?? "";
+  const feeText = formatCoin(sendConfigs.feeConfig.fee);
   const rows: IRow[] = [
     {
       type: "items",
@@ -120,7 +121,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         buildLeftColumn({
           text: intl.formatMessage({ id: "stake.delegate.fee" }),
         }),
-        buildRightColumn({ text: fee }),
+        buildRightColumn({ text: feeText }),
       ],
     },
   ];

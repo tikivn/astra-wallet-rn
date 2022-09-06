@@ -1,15 +1,15 @@
-import React, { FunctionComponent, useMemo } from "react";
-import { PageWithScrollView } from "../../../components/page";
+import React, { FunctionComponent } from "react";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 
-import { View, Text } from "react-native";
+import { View, Text, ScrollView, SafeAreaView } from "react-native";
 import { Button } from "../../../components/button";
 import { useSmartNavigation } from "../../../navigation-util";
 import { RewardDetails } from "./rewards";
 import { useSendTxConfig } from "@keplr-wallet/hooks";
 import { EthereumEndpoint } from "../../../config";
-import { FormattedMessage, useIntl } from "react-intl";
+import { useIntl } from "react-intl";
+import { formatCoin } from "../../../common/utils";
 export const StakingRewardScreen: FunctionComponent = () => {
   const {
     chainStore,
@@ -42,6 +42,8 @@ export const StakingRewardScreen: FunctionComponent = () => {
     8
   );
   sendConfigs.feeConfig.setFeeType("average");
+  sendConfigs.gasConfig.setGas(700000);
+  const feeText = formatCoin(sendConfigs.feeConfig.fee);
 
   const withdrawAllRewards = async () => {
     try {
@@ -96,47 +98,39 @@ export const StakingRewardScreen: FunctionComponent = () => {
   };
 
   return (
-    <PageWithScrollView backgroundColor={style.get("color-background").color}>
-      <View style={style.flatten(["height-32"])} />
-      <Text
-        style={style.flatten(["color-gray-30", "subtitle3", "text-center"])}
-      >
-        <FormattedMessage id="staking.rewards.totalProfit" />
-      </Text>
-      <Text
-        style={style.flatten([
-          "color-gray-10",
-          "title1",
-          "text-center",
-          "margin-top-8",
-        ])}
-      >
-        {stakingReward
-          .shrink(true)
-          .maxDecimals(6)
-          .trim(true)
-          .upperCase(true)
-          .toString()}
-      </Text>
-      <View style={style.flatten(["height-48"])} />
-      <View style={style.flatten(["flex-1"])} />
-      <RewardDetails
-        containerStyle={style.flatten(["background-color-background"])}
-      />
+    <View style={style.flatten(["flex-1", "background-color-background"])}>
+      <ScrollView style={style.flatten(["flex-1"])}>
+        <View style={style.flatten(["height-24"])} />
+        <Text style={style.flatten(["color-gray-30", "text-base-regular", "text-center"])}>
+          {intl.formatMessage({ id: "staking.rewards.totalProfit" })}
+        </Text>
+        <Text
+          style={style.flatten([
+            "color-gray-10",
+            "text-4x-large-semi-bold",
+            "text-center",
+            "margin-top-4",
+            "margin-bottom-24",
+          ])}
+        >
+          {formatCoin(stakingReward)}
+        </Text>
+        <RewardDetails
+          feeText={feeText}
+          containerStyle={style.flatten(["background-color-background"])}
+        />
+      </ScrollView>
+      <View style={style.flatten(["height-1", "background-color-gray-70"])} />
       <Button
         containerStyle={style.flatten([
-          "border-radius-4",
-          "height-44",
-          "margin-16",
+          "margin-y-12",
+          "margin-x-page"
         ])}
-        textStyle={style.flatten(["subtitle2"])}
         text={intl.formatMessage({ id: "staking.rewards.withdrawRewards" })}
-        size="large"
         onPress={withdrawAllRewards}
         loading={account.txTypeInProgress === "withdrawRewards"}
       />
-      {/* Mock element for bottom padding */}
-      <View style={style.flatten(["height-page-pad"])} />
-    </PageWithScrollView>
+      <SafeAreaView />
+    </View>
   );
 };

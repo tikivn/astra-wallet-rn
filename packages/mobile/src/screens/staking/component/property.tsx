@@ -7,7 +7,7 @@ export const PropertyView: FunctionComponent<{
   containerStyle?: ViewStyle;
   label: string;
   value: string;
-  subValue: string;
+  subValue?: string;
   labelStyle?: TextStyle;
   valueStyle?: TextStyle;
   subValueStyle?: TextStyle;
@@ -25,7 +25,7 @@ export const PropertyView: FunctionComponent<{
     return (
       <View
         style={StyleSheet.flatten([
-          style.flatten(["flex-1", "margin-left-0", "items-start"]),
+          style.flatten(["flex-1", "margin-left-0", "justify-center", "items-start"]),
           containerStyle,
         ])}
       >
@@ -45,14 +45,16 @@ export const PropertyView: FunctionComponent<{
         >
           {value}
         </Text>
-        <Text
-          style={StyleSheet.flatten([
-            style.flatten(["color-gray-30", "subtitle4", "margin-bottom-0"]),
-            subValueStyle,
-          ])}
-        >
-          {subValue}
-        </Text>
+        {subValue && (
+          <Text
+            style={StyleSheet.flatten([
+              style.flatten(["color-gray-30", "subtitle4", "margin-bottom-0"]),
+              subValueStyle,
+            ])}
+          >
+            {subValue}
+          </Text>
+        )}
       </View>
     );
   }

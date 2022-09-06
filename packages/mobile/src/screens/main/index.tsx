@@ -189,16 +189,22 @@ export const MainScreen: FunctionComponent = observer(() => {
             </TouchableOpacity>
           </View>
           <AccountCardNew
-            containerStyle={style.get("background-color-transparent")}
+            containerStyle={style.flatten([
+              "background-color-transparent",
+              "margin-top-24",
+            ])}
           />
           <ActionsCard
             containerStyle={style.flatten([
               "background-color-transparent",
-              "margin-top-16",
+              "margin-top-24",
             ])}
           />
           <BalanceCard
-            containerStyle={style.get("background-color-transparent")}
+            containerStyle={style.flatten([
+              "background-color-transparent",
+              "margin-top-40",
+            ])}
           />
         </PageWithScrollViewInBottomTabView>
       </ImageBackground>

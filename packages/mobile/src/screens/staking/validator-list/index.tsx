@@ -15,6 +15,7 @@ import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { TooltipLabel } from "../component";
 import { FormattedMessage, useIntl } from "react-intl";
+import { formatCoin } from "../../../common/utils";
 
 type Sort = "APY" | "Voting Power" | "Name";
 
@@ -164,6 +165,15 @@ const ValidatorItem: FunctionComponent<{
 
   const smartNavigation = useSmartNavigation();
   const intl = useIntl();
+
+  var totalStakingText = "";
+  if (validator) {
+    const totalStaking = new CoinPretty(
+      chainStore.current.stakeCurrency,
+      new Dec(validator.tokens)
+    );
+    totalStakingText = formatCoin(totalStaking);
+  }
   return validator ? (
     <RectButton
       style={style.flatten([
@@ -213,12 +223,7 @@ const ValidatorItem: FunctionComponent<{
             style={style.flatten(["flex-row", "justify-end", "items-center"])}
           >
             <Text style={style.flatten(["subtitle3", "color-gray-10"])}>
-              {new CoinPretty(
-                chainStore.current.stakeCurrency,
-                new Dec(validator.tokens)
-              )
-                .maxDecimals(0)
-                .toString()}
+              {totalStakingText}
             </Text>
             <View
               style={style.flatten([

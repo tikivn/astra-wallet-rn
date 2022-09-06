@@ -8,7 +8,6 @@ import { Button } from "../../../components/button";
 import { SwapIcon, SendIcon, ReceiveIcon } from "../../../components/icon";
 import { useSmartNavigation } from "../../../navigation-util";
 import { useIntl } from "react-intl";
-import { useToastModal } from "../../../providers/toast-modal";
 
 export const ActionsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -17,14 +16,12 @@ export const ActionsCard: FunctionComponent<{
   const smartNavigation = useSmartNavigation();
   const { chainStore, remoteConfigStore } = useStore();
   const intl = useIntl();
-  const toastModal = useToastModal();
 
-  // const swapEnabled = remoteConfigStore.getBool("feature_swap_enabled");
-  const swapEnabled = true;
+  const swapEnabled = remoteConfigStore.getBool("feature_swap_enabled");
 
   return (
     <Card style={containerStyle}>
-      <CardBody>
+      <CardBody style={style.flatten(["padding-y-0"])}>
         <View style={style.flatten(["flex-row", "justify-center"])}>
           <Button
             color="primary"

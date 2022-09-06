@@ -14,6 +14,7 @@ import { useIntl } from "react-intl";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 import { buildLeftColumn, buildRightColumn, IRow, ListRowView } from "../../../components";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { formatCoin } from "../../../common/utils";
 
 export const SendTokenScreen: FunctionComponent = observer(() => {
   const {
@@ -73,7 +74,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
 
   sendConfigs.gasConfig.setGas(200000);
   sendConfigs.feeConfig.setFeeType("average");
-  const fee = sendConfigs.feeConfig.fee?.trim(true).toString() ?? "";
+  const feeText = formatCoin(sendConfigs.feeConfig.fee);
 
   const sendConfigError =
     sendConfigs.recipientConfig.error ??
@@ -99,7 +100,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
       type: "items",
       cols: [
         buildLeftColumn({ text: intl.formatMessage({ id: "component.amount.input.fee" }) }),
-        buildRightColumn({ text: fee }),
+        buildRightColumn({ text: feeText }),
       ]
     },
   ];

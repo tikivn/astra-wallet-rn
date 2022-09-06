@@ -9,6 +9,7 @@ import {
   SecretQueries,
 } from "@keplr-wallet/stores";
 import { CoinPretty } from "@keplr-wallet/unit";
+import { formatCoin } from "../../common/utils";
 import { ChainStore } from "../chain";
 
 export class UserBalanceStore {
@@ -37,15 +38,7 @@ export class UserBalanceStore {
 
   getBalanceString(chainId?: string): string {
     const balance = this.getBalance(chainId);
-    return Number(balance.toDec()).toLocaleString("vi-VN", {
-      maximumFractionDigits: 2
-    }) + " " + balance.denom.toUpperCase();
-    // return this.getBalance(chainId)
-    //   .trim(true)
-    //   .shrink(true)
-    //   .maxDecimals(6)
-    //   .upperCase(true)
-    //   .toString();
+    return formatCoin(balance);
   }
 
   getRewards(chainId?: string): CoinPretty {

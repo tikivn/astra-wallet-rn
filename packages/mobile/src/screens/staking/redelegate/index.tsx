@@ -17,6 +17,7 @@ import {
 import { TextAlign } from "../../../components/foundation-view/text-style";
 import { FormattedMessage, useIntl } from "react-intl";
 import { SelectValidatorItem } from "./select-validator";
+import { formatCoin } from "../../../common/utils";
 
 export const RedelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -110,7 +111,8 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.feeConfig.error;
   const txStateIsValid = sendConfigError == null;
   sendConfigs.feeConfig.setFeeType("average");
-  const fee = sendConfigs.feeConfig.fee?.trim(true).toString() ?? "";
+  const feeText = formatCoin(sendConfigs.feeConfig.fee);
+
   return (
     <PageWithScrollView
       backgroundColor={Colors["background"]}
@@ -165,7 +167,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
             textColor: Colors["gray-30"],
           },
           {
-            text: fee,
+            text: feeText,
             textColor: Colors["gray-10"],
             textAlign: TextAlign.right,
             flex: 1,

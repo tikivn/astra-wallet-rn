@@ -9,6 +9,7 @@ import { ValidatorThumbnail } from "../../../components/thumbnail";
 import { Staking } from "@keplr-wallet/stores";
 import { DelegationsEmptyItem } from "../dashboard/delegate";
 import { useSmartNavigation } from "../../../navigation-util";
+import { formatCoin } from "../../../common/utils";
 
 export const UnbondingCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -171,11 +172,7 @@ export const UnbondingCard: FunctionComponent<{
                     <Text
                       style={style.flatten(["text-caption2", "color-gray-10"])}
                     >
-                      {entry.balance
-                        .shrink(true)
-                        .trim(true)
-                        .maxDecimals(6)
-                        .toString()}
+                      {formatCoin(entry.balance)}
                     </Text>
                   </View>
                 </View>

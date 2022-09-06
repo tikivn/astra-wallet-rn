@@ -8,6 +8,7 @@ import { useStyle } from "../../../styles";
 import FastImage from "react-native-fast-image";
 import { VectorCharacter } from "../../../components/vector-character";
 import { AppCurrency } from "@keplr-wallet/types";
+import { formatCoin } from "../../../common/utils";
 
 export const TokenItemNew: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -66,7 +67,7 @@ export const TokenItemNew: FunctionComponent<{
             numberOfLines={1}
             ellipsizeMode="tail"
           >
-            {new Number(balance.toDec()).toLocaleString("vi-VN", { maximumFractionDigits: 2 })}
+            {formatCoin(balance, true)}
           </Text>
         </View>
         <View style={style.flatten(["flex-row", "justify-between", "margin-bottom-0"])}>

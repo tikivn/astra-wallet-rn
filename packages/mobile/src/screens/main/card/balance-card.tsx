@@ -38,7 +38,7 @@ export const BalanceCard: FunctionComponent<{
     });
   return (
     <Card style={containerStyle}>
-      <CardBody>
+      <CardBody style={style.flatten(["padding-y-0"])}>
         <Text style={style.flatten(["color-white", "text-medium-medium"])}>
           {intl.formatMessage({ id: "main.balance.card.title" })}
         </Text>
