@@ -43,7 +43,7 @@ export const AccountCardNew: FunctionComponent<{
       <View style={{ alignItems: "center" }}>
         <AddressCopyableItem
           style={{ width: 200, marginTop: 6 }}
-          address={account.hexAddress}
+          address={account.ethereumHexAddress}
           maxCharacters={22}
         />
       </View>
