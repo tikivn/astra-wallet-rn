@@ -76,9 +76,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
     ],
     coinType: 60,
     gasPriceStep: {
-      low: 500000000000,
-      average: 1000000000000,
-      high: 2000000000000,
+      low: 500000000,
+      average: 1000000000,
+      high: 2000000000,
     },
     features: ["ibc-transfer", "ibc-go", "eth-key-sign", "eth-address-gen"],
     chainSymbolImageUrl:
