@@ -1,4 +1,4 @@
-import { EmbedChainInfos } from "../config";
+import { EmbedChainInfos, EthereumEndpoint } from "../config";
 import {
   KeyRingStore,
   InteractionStore,
@@ -33,7 +33,7 @@ import { SignClientStore } from "./wallet-connect-v2";
 import { RemoteConfigStore } from "./remote-config";
 import { UserLoginStore } from "./user-login";
 import { initializeAnalyticsStore, StackityAnalyticsStore } from "./analytics";
-
+import { KeplrETCQueries } from "@keplr-wallet/stores-etc";
 export class RootStore {
   public readonly chainStore: ChainStore;
   public readonly keyRingStore: KeyRingStore;
@@ -58,14 +58,8 @@ export class RootStore {
   public readonly keychainStore: KeychainStore;
   public readonly signClientStore: SignClientStore;
   public readonly analyticsStore: StackityAnalyticsStore<
-    Record<
-      string,
-      Readonly<string | number | boolean | undefined | null>
-    >,
-    Record<
-      string,
-      Readonly<string | number | boolean | undefined | null>
-    >
+    Record<string, Readonly<string | number | boolean | undefined | null>>,
+    Record<string, Readonly<string | number | boolean | undefined | null>>
   >;
 
   public readonly userBalanceStore: UserBalanceStore;
@@ -128,6 +122,9 @@ export class RootStore {
           // TOOD: Set version for Keplr API
           return new Keplr("", "core", new RNMessageRequesterInternal());
         },
+      }),
+      KeplrETCQueries.use({
+        ethereumURL: EthereumEndpoint,
       })
     );
 
@@ -331,7 +328,9 @@ export class RootStore {
     });
 
     this.analyticsStore = initializeAnalyticsStore();
-    this.analyticsStore.setup(this.remoteConfigStore.getString("feature_stackity_env"));
+    this.analyticsStore.setup(
+      this.remoteConfigStore.getString("feature_stackity_env")
+    );
   }
 }
 

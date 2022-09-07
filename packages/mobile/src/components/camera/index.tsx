@@ -75,42 +75,42 @@ export const FullScreenCameraView: FunctionComponent<
           <View style={style.flatten(["flex-1"])} />
         </View>
         <View style={style.get("flex-5")} />
-        <View>
-          {isLoading ? (
+
+        {isLoading ? (
+          <View
+            style={style.flatten([
+              "absolute-fill",
+              "items-center",
+              "justify-center",
+            ])}
+          >
             <View
               style={style.flatten([
-                "absolute-fill",
+                "padding-x-32",
+                "padding-top-48",
+                "padding-bottom-31",
+                "background-color-camera-loading-background",
+                "border-radius-8",
                 "items-center",
-                "justify-center",
               ])}
             >
-              <View
+              <LoadingSpinner
+                size={42}
+                color={style.get("color-primary").color}
+              />
+              <Text
                 style={style.flatten([
-                  "padding-x-32",
-                  "padding-top-48",
-                  "padding-bottom-31",
-                  "background-color-camera-loading-background",
-                  "border-radius-8",
-                  "items-center",
+                  "subtitle1",
+                  "color-text-black-low",
+                  "margin-top-34",
                 ])}
               >
-                <LoadingSpinner
-                  size={42}
-                  color={style.get("color-primary").color}
-                />
-                <Text
-                  style={style.flatten([
-                    "subtitle1",
-                    "color-text-black-low",
-                    "margin-top-34",
-                  ])}
-                >
-                  Loading...
-                </Text>
-              </View>
+                Loading...
+              </Text>
             </View>
-          ) : null}
-        </View>
+          </View>
+        ) : null}
+
         {containerBottom}
         <View style={style.get("flex-1")} />
       </View>
