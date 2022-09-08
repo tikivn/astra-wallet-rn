@@ -1,22 +1,22 @@
-import React, { FunctionComponent, useEffect } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { PageWithScrollView } from "../../../components/page";
 import { Colors, useStyle } from "../../../styles";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { View } from "react-native";
 import { useStore } from "../../../stores";
-import { useDelegateTxConfig } from "@keplr-wallet/hooks";
+import { FeeType, IAmountConfig, useDelegateTxConfig } from "@keplr-wallet/hooks";
 import { EthereumEndpoint } from "../../../config";
 import { AmountInput } from "../../../components/input";
 import { Button } from "../../../components/button";
 import { useSmartNavigation } from "../../../navigation-util";
-import { Staking } from "@keplr-wallet/stores";
+import { AccountStore, CosmosAccount, CosmwasmAccount, SecretAccount, Staking } from "@keplr-wallet/stores";
 import { ValidatorInfo } from "./components/validator-info";
 import {
   buildLeftColumn,
   buildRightColumn,
 } from "../../../components/foundation-view/item-row";
-import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, IntPretty } from "@keplr-wallet/unit";
 import {
   IRow,
   ListRowView,
@@ -24,6 +24,7 @@ import {
 import { AlertInline } from "../../../components";
 import { useIntl } from "react-intl";
 import { formatCoin } from "../../../common/utils";
+import { MsgDelegate } from "@keplr-wallet/proto-types/cosmos/staking/v1beta1/tx";
 
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -103,8 +104,16 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     .maxDecimals(0)
     .toString();
 
-  sendConfigs.feeConfig.setFeeType("average");
+  const { gasLimit, feeType } = simulateDelegateGasFee(
+    chainStore.current.chainId,
+    accountStore,
+    sendConfigs.amountConfig,
+    validatorAddress,
+  );
+  sendConfigs.gasConfig.setGas(gasLimit);
+  sendConfigs.feeConfig.setFeeType(feeType);
   const feeText = formatCoin(sendConfigs.feeConfig.fee);
+
   const rows: IRow[] = [
     {
       type: "items",
@@ -187,11 +196,22 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         onPress={async () => {
           if (account.isReadyToSendTx && txStateIsValid) {
             try {
-              transactionStore.updateTxData({
-                chainInfo: chainStore.current,
-                amount: sendConfigs.amountConfig,
-                fee: sendConfigs.feeConfig,
-                memo: sendConfigs.memoConfig,
+              let dec = new Dec(sendConfigs.amountConfig.amount);
+              dec = dec.mulTruncate(DecUtils.getPrecisionDec(sendConfigs.amountConfig.sendCurrency.coinDecimals));
+              const amount = new CoinPretty(
+                sendConfigs.amountConfig.sendCurrency,
+                dec,
+              );
+          
+              transactionStore.updateRawData({
+                type: account.cosmos.msgOpts.delegate.type,
+                value: {
+                  amount,
+                  fee: sendConfigs.feeConfig.fee,
+                  validatorAddress,
+                  validatorName: validator?.description.moniker,
+                  commission: new IntPretty(new Dec(validator?.commission.commission_rates.rate ?? 0)),
+                },
               });
               const tx = account.cosmos.makeDelegateTx(
                 sendConfigs.amountConfig.amount,
@@ -211,8 +231,8 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                       token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
                       amount: Number(sendConfigs.amountConfig.amount),
                       fee: Number(sendConfigs.feeConfig.fee?.trim(true).hideDenom(true).toString() ?? "0"),
-                      fee_type: sendConfigs.feeConfig.feeType,
-                      gas: sendConfigs.gasConfig.gas,
+                      fee_type: feeType,
+                      gas: gasLimit,
                       validator_address: validatorAddress,
                       validator_name: validator?.description.moniker,
                       commission: 100 * Number(validator?.commission.commission_rates.rate ?? "0"),
@@ -227,8 +247,8 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                 token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
                 amount: Number(sendConfigs.amountConfig.amount),
                 fee: Number(sendConfigs.feeConfig.fee?.trim(true).hideDenom(true).toString() ?? "0"),
-                fee_type: sendConfigs.feeConfig.feeType,
-                gas: sendConfigs.gasConfig.gas,
+                fee_type: feeType,
+                gas: gasLimit,
                 validator_address: validatorAddress,
                 validator_name: validator?.description.moniker,
                 commission: 100 * Number(validator?.commission.commission_rates.rate ?? "0"),
@@ -249,3 +269,59 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     </PageWithScrollView>
   );
 });
+
+const simulateDelegateGasFee = (
+  chainId: string,
+  accountStore: AccountStore<
+    [CosmosAccount, CosmwasmAccount, SecretAccount]
+  >,
+  amountConfig: IAmountConfig,
+  validatorAddress: string,
+) => {
+  useEffect(() => {
+    simulate();
+  }, [amountConfig.amount]);
+
+  const [gasLimit, setGasLimit] = useState(0);
+
+  const simulate = async () => {
+    const account = accountStore.getAccount(chainId);
+
+    const amount = amountConfig.amount || "0"
+    let dec = new Dec(amount);
+    dec = dec.mulTruncate(DecUtils.getPrecisionDec(amountConfig.sendCurrency.coinDecimals));
+
+    const msg = {
+      type: account.cosmos.msgOpts.delegate.type,
+      value: {
+        delegator_address: account.bech32Address,
+        validator_address: validatorAddress,
+        amount: {
+          denom: amountConfig.sendCurrency.coinMinimalDenom,
+          amount: dec.truncate().toString(),
+        },
+      },
+    };
+    const { gasUsed } = await account.cosmos.simulateTx(
+      [{
+        typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
+        value: MsgDelegate.encode({
+          delegatorAddress: msg.value.delegator_address,
+          validatorAddress: msg.value.validator_address,
+          amount: msg.value.amount,
+        }).finish(),
+      }],
+      { amount: [] },
+    );
+
+    const gasLimit = Math.ceil(gasUsed * 1.3);
+    console.log("__DEBUG__ simulate gasUsed", gasUsed);
+    console.log("__DEBUG__ simulate gasLimit", gasLimit);
+    setGasLimit(gasLimit);
+  }
+
+  return {
+    gasLimit,
+    feeType: "average" as FeeType
+  }
+};

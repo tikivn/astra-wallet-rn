@@ -443,9 +443,6 @@ export const GovernanceVoteModal: FunctionComponent<{
           onPress={async () => {
             if (vote !== "Unspecified" && account.isReadyToSendMsgs) {
               try {
-                transactionStore.updateTxData({
-                  chainInfo: chainStore.current,
-                });
                 await account.cosmos.sendGovVoteMsg(
                   proposalId,
                   vote,

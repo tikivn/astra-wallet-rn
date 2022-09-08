@@ -1,4 +1,5 @@
-import { AccountStore, QueriesStore } from "@keplr-wallet/stores";
+import { AccountStore, CosmosAccount, CosmosQueries, CosmwasmAccount, CosmwasmQueries, QueriesStore, SecretAccount, SecretQueries } from "@keplr-wallet/stores";
+import { Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { useIntl } from "react-intl";
@@ -14,10 +15,13 @@ import { PropertyView } from "../component/property";
 
 export const RewardsItem: FunctionComponent<{
   chainStore: ChainStore;
-  accountStore: AccountStore;
-  queriesStore: QueriesStore;
-  priceStore: PriceStore;
-}> = observer(({ chainStore, accountStore, queriesStore, priceStore }) => {
+  accountStore: AccountStore<
+    [CosmosAccount, CosmwasmAccount, SecretAccount]
+  >,
+  queriesStore: QueriesStore<
+    [CosmosQueries, CosmwasmQueries, SecretQueries]
+  >,
+}> = observer(({ chainStore, accountStore, queriesStore }) => {
   const smartNavigation = useSmartNavigation();
   const style = useStyle();
   const intl = useIntl();
@@ -41,8 +45,10 @@ export const RewardsItem: FunctionComponent<{
   const unbondingBalances = unbondingsQueries.unbondingBalances;
 
   const delegated = queryDelegated.total;
-
-  const isRewardExist = rewardsQueries.rewards.length > 0;
+  const isRewardExist = queryDelegated.delegations.filter((delegation) => {
+    const stakableRewards = rewardsQueries.getStakableRewardOf(delegation.delegation.validator_address);
+    return stakableRewards.toDec().gte(new Dec(0.001));
+  })?.length !== 0;
 
   const isPending = unbondingBalances.length > 0;
 
@@ -120,7 +126,6 @@ export const RewardsItem: FunctionComponent<{
               "border-width-1",
               "width-132",
             ],
-            [!isRewardExist && "opacity-40"]
           )}
           text={intl.formatMessage({
             id: "staking.dashboard.rewards.withdrawProfit",

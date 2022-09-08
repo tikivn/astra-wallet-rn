@@ -28,7 +28,7 @@ export function renderDirectMessages(): IRow[] {
   const chainId = transactionStore.signDocHelper?.signDocWrapper?.chainId ?? chainStore.current.chainId;
   const currencies = chainStore.getChain(chainId).currencies;
 
-  var feeString = transactionStore.txFee?.toString() ?? "";
+  var feeString = "";
 
   const fees = transactionStore.signDocHelper?.signDocWrapper?.fees;
   if (feeString.length == 0 && fees && fees.length != 0) {

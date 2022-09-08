@@ -6,11 +6,14 @@ export const formatCoin = (coin?: CoinPretty, hideDenom: boolean = false) => {
   }
 
   const value = Number(coin.toDec());
-  var formattedText = value.toLocaleString("en-US", {
-    maximumFractionDigits: value < 1000 ? 6 : 0,
-  });
+  const maximumFractionDigits = value >= 1000 ? 0 : (value > 1 ? 3 : 6);
+  var formattedText = value.toLocaleString("en-US", { maximumFractionDigits });
   if (!hideDenom) {
     formattedText += " " + coin.denom.toUpperCase();
   }
   return formattedText;
+};
+
+export const formatDate = (date: Date) => {
+  return date.toLocaleTimeString("vi-VN") + ", " + date.toLocaleDateString("vi-VN");
 };

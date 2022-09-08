@@ -156,7 +156,7 @@ export const Button: FunctionComponent<{
             ),
             containerStyle,
           ]),
-          opacity: mode === "fill" && disabled ? 0.4 : 1
+          opacity: /*mode === "fill" && */disabled ? 0.4 : 1
         }}
       >
         <RectButton

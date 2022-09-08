@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 
@@ -6,10 +6,21 @@ import { View, Text, ScrollView, SafeAreaView } from "react-native";
 import { Button } from "../../../components/button";
 import { useSmartNavigation } from "../../../navigation-util";
 import { RewardDetails } from "./rewards";
-import { useSendTxConfig } from "@keplr-wallet/hooks";
+import { FeeType, useSendTxConfig } from "@keplr-wallet/hooks";
 import { EthereumEndpoint } from "../../../config";
 import { useIntl } from "react-intl";
 import { formatCoin } from "../../../common/utils";
+import { MsgWithdrawDelegatorReward } from "@keplr-wallet/proto-types/cosmos/distribution/v1beta1/tx";
+import { AccountStore, CosmosAccount, CosmwasmAccount, SecretAccount } from "@keplr-wallet/stores";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
+
+export type StakableRewards = {
+  delegatorAddress?: string,
+  validatorAddress?: string,
+  validatorName?: string,
+  rewards?: CoinPretty,
+};
+
 export const StakingRewardScreen: FunctionComponent = () => {
   const {
     chainStore,
@@ -29,7 +40,6 @@ export const StakingRewardScreen: FunctionComponent = () => {
   const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
     account.bech32Address
   );
-  const stakingReward = queryReward.stakableReward;
   const sendConfigs = useSendTxConfig(
     chainStore,
     queriesStore,
@@ -38,24 +48,70 @@ export const StakingRewardScreen: FunctionComponent = () => {
     account.bech32Address,
     EthereumEndpoint
   );
-  const validatorAddresses = queryReward.getDescendingPendingRewardValidatorAddresses(
-    8
+
+  const stakableRewardsList = transactionStore.getDelegations({
+    chainId: chainStore.current.chainId,
+    delegatorAddress: account.bech32Address,
+  })?.map((delegation) => {
+    const validator = transactionStore.getValidator({
+      chainId: chainStore.current.chainId,
+      validatorAddress: delegation.delegation.validator_address,
+    });
+    const rewards = queryReward.getStakableRewardOf(delegation.delegation.validator_address);
+
+    return {
+      delegatorAddress: account.bech32Address,
+      validatorAddress: validator?.operator_address,
+      validatorName: validator?.description.moniker,
+      rewards,
+    }
+  }).filter((stakableRewards) => {
+    const { rewards } = stakableRewards;
+    return rewards.toDec().gte(new Dec(0.001));
+  }).sort((a, b) => {
+    // Sort DESC
+    return Number(b.rewards.toDec()) - Number(a.rewards.toDec());
+  });
+
+  const stakingReward = stakableRewardsList
+    ? stakableRewardsList?.map(({ rewards }) => rewards).reduce((oldRewards, newRewards) => {
+      return oldRewards.add(newRewards);
+    })
+    : undefined;
+
+  const validatorAddresses = stakableRewardsList?.map((info) => info.validatorAddress) as string[];
+
+  const { gasLimit, feeType } = simulateWithdrawRewardGasFee(
+    chainStore.current.chainId,
+    accountStore,
+    validatorAddresses,
   );
-  sendConfigs.feeConfig.setFeeType("average");
-  sendConfigs.gasConfig.setGas(700000);
+  sendConfigs.gasConfig.setGas(gasLimit);
+  sendConfigs.feeConfig.setFeeType(feeType);
   const feeText = formatCoin(sendConfigs.feeConfig.fee);
 
   const withdrawAllRewards = async () => {
     try {
-      transactionStore.updateTxData({
-        chainInfo: chainStore.current,
+      transactionStore.updateRawData({
+        type: account.cosmos.msgOpts.withdrawRewards.type,
+        value: {
+          totalRewards: stakingReward,
+          fee: sendConfigs.feeConfig.fee,
+          validatorRewards: stakableRewardsList?.map(({ validatorAddress, validatorName, rewards }) => {
+            return {
+              validatorAddress,
+              validatorName,
+              rewards,
+            };
+          }) ?? [],
+        },
       });
 
       const tx = account.cosmos.makeWithdrawDelegationRewardTx(
         validatorAddresses
       );
       await tx.simulateAndSend(
-        { gasAdjustment: 1.5 },
+        { gasAdjustment: 1.3 },
         sendConfigs.memoConfig.memo,
         {
           preferNoSetMemo: true,
@@ -65,11 +121,11 @@ export const StakingRewardScreen: FunctionComponent = () => {
           onBroadcasted: (txHash) => {
             analyticsStore.logEvent("astra_hub_claim_reward", {
               tx_hash: Buffer.from(txHash).toString("hex"),
-              token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
-              amount: Number(sendConfigs.amountConfig.amount),
-              fee: Number(sendConfigs.feeConfig.fee?.trim(true).hideDenom(true).toString() ?? "0"),
-              fee_type: sendConfigs.feeConfig.feeType,
-              gas: sendConfigs.gasConfig.gas,
+              token: stakingReward?.denom,
+              amount: Number(stakingReward?.toDec() || 0),
+              fee: Number(sendConfigs.feeConfig.fee?.toDec() ?? "0"),
+              fee_type: feeType,
+              gas: gasLimit,
               validator_addresses: JSON.stringify(validatorAddresses),
               success: true,
             });
@@ -79,11 +135,11 @@ export const StakingRewardScreen: FunctionComponent = () => {
       );
     } catch (e: any) {
       analyticsStore.logEvent("astra_hub_claim_reward", {
-        token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
-        amount: Number(sendConfigs.amountConfig.amount),
-        fee: Number(sendConfigs.feeConfig.fee?.trim(true).hideDenom(true).toString() ?? "0"),
-        fee_type: sendConfigs.feeConfig.feeType,
-        gas: sendConfigs.gasConfig.gas,
+        token: stakingReward?.denom,
+        amount: Number(stakingReward?.toDec() || 0),
+        fee: Number(sendConfigs.feeConfig.fee?.toDec() ?? "0"),
+        fee_type: feeType,
+        gas: gasLimit,
         validator_addresses: JSON.stringify(validatorAddresses),
         success: false,
         error: e?.message,
@@ -116,6 +172,7 @@ export const StakingRewardScreen: FunctionComponent = () => {
           {formatCoin(stakingReward)}
         </Text>
         <RewardDetails
+          stakableRewardsList={stakableRewardsList}
           feeText={feeText}
           containerStyle={style.flatten(["background-color-background"])}
         />
@@ -133,4 +190,54 @@ export const StakingRewardScreen: FunctionComponent = () => {
       <SafeAreaView />
     </View>
   );
+};
+
+const simulateWithdrawRewardGasFee = (
+  chainId: string,
+  accountStore: AccountStore<
+    [CosmosAccount, CosmwasmAccount, SecretAccount]
+  >,
+  validatorAddresses: string[],
+) => {
+  useEffect(() => {
+    simulate();
+  }, []);
+
+  const [gasLimit, setGasLimit] = useState(0);
+
+  const simulate = async () => {
+    const account = accountStore.getAccount(chainId);
+
+    const msgs = validatorAddresses.map((validatorAddress) => {
+      return {
+        type: account.cosmos.msgOpts.withdrawRewards.type,
+        value: {
+          delegator_address: account.bech32Address,
+          validator_address: validatorAddress,
+        },
+      };
+    });
+    const { gasUsed } = await account.cosmos.simulateTx(
+      msgs.map((msg) => {
+        return {
+          typeUrl: "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
+          value: MsgWithdrawDelegatorReward.encode({
+            delegatorAddress: msg.value.delegator_address,
+            validatorAddress: msg.value.validator_address,
+          }).finish(),
+        };
+      }),
+      { amount: [] },
+    );
+
+    const gasLimit = Math.ceil(gasUsed * 1.3);
+    console.log("__DEBUG__ simulate gasUsed", gasUsed);
+    console.log("__DEBUG__ simulate gasLimit", gasLimit);
+    setGasLimit(gasLimit);
+  }
+
+  return {
+    gasLimit,
+    feeType: "average" as FeeType
+  }
 };
