@@ -1,12 +1,10 @@
-import React, { FunctionComponent, useMemo } from "react";
+import React, { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
 import { Text, ViewStyle, View } from "react-native";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Card, CardBody, CardDivider } from "../../../components/card";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
-import { ValidatorThumbnail } from "../../../components/thumbnail";
-import { Staking } from "@keplr-wallet/stores";
 import { DelegationsEmptyItem } from "../dashboard/delegate";
 import { useSmartNavigation } from "../../../navigation-util";
 import { formatCoin } from "../../../common/utils";
@@ -14,7 +12,10 @@ import { formatCoin } from "../../../common/utils";
 export const UnbondingCard: FunctionComponent<{
   containerStyle?: ViewStyle;
   validatorAddress: string;
-}> = observer(({ containerStyle, validatorAddress }) => {
+}> = observer(({
+  containerStyle,
+  validatorAddress,
+}) => {
   const smartNavigation = useSmartNavigation();
   const { chainStore, accountStore, queriesStore } = useStore();
 
@@ -26,30 +27,6 @@ export const UnbondingCard: FunctionComponent<{
     .unbondingBalances.find(
       (unbonding) => unbonding.validatorAddress === validatorAddress
     );
-  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Bonded
-  );
-  const unbondingValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Unbonding
-  );
-  const unbondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Unbonded
-  );
-  const validator = useMemo(() => {
-    return bondedValidators.validators
-      .concat(unbondingValidators.validators)
-      .concat(unbondedValidators.validators)
-      .find((val) => val.operator_address === validatorAddress);
-  }, [
-    bondedValidators.validators,
-    unbondingValidators.validators,
-    unbondedValidators.validators,
-    validatorAddress,
-  ]);
-  const thumbnail =
-    bondedValidators.getValidatorThumbnail(validatorAddress) ||
-    unbondingValidators.getValidatorThumbnail(validatorAddress) ||
-    unbondedValidators.getValidatorThumbnail(validatorAddress);
   const style = useStyle();
 
   const intl = useIntl();
@@ -155,7 +132,7 @@ export const UnbondingCard: FunctionComponent<{
           })();
 
           return (
-            <View style={style.flatten(["height-72"])} key={i}>
+            <View key={i}>
               <View
                 style={style.flatten([
                   "flex-row",
@@ -163,20 +140,10 @@ export const UnbondingCard: FunctionComponent<{
                   "margin-y-16",
                 ])}
               >
-                <View style={style.flatten(["flex-row", "justify-start"])}>
-                  <ValidatorThumbnail size={24} url={thumbnail} />
-                  <View style={style.flatten(["padding-x-16", "flex"])}>
-                    <Text style={style.flatten(["subtitle3", "color-gray-10"])}>
-                      {validator?.description.moniker ?? "..."}
-                    </Text>
-                    <Text
-                      style={style.flatten(["text-caption2", "color-gray-10"])}
-                    >
-                      {formatCoin(entry.balance)}
-                    </Text>
-                  </View>
-                </View>
-                <Text style={style.flatten(["subtitle3", "color-gray-10"])}>
+                <Text style={style.flatten(["text-base-medium", "color-gray-10"])}>
+                  {formatCoin(entry.balance)}
+                </Text>
+                <Text style={style.flatten(["text-base-medium", "color-gray-10"])}>
                   {remainingText}
                 </Text>
               </View>

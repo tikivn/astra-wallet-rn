@@ -56,15 +56,9 @@ export const AmountInput: FunctionComponent<{
         }
       }
 
-      const integral = validTextValue.substring(0, validTextValue.indexOf("."));
-
-      const valuePrecision = Number(validTextValue).toPrecision();
-      const correctedIntegral = valuePrecision.substring(0, valuePrecision.indexOf("."));
-
-      validTextValue = validTextValue.replace(
-        integral,
-        correctedIntegral
-      );
+      if (!Number(validTextValue)) {
+        return;
+      }
 
       amountConfig.setAmount(validTextValue);
     };

@@ -324,12 +324,16 @@ const simulateUndelegateGasFee = (
   }
 
   const feeType = "average" as FeeType;
-  const { [feeType]: wei } = chainStore.current.gasPriceStep;
+  var gasPrice = 0;
+  if (chainStore.current.gasPriceStep) {
+    const { [feeType]: wei } = chainStore.current.gasPriceStep;
 
-  const gwei = (new Dec(wei).mulTruncate(DecUtils.getTenExponentN(-9)));
+    const gwei = (new Dec(wei).mulTruncate(DecUtils.getTenExponentN(-9)));
+    gasPrice = Number(gwei);
+  }
 
   return {
-    gasPrice: Number(gwei),
+    gasPrice,
     gasLimit,
     feeType,
   }

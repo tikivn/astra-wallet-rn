@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Text, View } from "react-native";
+import { formatCoin } from "../../../common/utils";
 import { AlertInline, PageWithScrollView } from "../../../components";
 import { CardDivider } from "../../../components/card";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
@@ -12,7 +13,7 @@ import { Colors, useStyle } from "../../../styles";
 
 export const UnbondingScreen: FunctionComponent = observer(() => {
   const smartNavigation = useSmartNavigation();
-  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+  const { chainStore, accountStore, queriesStore } = useStore();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
@@ -48,7 +49,6 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
 
   const unbondings = unbondingsQuery.unbondingBalances;
   const balance = unbondingsQuery.total;
-  const totalUnboding = priceStore.calculatePrice(balance);
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
     Staking.BondStatus.Bonded
   );
@@ -72,20 +72,7 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
           <FormattedMessage id="staking.unbonding.totalAmount" />
         </Text>
         <Text style={style.flatten(["color-gray-10", "title1", "margin-y-2"])}>
-          {balance
-            .shrink(true)
-            .maxDecimals(6)
-            .trim(true)
-            .upperCase(true)
-            .toString()}
-        </Text>
-        <Text
-          style={style.flatten(["color-gray-30", "body3", "margin-bottom-0"])}
-        >
-          ~
-          {totalUnboding
-            ? totalUnboding.toString()
-            : balance.shrink(true).maxDecimals(6).toString()}
+          {formatCoin(balance)}
         </Text>
       </View>
       <View style={style.flatten(["background-color-background"])}>
@@ -201,25 +188,21 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
                       <ValidatorThumbnail size={24} url={thumbnail} />
                       <View style={style.flatten(["padding-x-16", "flex"])}>
                         <Text
-                          style={style.flatten(["subtitle3", "color-gray-10"])}
+                          style={style.flatten(["text-base-medium", "color-gray-10"])}
                         >
                           {validator?.description.moniker ?? "..."}
                         </Text>
                         <Text
                           style={style.flatten([
-                            "text-caption2",
+                            "text-small-regular",
                             "color-gray-10",
                           ])}
                         >
-                          {entry.balance
-                            .shrink(true)
-                            .trim(true)
-                            .maxDecimals(6)
-                            .toString()}
+                          {formatCoin(entry.balance)}
                         </Text>
                       </View>
                     </View>
-                    <Text style={style.flatten(["subtitle3", "color-gray-10"])}>
+                    <Text style={style.flatten(["text-base-medium", "color-gray-10"])}>
                       {remainingText}
                     </Text>
                   </View>

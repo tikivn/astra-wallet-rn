@@ -3,8 +3,8 @@ import { Colors } from "../../styles";
 
 const InfoStyles = StyleSheet.create({
   container: {
-    backgroundColor: Colors["blue-10"],
-    borderColor: Colors["blue-30"],
+    backgroundColor: Colors["blue-20"],
+    borderColor: Colors["blue-40"],
   },
   logo: {
     color: Colors["blue-70"],
