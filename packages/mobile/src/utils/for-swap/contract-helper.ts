@@ -20,13 +20,16 @@ export const getContract = (
   signer?: Signer | Provider
 ) => {
   const signerOrProvider = signer ?? simpleRpcProvider;
-  return new Contract(address, abi, signerOrProvider as any);
+  return new Contract(address, abi, signerOrProvider as any) as any;
 };
 
-export const getMulticallContract = (chainId?: ChainId) => {
+export const getMulticallContract = (
+  chainId?: ChainId,
+  provider?: Provider
+) => {
   return getContract(
     MultiCallAbi,
     getAddress(addresses.Multicall, chainId),
-    simpleRpcProvider
+    provider
   ) as Multicall;
 };

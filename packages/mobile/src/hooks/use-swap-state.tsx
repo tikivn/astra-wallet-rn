@@ -1,11 +1,11 @@
-import { CurrencyAmount, Fraction, Trade } from "@solarswap/sdk";
+import { parseUnits } from "@ethersproject/units";
+import { CurrencyAmount, Fraction, JSBI, Trade } from "@solarswap/sdk";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { SwapAction, SwapInfoState, SwapType } from "../providers/swap/reducer";
 import {
   calculateSlippagePercent,
   ERROR_KEY,
   FIXED_DECIMAL_PLACES,
-  isValueLessThanOrEqualBalance,
   SwapField,
   TIME_DEBOUNCE,
 } from "../utils/for-swap";
@@ -132,11 +132,16 @@ export const useSwapState = ({
     if (!balance || !inputValue || !dispatch) return;
     let error = "";
     try {
-      const isTrue = isValueLessThanOrEqualBalance(inputValue, balance);
+      const parseInput = parseUnits(
+        inputValue,
+        balance?.currency?.decimals
+      ).toString();
+      const isTrue = JSBI.lessThanOrEqual(JSBI.BigInt(parseInput), balance.raw);
       if (!isTrue) {
         error = ERROR_KEY.INSUFFICIENT_BALANCE;
       }
     } catch (err) {
+      console.error("Error when input value", { err });
       error = ERROR_KEY.INVALID_INPUT;
     }
 

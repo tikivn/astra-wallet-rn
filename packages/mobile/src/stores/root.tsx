@@ -45,7 +45,7 @@ export class RootStore {
   public readonly chainSuggestStore: ChainSuggestStore;
 
   public readonly queriesStore: QueriesStore<
-    [CosmosQueries, CosmwasmQueries, SecretQueries]
+    [CosmosQueries, CosmwasmQueries, SecretQueries, KeplrETCQueries]
   >;
   public readonly accountStore: AccountStore<
     [CosmosAccount, CosmwasmAccount, SecretAccount]

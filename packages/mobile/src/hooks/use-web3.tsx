@@ -1,6 +1,6 @@
 import { Web3Provider } from "@ethersproject/providers";
 import { ChainId, Token } from "@solarswap/sdk";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { AppChainInfo } from "../config";
 
 import { default as Web3ProviderHttp } from "web3-providers-http";
@@ -25,7 +25,9 @@ export const useWeb3 = () => {
     return accountStore.getAccount(chainIdStr);
   }, [accountStore, chainIdStr]);
 
-  const accountHex = useMemo(() => account.hexAddress, [account.hexAddress]);
+  const accountHex = useMemo(() => account.ethereumHexAddress, [
+    account.ethereumHexAddress,
+  ]);
 
   const wasaImg = useMemo(() => chainStore.current.stakeCurrency.coinImageUrl, [
     chainStore,
@@ -47,15 +49,6 @@ export const useWeb3 = () => {
   const getStore = useCallback(() => {
     return { chainStore, accountStore };
   }, [accountStore, chainStore]);
-
-  useEffect(() => {
-    (async () => {
-      console.log(
-        "sssss test 1232: => ",
-        await etherProviderRef.current.getNetwork()
-      );
-    })();
-  }, []);
 
   return {
     etherProvider: etherProviderRef.current,

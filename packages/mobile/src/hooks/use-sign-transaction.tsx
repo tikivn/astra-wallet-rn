@@ -15,7 +15,7 @@ export const useSignTransaction = () => {
   const walletSignAsync = useMemo(async () => {
     if (!etherProvider) return;
     const privateKey = await keyRingStore.exportPrivateKey();
-    const wallet = new Wallet(privateKey, etherProvider);
+    const wallet = new Wallet(`0x${privateKey}`, etherProvider);
     return wallet;
   }, [etherProvider, keyRingStore]);
 
@@ -38,21 +38,21 @@ export const useSignTransaction = () => {
               data: encodeFunctionData,
               from: accountSign.address,
               nonce: hexlify(_nonce),
+              chainId,
               ...opts,
             };
             accountSign
               .signTransaction(txParams)
-              .then((signed) => {
-                console.log("🚀 -> .then -> signed", signed);
-                // accountSign
-                //   .sendTransaction(signed)
-                //   .on("transactionHash", (hash) => {
-                //     resolve(hash);
-                //   })
-                //   .on("error", reject);
-                // etherProvider.sendTransaction()
-              })
-              .catch(reject);
+              .then((signed) => etherProvider.sendTransaction(signed))
+              .then(({ hash }) => etherProvider.waitForTransaction(hash))
+              .then(({ transactionHash }) => resolve(transactionHash))
+              .catch((err) => {
+                console.log("Error Sign Data ", { error: err, opts });
+                reject(err);
+              });
+          })
+          .catch((err) => {
+            console.log("Error sign => ", { error: err });
           });
       });
     },

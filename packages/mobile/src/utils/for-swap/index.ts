@@ -101,18 +101,3 @@ export const getSlippageTolaranceString = ({
 }: SwapInfoState) => {
   return `${slippageTolerance / 100} %`;
 };
-
-export const isValueLessThanOrEqualBalance = (
-  inputValue: string,
-  balance: string | CurrencyAmount
-) => {
-  let bls = balance;
-
-  if (typeof balance !== "string") {
-    bls = balance.toExact();
-  }
-  const vl = BigNumber.from(inputValue);
-  const bl = BigNumber.from(bls);
-
-  return vl.lte(bl);
-};

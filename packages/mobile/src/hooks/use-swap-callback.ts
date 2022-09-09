@@ -232,7 +232,8 @@ export function useSwapCallback(
               .catch((gasError) => {
                 console.error(
                   "Gas estimate failed, trying eth_call to extract error",
-                  call
+                  call,
+                  gasError
                 );
 
                 return contract.callStatic[methodName](...args, options)
@@ -281,14 +282,14 @@ export function useSwapCallback(
 
         const { encodeFunctionData, gasEstimate, value } = successfulEstimation;
         return signTransaction(encodeFunctionData || "", {
-          gasLimit: calculateGasMargin(gasEstimate),
+          gasLimit: calculateGasMargin(gasEstimate).toHexString(),
           value,
         })
           .then((hash) => {
             return hash;
           })
           .catch((error) => {
-            console.log(
+            console.error(
               `Swap failed: ${swapErrorToUserReadableMessage(error)}`
             );
             return "failed";

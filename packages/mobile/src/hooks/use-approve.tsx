@@ -1,5 +1,5 @@
 import { Interface } from "@ethersproject/abi";
-import { MaxUint256 } from "@ethersproject/constants";
+import { MaxUint256, Zero } from "@ethersproject/constants";
 import {
   CurrencyAmount,
   ETHER,
@@ -24,21 +24,39 @@ import { useWeb3 } from "./use-web3";
 
 export const useTokenAllowance = (token?: Token) => {
   const [allowance, setAllowance] = useState();
-  const { chainId, accountHex } = useWeb3();
-  const call: CallProps = {
-    methodName: "allowance",
-    target: token?.address || "",
-    params: [accountHex, addresses.ROUTER[chainId]],
-  };
+  const { chainId, accountHex, etherProvider } = useWeb3();
+  const call: CallProps | null = useMemo(
+    () =>
+      token?.address
+        ? {
+            methodName: "allowance",
+            target: token?.address || "",
+            params: [accountHex, addresses.ROUTER[chainId]],
+          }
+        : null,
+    [accountHex, chainId, token]
+  );
 
   useEffect(() => {
     (async () => {
-      const allowance = await multicall(erc20Abi, [call], chainId);
-      if (allowance) {
-        setAllowance(allowance[0][0]);
+      try {
+        if (!call) {
+          return;
+        }
+        const allowance = await multicall(
+          erc20Abi,
+          [call],
+          chainId,
+          etherProvider
+        );
+        if (allowance) {
+          setAllowance(allowance[0][0]);
+        }
+      } catch (e: any) {
+        console.error("Error when fetch allowance: ", { error: e });
       }
     })();
-  }, [call, chainId]);
+  }, [call, chainId, etherProvider]);
 
   return useMemo(
     () => (token && allowance ? new TokenAmount(token, allowance) : undefined),
@@ -76,11 +94,13 @@ export function useApproveCallback(
       : ApprovalState.APPROVED;
   }, [amountToApprove, currentAllowance, spender]);
 
-  const tokenContract = getContract(
-    erc20Abi,
-    token?.address ?? "",
-    etherProvider
-  ) as Erc20;
+  const tokenContract = useMemo(
+    () =>
+      token?.address
+        ? (getContract(erc20Abi, token?.address ?? "", etherProvider) as Erc20)
+        : null,
+    [etherProvider, token]
+  );
   const approve = useCallback(async (): Promise<void> => {
     if (approvalState !== ApprovalState.NOT_APPROVED) {
       console.error("approve was called unnecessarily");
@@ -128,10 +148,10 @@ export function useApproveCallback(
       useExact ? amountToApprove.raw.toString() : MaxUint256,
     ]);
     return signTransaction(encodeFunctionData, {
-      value: 0,
+      value: Zero,
       to: token?.address,
       from: accountHex,
-      gasLimit: calculateGasMargin(estimatedGas),
+      gasLimit: calculateGasMargin(estimatedGas).toHexString(),
       gasPrice: GAS_PRICE_GWEI.testnet,
     })
       .then((response: any) => {
@@ -152,21 +172,33 @@ export function useApproveCallback(
 
   const approveTest = useCallback(async () => {
     try {
-      const estimatedGas = await tokenContract.estimateGas.approve(spender, 0, {
-        from: accountHex,
-      });
+      if (!tokenContract) {
+        return;
+      }
+      const az = await tokenContract.symbol();
+      console.log("🚀 -> approveTest -> az", az);
+      const estimatedGas = await tokenContract.estimateGas.approve(
+        spender,
+        Zero,
+        {
+          from: accountHex,
+        }
+      );
+      console.log("🚀 -> approveTest -> estimatedGas", estimatedGas);
       const intfErc20 = new Interface(erc20Abi);
       const encodeFunctionData = intfErc20.encodeFunctionData("approve", [
         spender,
         0,
       ]);
-      const a = await signTransaction(encodeFunctionData, {
+      const params = {
         value: 0,
         to: token?.address,
         from: accountHex,
-        gasLimit: calculateGasMargin(estimatedGas),
+        gasLimit: calculateGasMargin(estimatedGas).toHexString(),
         gasPrice: GAS_PRICE_GWEI.testnet,
-      });
+      };
+      console.log("🚀 -> approveTest -> params", params);
+      const a = await signTransaction(encodeFunctionData, params);
       console.log("success", { asd: a });
     } catch (error) {
       console.error("Failed to approve", { error });

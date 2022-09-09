@@ -1,3 +1,4 @@
+import { ObservableQueryERC20Metadata } from "@keplr-wallet/stores-etc";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { useIntl } from "react-intl";
@@ -20,6 +21,21 @@ export const BalanceCard: FunctionComponent<{
     .queryBalances.getQueryBech32Address(
       accountStore.getAccount(chainStore.current.chainId).bech32Address
     );
+  // const a = testStore.keplrETC.queryERC20Metadata.get(
+  //   "0x41591484aEB5FA3d1759f1cbA369dC8dc1281298"
+  // );
+  const account = accountStore.getAccount(chainStore.current.chainId)
+    .ethereumHexAddress;
+  console.log("🚀 -> account", account);
+  const asd =
+    account &&
+    queriesStore
+      .get(chainStore.current.chainId)
+      .keplrETC.queryERC20Metadata.get(
+        "0x41591484aEB5FA3d1759f1cbA369dC8dc1281298"
+      )
+      .balance(account);
+  console.log("🚀 -> asd test", asd);
 
   const tokens = queryBalances.balances
     .concat(queryBalances.nonNativeBalances)
@@ -45,7 +61,11 @@ export const BalanceCard: FunctionComponent<{
         {tokens.map((token) => {
           return (
             <TokenItemNew
-              containerStyle={style.flatten(["height-74", "background-color-background-secondary", "border-radius-16"])}
+              containerStyle={style.flatten([
+                "height-74",
+                "background-color-background-secondary",
+                "border-radius-16",
+              ])}
               key={token.currency.coinMinimalDenom}
               chainInfo={chainStore.current}
               balance={token.balance}
@@ -54,8 +74,6 @@ export const BalanceCard: FunctionComponent<{
           );
         })}
       </CardBody>
-
     </Card>
   );
-
 });

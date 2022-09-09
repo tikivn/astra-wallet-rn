@@ -4,8 +4,7 @@ import { ChainId } from "@solarswap/sdk";
 
 export const CoinGeckoAPIEndPoint = "https://api.coingecko.com/api/v3";
 
-export const EthereumEndpoint =
-  "https://mainnet.infura.io/v3/eeb00e81cdb2410098d5a270eff9b341";
+export const EthereumEndpoint = "https://rpc.astranaut.dev";
 
 export interface AppChainInfo extends ChainInfo {
   readonly chainSymbolImageUrl?: string;

@@ -14,7 +14,6 @@ import { reducer } from "./reducer";
 export const SwapProvider: FunctionComponent<SwapProviderProps> = ({
   children,
 }) => {
-  console.log("12312312312");
   const [{ swapInfos }, dispatch] = useReducer(
     reducer,
     initialSwapReducerValue
