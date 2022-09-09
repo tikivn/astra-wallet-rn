@@ -86,7 +86,6 @@ export const SwapScreen: FunctionComponent = observer(() => {
     >
       <View style={style.flatten(["padding-x-16"])}>
         <View style={style.get("height-12")} />
-        {/* <MulticallUpdater />s */}
 
         <AmountSwap
           currency={currencies[SwapField.Input]}

@@ -1,39 +1,31 @@
 import { Web3Provider } from "@ethersproject/providers";
 import { ChainId, Token } from "@solarswap/sdk";
-import converter from "bech32-converting";
-import { useCallback, useMemo, useRef } from "react";
-import Web3 from "web3";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { AppChainInfo } from "../config";
-import { ADDRESSES } from "../contracts/addresses";
 
+import { default as Web3ProviderHttp } from "web3-providers-http";
 import { useStore } from "../stores";
 import { RPC_ENPOINT } from "../utils/for-swap";
+import addresses from "../utils/for-swap/addresses";
 
 export const useWeb3 = () => {
   const { chainStore, accountStore } = useStore();
-  const {
-    bech32Config,
-    chainId: chainIdStr,
-    chainIdNumber: chainId,
-  } = useMemo(() => chainStore.current as AppChainInfo, [chainStore]);
-
-  const web3Ref = useRef<Web3>(
-    new Web3(new Web3.providers.HttpProvider(RPC_ENPOINT[chainId as number]))
+  const { chainId: chainIdStr, chainIdNumber: chainId } = useMemo(
+    () => chainStore.current as AppChainInfo,
+    [chainStore]
   );
 
   const etherProviderRef = useRef<Web3Provider>(
-    new Web3Provider(web3Ref.current.currentProvider as any)
+    new Web3Provider(
+      new (Web3ProviderHttp as any)(RPC_ENPOINT[chainId as ChainId]) as any
+    )
   );
 
   const account = useMemo(() => {
     return accountStore.getAccount(chainIdStr);
   }, [accountStore, chainIdStr]);
 
-  const accountHex = useMemo(() => {
-    const prefix = bech32Config.bech32PrefixAccAddr;
-    const address = converter(prefix).toHex(account.bech32Address);
-    return address;
-  }, [account.bech32Address, bech32Config.bech32PrefixAccAddr]);
+  const accountHex = useMemo(() => account.hexAddress, [account.hexAddress]);
 
   const wasaImg = useMemo(() => chainStore.current.stakeCurrency.coinImageUrl, [
     chainStore,
@@ -43,7 +35,7 @@ export const useWeb3 = () => {
     () =>
       new Token(
         chainId || ChainId.TESTNET,
-        ADDRESSES.WASA[chainId || ChainId.TESTNET],
+        addresses.WASA[chainId || ChainId.TESTNET],
         18,
         "ASA",
         "Wrap ASA",
@@ -56,8 +48,16 @@ export const useWeb3 = () => {
     return { chainStore, accountStore };
   }, [accountStore, chainStore]);
 
+  useEffect(() => {
+    (async () => {
+      console.log(
+        "sssss test 1232: => ",
+        await etherProviderRef.current.getNetwork()
+      );
+    })();
+  }, []);
+
   return {
-    web3Instance: web3Ref.current,
     etherProvider: etherProviderRef.current,
     chainId: chainId || ChainId.TESTNET,
     account,

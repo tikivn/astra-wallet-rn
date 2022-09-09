@@ -1,11 +1,14 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { BN } from "bn.js";
 /* eslint-disable import/no-extraneous-dependencies */
-import { Currency, CurrencyAmount, JSBI, Percent } from "@solarswap/sdk";
+import { BigNumber } from "@ethersproject/bignumber";
 import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers";
-import Web3 from "web3";
-import { Contract, ContractOptions } from "web3-eth-contract";
-import { AbiItem, Unit } from "web3-utils";
+import {
+  ChainId,
+  Currency,
+  CurrencyAmount,
+  JSBI,
+  Percent,
+} from "@solarswap/sdk";
 import { SwapInfoState } from "../../providers/swap/reducer";
 import { BIPS_BASE } from "./constant";
 export * from "./compute-price";
@@ -13,8 +16,12 @@ export * from "./constant";
 export * from "./wrapped-currency";
 
 /**
- * Truncate a transaction or address hash
+ * Truncate a transaction or address hashø
  */
+export interface Address {
+  [ChainId.TESTNET]?: string;
+  [ChainId.MAINNET]: string;
+}
 export const truncateHash = (
   address: string,
   startLength = 4,
@@ -27,8 +34,11 @@ export const truncateHash = (
 
 // add 10%
 export function calculateGasMargin(value: any) {
-  const bn = Web3.utils.toBN(value);
-  return bn.mul(new BN(10000)).add(new BN(1000)).div(new BN(10000));
+  const bn = BigNumber.from(value);
+  return bn
+    .mul(BigNumber.from(10000))
+    .add(BigNumber.from(1000))
+    .div(BigNumber.from(10000));
 }
 
 /**
@@ -64,69 +74,10 @@ export const calculateSlippagePercent = (slipage: number) => {
   return new Percent(JSBI.BigInt(slipage), BIPS_BASE);
 };
 
-export const getContract = (
-  abi: AbiItem[] | AbiItem,
-  address: string,
-  web3: Web3,
-  options?: ContractOptions
-): Contract | null => {
-  if (!web3) {
-    return null;
-  }
-  return new web3.eth.Contract(abi, address, options);
-};
-
-export const encodeFunctionCall = (
-  abis: AbiItem[] | AbiItem,
-  methodName: string,
-  params: any,
-  web3: Web3
-) => {
-  let abi: AbiItem;
-  if (Array.isArray(abis)) {
-    abi = Array.from(abis).find(
-      (item: AbiItem) => item.name === methodName && item.type === "function"
-    ) as AbiItem;
-  } else {
-    abi = abis;
-  }
-  const callData = web3 && web3.eth.abi.encodeFunctionCall(abi, params);
-  const typeOutputs = abi.outputs?.map((i) => i.type);
-  return { callData, typeOutputs };
-};
-
 export enum SwapField {
   Input = "Input",
   Output = "Output",
 }
-
-export const getUnitMapKey = (decimal: number): Unit => {
-  const unitMaps = Web3.utils.unitMap;
-  for (const [key, value] of Object.entries(unitMaps)) {
-    if (value.length - 1 === decimal) {
-      return key as Unit;
-    }
-  }
-  return "ether";
-};
-
-export const toBN = (value: string, decimal: number) => {
-  return Web3.utils.toBN(Web3.utils.toWei(value, getUnitMapKey(decimal)));
-};
-export const isValueLessThanOrEqualBalance = (
-  value: string,
-  balance: string | CurrencyAmount,
-  decimal: number
-) => {
-  let bl = balance;
-
-  if (typeof balance !== "string") {
-    bl = balance.toExact();
-  }
-  const valueWei = toBN(value, decimal);
-  const balanceWei = toBN(bl as string, decimal);
-  return valueWei.lte(balanceWei);
-};
 
 export const getExchangeRateString = (
   { dependentField, independentField }: SwapInfoState,
@@ -149,4 +100,19 @@ export const getSlippageTolaranceString = ({
   slippageTolerance,
 }: SwapInfoState) => {
   return `${slippageTolerance / 100} %`;
+};
+
+export const isValueLessThanOrEqualBalance = (
+  inputValue: string,
+  balance: string | CurrencyAmount
+) => {
+  let bls = balance;
+
+  if (typeof balance !== "string") {
+    bls = balance.toExact();
+  }
+  const vl = BigNumber.from(inputValue);
+  const bl = BigNumber.from(bls);
+
+  return vl.lte(bl);
 };

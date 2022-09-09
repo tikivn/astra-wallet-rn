@@ -14,11 +14,12 @@ import { reducer } from "./reducer";
 export const SwapProvider: FunctionComponent<SwapProviderProps> = ({
   children,
 }) => {
+  console.log("12312312312");
   const [{ swapInfos }, dispatch] = useReducer(
     reducer,
     initialSwapReducerValue
   );
-  const { accountHex, chainId, getStore, WASA } = useWeb3();
+  const { chainId, getStore, WASA } = useWeb3();
 
   const { chainStore } = getStore();
 

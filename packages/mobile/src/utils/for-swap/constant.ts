@@ -1,6 +1,5 @@
-import { ChainId, JSBI, Percent } from "@solarswap/sdk";
 import { parseUnits } from "@ethersproject/units";
-import Web3 from "web3";
+import { ChainId, JSBI, Percent } from "@solarswap/sdk";
 
 export enum GAS_PRICE {
   default = "5",
@@ -42,7 +41,3 @@ export enum ERROR_KEY {
   INSUFFICIENT_BALANCE = "InsufficientBalances",
   INVALID_INPUT = "InvalidInput",
 }
-
-export const MaxUint256 = Web3.utils.toBN(
-  "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-);

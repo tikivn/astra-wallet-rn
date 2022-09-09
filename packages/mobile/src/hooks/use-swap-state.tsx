@@ -132,11 +132,7 @@ export const useSwapState = ({
     if (!balance || !inputValue || !dispatch) return;
     let error = "";
     try {
-      const isTrue = isValueLessThanOrEqualBalance(
-        inputValue,
-        balance,
-        balance?.currency.decimals
-      );
+      const isTrue = isValueLessThanOrEqualBalance(inputValue, balance);
       if (!isTrue) {
         error = ERROR_KEY.INSUFFICIENT_BALANCE;
       }
