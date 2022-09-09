@@ -9,6 +9,7 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { useStore } from "../../../stores";
 import { useIntl } from "react-intl";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
+import { MIN_PASSWORD_LENGTH } from "../../../common/utils";
 
 export declare type PasswordInputScreenType =
   | "updatePassword"
@@ -16,8 +17,6 @@ export declare type PasswordInputScreenType =
   | "deleteWallet";
 
 export const PasswordInputScreen: FunctionComponent = observer(() => {
-  const MIN_LENGTH_PASSWORD = 8;
-
   const navigation = useNavigation();
   const route = useRoute<
     RouteProp<
@@ -203,7 +202,7 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
   }
 
   function validateInputData() {
-    if (password.length >= MIN_LENGTH_PASSWORD) {
+    if (password.length >= MIN_PASSWORD_LENGTH) {
       setInputDataValid(true);
       return;
     }

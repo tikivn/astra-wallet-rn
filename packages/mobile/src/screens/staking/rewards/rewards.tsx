@@ -39,7 +39,7 @@ export const RewardDetails: FunctionComponent<{
 
   return (
     <Card style={containerStyle}>
-      <CardDivider style={style.flatten(["background-color-gray-70"])} />
+      {/* <CardDivider style={style.flatten(["background-color-gray-70"])} /> */}
       {stakableRewardsList && stakableRewardsList.length > 0 ? (
         <CardBody style={style.flatten(["padding-x-0", "padding-y-0", "padding-top-24"])}>
           <Text

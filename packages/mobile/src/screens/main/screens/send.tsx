@@ -4,7 +4,7 @@ import { View } from "react-native";
 import { useStyle } from "../../../styles";
 import { AddressInput, AmountInput } from "../components";
 
-import { useStore } from "../../../stores";
+import { ChainStore, useStore } from "../../../stores";
 import { Button } from "../../../components/button";
 import { useSmartNavigation } from "../../../navigation-util";
 import { FeeType, IAmountConfig, useSendTxConfig } from "@keplr-wallet/hooks";
@@ -75,8 +75,8 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
     }
   }, [route.params.recipient, sendConfigs.recipientConfig]);
 
-  const { gasLimit, feeType } = simulateSendGasFee(
-    chainId,
+  const { gasPrice, gasLimit, feeType } = simulateSendGasFee(
+    chainStore,
     accountStore,
     sendConfigs.amountConfig,
   );
@@ -91,6 +91,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
     sendConfigs.gasConfig.error ??
     sendConfigs.feeConfig.error;
   console.log("__DEBUG__ error === ", sendConfigError);
+
   const txStateIsValid = sendConfigError == null;
   const style = useStyle();
   const intl = useIntl();
@@ -115,9 +116,18 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
 
   const onSendHandler = async () => {
     if (account.isReadyToSendTx && txStateIsValid) {
+      const params = {
+        token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
+        amount: Number(sendConfigs.amountConfig.amount),
+        fee: Number(sendConfigs.feeConfig.fee?.toDec() ?? "0"),
+        gas: gasLimit,
+        gas_price: gasPrice,
+        receiver_address: sendConfigs.recipientConfig.recipient,
+      };
+
       try {
         let dec = new Dec(sendConfigs.amountConfig.amount);
-        dec = dec.mulTruncate(DecUtils.getPrecisionDec(sendConfigs.amountConfig.sendCurrency.coinDecimals));
+        dec = dec.mulTruncate(DecUtils.getTenExponentN(sendConfigs.amountConfig.sendCurrency.coinDecimals));
         const amount = new CoinPretty(
           sendConfigs.amountConfig.sendCurrency,
           dec
@@ -131,6 +141,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
             recipient: sendConfigs.recipientConfig.recipient,
           }
         });
+
         await account.sendToken(
           sendConfigs.amountConfig.amount,
           sendConfigs.amountConfig.sendCurrency,
@@ -144,13 +155,8 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
           {
             onBroadcasted: (txHash) => {
               analyticsStore.logEvent("astra_hub_transfer_token", {
+                ...params,
                 tx_hash: Buffer.from(txHash).toString("hex"),
-                token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
-                amount: Number(sendConfigs.amountConfig.amount),
-                fee: Number(sendConfigs.feeConfig.fee?.trim(true).hideDenom(true).toString() ?? "0"),
-                fee_type: feeType,
-                gas: gasLimit,
-                receiver_address: sendConfigs.recipientConfig.recipient,
                 success: true,
               });
               transactionStore.updateTxHash(txHash);
@@ -159,12 +165,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
         );
       } catch (e: any) {
         analyticsStore.logEvent("astra_hub_transfer_token", {
-          token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
-          amount: Number(sendConfigs.amountConfig.amount),
-          fee: Number(sendConfigs.feeConfig.fee?.trim(true).hideDenom(true).toString() ?? "0"),
-          fee_type: feeType,
-          gas: gasLimit,
-          receiver_address: sendConfigs.recipientConfig.recipient,
+          ...params,
           success: false,
           error: e?.message,
         });
@@ -187,7 +188,11 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
         <View style={{ height: 24 }} />
         <AddressInput recipientConfig={sendConfigs.recipientConfig} />
         <View style={{ height: 24 }} />
-        <AmountInput amountConfig={sendConfigs.amountConfig} />
+        <AmountInput
+          hideDenom
+          labelText={intl.formatMessage({ id: "component.amount.input.sendindAmount" })}
+          amountConfig={sendConfigs.amountConfig}
+        />
         <View style={{ height: 24 }} />
         <ListRowView
           rows={rows}
@@ -214,7 +219,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
 });
 
 const simulateSendGasFee = (
-  chainId: string,
+  chainStore: ChainStore,
   accountStore: AccountStore<
     [CosmosAccount, CosmwasmAccount, SecretAccount]
   >,
@@ -224,6 +229,7 @@ const simulateSendGasFee = (
     simulate();
   }, [amountConfig.amount]);
 
+  const chainId = chainStore.current.chainId;
   const [gasLimit, setGasLimit] = useState(0);
 
   const simulate = async () => {
@@ -232,7 +238,7 @@ const simulateSendGasFee = (
     const amount = amountConfig.amount || "0"
     const actualAmount = (() => {
       let dec = new Dec(amount);
-      dec = dec.mul(DecUtils.getPrecisionDec(amountConfig.sendCurrency.coinDecimals));
+      dec = dec.mul(DecUtils.getTenExponentN(amountConfig.sendCurrency.coinDecimals));
       return dec.truncate().toString();
     })();
 
@@ -267,8 +273,14 @@ const simulateSendGasFee = (
     setGasLimit(gasLimit);
   }
 
+  const feeType = "average" as FeeType;
+  const { [feeType]: wei } = chainStore.current.gasPriceStep;
+
+  const gwei = (new Dec(wei).mulTruncate(DecUtils.getTenExponentN(-9)));
+
   return {
+    gasPrice: Number(gwei),
     gasLimit,
-    feeType: "average" as FeeType
+    feeType,
   }
 };

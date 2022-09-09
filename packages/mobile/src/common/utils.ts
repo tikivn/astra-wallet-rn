@@ -1,5 +1,8 @@
 import { CoinPretty } from "@keplr-wallet/unit";
 
+export const MIN_PASSWORD_LENGTH = 8;
+export const MIN_AMOUNT = 10;
+
 export const formatCoin = (coin?: CoinPretty, hideDenom: boolean = false) => {
   if (!coin) {
     return "";

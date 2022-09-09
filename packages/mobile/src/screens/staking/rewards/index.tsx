@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { useStore } from "../../../stores";
+import { ChainStore, useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 
 import { View, Text, ScrollView, SafeAreaView } from "react-native";
@@ -12,7 +12,7 @@ import { useIntl } from "react-intl";
 import { formatCoin } from "../../../common/utils";
 import { MsgWithdrawDelegatorReward } from "@keplr-wallet/proto-types/cosmos/distribution/v1beta1/tx";
 import { AccountStore, CosmosAccount, CosmwasmAccount, SecretAccount } from "@keplr-wallet/stores";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 
 export type StakableRewards = {
   delegatorAddress?: string,
@@ -81,8 +81,8 @@ export const StakingRewardScreen: FunctionComponent = () => {
 
   const validatorAddresses = stakableRewardsList?.map((info) => info.validatorAddress) as string[];
 
-  const { gasLimit, feeType } = simulateWithdrawRewardGasFee(
-    chainStore.current.chainId,
+  const { gasPrice, gasLimit, feeType } = simulateWithdrawRewardGasFee(
+    chainStore,
     accountStore,
     validatorAddresses,
   );
@@ -91,6 +91,15 @@ export const StakingRewardScreen: FunctionComponent = () => {
   const feeText = formatCoin(sendConfigs.feeConfig.fee);
 
   const withdrawAllRewards = async () => {
+    const params = {
+      token: stakingReward?.denom,
+      amount: Number(stakingReward?.toDec() || 0),
+      fee: Number(sendConfigs.feeConfig.fee?.toDec() ?? "0"),
+      gas: gasLimit,
+      gas_price: gasPrice,
+      validator_addresses: JSON.stringify(validatorAddresses),
+    };
+
     try {
       transactionStore.updateRawData({
         type: account.cosmos.msgOpts.withdrawRewards.type,
@@ -120,13 +129,8 @@ export const StakingRewardScreen: FunctionComponent = () => {
         {
           onBroadcasted: (txHash) => {
             analyticsStore.logEvent("astra_hub_claim_reward", {
+              ...params,
               tx_hash: Buffer.from(txHash).toString("hex"),
-              token: stakingReward?.denom,
-              amount: Number(stakingReward?.toDec() || 0),
-              fee: Number(sendConfigs.feeConfig.fee?.toDec() ?? "0"),
-              fee_type: feeType,
-              gas: gasLimit,
-              validator_addresses: JSON.stringify(validatorAddresses),
               success: true,
             });
             transactionStore.updateTxHash(txHash);
@@ -135,12 +139,7 @@ export const StakingRewardScreen: FunctionComponent = () => {
       );
     } catch (e: any) {
       analyticsStore.logEvent("astra_hub_claim_reward", {
-        token: stakingReward?.denom,
-        amount: Number(stakingReward?.toDec() || 0),
-        fee: Number(sendConfigs.feeConfig.fee?.toDec() ?? "0"),
-        fee_type: feeType,
-        gas: gasLimit,
-        validator_addresses: JSON.stringify(validatorAddresses),
+        ...params,
         success: false,
         error: e?.message,
       });
@@ -155,22 +154,23 @@ export const StakingRewardScreen: FunctionComponent = () => {
 
   return (
     <View style={style.flatten(["flex-1", "background-color-background"])}>
+      <View style={style.flatten(["height-24"])} />
+      <Text style={style.flatten(["color-gray-30", "text-base-regular", "text-center"])}>
+        {intl.formatMessage({ id: "staking.rewards.totalProfit" })}
+      </Text>
+      <Text
+        style={style.flatten([
+          "color-gray-10",
+          "text-4x-large-semi-bold",
+          "text-center",
+          "margin-top-4",
+          "margin-bottom-24",
+        ])}
+      >
+        {formatCoin(stakingReward)}
+      </Text>
+      <View style={style.flatten(["height-1", "background-color-gray-70", "margin-x-page"])} />
       <ScrollView style={style.flatten(["flex-1"])}>
-        <View style={style.flatten(["height-24"])} />
-        <Text style={style.flatten(["color-gray-30", "text-base-regular", "text-center"])}>
-          {intl.formatMessage({ id: "staking.rewards.totalProfit" })}
-        </Text>
-        <Text
-          style={style.flatten([
-            "color-gray-10",
-            "text-4x-large-semi-bold",
-            "text-center",
-            "margin-top-4",
-            "margin-bottom-24",
-          ])}
-        >
-          {formatCoin(stakingReward)}
-        </Text>
         <RewardDetails
           stakableRewardsList={stakableRewardsList}
           feeText={feeText}
@@ -193,7 +193,7 @@ export const StakingRewardScreen: FunctionComponent = () => {
 };
 
 const simulateWithdrawRewardGasFee = (
-  chainId: string,
+  chainStore: ChainStore,
   accountStore: AccountStore<
     [CosmosAccount, CosmwasmAccount, SecretAccount]
   >,
@@ -203,6 +203,7 @@ const simulateWithdrawRewardGasFee = (
     simulate();
   }, []);
 
+  const chainId = chainStore.current.chainId;
   const [gasLimit, setGasLimit] = useState(0);
 
   const simulate = async () => {
@@ -236,8 +237,14 @@ const simulateWithdrawRewardGasFee = (
     setGasLimit(gasLimit);
   }
 
+  const feeType = "average" as FeeType;
+  const { [feeType]: wei } = chainStore.current.gasPriceStep;
+
+  const gwei = (new Dec(wei).mulTruncate(DecUtils.getTenExponentN(-9)));
+
   return {
+    gasPrice: Number(gwei),
     gasLimit,
-    feeType: "average" as FeeType
+    feeType,
   }
 };
