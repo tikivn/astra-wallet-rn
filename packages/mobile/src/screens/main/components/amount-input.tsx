@@ -40,24 +40,13 @@ export const AmountInput: FunctionComponent<{
     }, [amountConfig.amount]);
 
     const formatTextValue = (text: string) => {
-      var validTextValue = text;
+      var validTextValue = text.replaceAll(/[^0-9.,]/g, "");
+      validTextValue = validTextValue.replaceAll(",", ".");
+
       if (validTextValue.indexOf(".") !== -1) {
         // Case many '.' => remove all '.' except first '.'
         const idx = validTextValue.indexOf(".");
         validTextValue = validTextValue.substring(0, idx + 1) + validTextValue.substring(validTextValue.indexOf(".") + 1).replaceAll(".", "");
-      }
-
-      if (validTextValue.indexOf(",") !== -1) {
-        if (validTextValue.indexOf(".") !== -1) {
-          validTextValue = validTextValue.replaceAll(",", "");
-        }
-        else {
-          validTextValue = validTextValue.replaceAll(",", ".");
-        }
-      }
-
-      if (!Number(validTextValue)) {
-        return;
       }
 
       amountConfig.setAmount(validTextValue);
