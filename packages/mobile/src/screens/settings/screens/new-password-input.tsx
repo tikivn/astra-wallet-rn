@@ -9,10 +9,9 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { useStore } from "../../../stores";
 import { useIntl } from "react-intl";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
+import { MIN_PASSWORD_LENGTH } from "../../../common/utils";
 
 export const NewPasswordInputScreen: FunctionComponent = observer(() => {
-  const MIN_LENGTH_PASSWORD = 8;
-
   const route = useRoute<RouteProp<Record<string, {
     currentPassword: string;
   }>, string>>();
@@ -76,7 +75,7 @@ export const NewPasswordInputScreen: FunctionComponent = observer(() => {
   }, [password, confirmPassword]);
 
   function validateInputData() {
-    if (password.length >= MIN_LENGTH_PASSWORD
+    if (password.length >= MIN_PASSWORD_LENGTH
       && password === confirmPassword) {
       setConfirmPasswordErrorText("");
       setInputDataValid(true);
@@ -103,7 +102,7 @@ export const NewPasswordInputScreen: FunctionComponent = observer(() => {
           info={intl.formatMessage({
             id: "common.text.minimumCharacters"
           }, {
-            number: `${MIN_LENGTH_PASSWORD}`
+            number: `${MIN_PASSWORD_LENGTH}`
           })}
           secureTextEntry={true}
           showPassword={showPassword}
@@ -111,11 +110,11 @@ export const NewPasswordInputScreen: FunctionComponent = observer(() => {
           onChangeText={setPassword}
           onBlur={validateInputData}
           validations={[{
-            minLength: MIN_LENGTH_PASSWORD,
+            minLength: MIN_PASSWORD_LENGTH,
             error: intl.formatMessage({
               id: "common.text.minimumCharacters"
             }, {
-              number: `${MIN_LENGTH_PASSWORD}`
+              number: `${MIN_PASSWORD_LENGTH}`
             })
           }]}
           style={{ marginTop: 32, marginBottom: 24, paddingBottom: 24, }}

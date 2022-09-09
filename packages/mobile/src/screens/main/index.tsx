@@ -142,7 +142,7 @@ export const MainScreen: FunctionComponent = observer(() => {
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   analyticsStore.setUserProperties({
-    astra_hub_from_address: account.hexAddress,
+    astra_hub_from_address: account.ethereumHexAddress,
   });
 
   return (

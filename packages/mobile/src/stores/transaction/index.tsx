@@ -1,9 +1,6 @@
 import { Msg } from "@cosmjs/launchpad";
 import { AnyWithUnpacked, SignDocWrapper } from "@keplr-wallet/cosmos";
 import {
-  IAmountConfig,
-  IFeeConfig,
-  IMemoConfig,
   SignDocHelper,
 } from "@keplr-wallet/hooks";
 import {
@@ -19,17 +16,10 @@ import {
   Staking,
 } from "@keplr-wallet/stores";
 import { ChainStore } from "../chain";
-import { ChainInfo } from "@keplr-wallet/types";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty } from "@keplr-wallet/unit";
 import { action, computed, makeObservable, observable } from "mobx";
 
 export type TxState = "pending" | "success" | "failure" | undefined;
-export type TxData = {
-  chainInfo?: ChainInfo;
-  amount?: IAmountConfig;
-  fee?: IFeeConfig;
-  memo?: IMemoConfig;
-};
 
 export class TransactionStore {
   constructor(
@@ -45,14 +35,13 @@ export class TransactionStore {
     makeObservable(this);
   }
 
-  protected _txTime?: Date = undefined;
-
   @observable protected _txState: TxState = undefined;
   @observable protected _txHash?: Uint8Array = undefined;
-  @observable protected _txData?: TxData = undefined;
-
+  @observable protected _rawData?: {
+    type: string,
+    value: Record<string, any>,
+  } = undefined;
   @observable protected _txAmount?: CoinPretty = undefined;
-  @observable protected _txFee?: CoinPretty = undefined;
 
   @observable protected _signDocHelper?: SignDocHelper = undefined;
 
@@ -84,8 +73,11 @@ export class TransactionStore {
   }
 
   @computed
-  get txData(): TxData | undefined {
-    return this._txData;
+  get rawData(): {
+    type: string,
+    value: Record<string, any>,
+  } | undefined {
+    return this._rawData;
   }
 
   @computed
@@ -95,68 +87,36 @@ export class TransactionStore {
 
   @computed
   get txAmount(): CoinPretty | undefined {
-    const amount = this._txData?.amount;
-    if (amount) {
-      return new CoinPretty(
-        amount.sendCurrency,
-        new Dec(amount.getAmountPrimitive().amount)
-      )
-        .trim(true)
-        .maxDecimals(6)
-        .upperCase(true);
-    }
-    return undefined;
+    return this._txAmount;
   }
 
-  @computed
-  get txFee(): CoinPretty | undefined {
-    const fee = this._txData?.fee;
-    if (fee && fee.fee) {
-      return fee.fee.trim(true).maxDecimals(6).upperCase(true);
-    }
-    return undefined;
-  }
-
-  @computed
-  get txTime(): string | undefined {
-    return (
-      this._txTime?.toLocaleTimeString() +
-      ", " +
-      this._txTime?.toLocaleDateString()
-    );
-  }
   @action
   protected setAmount() {
-    const amount = this._txData?.amount;
-    if (amount) {
-      this._txAmount = new CoinPretty(
-        amount.sendCurrency,
-        new Dec(amount.getAmountPrimitive().amount)
-      )
-        .trim(true)
-        .maxDecimals(6)
-        .upperCase(true);
+    const value = this._rawData?.value;
+    if (value) {
+      if (value["amount"]) {
+        this._txAmount = value["amount"] as CoinPretty;
+      }
+      else if (value["totalRewards"]) {
+        this._txAmount = value["totalRewards"] as CoinPretty;
+      }
     }
   }
-  @action
-  protected setFee() {
-    const fee = this._txData?.fee;
-    if (fee && fee.fee) {
-      this._txFee = fee.fee.trim(true).maxDecimals(6).upperCase(true);
-    }
-  }
+
   @action
   updateTxState(txState: TxState) {
     if (this._txState != txState) {
       this._txState = txState;
     }
   }
+
   @action
-  updateTxData(txData: TxData) {
-    this._txData = txData;
-    this._txTime = new Date();
+  updateRawData(rawData: {
+    type: string,
+    value: Record<string, any>,
+  }) {
+    this._rawData = rawData;
     this.setAmount();
-    this.setFee();
   }
 
   @action
@@ -187,16 +147,18 @@ export class TransactionStore {
     this._txState = undefined;
     this._txHash = undefined;
     this._txAmount = undefined;
-    this._txFee = undefined;
     this._signDocHelper = undefined;
+    this._rawData = undefined;
   }
 
   getDelegations(params: {
     chainId?: string;
-    validatorAddress: string;
+    delegatorAddress?: string;
+    validatorAddress?: string;
   }): Staking.Delegation[] | undefined {
     const {
       chainId = this.chainStore.current.chainId,
+      delegatorAddress,
       validatorAddress,
     } = params;
 
@@ -209,7 +171,8 @@ export class TransactionStore {
     const delegations = queryDelegations.delegations;
 
     return delegations.filter((del) => {
-      return del.delegation.validator_address === validatorAddress;
+      return (!delegatorAddress || delegatorAddress === del.delegation.delegator_address)
+        && (!validatorAddress || validatorAddress === del.delegation.validator_address);
     });
   }
 

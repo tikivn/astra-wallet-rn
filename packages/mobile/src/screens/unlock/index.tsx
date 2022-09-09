@@ -36,6 +36,7 @@ import { BIOMETRY_TYPE } from "react-native-keychain";
 import { AvoidingKeyboardBottomView } from "../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 import { hideSplashScreen } from "../splash";
 import { useLanguage } from "../../translations";
+import { MIN_PASSWORD_LENGTH } from "../../common/utils";
 
 async function waitAccountLoad(
   accountStore: IAccountStore,
@@ -301,7 +302,6 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       })();
     }
   }, [keyRingStore.status, navigateToHome]);
-  const cellCount = 8;
 
   useEffect(() => {
     setIsFailed(false);
@@ -409,7 +409,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
             mode="fill"
             loading={isLoading}
             onPress={tryUnlock}
-            disabled={password.length < cellCount}
+            disabled={password.length < MIN_PASSWORD_LENGTH}
           />
           <AvoidingKeyboardBottomView />
         </View>

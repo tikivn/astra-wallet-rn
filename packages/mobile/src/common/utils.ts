@@ -1,14 +1,7 @@
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty } from "@keplr-wallet/unit";
 
-export const formatNumber = (value: any) => {
-  if (value instanceof Dec) {
-    const numValue = Number(value);
-    return numValue.toLocaleString("vi-VN", {
-      maximumFractionDigits: numValue < 1000 ? 3 : 0,
-    })
-  }
-  return value;
-};
+export const MIN_PASSWORD_LENGTH = 8;
+export const MIN_AMOUNT = 10;
 
 export const formatCoin = (coin?: CoinPretty, hideDenom: boolean = false) => {
   if (!coin) {
@@ -16,11 +9,14 @@ export const formatCoin = (coin?: CoinPretty, hideDenom: boolean = false) => {
   }
 
   const value = Number(coin.toDec());
-  var formattedText = value.toLocaleString("vi-VN", {
-    maximumFractionDigits: value < 1000 ? 3 : 0,
-  });
+  const maximumFractionDigits = value >= 1000 ? 0 : (value > 1 ? 3 : 6);
+  var formattedText = value.toLocaleString("en-US", { maximumFractionDigits });
   if (!hideDenom) {
     formattedText += " " + coin.denom.toUpperCase();
   }
   return formattedText;
+};
+
+export const formatDate = (date: Date) => {
+  return date.toLocaleTimeString("vi-VN") + ", " + date.toLocaleDateString("vi-VN");
 };

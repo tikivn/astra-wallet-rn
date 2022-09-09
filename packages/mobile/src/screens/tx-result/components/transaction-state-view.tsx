@@ -15,9 +15,7 @@ import { useStore } from "../../../stores";
 import { TxState } from "../../../stores/transaction";
 import { Typos, Colors } from "../../../styles";
 import { Msg as AminoMsg } from "@cosmjs/launchpad";
-import {
-  CosmosMsgOpts,
-} from "@keplr-wallet/stores";
+import { formatCoin } from "../../../common/utils";
 
 export const TransactionStateView: FunctionComponent<{
   style?: ViewStyle;
@@ -33,7 +31,7 @@ export const TransactionStateView: FunctionComponent<{
   }, [transactionStore.txState]);
 
   useEffect(() => {
-    setAmountText(transactionStore.txAmount?.toString() ?? "");
+    setAmountText(formatCoin(transactionStore.txAmount));
   }, [transactionStore.txAmount]);
 
   const isFailure = txState == "failure";
@@ -41,41 +39,36 @@ export const TransactionStateView: FunctionComponent<{
   const intl = useIntl();
 
   function getMainText(type: string, state: TxState): string {
-    const msgOpts: {
-      readonly cosmos: {
-        readonly msgOpts: CosmosMsgOpts;
-      };
-    } = accountStore.getAccount(chainStore.current.chainId);
+    const account = accountStore.getAccount(chainStore.current.chainId);
     const allMainText: Record<string, Record<string, string>> = {
-      [msgOpts.cosmos.msgOpts.send.native.type]: {
+      [account.cosmos.msgOpts.send.native.type]: {
         pending: intl.formatMessage({ id: "tx.result.state.send.pending" }),
         success: intl.formatMessage({ id: "tx.result.state.send.success" }),
         failure: intl.formatMessage({ id: "tx.result.state.send.failure" }),
       },
-      [msgOpts.cosmos.msgOpts.delegate.type]: {
+      [account.cosmos.msgOpts.delegate.type]: {
         pending: intl.formatMessage({ id: "tx.result.state.delegate.pending" }),
         success: intl.formatMessage({ id: "tx.result.state.delegate.success" }),
         failure: intl.formatMessage({ id: "tx.result.state.delegate.failure" }),
       },
-      [msgOpts.cosmos.msgOpts.undelegate.type]: {
+      [account.cosmos.msgOpts.undelegate.type]: {
         pending: intl.formatMessage({ id: "tx.result.state.undelegate.pending", }),
         success: intl.formatMessage({ id: "tx.result.state.undelegate.success", }),
         failure: intl.formatMessage({ id: "tx.result.state.undelegate.failure", }),
       },
-      [msgOpts.cosmos.msgOpts.redelegate.type]: {
+      [account.cosmos.msgOpts.redelegate.type]: {
         pending: intl.formatMessage({ id: "tx.result.state.redelegate.pending", }),
         success: intl.formatMessage({ id: "tx.result.state.redelegate.success", }),
         failure: intl.formatMessage({ id: "tx.result.state.redelegate.failure", }),
       },
-      [msgOpts.cosmos.msgOpts.withdrawRewards.type]: {
+      [account.cosmos.msgOpts.withdrawRewards.type]: {
         pending: intl.formatMessage({ id: "tx.result.state.withdraw.pending" }),
         success: intl.formatMessage({ id: "tx.result.state.withdraw.success" }),
         failure: intl.formatMessage({ id: "tx.result.state.withdraw.failure" }),
       },
     };
 
-    console.log("__DEBUG__ tx type:", type);
-    const mainText = allMainText[type]// as Record<string, string>;
+    const mainText = allMainText[type]
 
     if (!mainText) {
       return "";

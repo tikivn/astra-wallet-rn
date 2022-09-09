@@ -5,7 +5,6 @@ import {
   CoinUtils,
   Coin,
   IntPretty,
-  Dec,
   CoinPretty,
 } from "@keplr-wallet/unit";
 import { AppCurrency, Currency } from "@keplr-wallet/types";
@@ -32,6 +31,7 @@ import {
 } from "../../../components";
 import { useIntl } from "react-intl";
 import converter from "bech32-converting";
+import { formatCoin, formatDate } from "../../../common/utils";
 
 const h = new Hypher(english);
 
@@ -47,14 +47,9 @@ export interface MessageObj {
 
 export interface MsgSend {
   value: {
-    amount: [
-      {
-        amount: string;
-        denom: string;
-      }
-    ];
-    from_address: string;
-    to_address: string;
+    amount: CoinPretty;
+    fee: CoinPretty;
+    recipient: string;
   };
 }
 
@@ -77,42 +72,44 @@ export interface MsgTransfer {
 
 export interface MsgDelegate {
   value: {
-    amount: {
-      amount: string;
-      denom: string;
-    };
-    delegator_address: string;
-    validator_address: string;
+    amount: CoinPretty;
+    fee: CoinPretty;
+    validatorAddress: string;
+    validatorName: string;
+    commission: IntPretty;
   };
 }
 
 export interface MsgUndelegate {
   value: {
-    amount: {
-      amount: string;
-      denom: string;
-    };
-    delegator_address: string;
-    validator_address: string;
+    amount: CoinPretty;
+    fee: CoinPretty;
+    validatorAddress: string;
+    validatorName: string;
+    commission: IntPretty;
   };
 }
 
 export interface MsgWithdrawDelegatorReward {
   value: {
-    delegator_address: string;
-    validator_address: string;
+    totalRewards: CoinPretty | undefined;
+    fee: CoinPretty;
+    validatorRewards: [{
+      validatorAddress: string;
+      validatorName: string;
+      rewards: CoinPretty;
+    }]
   };
 }
 
 export interface MsgBeginRedelegate {
   value: {
-    amount: {
-      amount: string;
-      denom: string;
-    };
-    delegator_address: string;
-    validator_dst_address: string;
-    validator_src_address: string;
+    amount: CoinPretty;
+    fee: CoinPretty;
+    srcValidatorAddress: string;
+    srcValidatorName: string;
+    dstValidatorAddress: string;
+    dstValidatorName: string;
   };
 }
 
@@ -203,29 +200,16 @@ const common: {
 };
 
 export function renderMsgSend(
-  currencies: AppCurrency[],
-  amount: CoinPrimitive[],
-  fee: string,
-  toAddress: string
+  value: MsgSend["value"]
 ): IRow[] {
   const intl = useIntl();
-  const receives: CoinPrimitive[] = [];
-  let _toAddress = toAddress;
+
+  let _toAddress = value.recipient;
   if (_toAddress.startsWith("astra")) {
     try {
-      _toAddress = converter("astra").toHex(toAddress);
+      _toAddress = converter("astra").toHex(value.recipient);
       console.log("toAddress: ", _toAddress);
-    } catch {}
-  }
-
-  for (const coinPrimitive of amount) {
-    const coin = new Coin(coinPrimitive.denom, coinPrimitive.amount);
-    const parsed = CoinUtils.parseDecAndDenomFromCoin(currencies, coin);
-
-    receives.push({
-      amount: clearDecimals(parsed.amount),
-      denom: parsed.denom,
-    });
+    } catch { }
   }
 
   const separatorRow: IRow = { type: "separator" };
@@ -244,21 +228,19 @@ export function renderMsgSend(
           buildRightColumn({ text: _toAddress, flex: 7 }),
         ],
       },
-      ...receives.map((coin) => {
-        return {
-          ...common,
-          cols: [
-            buildLeftColumn({
-              text: intl.formatMessage(
-                { id: "tx.result.models.msgSend.amount" },
-                { coin: "Astra" }
-              ),
-              flex: 3,
-            }),
-            buildRightColumn({ text: `${coin.amount} ${coin.denom}`, flex: 7 }),
-          ],
-        };
-      }),
+      {
+        ...common,
+        cols: [
+          buildLeftColumn({
+            text: intl.formatMessage(
+              { id: "tx.result.models.msgSend.amount" },
+              { coin: "Astra" }
+            ),
+            flex: 3,
+          }),
+          buildRightColumn({ text: formatCoin(value.amount), flex: 7 }),
+        ],
+      },
       {
         ...common,
         cols: [
@@ -266,7 +248,7 @@ export function renderMsgSend(
             text: intl.formatMessage({ id: "tx.result.models.msgSend.fee" }),
             flex: 3,
           }),
-          buildRightColumn({ text: fee, flex: 7 }),
+          buildRightColumn({ text: formatCoin(value.fee), flex: 7 }),
         ],
       },
     ],
@@ -357,24 +339,9 @@ export function renderMsgTransfer(
 }
 
 export function renderMsgBeginRedelegate(
-  currencies: AppCurrency[],
-  amount: CoinPrimitive,
-  validatorSrcAddress: string,
-  validatorDstAddress: string,
-  fee: string
+  value: MsgBeginRedelegate["value"]
 ) {
   const intl = useIntl();
-  const { transactionStore } = useStore();
-  const validatorSrc = transactionStore.getValidator({
-    validatorAddress: validatorSrcAddress,
-  });
-  const validatorDst = transactionStore.getValidator({
-    validatorAddress: validatorDstAddress,
-  });
-
-  const date = new Date();
-  const dateString =
-    date.toLocaleTimeString("vi-VN") + ", " + date.toLocaleDateString("vi-VN");
 
   const rows: IRow[] = join(
     [
@@ -386,7 +353,7 @@ export function renderMsgBeginRedelegate(
               id: "tx.result.models.msgBeginRedelegate.from",
             }),
           }),
-          buildRightColumn({ text: validatorSrc?.description.moniker ?? "" }),
+          buildRightColumn({ text: value.srcValidatorName }),
         ],
       },
       {
@@ -397,7 +364,7 @@ export function renderMsgBeginRedelegate(
               id: "tx.result.models.msgBeginRedelegate.to",
             }),
           }),
-          buildRightColumn({ text: validatorDst?.description.moniker ?? "" }),
+          buildRightColumn({ text: value.dstValidatorName }),
         ],
       },
       {
@@ -408,7 +375,7 @@ export function renderMsgBeginRedelegate(
               id: "tx.result.models.msgBeginRedelegate.time",
             }),
           }),
-          buildRightColumn({ text: dateString }),
+          buildRightColumn({ text: formatDate(new Date()) }),
         ],
       },
       {
@@ -419,7 +386,7 @@ export function renderMsgBeginRedelegate(
               id: "tx.result.models.msgBeginRedelegate.fee",
             }),
           }),
-          buildRightColumn({ text: fee }),
+          buildRightColumn({ text: formatCoin(value.fee) }),
         ],
       },
     ],
@@ -430,16 +397,9 @@ export function renderMsgBeginRedelegate(
 }
 
 export function renderMsgUndelegate(
-  validatorAddress: string,
-  fee: string
+  value: MsgUndelegate["value"]
 ): IRow[] {
   const intl = useIntl();
-  const { transactionStore } = useStore();
-  const validator = transactionStore.getValidator({ validatorAddress });
-
-  const date = new Date();
-  const dateString =
-    date.toLocaleTimeString("vi-VN") + ", " + date.toLocaleDateString("vi-VN");
 
   const rows: IRow[] = join(
     [
@@ -451,7 +411,7 @@ export function renderMsgUndelegate(
               id: "tx.result.models.msgUndelegate.from",
             }),
           }),
-          buildRightColumn({ text: validator?.description.moniker ?? "" }),
+          buildRightColumn({ text: value.validatorName }),
         ],
       },
       {
@@ -462,7 +422,7 @@ export function renderMsgUndelegate(
               id: "tx.result.models.msgUndelegate.time",
             }),
           }),
-          buildRightColumn({ text: dateString }),
+          buildRightColumn({ text: formatDate(new Date()) }),
         ],
       },
       {
@@ -473,7 +433,7 @@ export function renderMsgUndelegate(
               id: "tx.result.models.msgUndelegate.fee",
             }),
           }),
-          buildRightColumn({ text: fee }),
+          buildRightColumn({ text: formatCoin(value.fee) }),
         ],
       },
     ],
@@ -484,33 +444,15 @@ export function renderMsgUndelegate(
 }
 
 export function renderMsgDelegate(
-  currencies: AppCurrency[],
-  amount: CoinPrimitive,
-  fee: string,
-  validatorAddress: string
+  value: MsgDelegate["value"]
 ) {
   const intl = useIntl();
-  const { transactionStore } = useStore();
-  const validator = transactionStore.getValidator({ validatorAddress });
-  const commission =
-    new IntPretty(new Dec(validator?.commission.commission_rates.rate || 0))
-      .maxDecimals(2)
-      .trim(true)
-      .toString() + "%";
 
-  const parsed = CoinUtils.parseDecAndDenomFromCoin(
-    currencies,
-    new Coin(amount.denom, amount.amount)
-  );
-
-  amount = {
-    amount: clearDecimals(parsed.amount),
-    denom: parsed.denom,
-  };
-
-  const date = new Date();
-  const dateString =
-    date.toLocaleTimeString("vi-VN") + ", " + date.toLocaleDateString("vi-VN");
+  const commissionText = value.commission
+    .moveDecimalPointRight(2)
+    .maxDecimals(2)
+    .trim(true)
+    .toString() + "%";
 
   const rows: IRow[] = join(
     [
@@ -522,7 +464,7 @@ export function renderMsgDelegate(
               id: "tx.result.models.msgDelegate.validator",
             }),
           }),
-          buildRightColumn({ text: validator?.description.moniker ?? "" }),
+          buildRightColumn({ text: value.validatorName }),
         ],
       },
       {
@@ -534,7 +476,7 @@ export function renderMsgDelegate(
             }),
           }),
           buildRightColumn({
-            text: commission,
+            text: commissionText,
           }),
         ],
       },
@@ -546,7 +488,7 @@ export function renderMsgDelegate(
               id: "tx.result.models.msgDelegate.time",
             }),
           }),
-          buildRightColumn({ text: dateString }),
+          buildRightColumn({ text: formatDate(new Date()) }),
         ],
       },
       {
@@ -557,7 +499,7 @@ export function renderMsgDelegate(
               id: "tx.result.models.msgDelegate.fee",
             }),
           }),
-          buildRightColumn({ text: fee }),
+          buildRightColumn({ text: formatCoin(value.fee) }),
         ],
       },
     ],
@@ -568,10 +510,8 @@ export function renderMsgDelegate(
 }
 
 export function renderMsgWithdrawDelegatorReward(
-  addresses: MsgWithdrawDelegatorReward["value"][],
-  fee: string
+  value: MsgWithdrawDelegatorReward["value"],
 ): IRow[] {
-  const { chainStore, transactionStore } = useStore();
   const intl = useIntl();
 
   var rows: IRow[] = [
@@ -588,49 +528,22 @@ export function renderMsgWithdrawDelegatorReward(
     },
   ];
 
-  addresses.map((address) => {
-    const validator = transactionStore.getValidator({
-      validatorAddress: address.validator_address,
-    });
-    const delegations = transactionStore.getDelegations({
-      validatorAddress: address.validator_address,
-    });
-
-    delegations?.forEach((del) => {
-      const currencies = chainStore.current.currencies.filter((currency) => {
-        return currency.coinDenom == del.balance.denom;
-      });
-
-      if (currencies.length != 0) {
-        const amount = new CoinPretty(currencies[0], del.balance.amount)
-          .trim(true)
-          .maxDecimals(6)
-          .upperCase(true)
-          .toString();
-
-        rows = [
-          ...rows,
-          {
-            ...common,
-            cols: [
-              buildLeftColumn({
-                text: validator?.description.moniker ?? "",
-                textColor: Colors["gray-10"],
-              }),
-              buildRightColumn({ text: amount }),
-            ],
-          },
-        ];
-      }
-    });
+  const validatorRows = value.validatorRewards.map(({ validatorName, rewards }) => {
+    return {
+      ...common,
+      cols: [
+        buildLeftColumn({
+          text: validatorName,
+          textColor: Colors["gray-10"],
+        }),
+        buildRightColumn({ text: formatCoin(rewards) }),
+      ],
+    }
   });
-
-  const date = new Date();
-  const dateString =
-    date.toLocaleTimeString("vi-VN") + ", " + date.toLocaleDateString("vi-VN");
 
   rows = [
     ...rows,
+    ...validatorRows,
     { type: "separator" },
     {
       ...common,
@@ -640,7 +553,7 @@ export function renderMsgWithdrawDelegatorReward(
             id: "tx.result.models.msgWithdrawDelegatorReward.time",
           }),
         }),
-        buildRightColumn({ text: dateString }),
+        buildRightColumn({ text: formatDate(new Date()) }),
       ],
     },
     { type: "separator" },
@@ -652,7 +565,7 @@ export function renderMsgWithdrawDelegatorReward(
             id: "tx.result.models.msgWithdrawDelegatorReward.fee",
           }),
         }),
-        buildRightColumn({ text: fee }),
+        buildRightColumn({ text: formatCoin(value.fee) }),
       ],
     },
   ];

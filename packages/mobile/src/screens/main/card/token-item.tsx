@@ -47,7 +47,7 @@ export const TokenItemNew: FunctionComponent<{
         currency={balance.currency}
       />
       <View style={style.flatten(["flex-1"])}>
-        <View style={style.flatten(["flex-row", "justify-between", "margin-bottom-4"])}>
+        <View style={style.flatten(["flex-row", "justify-between"])}>
           <Text
             style={style.flatten([
               "text-medium-semi-bold",
@@ -55,7 +55,7 @@ export const TokenItemNew: FunctionComponent<{
               "uppercase",
             ])}
           >
-            {balance.currency.coinMinimalDenom}
+            {balance.currency.coinDenom}
           </Text>
           <Text
             style={style.flatten([
@@ -70,7 +70,7 @@ export const TokenItemNew: FunctionComponent<{
             {formatCoin(balance, true)}
           </Text>
         </View>
-        <View style={style.flatten(["flex-row", "justify-between", "margin-bottom-0"])}>
+        {/* <View style={style.flatten(["flex-row", "justify-between", "margin-bottom-0"])}>
           <Text
             style={style.flatten([
               "text-caption2",
@@ -91,7 +91,7 @@ export const TokenItemNew: FunctionComponent<{
           >
             {priceChange}
           </Text>
-        </View>
+        </View> */}
       </View>
 
     </RectButton>

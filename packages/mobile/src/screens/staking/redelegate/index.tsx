@@ -1,23 +1,27 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { RouteProp, useRoute } from "@react-navigation/native";
-import { useStore } from "../../../stores";
-import { Colors, useStyle } from "../../../styles";
-import { Staking } from "@keplr-wallet/stores";
-import { useRedelegateTxConfig } from "@keplr-wallet/hooks";
-import { PageWithScrollView } from "../../../components/page";
+import { ChainStore, useStore } from "../../../stores";
+import { useStyle } from "../../../styles";
+import { AccountStore, CosmosAccount, CosmwasmAccount, SecretAccount, Staking } from "@keplr-wallet/stores";
+import { FeeType, IAmountConfig, useRedelegateTxConfig } from "@keplr-wallet/hooks";
 import { Text, View } from "react-native";
-import { AmountInput, ValidatorItem } from "../../../components/input";
+import { ValidatorItem } from "../../../components/input";
+import { AmountInput } from "../../main/components";
 import { Button } from "../../../components/button";
 import { useSmartNavigation } from "../../../navigation-util";
 import {
-  ItemRow,
-  AlignItems,
+  buildLeftColumn,
+  buildRightColumn,
 } from "../../../components/foundation-view/item-row";
-import { TextAlign } from "../../../components/foundation-view/text-style";
-import { FormattedMessage, useIntl } from "react-intl";
+import { useIntl } from "react-intl";
 import { SelectValidatorItem } from "./select-validator";
 import { formatCoin } from "../../../common/utils";
+import { MsgBeginRedelegate } from "@keplr-wallet/proto-types/cosmos/staking/v1beta1/tx";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
+import { IRow, ListRowView } from "../../../components";
 
 export const RedelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -110,145 +114,229 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.gasConfig.error ??
     sendConfigs.feeConfig.error;
   const txStateIsValid = sendConfigError == null;
-  sendConfigs.feeConfig.setFeeType("average");
+
+  const { gasPrice, gasLimit, feeType } = simulateRedelegateGasFee(
+    chainStore,
+    accountStore,
+    sendConfigs.amountConfig,
+    sendConfigs.srcValidatorAddress,
+    dstValidatorAddress,
+  );
+  sendConfigs.gasConfig.setGas(gasLimit);
+  sendConfigs.feeConfig.setFeeType(feeType);
   const feeText = formatCoin(sendConfigs.feeConfig.fee);
 
-  return (
-    <PageWithScrollView
-      backgroundColor={Colors["background"]}
-      style={style.flatten(["padding-x-page"])}
-      contentContainerStyle={style.get("flex-grow-1")}
-    >
-      <View style={style.flatten(["height-page-pad"])} />
-      <Text style={style.flatten(["color-gray-30", "subtitle2"])}>
-        <FormattedMessage id="stake.redelegate.from" />
-      </Text>
-      <ValidatorItem
-        containerStyle={style.flatten(["margin-bottom-16"])}
-        name={srcValidator ? srcValidator.description.moniker : "..."}
-        thumbnail={srcValidatorThumbnail}
-        value={staked.trim(true).shrink(true).maxDecimals(6).toString()}
-      />
-      <SelectValidatorItem
-        currentValidator={validatorAddress}
-        onSelectedValidator={(address) => {
-          setDstValidatorAddress(address);
-        }}
-      />
+  const rows: IRow[] = [
+    {
+      type: "items",
+      cols: [
+        buildLeftColumn({
+          text: intl.formatMessage({ id: "stake.redelegate.available" }),
+        }),
+        buildRightColumn({ text: formatCoin(staked) }),
+      ],
+    },
+    {
+      type: "items",
+      cols: [
+        buildLeftColumn({
+          text: intl.formatMessage({ id: "stake.redelegate.fee" }),
+        }),
+        buildRightColumn({ text: feeText }),
+      ],
+    },
+  ];
 
-      <AmountInput
-        label={intl.formatMessage({ id: "stake.redelegate.amountLabel" })}
-        amountConfig={sendConfigs.amountConfig}
-      />
-      <ItemRow
-        style={{ marginHorizontal: 0, paddingHorizontal: 0 }}
-        alignItems={AlignItems.center}
-        itemSpacing={12}
-        columns={[
+  const onContinueHandler = async () => {
+    if (account.isReadyToSendTx && txStateIsValid) {
+      const params = {
+        token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
+        amount: Number(sendConfigs.amountConfig.amount),
+        fee: Number(sendConfigs.feeConfig.fee?.toDec() ?? "0"),
+        gas: gasLimit,
+        gas_price: gasPrice,
+        from_validator_address: sendConfigs.srcValidatorAddress,
+        from_validator_name: srcValidator?.description.moniker,
+        from_commission: 100 * Number(srcValidator?.commission.commission_rates.rate ?? "0"),
+        to_validator_address: sendConfigs.dstValidatorAddress,
+        to_validator_name: dstValidator?.description.moniker,
+        to_commission: 100 * Number(dstValidator?.commission.commission_rates.rate ?? "0"),
+      };
+
+      try {
+        let dec = new Dec(sendConfigs.amountConfig.amount);
+        dec = dec.mulTruncate(DecUtils.getTenExponentN(sendConfigs.amountConfig.sendCurrency.coinDecimals));
+        const amount = new CoinPretty(
+          sendConfigs.amountConfig.sendCurrency,
+          dec
+        );
+
+        transactionStore.updateRawData({
+          type: account.cosmos.msgOpts.redelegate.type,
+          value: {
+            amount,
+            fee: sendConfigs.feeConfig.fee,
+            srcValidatorAddress: sendConfigs.srcValidatorAddress,
+            srcValidatorName: srcValidator?.description.moniker || "",
+            dstValidatorAddress: sendConfigs.dstValidatorAddress,
+            dstValidatorName: dstValidator?.description.moniker || "",
+          },
+        })
+        const tx = account.cosmos.makeBeginRedelegateTx(
+          sendConfigs.amountConfig.amount,
+          sendConfigs.srcValidatorAddress,
+          sendConfigs.dstValidatorAddress
+        );
+        await tx.simulateAndSend(
+          { gasAdjustment: 1.3 },
+          sendConfigs.memoConfig.memo,
           {
-            text: intl.formatMessage({ id: "stake.redelegate.available" }),
-            textColor: Colors["gray-30"],
+            preferNoSetMemo: true,
+            preferNoSetFee: true,
           },
           {
-            text: staked.trim(true).shrink(true).maxDecimals(6).toString(),
-            textColor: Colors["gray-10"],
-            textAlign: TextAlign.right,
-            flex: 1,
-          },
-        ]}
-      />
-      <ItemRow
-        style={{ marginHorizontal: 0, paddingHorizontal: 0 }}
-        alignItems={AlignItems.center}
-        itemSpacing={12}
-        columns={[
-          {
-            text: intl.formatMessage({ id: "stake.redelegate.fee" }),
-            textColor: Colors["gray-30"],
-          },
-          {
-            text: feeText,
-            textColor: Colors["gray-10"],
-            textAlign: TextAlign.right,
-            flex: 1,
-          },
-        ]}
-      />
-      <View style={style.flatten(["flex-1"])} />
-      <Button
-        text={intl.formatMessage({ id: "stake.redelegate.redelagate" })}
-        size="large"
-        disabled={!account.isReadyToSendTx || !txStateIsValid}
-        loading={account.txTypeInProgress === "redelegate"}
-        onPress={async () => {
-          if (account.isReadyToSendTx && txStateIsValid) {
-            try {
-              transactionStore.updateTxData({
-                chainInfo: chainStore.current,
-                amount: sendConfigs.amountConfig,
-                fee: sendConfigs.feeConfig,
-                memo: sendConfigs.memoConfig,
-              });
-              const tx = account.cosmos.makeBeginRedelegateTx(
-                sendConfigs.amountConfig.amount,
-                sendConfigs.srcValidatorAddress,
-                sendConfigs.dstValidatorAddress
-              );
-              await tx.simulateAndSend(
-                { gasAdjustment: 1.3 },
-                sendConfigs.memoConfig.memo,
-                {
-                  preferNoSetMemo: true,
-                  preferNoSetFee: true,
-                },
-                {
-                  onBroadcasted: (txHash: Uint8Array) => {
-                    analyticsStore.logEvent("astra_hub_redelegate_token", {
-                      tx_hash: Buffer.from(txHash).toString("hex"),
-                      token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
-                      amount: Number(sendConfigs.amountConfig.amount),
-                      fee: Number(sendConfigs.feeConfig.fee?.trim(true).hideDenom(true).toString() ?? "0"),
-                      fee_type: sendConfigs.feeConfig.feeType,
-                      gas: sendConfigs.gasConfig.gas,
-                      from_validator_address: sendConfigs.srcValidatorAddress,
-                      from_validator_name: srcValidator?.description.moniker,
-                      from_commission: 100 * Number(srcValidator?.commission.commission_rates.rate ?? "0"),
-                      to_validator_address: sendConfigs.dstValidatorAddress,
-                      to_validator_name: dstValidator?.description.moniker,
-                      to_commission: 100 * Number(dstValidator?.commission.commission_rates.rate ?? "0"),
-                      success: true,
-                    });
-                    transactionStore.updateTxHash(txHash);
-                  },
-                }
-              );
-            } catch (e: any) {
+            onBroadcasted: (txHash: Uint8Array) => {
               analyticsStore.logEvent("astra_hub_redelegate_token", {
-                token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
-                amount: Number(sendConfigs.amountConfig.amount),
-                fee: Number(sendConfigs.feeConfig.fee?.trim(true).hideDenom(true).toString() ?? "0"),
-                fee_type: sendConfigs.feeConfig.feeType,
-                gas: sendConfigs.gasConfig.gas,
-                from_validator_address: sendConfigs.srcValidatorAddress,
-                from_validator_name: srcValidator?.description.moniker,
-                from_commission: 100 * Number(srcValidator?.commission.commission_rates.rate ?? "0"),
-                to_validator_address: sendConfigs.dstValidatorAddress,
-                to_validator_name: dstValidator?.description.moniker,
-                to_commission: 100 * Number(dstValidator?.commission.commission_rates.rate ?? "0"),
-                success: false,
-                error: e?.message,
+                ...params,
+                tx_hash: Buffer.from(txHash).toString("hex"),
+                success: true,
               });
-              if (e?.message === "Request rejected") {
-                return;
-              }
-              transactionStore.rejectTransaction();
-              console.log(e);
-              smartNavigation.navigateSmart("NewHome", {});
-            }
+              transactionStore.updateTxHash(txHash);
+            },
           }
-        }}
-      />
-      <View style={style.flatten(["height-page-pad"])} />
-    </PageWithScrollView>
+        );
+      } catch (e: any) {
+        analyticsStore.logEvent("astra_hub_redelegate_token", {
+          ...params,
+          success: false,
+          error: e?.message,
+        });
+        if (e?.message === "Request rejected") {
+          return;
+        }
+        transactionStore.rejectTransaction();
+        console.log(e);
+        smartNavigation.navigateSmart("NewHome", {});
+      }
+    }
+  };
+
+  return (
+    <View style={style.flatten(["flex-1", "background-color-background"])}>
+      <KeyboardAwareScrollView
+        contentContainerStyle={style.flatten(["padding-x-page"])}
+        enableOnAndroid
+      >
+        <View style={style.flatten(["height-24"])} />
+        <Text style={style.flatten(["color-gray-30", "text-medium-medium"])}>
+          {intl.formatMessage({ id: "stake.redelegate.from" })}
+        </Text>
+        <ValidatorItem
+          containerStyle={style.flatten(["margin-top-8", "margin-bottom-24"])}
+          name={srcValidator ? srcValidator.description.moniker : "..."}
+          thumbnail={srcValidatorThumbnail}
+          value={formatCoin(staked)}
+        />
+        <SelectValidatorItem
+          currentValidator={validatorAddress}
+          onSelectedValidator={(address) => {
+            setDstValidatorAddress(address);
+          }}
+        />
+        <AmountInput
+          labelText={intl.formatMessage({ id: "stake.redelegate.amountLabel" })}
+          amountConfig={sendConfigs.amountConfig}
+        />
+        <ListRowView
+          rows={rows}
+          style={{ paddingHorizontal: 0, paddingVertical: 0, marginTop: 24 }}
+          hideBorder
+          clearBackground
+        />
+      </KeyboardAwareScrollView>
+      <View style={style.flatten(["flex-1", "justify-end", "margin-bottom-12"])}>
+        <View style={style.flatten(["height-1", "background-color-gray-70"])} />
+        <View style={{ ...style.flatten(["background-color-background"]), height: 56 }}>
+          <Button
+            text={intl.formatMessage({ id: "stake.redelegate.redelagate" })}
+            disabled={!account.isReadyToSendTx || !txStateIsValid}
+            loading={account.txTypeInProgress === "redelegate"}
+            onPress={onContinueHandler}
+            containerStyle={style.flatten(["margin-x-page", "margin-top-12"])}
+          />
+        </View>
+        <AvoidingKeyboardBottomView />
+      </View>
+    </View >
   );
 });
+
+const simulateRedelegateGasFee = (
+  chainStore: ChainStore,
+  accountStore: AccountStore<
+    [CosmosAccount, CosmwasmAccount, SecretAccount]
+  >,
+  amountConfig: IAmountConfig,
+  srcValidatorAddress: string,
+  dstValidatorAddress: string,
+) => {
+  useEffect(() => {
+    simulate();
+  }, [amountConfig.amount]);
+
+  const chainId = chainStore.current.chainId;
+  const [gasLimit, setGasLimit] = useState(0);
+
+  const simulate = async () => {
+    const account = accountStore.getAccount(chainId);
+
+    const amount = amountConfig.amount || "0"
+    let dec = new Dec(amount);
+    dec = dec.mulTruncate(DecUtils.getTenExponentN(amountConfig.sendCurrency.coinDecimals));
+
+    const msg = {
+      type: account.cosmos.msgOpts.redelegate.type,
+      value: {
+        delegator_address: account.bech32Address,
+        validator_src_address: srcValidatorAddress,
+        validator_dst_address: dstValidatorAddress,
+        amount: {
+          denom: amountConfig.sendCurrency.coinMinimalDenom,
+          amount: dec.truncate().toString(),
+        },
+      },
+    };
+    const { gasUsed } = await account.cosmos.simulateTx(
+      [{
+        typeUrl: "/cosmos.staking.v1beta1.MsgBeginRedelegate",
+        value: MsgBeginRedelegate.encode({
+          delegatorAddress: msg.value.delegator_address,
+          validatorSrcAddress: msg.value.validator_src_address,
+          validatorDstAddress: msg.value.validator_dst_address,
+          amount: msg.value.amount,
+        }).finish(),
+      }],
+      { amount: [] },
+    );
+
+    const gasLimit = Math.ceil(gasUsed * 1.3);
+    console.log("__DEBUG__ simulate gasUsed", gasUsed);
+    console.log("__DEBUG__ simulate gasLimit", gasLimit);
+    setGasLimit(gasLimit);
+  }
+
+  const feeType = "average" as FeeType;
+  var gasPrice = 0;
+  if (chainStore.current.gasPriceStep) {
+    const { [feeType]: wei } = chainStore.current.gasPriceStep;
+
+    const gwei = (new Dec(wei).mulTruncate(DecUtils.getTenExponentN(-9)));
+    gasPrice = Number(gwei);
+  }
+
+  return {
+    gasPrice,
+    gasLimit,
+    feeType,
+  }
+};

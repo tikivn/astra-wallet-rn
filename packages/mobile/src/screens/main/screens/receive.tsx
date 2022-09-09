@@ -30,7 +30,7 @@ export const ReceiveScreen: FunctionComponent = observer(() => {
       </Text>
       <AddressQRCodeItem
         bech32Address={account.bech32Address}
-        hexAddress={account.hexAddress}
+        hexAddress={account.ethereumHexAddress}
       />
     </PageWithScrollView>
   );

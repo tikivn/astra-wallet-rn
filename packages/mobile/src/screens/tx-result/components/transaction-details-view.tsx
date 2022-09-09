@@ -1,4 +1,3 @@
-import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useState } from "react";
 import { View, ViewStyle } from "react-native";
 import { Button, IRow, ListRowView } from "../../../components";
@@ -10,8 +9,8 @@ import { useSmartNavigation } from "../../../navigation-util";
 
 export const TransactionDetailsView: FunctionComponent<{
   style?: ViewStyle;
-}> = observer(({ style }) => {
-  const { chainStore, transactionStore, accountStore } = useStore();
+}> = ({ style }) => {
+  const { chainStore, transactionStore, accountStore, queriesStore } = useStore();
 
   const [hasData] = useState(() => {
     if (transactionStore.txMsgsMode && transactionStore.txMsgs) {
@@ -21,8 +20,7 @@ export const TransactionDetailsView: FunctionComponent<{
   });
 
   const mode = transactionStore.txMsgsMode;
-  const chainId =
-    transactionStore.txData?.chainInfo?.chainId ?? chainStore.current.chainId;
+  const chainId = chainStore.current.chainId;
   const chainInfo = chainStore.getChain(chainId);
 
   const intl = useIntl();
@@ -31,11 +29,12 @@ export const TransactionDetailsView: FunctionComponent<{
   let rows: IRow[] = [];
   if (hasData) {
     if (mode === "amino") {
-      rows = renderAminoMessages({
-        chainStore,
-        transactionStore,
+      console.log("__DEBUG__ render amino");
+      rows = renderAminoMessages(
+        chainStore.current.chainId,
         accountStore,
-      });
+        transactionStore,
+      );
     } else if (mode === "direct") {
       rows = renderDirectMessages();
     }
@@ -50,6 +49,7 @@ export const TransactionDetailsView: FunctionComponent<{
         "{txHash}",
         txHash
       );
+      console.log("___URL___", url);
       smartNavigation.pushSmart("WebView", {
         url: url,
       });
@@ -72,4 +72,4 @@ export const TransactionDetailsView: FunctionComponent<{
       )}
     </View>
   );
-});
+};

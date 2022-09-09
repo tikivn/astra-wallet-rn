@@ -112,12 +112,6 @@ export const SendScreen: FunctionComponent = observer(() => {
         onPress={async () => {
           if (account.isReadyToSendMsgs && txStateIsValid) {
             try {
-              transactionStore.updateTxData({
-                chainInfo: chainStore.current,
-                amount: sendConfigs.amountConfig,
-                fee: sendConfigs.feeConfig,
-                memo: sendConfigs.memoConfig,
-              });
               await account.sendToken(
                 sendConfigs.amountConfig.amount,
                 sendConfigs.amountConfig.sendCurrency,
@@ -130,31 +124,11 @@ export const SendScreen: FunctionComponent = observer(() => {
                 },
                 {
                   onBroadcasted: (txHash) => {
-                    analyticsStore.logEvent("astra_hub_transfer_token", {
-                      tx_hash: Buffer.from(txHash).toString("hex"),
-                      token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
-                      amount: Number(sendConfigs.amountConfig.amount),
-                      fee: Number(sendConfigs.feeConfig.fee?.trim(true).hideDenom(true).toString() ?? "0"),
-                      fee_type: sendConfigs.feeConfig.feeType,
-                      gas: sendConfigs.gasConfig.gas,
-                      receiver_address: sendConfigs.recipientConfig.recipient,
-                      success: true,
-                    });
                     transactionStore.updateTxHash(txHash);
                   },
                 }
               );
             } catch (e: any) {
-              analyticsStore.logEvent("astra_hub_transfer_token", {
-                token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
-                amount: Number(sendConfigs.amountConfig.amount),
-                fee: Number(sendConfigs.feeConfig.fee?.trim(true).hideDenom(true).toString() ?? "0"),
-                fee_type: sendConfigs.feeConfig.feeType,
-                gas: sendConfigs.gasConfig.gas,
-                receiver_address: sendConfigs.recipientConfig.recipient,
-                success: false,
-                error: e?.message,
-              });
               if (e?.message === "Request rejected") {
                 return;
               }

@@ -26,6 +26,11 @@ import { ChainStore } from "./chain";
 import EventEmitter from "eventemitter3";
 import { Keplr } from "@keplr-wallet/provider";
 import { KeychainStore } from "./keychain";
+import {
+  AxelarEVMBridgeCurrencyRegistrar,
+  GravityBridgeCurrencyRegsitrar,
+  KeplrETCQueries,
+} from "@keplr-wallet/stores-etc";
 
 import { UserBalanceStore } from "./user-balance";
 import { TransactionStore } from "./transaction";
@@ -33,7 +38,6 @@ import { SignClientStore } from "./wallet-connect-v2";
 import { RemoteConfigStore } from "./remote-config";
 import { UserLoginStore } from "./user-login";
 import { initializeAnalyticsStore, StackityAnalyticsStore } from "./analytics";
-import { KeplrETCQueries } from "@keplr-wallet/stores-etc";
 export class RootStore {
   public readonly chainStore: ChainStore;
   public readonly keyRingStore: KeyRingStore;
@@ -54,6 +58,8 @@ export class RootStore {
   public readonly tokensStore: TokensStore<ChainInfoWithEmbed>;
 
   protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar<ChainInfoWithEmbed>;
+  protected readonly gravityBridgeCurrencyRegistrar: GravityBridgeCurrencyRegsitrar<ChainInfoWithEmbed>;
+  protected readonly axelarEVMBridgeCurrencyRegistrar: AxelarEVMBridgeCurrencyRegistrar<ChainInfoWithEmbed>;
 
   public readonly keychainStore: KeychainStore;
   public readonly signClientStore: SignClientStore;
@@ -150,7 +156,7 @@ export class RootStore {
       },
       CosmosAccount.use({
         queriesStore: this.queriesStore,
-        msgOptsCreator: (chainId) => {
+        msgOptsCreator: (chainId: string) => {
           if (chainId.startsWith("osmosis")) {
             return {
               send: {
@@ -285,6 +291,18 @@ export class RootStore {
       this.accountStore,
       this.queriesStore,
       this.queriesStore
+    );
+
+    this.gravityBridgeCurrencyRegistrar = new GravityBridgeCurrencyRegsitrar(
+      new AsyncKVStore("store_gravity_bridge_currency_registrar"),
+      this.chainStore,
+      this.queriesStore
+    );
+    this.axelarEVMBridgeCurrencyRegistrar = new AxelarEVMBridgeCurrencyRegistrar<ChainInfoWithEmbed>(
+      new AsyncKVStore("store_axelar_evm_bridge_currency_registrar"),
+      this.chainStore,
+      this.queriesStore,
+      "ethereum"
     );
 
     router.listen(APP_PORT);

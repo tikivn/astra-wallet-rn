@@ -17,6 +17,7 @@ import { useToastModal } from "../../../providers/toast-modal";
 import { BIOMETRY_TYPE } from "react-native-keychain";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 import { SocialLoginUserState } from "../../../stores/user-login";
+import { MIN_PASSWORD_LENGTH } from "../../../common/utils";
 
 export const NewPincodeScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -33,8 +34,6 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
       string
     >
   >();
-
-  const MIN_LENGTH_PASSWORD = 8;
 
   const { keychainStore, userLoginStore, keyRingStore, analyticsStore } = useStore();
   const style = useStyle();
@@ -182,7 +181,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
   }
 
   function validateInputData() {
-    if (password.length >= MIN_LENGTH_PASSWORD
+    if (password.length >= MIN_PASSWORD_LENGTH
       && password === confirmPassword
       && name.length != 0) {
       setConfirmPasswordErrorText("");
@@ -242,7 +241,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
           info={intl.formatMessage({
             id: "common.text.minimumCharacters"
           }, {
-            number: `${MIN_LENGTH_PASSWORD}`
+            number: `${MIN_PASSWORD_LENGTH}`
           })}
           secureTextEntry={true}
           showPassword={showPassword}

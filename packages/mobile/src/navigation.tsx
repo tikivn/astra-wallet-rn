@@ -679,12 +679,12 @@ export const MainTabNavigation: FunctionComponent = () => {
         activeTintColor: style.get("color-primary").color,
         inactiveTintColor: style.get("color-text-black-very-very-low").color,
         style: {
-          borderTopWidth: 0.5,
-          borderTopColor: "#303341", //style.get("border-color-border-white").borderColor,
+          borderTopWidth: 1,
+          borderTopColor: style.get("color-gray-70").color,
           shadowColor: style.get("color-transparent").color,
           elevation: 0,
-          paddingLeft: 30,
-          paddingRight: 30,
+          // paddingLeft: 30,
+          // paddingRight: 30,
         },
         showLabel: true,
       }}

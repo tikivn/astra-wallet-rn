@@ -39,6 +39,7 @@ import {
 import { ObservableQueryDistributionParams } from "./distribution";
 import { ObservableQueryRPCStatus } from "./status";
 import { ObservableQueryTxs } from "./tx";
+import { ObservableQueryJunoAnnualProvisions } from "./supply/juno";
 
 export interface CosmosQueries {
   cosmos: CosmosQueriesImpl;
@@ -174,6 +175,7 @@ export class CosmosQueriesImpl {
         osmosisMintParams
       ),
       osmosisMintParams,
+      new ObservableQueryJunoAnnualProvisions(kvStore, chainId, chainGetter),
       this.queryDistributionParams
     );
     this.queryRewards = new ObservableQueryRewards(
