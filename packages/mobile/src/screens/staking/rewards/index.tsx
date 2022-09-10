@@ -9,7 +9,7 @@ import { RewardDetails } from "./rewards";
 import { FeeType, useSendTxConfig } from "@keplr-wallet/hooks";
 import { EthereumEndpoint } from "../../../config";
 import { useIntl } from "react-intl";
-import { formatCoin } from "../../../common/utils";
+import { formatCoin, MIN_REWARDS_AMOUNT } from "../../../common/utils";
 import { MsgWithdrawDelegatorReward } from "@keplr-wallet/proto-types/cosmos/distribution/v1beta1/tx";
 import { AccountStore, CosmosAccount, CosmwasmAccount, SecretAccount } from "@keplr-wallet/stores";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
@@ -67,7 +67,7 @@ export const StakingRewardScreen: FunctionComponent = () => {
     }
   }).filter((stakableRewards) => {
     const { rewards } = stakableRewards;
-    return rewards.toDec().gte(new Dec(0.001));
+    return rewards.toDec().gte(new Dec(MIN_REWARDS_AMOUNT));
   }).sort((a, b) => {
     // Sort DESC
     return Number(b.rewards.toDec()) - Number(a.rewards.toDec());

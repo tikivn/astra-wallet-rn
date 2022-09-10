@@ -4,7 +4,7 @@
   "staking.dashboard.rewards.invest": "Stake",
   "staking.dashboard.rewards.totalInvestment": "Total staking",
   "staking.dashboard.rewards.totalProfit": "Total earned",
-  "staking.dashboard.rewards.totalWithdrawals": "Unstaking amount",
+  "staking.dashboard.rewards.totalWithdrawals": "Unstaking {denom} amount",
   "staking.dashboard.rewards.withdrawProfit": "Claim",
   "staking.dashboard.title": "Stake and Earn",
   "staking.delegate.empty": "There is no \bstaking activity",

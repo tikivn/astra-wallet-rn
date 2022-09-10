@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 
 import { Text, View } from "react-native";
 import { Staking } from "@keplr-wallet/stores";
-import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { RectButton } from "react-native-gesture-handler";
 import { CardDivider } from "../../../components/card";
@@ -15,7 +15,7 @@ import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { TooltipLabel } from "../component";
 import { FormattedMessage, useIntl } from "react-intl";
-import { formatCoin } from "../../../common/utils";
+import { formatCoin, formatPercent } from "../../../common/utils";
 
 type Sort = "APY" | "Voting Power" | "Name";
 
@@ -241,15 +241,7 @@ const ValidatorItem: FunctionComponent<{
         <Text style={style.flatten(["text-caption2", "color-gray-30"])}>
           {intl.formatMessage(
             { id: "validator.details.commission.percent" },
-            {
-              percent: new IntPretty(
-                new Dec(validator.commission.commission_rates.rate)
-              )
-                .moveDecimalPointRight(2)
-                .maxDecimals(2)
-                .trim(true)
-                .toString(),
-            }
+            { percent: formatPercent(validator.commission.commission_rates.rate, true) },
           )}
         </Text>
       </View>

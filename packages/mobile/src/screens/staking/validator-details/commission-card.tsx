@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import { Staking } from "@keplr-wallet/stores";
 import { Text, View, ViewStyle } from "react-native";
 import { Button } from "../../../components/button";
-import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { Card, CardBody, CardDivider } from "../../../components/card";
 
 import { useStore } from "../../../stores";
@@ -12,7 +12,7 @@ import { useStyle } from "../../../styles";
 import { TooltipLabel } from "../component";
 import { useSmartNavigation } from "../../../navigation-util";
 import { FormattedMessage, useIntl } from "react-intl";
-import { formatCoin } from "../../../common/utils";
+import { formatCoin, formatDate, formatPercent } from "../../../common/utils";
 
 export const CommissionsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -47,11 +47,10 @@ export const CommissionsCard: FunctionComponent<{
     validatorAddress,
   ]);
 
-  let f = "";
+  let dateText = "";
   if (validator) {
     const date = new Date(validator.commission.update_time);
-    f =
-      date.toLocaleTimeString("vi-VN") + " " + date.toLocaleDateString("vi-VN");
+    dateText = formatDate(date);
   }
 
   const style = useStyle();
@@ -68,7 +67,7 @@ export const CommissionsCard: FunctionComponent<{
   return (
     <Card style={containerStyle}>
       {validator ? (
-        <CardBody style={style.flatten(["padding-y-4"])}>
+        <CardBody style={style.flatten(["padding-y-0"])}>
           {validator.description.details ? (
             <Text
               style={style.flatten(["text-left", "color-gray-10", "body3"])}
@@ -86,21 +85,21 @@ export const CommissionsCard: FunctionComponent<{
           <View
             style={style.flatten([
               "flex-row",
-              "justify-evenly",
-              "padding-y-12",
+              "padding-y-24",
             ])}
           >
-            <View style={style.flatten(["items-center"])}>
+            <View style={style.flatten(["items-center", "flex-1"])}>
               <TooltipLabel
                 text={intl.formatMessage({
                   id: "validator.details.totalShares",
                 })}
+                textStyle={style.flatten(["text-small-regular"])}
               />
               <Text
                 style={style.flatten([
                   "color-gray-10",
-                  "subtitle2",
-                  "margin-y-2",
+                  "text-x-large-medium",
+                  "margin-top-2",
                 ])}
               >
                 {totalStakingText}
@@ -112,26 +111,21 @@ export const CommissionsCard: FunctionComponent<{
                 )}
               /> */}
             </View>
-            <View style={style.flatten(["items-center"])}>
+            <View style={style.flatten(["items-center", "flex-1"])}>
               <TooltipLabel
                 text={intl.formatMessage({
                   id: "validator.details.commission",
                 })}
+                textStyle={style.flatten(["text-small-regular"])}
               />
               <Text
                 style={style.flatten([
                   "color-gray-10",
-                  "subtitle2",
-                  "margin-y-2",
+                  "text-x-large-medium",
+                  "margin-top-2",
                 ])}
               >
-                {new IntPretty(
-                  new Dec(validator.commission.commission_rates.rate)
-                )
-                  .moveDecimalPointRight(2)
-                  .maxDecimals(2)
-                  .trim(true)
-                  .toString() + "%"}
+                {formatPercent(validator.commission.commission_rates.rate)}
               </Text>
             </View>
           </View>
@@ -161,10 +155,10 @@ export const CommissionsCard: FunctionComponent<{
               "flex-row",
               "items-center",
               "justify-between",
-              "margin-top-8",
+              "margin-top-24",
             ])}
           >
-            <Text style={style.flatten(["color-gray-10", "body3"])}>
+            <Text style={style.flatten(["color-gray-10", "text-base-semi-bold"])}>
               {intl.formatMessage({
                 id: "validator.details.commission.details",
               })}
@@ -175,23 +169,18 @@ export const CommissionsCard: FunctionComponent<{
               "flex-row",
               "items-center",
               "justify-between",
-              "margin-y-8",
+              "margin-top-16",
             ])}
           >
             <TooltipLabel
               text={intl.formatMessage({ id: "validator.details.maxRate" })}
+              textStyle={style.flatten(["text-base-regular"])}
             />
-            <Text style={style.flatten(["color-gray-10", "body3"])}>
+            <Text style={style.flatten(["color-gray-10", "text-base-regular"])}>
               <FormattedMessage
                 id="validator.details.percentValue"
                 values={{
-                  percent: new IntPretty(
-                    new Dec(validator.commission.commission_rates.max_rate)
-                  )
-                    .moveDecimalPointRight(2)
-                    .maxDecimals(2)
-                    .trim(true)
-                    .toString(),
+                  percent: formatPercent(validator.commission.commission_rates.max_rate, true)
                 }}
               />
             </Text>
@@ -201,27 +190,20 @@ export const CommissionsCard: FunctionComponent<{
               "flex-row",
               "items-center",
               "justify-between",
-              "margin-bottom-8",
+              "margin-top-16",
             ])}
           >
             <TooltipLabel
               text={intl.formatMessage({
                 id: "validator.details.maxChangeRate",
               })}
+              textStyle={style.flatten(["text-base-regular"])}
             />
-            <Text style={style.flatten(["color-gray-10", "body3"])}>
+            <Text style={style.flatten(["color-gray-10", "text-base-regular"])}>
               <FormattedMessage
                 id="validator.details.percentValue"
                 values={{
-                  percent: new IntPretty(
-                    new Dec(
-                      validator.commission.commission_rates.max_change_rate
-                    )
-                  )
-                    .moveDecimalPointRight(2)
-                    .maxDecimals(2)
-                    .trim(true)
-                    .toString(),
+                  percent: formatPercent(validator.commission.commission_rates.max_change_rate, true)
                 }}
               />
             </Text>
@@ -231,12 +213,14 @@ export const CommissionsCard: FunctionComponent<{
               "flex-row",
               "items-center",
               "justify-between",
+              "margin-top-16",
             ])}
           >
             <TooltipLabel
               text={intl.formatMessage({ id: "validator.details.updateTime" })}
+              textStyle={style.flatten(["text-base-regular"])}
             />
-            <Text style={style.flatten(["color-gray-10", "body3"])}>{f}</Text>
+            <Text style={style.flatten(["color-gray-10", "text-base-regular"])}>{dateText}</Text>
           </View>
         </CardBody>
       ) : null}

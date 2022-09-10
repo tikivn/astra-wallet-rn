@@ -193,10 +193,9 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
           labelText={intl.formatMessage({ id: "component.amount.input.sendindAmount" })}
           amountConfig={sendConfigs.amountConfig}
         />
-        <View style={{ height: 24 }} />
         <ListRowView
           rows={rows}
-          style={{ paddingHorizontal: 0, paddingVertical: 0 }}
+          style={{ paddingHorizontal: 0, paddingVertical: 0, marginTop: 16 }}
           hideBorder
           clearBackground
         />

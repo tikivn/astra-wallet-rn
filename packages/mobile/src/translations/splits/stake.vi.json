@@ -1,21 +1,23 @@
 {
   "stake.delegate.amount": "Số lượng",
   "stake.delegate.available": "Khả dụng",
-  "stake.delegate.fee": "Phí",
+  "stake.delegate.fee": "Phí giao dịch",
   "stake.delegate.invest": "Gửi tiết kiệm",
   "stake.delegate.validator.totalShares": "Tổng số cổ phần",
   "stake.delegate.validator.uptime": "Thời gian hoạt động",
   "stake.delegate.warning": "Sau khi đầu tư, nếu bạn muốn rút tiền, thì bạn sẽ nhận được tiền {days}.",
   "stake.redelegate.amountLabel": "Số lượng",
   "stake.redelegate.available": "Khả dụng",
-  "stake.redelegate.fee": "Phí",
+  "stake.redelegate.fee": "Phí chuyển đổi",
   "stake.redelegate.from": "Từ",
+  "stake.redelegate.listValidators": "Chuyển đổi sang",
   "stake.redelegate.redelagate": "Đổi quỹ",
   "stake.redelegate.selectValidator": "Chọn quỹ đầu tư",
   "stake.redelegate.to": "Sang",
-  "stake.undelegate.amountLabel": "Số tiền rút (không bao gồm lãi)",
+  "stake.undelegate.amountLabel": "Số lượng (không bao gồm phần thưởng)",
   "stake.undelegate.available": "Khả dụng",
-  "stake.undelegate.fee": "Phí",
+  "stake.undelegate.fee": "Phí giao dịch",
   "stake.undelegate.noticeWithdrawalPeriod": "Bạn sẽ nhận được số {coin} bạn rút {days}",
-  "stake.undelegate.undelegate": "Rút"
+  "stake.undelegate.undelegate": "Rút",
+  "stake.undelegate.validatorLabel": "Rút từ gói tích luỹ"
 }

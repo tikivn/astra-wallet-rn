@@ -13,7 +13,7 @@ export const DelegatedCard: FunctionComponent<{
   containerStyle?: ViewStyle;
   validatorAddress: string;
 }> = observer(({ containerStyle, validatorAddress }) => {
-  const { chainStore, queriesStore, accountStore, priceStore } = useStore();
+  const { chainStore, queriesStore, accountStore } = useStore();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
@@ -53,14 +53,14 @@ export const DelegatedCard: FunctionComponent<{
                 "flex-1",
                 "margin-left-0",
                 "items-center",
-                "padding-16",
+                "padding-x-16",
+                "padding-y-24",
               ])}
             >
               <Text
                 style={style.flatten([
                   "color-gray-30",
-                  "subtitle4",
-                  "margin-top-0",
+                  "text-small-medium",
                 ])}
               >
                 <FormattedMessage id="validator.details.delegated.invested" />
@@ -68,8 +68,8 @@ export const DelegatedCard: FunctionComponent<{
               <Text
                 style={style.flatten([
                   "color-gray-10",
-                  "subtitle2",
-                  "margin-y-2",
+                  "text-medium-medium",
+                  "margin-top-2",
                 ])}
               >
                 {formatCoin(staked)}
@@ -87,14 +87,14 @@ export const DelegatedCard: FunctionComponent<{
                 "flex-1",
                 "margin-left-0",
                 "items-center",
-                "padding-16",
+                "padding-x-16",
+                "padding-y-24",
               ])}
             >
               <Text
                 style={style.flatten([
                   "color-gray-30",
-                  "subtitle4",
-                  "margin-top-0",
+                  "text-small-medium",
                 ])}
               >
                 <FormattedMessage id="validator.details.delegated.profit" />
@@ -102,11 +102,11 @@ export const DelegatedCard: FunctionComponent<{
               <Text
                 style={style.flatten([
                   "color-green-50",
-                  "subtitle2",
-                  "margin-y-2",
+                  "text-medium-medium",
+                  "margin-top-2",
                 ])}
               >
-                {formatCoin(rewards)}
+                {"+" + formatCoin(rewards)}
               </Text>
             </View>
           </View>

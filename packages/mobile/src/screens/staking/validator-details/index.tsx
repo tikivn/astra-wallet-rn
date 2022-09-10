@@ -56,9 +56,10 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
     },
     {
       key: "second",
-      title: intl.formatMessage({
-        id: "validator.details.amountBeingWithdrawn",
-      }),
+      title: intl.formatMessage(
+        { id: "validator.details.amountBeingWithdrawn" },
+        { denom: staked.denom },
+      ),
     },
   ]);
 
@@ -113,7 +114,6 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
             containerStyle={style.flatten([
               "background-color-transparent",
               "padding-y-0",
-              "background-color-transparent",
             ])}
             validatorAddress={validatorAddress}
           />
@@ -142,12 +142,12 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
               indicatorStyle={style.get("background-color-primary")}
               tabStyle={style.flatten(["flex-0"])}
               //   scrollEnabled={true}
-              style={style.get("background-color-background")}
+              style={style.flatten(["background-color-background", "border-width-bottom-1", "border-color-gray-70"])}
               renderLabel={({ route, focused }) => (
                 <Text
                   style={style.flatten(
-                    ["subtitle3", "color-gray-30"],
-                    [focused && "color-primary"]
+                    ["text-base-medium", "color-gray-30"],
+                    [focused && "color-blue-70"]
                   )}
                 >
                   {route.title}

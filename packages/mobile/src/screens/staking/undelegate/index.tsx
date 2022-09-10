@@ -4,10 +4,9 @@ import { RouteProp, useRoute } from "@react-navigation/native";
 import { ChainStore, useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { FeeType, IAmountConfig, useUndelegateTxConfig } from "@keplr-wallet/hooks";
-import { PageWithScrollView } from "../../../components/page";
 import { ValidatorItem } from "../../../components/input";
 import { AmountInput } from "../../main/components";
-import { View } from "react-native";
+import { Text, View } from "react-native";
 import { Button } from "../../../components/button";
 import { AccountStore, CosmosAccount, CosmwasmAccount, SecretAccount, Staking } from "@keplr-wallet/stores";
 import { useSmartNavigation } from "../../../navigation-util";
@@ -17,10 +16,12 @@ import {
   buildRightColumn,
 } from "../../../components/foundation-view/item-row";
 import { useIntl } from "react-intl";
-import { formatCoin } from "../../../common/utils";
+import { formatCoin, formatPercent } from "../../../common/utils";
 import { MsgUndelegate } from "@keplr-wallet/proto-types/cosmos/staking/v1beta1/tx";
 import { CoinPretty, Dec, DecUtils, IntPretty } from "@keplr-wallet/unit";
 import { IRow, ListRowView } from "../../../components";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 
 export const UndelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -161,7 +162,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         gas_price: gasPrice,
         validator_address: validatorAddress,
         validator_name: validator?.description.moniker,
-        commission: 100 * Number(validator?.commission.commission_rates.rate ?? "0"),
+        commission: Number(formatPercent(validator?.commission.commission_rates.rate, true)),
       };
 
       try {
@@ -221,54 +222,61 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
   };
 
   return (
-    <PageWithScrollView
-      backgroundColor={style.get("color-background").color}
-      style={style.flatten(["padding-x-page"])}
-      contentContainerStyle={style.get("flex-grow-1")}
-    >
-      <View style={style.flatten(["height-page-pad"])} />
-      <AlertInline
-        type="warning"
-        content={intl.formatMessage(
-          { id: "stake.undelegate.noticeWithdrawalPeriod" },
-          { coin: "ASA", days: unbondingTimeText }
-        )}
-      />
-      <ValidatorItem
-        containerStyle={style.flatten(["margin-y-16"])}
-        name={validator ? validator.description.moniker : "..."}
-        thumbnail={validatorThumbnail}
-        value={formatCoin(staked)}
-      />
-      <AmountInput
-        labelText={intl.formatMessage({ id: "stake.undelegate.amountLabel" })}
-        amountConfig={sendConfigs.amountConfig}
-      />
-      <ListRowView
-        rows={rows}
-        style={{ paddingHorizontal: 0, paddingVertical: 0, marginTop: 24 }}
-        hideBorder
-        clearBackground
-      />
-      {/* <MemoInput label="Memo (Optional)" memoConfig={sendConfigs.memoConfig} />
+    <View style={style.flatten(["flex-1", "background-color-background"])}>
+      <KeyboardAwareScrollView
+        contentContainerStyle={style.flatten(["padding-x-page"])}
+        enableOnAndroid
+      >
+        <View style={style.flatten(["height-page-pad"])} />
+        <AlertInline
+          type="warning"
+          content={intl.formatMessage(
+            { id: "stake.undelegate.noticeWithdrawalPeriod" },
+            { coin: "ASA", days: unbondingTimeText }
+          )}
+        />
+        <Text style={style.flatten(["color-gray-30", "text-medium-medium", "margin-top-24"])}>
+          {intl.formatMessage({ id: "stake.undelegate.validatorLabel" })}
+        </Text>
+        <ValidatorItem
+          containerStyle={style.flatten(["margin-top-8"])}
+          name={validator ? validator.description.moniker : "..."}
+          thumbnail={validatorThumbnail}
+          value={formatCoin(staked)}
+        />
+        <AmountInput
+          labelText={intl.formatMessage({ id: "stake.undelegate.amountLabel" })}
+          amountConfig={sendConfigs.amountConfig}
+          containerStyle={style.flatten(["margin-top-24"])}
+        />
+        <ListRowView
+          rows={rows}
+          style={{ paddingHorizontal: 0, paddingVertical: 0, marginTop: 16 }}
+          hideBorder
+          clearBackground
+        />
+        {/* <MemoInput label="Memo (Optional)" memoConfig={sendConfigs.memoConfig} />
       <FeeButtons
         label="Fee"
         gasLabel="gas"
         feeConfig={sendConfigs.feeConfig}
         gasConfig={sendConfigs.gasConfig}
       /> */}
-      <View style={style.flatten(["flex-1"])} />
-      <Button
-        containerStyle={style.flatten(["border-radius-4", "height-44"])}
-        textStyle={style.flatten(["subtitle2"])}
-        text={intl.formatMessage({ id: "stake.undelegate.undelegate" })}
-        size="large"
-        disabled={!account.isReadyToSendTx || !txStateIsValid}
-        loading={account.txTypeInProgress === "undelegate"}
-        onPress={onContinueHandler}
-      />
-      <View style={style.flatten(["height-page-pad"])} />
-    </PageWithScrollView>
+      </KeyboardAwareScrollView>
+      <View style={style.flatten(["flex-1", "justify-end", "margin-bottom-12"])}>
+        <View style={style.flatten(["height-1", "background-color-gray-70"])} />
+        <View style={{ ...style.flatten(["background-color-background"]), height: 56 }}>
+          <Button
+            text={intl.formatMessage({ id: "stake.redelegate.redelagate" })}
+            disabled={!account.isReadyToSendTx || !txStateIsValid}
+            loading={account.txTypeInProgress === "redelegate"}
+            onPress={onContinueHandler}
+            containerStyle={style.flatten(["margin-x-page", "margin-top-12"])}
+          />
+        </View>
+        <AvoidingKeyboardBottomView />
+      </View>
+    </View >
   );
 });
 

@@ -6,6 +6,11 @@ const SmallTypos = {
     lineHeight: 16,
     ...getPlatformFontWeight("400"),
   },
+  "text-small-medium": {
+    fontSize: 12,
+    lineHeight: 16,
+    ...getPlatformFontWeight("500"),
+  },
 };
 
 const BaseTypos = {

@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { useIntl } from "react-intl";
 import { View } from "react-native";
-import { formatCoin } from "../../../common/utils";
+import { formatCoin, MIN_REWARDS_AMOUNT } from "../../../common/utils";
 import { Button } from "../../../components/button";
 import { CardDivider } from "../../../components/card";
 import { useSmartNavigation } from "../../../navigation-util";
@@ -47,7 +47,7 @@ export const RewardsItem: FunctionComponent<{
   const delegated = queryDelegated.total;
   const isRewardExist = queryDelegated.delegations.filter((delegation) => {
     const stakableRewards = rewardsQueries.getStakableRewardOf(delegation.delegation.validator_address);
-    return stakableRewards.toDec().gte(new Dec(0.001));
+    return stakableRewards.toDec().gte(new Dec(MIN_REWARDS_AMOUNT));
   })?.length !== 0;
 
   const isPending = unbondingBalances.length > 0;
@@ -113,7 +113,7 @@ export const RewardsItem: FunctionComponent<{
           label={intl.formatMessage({
             id: "staking.dashboard.rewards.totalProfit",
           })}
-          value={formatCoin(pendingStakableReward)}
+          value={"+" + formatCoin(pendingStakableReward)}
           valueStyle={style.flatten(["color-green-50"])}
         />
 
@@ -150,9 +150,10 @@ export const RewardsItem: FunctionComponent<{
         ])}
       >
         <PropertyView
-          label={intl.formatMessage({
-            id: "staking.dashboard.rewards.totalWithdrawals",
-          })}
+          label={intl.formatMessage(
+            { id: "staking.dashboard.rewards.totalWithdrawals" },
+            { denom: unboding.denom },
+          )}
           value={formatCoin(unboding)}
         />
 

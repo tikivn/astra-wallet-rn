@@ -11,7 +11,7 @@ export const StakingDashboardScreen: FunctionComponent = () => {
   const scrollViewRef = useRef<ScrollView | null>(null);
   const [refreshing, setRefreshing] = React.useState(false);
 
-  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+  const { chainStore, accountStore, queriesStore/*, priceStore*/ } = useStore();
   const onRefresh = React.useCallback(async () => {
     const account = accountStore.getAccount(chainStore.current.chainId);
     const queries = queriesStore.get(chainStore.current.chainId);
@@ -20,7 +20,7 @@ export const StakingDashboardScreen: FunctionComponent = () => {
     // fetching new query responses here would make query responses on all other components also refresh.
 
     await Promise.all([
-      priceStore.waitFreshResponse(),
+      // priceStore.waitFreshResponse(),
       ...queries.queryBalances
         .getQueryBech32Address(account.bech32Address)
         .balances.map((bal) => {
@@ -38,7 +38,7 @@ export const StakingDashboardScreen: FunctionComponent = () => {
     ]);
 
     setRefreshing(false);
-  }, [accountStore, chainStore, priceStore, queriesStore]);
+  }, [accountStore, chainStore/*, priceStore*/, queriesStore]);
 
   return (
     <PageWithScrollView
@@ -53,14 +53,12 @@ export const StakingDashboardScreen: FunctionComponent = () => {
         chainStore={chainStore}
         accountStore={accountStore}
         queriesStore={queriesStore}
-        priceStore={priceStore}
       />
       <DelegationsItem
         containerStyle={style.flatten(["background-color-background"])}
         chainStore={chainStore}
         accountStore={accountStore}
         queriesStore={queriesStore}
-        priceStore={priceStore}
       />
       <View style={style.flatten(["height-48"])} />
     </PageWithScrollView>

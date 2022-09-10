@@ -1,6 +1,6 @@
 {
   "validator.details.about": "About",
-  "validator.details.amountBeingWithdrawn": "Unstaking",
+  "validator.details.amountBeingWithdrawn": "Unstaking {denom}",
   "validator.details.commission": "Commission",
   "validator.details.commission.details": "Commission details",
   "validator.details.commission.percent": "Commission {percent}%",
