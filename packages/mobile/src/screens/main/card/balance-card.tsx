@@ -1,8 +1,8 @@
-import { ObservableQueryERC20Metadata } from "@keplr-wallet/stores-etc";
+import { AppCurrency, Secret20Currency } from "@keplr-wallet/types";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { useIntl } from "react-intl";
-import { ViewStyle, Text } from "react-native";
+import { Text, ViewStyle } from "react-native";
 import { Card, CardBody } from "../../../components/card";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
@@ -21,21 +21,35 @@ export const BalanceCard: FunctionComponent<{
     .queryBalances.getQueryBech32Address(
       accountStore.getAccount(chainStore.current.chainId).bech32Address
     );
-  // const a = testStore.keplrETC.queryERC20Metadata.get(
-  //   "0x41591484aEB5FA3d1759f1cbA369dC8dc1281298"
-  // );
   const account = accountStore.getAccount(chainStore.current.chainId)
     .ethereumHexAddress;
-  console.log("🚀 -> account", account);
-  const asd =
-    account &&
-    queriesStore
-      .get(chainStore.current.chainId)
-      .keplrETC.queryERC20Metadata.get(
-        "0x41591484aEB5FA3d1759f1cbA369dC8dc1281298"
-      )
-      .balance(account);
-  console.log("🚀 -> asd test", asd);
+
+  // queriesStore
+  //     .get(chainStore.current.chainId)
+  //     .keplrETC.queryERC20Balance.get().balance('');
+
+  // .then((res) => {
+  //   console.log("🚀 -> .then -> res", res);
+  //   console.log("🚀 -> test ne 2", formatUnits(BigNumber.from(res), "ether"));
+  // })
+  // .catch((error) => {
+  //   console.log("🚀 -> .then -> error", error);
+  // });
+
+  // const asd = queryBalances.balances
+  //   .concat(queryBalances.nonNativeBalances)
+  //   .map((item) => {
+  //     const contractAddress = (item.currency as Secret20Currency)
+  //       .contractAddress;
+  //     if (contractAddress) {
+  //       queriesStore
+  //         const balance = queriesStore.get(chainStore.current.chainId)
+  //         .keplrETC.queryERC20Balance.get()
+  //         .balance(contractAddress, account);
+  //       return { ...item, balance };
+  //     }
+  //     return item;
+  //   });
 
   const tokens = queryBalances.balances
     .concat(queryBalances.nonNativeBalances)

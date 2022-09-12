@@ -47,25 +47,6 @@ const erc20MetadataInterface: Interface = new Interface([
     stateMutability: "view",
     type: "function",
   },
-  {
-    constant: true,
-    inputs: [
-      {
-        name: "_owner",
-        type: "address",
-      },
-    ],
-    name: "balanceOf",
-    outputs: [
-      {
-        name: "balance",
-        type: "uint256",
-      },
-    ],
-    payable: false,
-    stateMutability: "view",
-    type: "function",
-  },
 ]);
 
 export class ObservableQueryERC20MetadataName extends ObservableJsonRPCQuery<string> {
@@ -179,58 +160,11 @@ export class ObservableQueryERC20MetadataDecimals extends ObservableJsonRPCQuery
   }
 }
 
-export class ObservableQueryERC20MetadataBalance extends ObservableJsonRPCQuery<string> {
-  constructor(
-    kvStore: KVStore,
-    ethereumURL: string,
-    contractAddress: string,
-    accountHex: string
-  ) {
-    const instance = Axios.create({
-      ...{
-        baseURL: ethereumURL,
-      },
-    });
-
-    super(kvStore, instance, "", "eth_call", [
-      {
-        to: contractAddress,
-        data: erc20MetadataInterface.encodeFunctionData("balanceOf", [
-          accountHex,
-        ]),
-      },
-      "latest",
-    ]);
-
-    makeObservable(this);
-  }
-
-  @computed
-  get balance(): string | undefined {
-    if (!this.response) {
-      return undefined;
-    }
-
-    try {
-      return erc20MetadataInterface.decodeFunctionResult(
-        "balanceOf",
-        this.response.data
-      )[0];
-    } catch (e: any) {
-      console.log(e);
-    }
-    return undefined;
-  }
-}
-
 export class ObservableQueryERC20MetadataInner {
   protected readonly _queryName: ObservableQueryERC20MetadataName;
   protected readonly _querySymbol: ObservableQueryERC20MetadataSymbol;
   protected readonly _queryDecimals: ObservableQueryERC20MetadataDecimals;
 
-  private _kvStore: KVStore;
-  private _ethereumURL: string;
-  private _contractAddress: string;
   constructor(kvStore: KVStore, ethereumURL: string, contractAddress: string) {
     this._queryName = new ObservableQueryERC20MetadataName(
       kvStore,
@@ -249,9 +183,6 @@ export class ObservableQueryERC20MetadataInner {
       ethereumURL,
       contractAddress
     );
-    this._kvStore = kvStore;
-    this._ethereumURL = ethereumURL;
-    this._contractAddress = contractAddress;
   }
 
   get queryName(): ObservableQueryERC20MetadataName {
@@ -272,16 +203,6 @@ export class ObservableQueryERC20MetadataInner {
 
   get decimals(): number | undefined {
     return this._queryDecimals.decimals;
-  }
-
-  balance(accountHex: string): string | undefined {
-    const balanceQuery = new ObservableQueryERC20MetadataBalance(
-      this._kvStore,
-      this._ethereumURL,
-      this._contractAddress,
-      accountHex
-    );
-    return balanceQuery.balance;
   }
 }
 
