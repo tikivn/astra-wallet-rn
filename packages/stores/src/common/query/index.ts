@@ -139,8 +139,8 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
     options: Partial<QueryOptions>
   ) {
     this.options = {
-      ...options,
       ...defaultOptions,
+      ...options,
     };
 
     this._instance = instance;

@@ -1,12 +1,21 @@
-import { AppCurrency, Secret20Currency } from "@keplr-wallet/types";
+import { BigNumber } from "@ethersproject/bignumber";
+import { ObservableQueryBalanceInner } from "@keplr-wallet/stores";
+import { Erc20Currency } from "@keplr-wallet/types";
+import { CoinPretty, Int } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useCallback } from "react";
 import { useIntl } from "react-intl";
 import { Text, ViewStyle } from "react-native";
 import { Card, CardBody } from "../../../components/card";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { TokenItemNew } from "./token-item";
+
+type TypeBalances = {
+  balanceErc20: CoinPretty;
+  isUseBalanceErc20?: boolean;
+  item: ObservableQueryBalanceInner;
+};
 
 export const BalanceCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -21,51 +30,54 @@ export const BalanceCard: FunctionComponent<{
     .queryBalances.getQueryBech32Address(
       accountStore.getAccount(chainStore.current.chainId).bech32Address
     );
-  const account = accountStore.getAccount(chainStore.current.chainId)
+  const accountHex = accountStore.getAccount(chainStore.current.chainId)
     .ethereumHexAddress;
 
-  // queriesStore
-  //     .get(chainStore.current.chainId)
-  //     .keplrETC.queryERC20Balance.get().balance('');
-
-  // .then((res) => {
-  //   console.log("🚀 -> .then -> res", res);
-  //   console.log("🚀 -> test ne 2", formatUnits(BigNumber.from(res), "ether"));
-  // })
-  // .catch((error) => {
-  //   console.log("🚀 -> .then -> error", error);
-  // });
-
-  // const asd = queryBalances.balances
-  //   .concat(queryBalances.nonNativeBalances)
-  //   .map((item) => {
-  //     const contractAddress = (item.currency as Secret20Currency)
-  //       .contractAddress;
-  //     if (contractAddress) {
-  //       queriesStore
-  //         const balance = queriesStore.get(chainStore.current.chainId)
-  //         .keplrETC.queryERC20Balance.get()
-  //         .balance(contractAddress, account);
-  //       return { ...item, balance };
-  //     }
-  //     return item;
-  //   });
+  const getBalanceErc20 = useCallback(
+    (currency: Erc20Currency) => {
+      const balance = queriesStore
+        .get(chainStore.current.chainId)
+        .keplrETC.queryERC20Balance.getBalance({
+          contractAddress: currency.contractAddress,
+          accountHex,
+        }).balance;
+      if (!balance) {
+        return new CoinPretty(currency, new Int(0));
+      }
+      const bn = BigNumber.from(balance);
+      return new CoinPretty(currency, new Int(bn.toString()));
+    },
+    [accountHex, chainStore, queriesStore]
+  );
 
   const tokens = queryBalances.balances
     .concat(queryBalances.nonNativeBalances)
-    .sort((a, b) => {
-      const aDecIsZero = a.balance.toDec().isZero();
-      const bDecIsZero = b.balance.toDec().isZero();
-
-      if (aDecIsZero && !bDecIsZero) {
-        return 1;
+    .map(
+      (item): TypeBalances => {
+        const token = item.currency as Erc20Currency;
+        if (token.type === "erc20") {
+          const balanceErc20 = getBalanceErc20(token);
+          return { item, balanceErc20, isUseBalanceErc20: true };
+        }
+        return {
+          item,
+          balanceErc20: new CoinPretty(item.currency, new Int(0)),
+        };
       }
-      if (!aDecIsZero && bDecIsZero) {
-        return -1;
-      }
+    );
+  // .sort((a, b) => {
+  //   const aDecIsZero = a.balance.toDec().isZero();
+  //   const bDecIsZero = b.balance.toDec().isZero();
 
-      return a.currency.coinDenom < b.currency.coinDenom ? -1 : 1;
-    });
+  //   if (aDecIsZero && !bDecIsZero) {
+  //     return 1;
+  //   }
+  //   if (!aDecIsZero && bDecIsZero) {
+  //     return -1;
+  //   }
+
+  //   return a.currency.coinDenom < b.currency.coinDenom ? -1 : 1;
+  // });
   return (
     <Card style={containerStyle}>
       <CardBody style={style.flatten(["padding-y-0"])}>
@@ -80,9 +92,13 @@ export const BalanceCard: FunctionComponent<{
                 "background-color-background-secondary",
                 "border-radius-16",
               ])}
-              key={token.currency.coinMinimalDenom}
+              key={token.item.currency.coinMinimalDenom}
               chainInfo={chainStore.current}
-              balance={token.balance}
+              balance={
+                token.isUseBalanceErc20
+                  ? token.balanceErc20
+                  : token.item.balance
+              }
               priceChange={priceChange}
             />
           );

@@ -56,6 +56,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
           "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
       },
       {
+        type: "erc20",
         coinDenom: "USDT",
         coinMinimalDenom: "usdt",
         coinDecimals: 18,

@@ -2,7 +2,7 @@ import { Interface, Result } from "@ethersproject/abi";
 import { KVStore } from "@keplr-wallet/common";
 import { HasMapStore, ObservableJsonRPCQuery } from "@keplr-wallet/stores";
 import Axios from "axios";
-import { action, makeObservable } from "mobx";
+import { computed, makeObservable } from "mobx";
 
 const erc20BalanceInterface: Interface = new Interface([
   {
@@ -27,47 +27,54 @@ const erc20BalanceInterface: Interface = new Interface([
 ]);
 
 export class ObservableQueryERC20MetadataBalance extends ObservableJsonRPCQuery<string> {
-  constructor(kvStore: KVStore, ethereumURL: string) {
+  constructor(
+    kvStore: KVStore,
+    ethereumURL: string,
+    contractAddress: string,
+    accountHex: string
+  ) {
     const instance = Axios.create({
       ...{
         baseURL: ethereumURL,
       },
     });
 
-    super(kvStore, instance, "", "eth_call", []);
+    super(
+      kvStore,
+      instance,
+      "",
+      "eth_call",
+      [
+        {
+          to: contractAddress,
+          data: erc20BalanceInterface.encodeFunctionData("balanceOf", [
+            accountHex,
+          ]),
+          from: accountHex,
+        },
+        "latest",
+      ],
+      {
+        cacheMaxAge: 10 * 1000,
+        fetchingInterval: 10 * 1000,
+      }
+    );
     makeObservable(this);
   }
 
-  @action
-  async balance(
-    contractAddress: string,
-    accountHex: string
-  ): Promise<Result | undefined> {
-    this.setParams([
-      {
-        to: contractAddress,
-        data: erc20BalanceInterface.encodeFunctionData("balanceOf", [
-          accountHex,
-        ]),
-        from: accountHex,
-      },
-      "latest",
-    ]);
-    let response = await this.waitFreshResponse();
-    if (!response) {
-      response = await this.waitResponse();
-    }
-    if (!response) {
+  @computed
+  get balance(): Result | undefined {
+    if (!this.response) {
       return undefined;
     }
 
     try {
       return erc20BalanceInterface.decodeFunctionResult(
         "balanceOf",
-        response.data
+        this.response.data
       )[0];
     } catch (e: any) {
-      console.log(e);
+      console.log("Error when fetching balance ERC20", e);
     }
     return undefined;
   }
@@ -76,35 +83,44 @@ export class ObservableQueryERC20MetadataBalance extends ObservableJsonRPCQuery<
 export class ObservableQueryERC20BalanceInner {
   protected readonly _queryBalance: ObservableQueryERC20MetadataBalance;
 
-  constructor(kvStore: KVStore, ethereumURL: string) {
+  constructor(
+    kvStore: KVStore,
+    ethereumURL: string,
+    contractAddress: string,
+    account: string
+  ) {
     this._queryBalance = new ObservableQueryERC20MetadataBalance(
       kvStore,
-      ethereumURL
+      ethereumURL,
+      contractAddress,
+      account
     );
   }
-  async balance(
-    contractAddress: string,
-    accountHex: string
-  ): Promise<any | undefined> {
-    return this._queryBalance.balance(contractAddress, accountHex);
+  get balance(): Result | undefined {
+    return this._queryBalance.balance;
   }
 }
-
+export type GetBalanceErc20Props = {
+  contractAddress: string;
+  accountHex: string;
+};
 export class ObservableQueryERC20Balance extends HasMapStore<ObservableQueryERC20BalanceInner> {
   constructor(
     protected readonly kvStore: KVStore,
     protected readonly ethereumURL: string
   ) {
-    super(() => {
+    super((key: string) => {
+      const data = JSON.parse(key) as GetBalanceErc20Props;
       return new ObservableQueryERC20BalanceInner(
         this.kvStore,
-        this.ethereumURL
+        this.ethereumURL,
+        data.contractAddress,
+        data.accountHex
       );
     });
   }
 
-  get(): ObservableQueryERC20BalanceInner {
-    const key = "get-balance";
-    return super.get(key);
+  getBalance(data: GetBalanceErc20Props): ObservableQueryERC20BalanceInner {
+    return this.get(JSON.stringify(data));
   }
 }
