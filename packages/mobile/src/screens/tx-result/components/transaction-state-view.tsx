@@ -43,18 +43,33 @@ export const TransactionStateView: FunctionComponent<{
     const allMainText: Record<string, Record<string, string>> = {
       [account.cosmos.msgOpts.send.native.type]: {
         pending: intl.formatMessage({ id: "tx.result.state.send.pending" }),
-        success: intl.formatMessage({ id: "tx.result.state.send.success" }),
-        failure: intl.formatMessage({ id: "tx.result.state.send.failure" }),
+        success: intl.formatMessage(
+          { id: "tx.result.state.send.success" },
+          { denom: transactionStore.txAmount?.denom },
+        ),
+        failure: intl.formatMessage(
+          { id: "tx.result.state.send.failure" },
+          { denom: transactionStore.txAmount?.denom },
+        ),
       },
       [account.cosmos.msgOpts.delegate.type]: {
-        pending: intl.formatMessage({ id: "tx.result.state.delegate.pending" }),
+        pending: intl.formatMessage(
+          { id: "tx.result.state.delegate.pending" },
+          { denom: transactionStore.txAmount?.denom },
+        ),
         success: intl.formatMessage({ id: "tx.result.state.delegate.success" }),
         failure: intl.formatMessage({ id: "tx.result.state.delegate.failure" }),
       },
       [account.cosmos.msgOpts.undelegate.type]: {
         pending: intl.formatMessage({ id: "tx.result.state.undelegate.pending", }),
-        success: intl.formatMessage({ id: "tx.result.state.undelegate.success", }),
-        failure: intl.formatMessage({ id: "tx.result.state.undelegate.failure", }),
+        success: intl.formatMessage(
+          { id: "tx.result.state.undelegate.success" },
+          { denom: transactionStore.txAmount?.denom },
+        ),
+        failure: intl.formatMessage(
+          { id: "tx.result.state.undelegate.failure" },
+          { denom: transactionStore.txAmount?.denom },
+        ),
       },
       [account.cosmos.msgOpts.redelegate.type]: {
         pending: intl.formatMessage({ id: "tx.result.state.redelegate.pending", }),

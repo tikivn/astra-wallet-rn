@@ -2,7 +2,7 @@
   "stake.delegate.amount": "Số lượng",
   "stake.delegate.available": "Khả dụng",
   "stake.delegate.fee": "Phí giao dịch",
-  "stake.delegate.invest": "Gửi tiết kiệm",
+  "stake.delegate.invest": "Tích lũy ngay",
   "stake.delegate.validator.totalShares": "Tổng số cổ phần",
   "stake.delegate.validator.uptime": "Thời gian hoạt động",
   "stake.delegate.warning": "Sau khi đầu tư, nếu bạn muốn rút tiền, thì bạn sẽ nhận được tiền {days}.",

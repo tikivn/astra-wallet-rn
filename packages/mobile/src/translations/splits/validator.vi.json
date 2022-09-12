@@ -10,7 +10,7 @@
   "validator.details.delegated.regelegate": "Chuyển đổi",
   "validator.details.delegated.undelegate": "Rút",
   "validator.details.emptyWithdrawHistory": "Bạn chưa có giao dịch rút tiền nào",
-  "validator.details.invest": "Gửi tiết kiệm",
+  "validator.details.invest": "Tích lũy ngay",
   "validator.details.maxChangeRate": "Thay đổi tối đa mỗi ngày",
   "validator.details.maxRate": "Tối đa",
   "validator.details.percentValue": "{percent}%",

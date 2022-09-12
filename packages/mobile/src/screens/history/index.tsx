@@ -7,6 +7,7 @@ import {
   Text,
   TouchableHighlight,
   FlatList,
+  SafeAreaView,
 } from "react-native";
 import { useStore } from "../../stores";
 import { useStyle } from "../../styles";
@@ -172,12 +173,18 @@ export const HistoryScreen: FunctionComponent = observer(() => {
   const queries = queriesStore.get(chainId);
 
   const histories = (() => {
-    const pageQueries = [];
+    const pageQueries: { txResponses: TxResponse[] }[] = [];
     const txResponses: TxResponse[] = [];
     for (let p = 0; p <= pageInfo.currentPage; p++) {
       pageQueries.push(...queriesForPage(queries, bech32Address, p));
     }
-    pageQueries.forEach((query) => txResponses.push(...query.txResponses));
+    pageQueries.forEach((query) => {
+      return txResponses.push(
+        ...query.txResponses.filter((txResponse) => {
+          return txResponses.map((txResponse) => txResponse.txhash).indexOf(txResponse.txhash) === -1
+        })
+      )
+    });
 
     const histories = txResponses
       .sort((lh, rh) => rh.timestamp.localeCompare(lh.timestamp))
@@ -186,82 +193,77 @@ export const HistoryScreen: FunctionComponent = observer(() => {
   })();
 
   return (
-  <View
-    style={style.flatten([
-      "padding-x-page",
-      "flex-grow-1",
-      "background-color-background",
-    ])}
-  >
-    <FlatList
-      // style={ { marginBottom: bottomTabBarHeight, flex: 1 }}
-      style={style.flatten(["flex-1"])}
-      data={histories}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-      ListEmptyComponent={
-        <Text
-          style={style.flatten([
-            "color-text-black-low",
-            "text-left",
-            "padding-3",
-            "body3",
-            "flex-1",
-          ])}
-        >
-          <FormattedMessage id="history.emptyHistory" />
-        </Text>
-      }
-      ItemSeparatorComponent={() => (
-        <View
-          style={{
-            flex: 0,
-            height: 1,
-            backgroundColor: "#2C364F",
-            marginVertical: 16,
-          }}
-        />
-      )}
-      ListFooterComponent={
-        <View style={{ flex: 1 }}>
-          {loading && (
-            <Text
-              style={style.flatten([
-                "color-text-black-low",
-                "text-center",
-                "padding-3",
-                "body3",
-                "flex-1",
-              ])}
-            >
-              <FormattedMessage id="common.loading" />
-            </Text>
-          )}
-        </View>
-      }
-      onEndReached={handleLoadMore}
-      keyExtractor={(_item, index) => `transaction_${index}`}
-      renderItem={({ item }) => (
-        <TouchableHighlight
-          onPress={() => {
-            let txExplorer = chainStore.getChain(chainId).raw.txExplorer;
-            let txHash = item.raw?.txhash;
-            if (txExplorer && txHash) {
-              let url = txExplorer.txUrl.replace(
-                "{txHash}",
-                txHash.toUpperCase()
-              );
-              smartNavigation.navigateSmart("WebView", {
-                url: url
-              });
-            }
-          }}
-        >
-          <TransactionItem item={item} chainStore={chainStore} />
-        </TouchableHighlight>
-      )}
-    />
-  </View>
+    <View
+      style={style.flatten([
+        "padding-x-page",
+        "flex-grow-1",
+        "background-color-background",
+      ])}
+    >
+      <FlatList
+        style={style.flatten(["flex-1"])}
+        data={histories}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        ListEmptyComponent={
+          <Text
+            style={style.flatten([
+              "color-text-black-low",
+              "text-left",
+              "padding-3",
+              "body3",
+              "flex-1",
+            ])}
+          >
+            <FormattedMessage id="history.emptyHistory" />
+          </Text>
+        }
+        ItemSeparatorComponent={() => (
+          <View style={style.flatten(["height-1", "background-color-gray-70"])} />
+        )}
+        ListFooterComponent={
+          <View style={{ flex: 1 }}>
+            {loading && (
+              <Text
+                style={style.flatten([
+                  "color-text-black-low",
+                  "text-center",
+                  "padding-3",
+                  "body3",
+                  "flex-1",
+                ])}
+              >
+                <FormattedMessage id="common.loading" />
+              </Text>
+            )}
+          </View>
+        }
+        onEndReached={handleLoadMore}
+        keyExtractor={(_item, index) => `transaction_${index}`}
+        renderItem={({ item }) => (
+          <TouchableHighlight
+            style={style.flatten(["margin-y-16"])}
+            onPress={() => {
+              let txExplorer = chainStore.getChain(chainId).raw.txExplorer;
+              let txHash = item.raw?.txhash;
+              if (txExplorer && txHash) {
+                let url = txExplorer.txUrl.replace(
+                  "{txHash}",
+                  txHash.toUpperCase()
+                );
+                smartNavigation.navigateSmart("WebView", {
+                  url: url
+                });
+              }
+            }}
+          >
+            <TransactionItem item={item} chainStore={chainStore} />
+          </TouchableHighlight>
+        )}
+      />
+      <View style={style.flatten(["height-44"])} />
+      <SafeAreaView />
+    </View>
   );
 });

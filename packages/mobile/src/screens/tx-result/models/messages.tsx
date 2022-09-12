@@ -223,22 +223,21 @@ export function renderMsgSend(
             text: intl.formatMessage({
               id: "tx.result.models.msgSend.reveiver",
             }),
-            flex: 3,
+            flex: 4,
           }),
-          buildRightColumn({ text: _toAddress, flex: 7 }),
+          buildRightColumn({ text: _toAddress, flex: 6 }),
         ],
       },
       {
         ...common,
         cols: [
           buildLeftColumn({
-            text: intl.formatMessage(
-              { id: "tx.result.models.msgSend.amount" },
-              { coin: "Astra" }
-            ),
-            flex: 3,
+            text: intl.formatMessage({
+              id: "tx.result.models.msgSend.time"
+            }),
+            flex: 4,
           }),
-          buildRightColumn({ text: formatCoin(value.amount), flex: 7 }),
+          buildRightColumn({ text: formatDate(new Date()), flex: 6 }),
         ],
       },
       {

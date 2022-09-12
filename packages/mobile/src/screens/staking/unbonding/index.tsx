@@ -80,7 +80,7 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
           type="info"
           content={intl.formatMessage(
             { id: "staking.unbonding.noticeWithdrawalPeriod" },
-            { coin: "ASA", days: unbondingTimeText }
+            { coin: balance.denom, days: unbondingTimeText }
           )}
         />
         <Text

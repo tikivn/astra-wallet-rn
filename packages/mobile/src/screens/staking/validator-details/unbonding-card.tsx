@@ -67,7 +67,7 @@ export const UnbondingCard: FunctionComponent<{
           >
             <FormattedMessage
               id="validator.details.unbonding.noticeWithdrawalPeroid"
-              values={{ coin: "ASA", days: unbondingTimeText }}
+              values={{ coin: unbonding.entries.shift()?.balance.denom, days: unbondingTimeText }}
             />
             <Text
               style={style.flatten(["text-underline", "color-primary"])}

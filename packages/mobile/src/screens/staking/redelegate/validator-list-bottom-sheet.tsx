@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useMemo, useRef, useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { RectButton } from "react-native-gesture-handler";
 import { registerModal } from "../../../modals/base";
 import { useStore } from "../../../stores";
@@ -13,6 +13,7 @@ import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { formatCoin, formatPercent } from "../../../common/utils";
 import { Button } from "../../../components";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { CloseLargeIcon } from "../../../components/icon/outlined";
 
 export const ValidatorsBottomSheet: FunctionComponent<{
   label: string;
@@ -149,16 +150,28 @@ export const ValidatorsBottomSheet: FunctionComponent<{
             "background-color-gray-90",
           ])}
         >
-          <View style={style.flatten(["height-60", "justify-center"])}>
+          <View style={style.flatten(["flex-row", "items-center"])}>
+            <TouchableOpacity
+              onPress={close}
+              style={style.flatten(["margin-16"])}>
+              <CloseLargeIcon
+                size={24}
+                color={style.get("color-gray-10").color}
+              />
+            </TouchableOpacity>
             <Text
               style={style.flatten([
-                "subtitle2",
+                "flex-1",
+                "text-medium-medium",
                 "color-gray-10",
                 "text-center",
               ])}
             >
               {label}
             </Text>
+            <View
+              style={style.flatten(["margin-16", "height-24", "width-24"])}
+            />
           </View>
           <CardDivider
             style={style.flatten(["background-color-gray-70", "margin-x-0"])}
@@ -190,7 +203,7 @@ export const ValidatorsBottomSheet: FunctionComponent<{
           </View>
           <ScrollView
             style={{
-              maxHeight: maxItemsToShow ? 64 * maxItemsToShow + 72 : undefined,
+              maxHeight: maxItemsToShow ? 64 * maxItemsToShow : undefined,
             }}
             ref={scrollViewRef}
             persistentScrollbar={true}

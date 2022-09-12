@@ -232,7 +232,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
           type="warning"
           content={intl.formatMessage(
             { id: "stake.undelegate.noticeWithdrawalPeriod" },
-            { coin: "ASA", days: unbondingTimeText }
+            { coin: staked.denom, days: unbondingTimeText }
           )}
         />
         <Text style={style.flatten(["color-gray-30", "text-medium-medium", "margin-top-24"])}>

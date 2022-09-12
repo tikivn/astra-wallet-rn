@@ -1,84 +1,74 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
-import { View, Text, StyleProp, TextStyle } from "react-native";
+import { View, Text } from "react-native";
 import {
-    TransactionItem as ITransactionItem,
-    Coin
+  TransactionItem as ITransactionItem,
 } from "./transaction_adapter"
 import { RightArrowIcon } from "../../components/icon";
 import { useStyle } from "../../styles";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { ChainStore } from "../../stores/chain";
 import moment from "moment";
-
+import { formatCoin } from "../../common/utils";
+import { useIntl } from "react-intl";
 
 export const TransactionItem: FunctionComponent<{
-    item?: ITransactionItem<any>,
-    chainStore: ChainStore,
+  item?: ITransactionItem<any>,
+  chainStore: ChainStore,
 }> = observer(({ item, chainStore }) => {
-    const style = useStyle()
-    style.flatten
-    const textStyles = (style: any) => [
-        style.flatten(["color-text-black-low", "text-left"]),
-        { height: 20, textAlignVertical: "center", fontSize: 14, color: "#D5D9E0" }
-    ]
+  const style = useStyle()
+  const intl = useIntl();
 
-    return <View style={{ height: 45 }}>
-        <View style={{ flexDirection: "row" }}>
-            <View style={{
-                flex: 4,
-            }}>
-                <Text numberOfLines={1} style={[textStyles(style)]}>
-                    {item.action}
-                </Text>
-                <Text numberOfLines={1} style={[textStyles(style), { fontSize: 12, color: "#818DA6" }]}>
-                    {moment(item.timestamp).format("hh:mm - DD/MM/YYYY")}
-                </Text>
-            </View>
+  let currency = chainStore.current.currencies.find((cur) => cur.coinMinimalDenom == item?.amount.denom)
+  var amountText = item?.amount.amount;
+  if (currency && item) {
+    amountText = formatCoin(new CoinPretty(currency, item?.amount.amount));
+  }
 
-            <View style={{
-                flex: 4,
+  var statusTextColor = style.get("color-yellow-50");
+  var statusText = intl.formatMessage({ id: "history.status.unknown" });
+  switch (item?.status) {
+    case "success":
+      statusTextColor = style.get("color-green-50");
+      statusText = intl.formatMessage({ id: "history.status.success" });
+      break;
+    case "failure":
+      statusTextColor = style.get("color-red-50");
+      statusText = intl.formatMessage({ id: "history.status.failure" });
+      break;
+  }
 
-            }}>
-                <TransactionAmount amount={item.amount} chainStore={chainStore} textStyles={textStyles(style)} />
-                <Text numberOfLines={1} style={[textStyles(style), { textAlign: "right", fontSize: 12, color: "#4AB57C" }]}>
-                    {item.status}
-                </Text>
-            </View>
-
-            <View
-                style={{ marginEnd: 8, marginStart: 16, marginTop: 5 }}
-            >
-                <RightArrowIcon
-                    height={6.25}
-                    color={style.get("color-text-black-low").color}
-                />
-            </View>
+  return (
+    <View style={style.flatten(["padding-0"])}>
+      <View style={style.flatten(["flex-row", "content-stretch"])}>
+        <Text style={style.flatten(["flex-1", "text-base-medium", "color-gray-10"])}>
+          {item?.action}
+        </Text>
+        <Text style={style.flatten(["text-base-medium", "color-gray-10", "text-right"])}>
+          {amountText}
+        </Text>
+        <View style={style.flatten(["height-20", "width-20", "margin-left-8", "items-center", "justify-center"])}>
+          <RightArrowIcon
+            height={6.25}
+            color={style.get("color-gray-10").color}
+          />
         </View>
-    </View>
-})
-
-export const TransactionAmount: FunctionComponent<{
-    amount: Coin,
-    chainStore: ChainStore,
-    textStyles: StyleProp<TextStyle>
-}> = observer(({ amount, chainStore, textStyles }) => {
-    let currency = chainStore.current.currencies.find((cur) => cur.coinMinimalDenom == amount?.denom)
-    let displayDenom = currency ? currency.coinDenom : amount.denom
-    let displayAmount = currency ? new CoinPretty(currency, amount.amount)
-        .shrink(true)
-        .maxDecimals(9)
-        .upperCase(true)
-        .hideDenom(true)
-        .trim(true)
-        .toString() : amount.amount
-    return <View style={{ flex: 1, alignItems: "flex-end", flexDirection: "row" }} >
-        <Text numberOfLines={1} style={[textStyles, { flex: 1, textAlign: "right", alignSelf: "stretch" }]}>
-            {`${displayAmount} `}
+      </View>
+      <View style={style.flatten(["flex-row", "content-stretch", "margin-top-4"])}>
+        <Text style={style.flatten(["flex-1", "text-small-regular", "color-gray-30"])}>
+          {moment(item?.timestamp).format("hh:mm - DD/MM/YYYY")}
         </Text>
-        <Text numberOfLines={1} style={[textStyles, { textAlign: "right", alignSelf: "flex-end" }]}>
-            {displayDenom}
+        <Text style={{
+          ...style.flatten([
+            "text-small-regular",
+            "text-right",
+            "margin-right-28",
+          ]),
+          ...statusTextColor,
+        }}>
+          {statusText}
         </Text>
-
+      </View>
     </View>
+  );
 })

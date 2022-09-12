@@ -77,6 +77,7 @@ export const Colors = {
   "red-30": "#FFB8BC",
   "red-50": "#D44E67",
   "red-60": "#FF424E",
+  "yellow-50": "#D4B039",
   icon: "#2C4163",
   card: "rgba(255,255,255,0.95)",
   success: "#2DCE89",

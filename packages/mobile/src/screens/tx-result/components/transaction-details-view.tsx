@@ -10,7 +10,7 @@ import { useSmartNavigation } from "../../../navigation-util";
 export const TransactionDetailsView: FunctionComponent<{
   style?: ViewStyle;
 }> = ({ style }) => {
-  const { chainStore, transactionStore, accountStore, queriesStore } = useStore();
+  const { chainStore, transactionStore, accountStore } = useStore();
 
   const [hasData] = useState(() => {
     if (transactionStore.txMsgsMode && transactionStore.txMsgs) {
@@ -49,7 +49,7 @@ export const TransactionDetailsView: FunctionComponent<{
         "{txHash}",
         txHash
       );
-      console.log("___URL___", url);
+
       smartNavigation.pushSmart("WebView", {
         url: url,
       });
@@ -63,7 +63,7 @@ export const TransactionDetailsView: FunctionComponent<{
         <Button
           text={intl.formatMessage(
             { id: "tx.result.viewDetails" },
-            { page: "Astra Scan" }
+            { page: chainInfo.raw.txExplorer.name }
           )}
           mode="text"
           containerStyle={{ marginTop: 16 }}
