@@ -17,8 +17,8 @@ export const ActionsCard: FunctionComponent<{
   const { chainStore, remoteConfigStore } = useStore();
   const intl = useIntl();
 
-  // const swapEnabled = remoteConfigStore.getBool("feature_swap_enabled");
-  const swapEnabled = true;
+  const swapEnabled = remoteConfigStore.getBool("feature_swap_enabled");
+  // const swapEnabled = true;
 
   return (
     <Card style={containerStyle}>
