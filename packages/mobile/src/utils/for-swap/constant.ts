@@ -1,6 +1,5 @@
-import { ChainId, JSBI, Percent } from "@solarswap/sdk";
 import { parseUnits } from "@ethersproject/units";
-import Web3 from "web3";
+import { ChainId, JSBI, Percent } from "@solarswap/sdk";
 
 export enum GAS_PRICE {
   default = "5",
@@ -10,10 +9,10 @@ export enum GAS_PRICE {
 }
 
 export const GAS_PRICE_GWEI = {
-  default: parseUnits(GAS_PRICE.default, "gwei").toString(),
-  fast: parseUnits(GAS_PRICE.fast, "gwei").toString(),
-  instant: parseUnits(GAS_PRICE.instant, "gwei").toString(),
-  testnet: parseUnits(GAS_PRICE.testnet, "gwei").toString(),
+  default: parseUnits(GAS_PRICE.default, "gwei").toHexString(),
+  fast: parseUnits(GAS_PRICE.fast, "gwei").toHexString(),
+  instant: parseUnits(GAS_PRICE.instant, "gwei").toHexString(),
+  testnet: parseUnits(GAS_PRICE.testnet, "gwei").toHexString(),
 };
 
 export const TX_DEADLINE = 20 * 60; // 20p
@@ -42,7 +41,3 @@ export enum ERROR_KEY {
   INSUFFICIENT_BALANCE = "InsufficientBalances",
   INVALID_INPUT = "InvalidInput",
 }
-
-export const MaxUint256 = Web3.utils.toBN(
-  "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-);

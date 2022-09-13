@@ -1,10 +1,10 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { ChainInfo } from "@keplr-wallet/types";
+import { ChainId } from "@solarswap/sdk";
 
 export const CoinGeckoAPIEndPoint = "https://api.coingecko.com/api/v3";
 
-export const EthereumEndpoint =
-  "https://mainnet.infura.io/v3/eeb00e81cdb2410098d5a270eff9b341";
+export const EthereumEndpoint = "https://rpc.astranaut.dev";
 
 export interface AppChainInfo extends ChainInfo {
   readonly chainSymbolImageUrl?: string;
@@ -23,7 +23,7 @@ export interface AppChainInfo extends ChainInfo {
       readonly icons: [string];
     };
   };
-  readonly chainIdNumber?: number;
+  readonly chainIdNumber?: ChainId;
   readonly unbondingTime?: number;
 }
 
@@ -56,6 +56,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
           "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
       },
       {
+        type: "erc20",
         coinDenom: "USDT",
         coinMinimalDenom: "usdt",
         coinDecimals: 18,

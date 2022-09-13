@@ -24,7 +24,6 @@ export const useAmountOut = ({
     [SwapField.Input]: inputCurrency,
     [SwapField.Output]: outputCurrency,
   },
-  swapValue,
 }: UseAmountOutProps) => {
   const { etherProvider, WASA } = useWeb3();
   const [pair, setPair] = useState<Pair>();

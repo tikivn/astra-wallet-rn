@@ -4,7 +4,6 @@ import { UseSwapAggregationValue } from "../../hooks";
 import { SLIPPAGE_TOLERANCE, SwapField } from "../../utils/for-swap";
 import { SwapAction, SwapInfoState } from "./reducer";
 export interface SwapRootState {
-  // multicalls: MulticallState;
   swapInfos: SwapInfoState;
 }
 export interface SwapContextProps extends UseSwapAggregationValue {
@@ -21,9 +20,6 @@ export interface SwapContextProps extends UseSwapAggregationValue {
     [K in SwapField]: Currency | undefined;
   };
 }
-// export const initialStateMulticalls: MulticallState = {
-//   callResults: {},
-// };
 
 export interface SwapProviderProps {
   children: React.ReactNode;
@@ -41,7 +37,6 @@ const swapInfos = {
   error: "",
 };
 export const initialSwapReducerValue: SwapRootState = {
-  // multicalls: initialStateMulticalls,
   swapInfos,
 };
 

@@ -60,6 +60,15 @@ export const SwapScreen: FunctionComponent = observer(() => {
     swapInfos.slippageTolerance
   );
 
+  // useEffect(() => {
+  //   if (currencies[SwapField.Input]?.symbol === "USDT") {
+  //     console.log("run appove 0");
+  //     (async () => {
+  //       await approve0();
+  //     })();
+  //   }
+  // }, [approve0, currencies]);
+
   const handleClickContinue = useCallback(() => {
     if (approvalState === ApprovalState.APPROVED) {
       smartNavigation.navigateSmart("Swap.Confirm", {});
@@ -86,7 +95,6 @@ export const SwapScreen: FunctionComponent = observer(() => {
     >
       <View style={style.flatten(["padding-x-16"])}>
         <View style={style.get("height-12")} />
-        {/* <MulticallUpdater />s */}
 
         <AmountSwap
           currency={currencies[SwapField.Input]}

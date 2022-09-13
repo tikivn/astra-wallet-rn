@@ -1,3 +1,6 @@
+import { Interface } from "@ethersproject/abi";
+import { BigNumber } from "@ethersproject/bignumber";
+import { Contract } from "@ethersproject/contracts";
 import {
   ChainId,
   Router,
@@ -6,8 +9,7 @@ import {
   TradeType,
 } from "@solarswap/sdk";
 import { useEffect, useMemo, useState } from "react";
-import ISolardexRouter02 from "../contracts/abis/ISolardexRouter02.json";
-import { ADDRESSES } from "../contracts/addresses";
+import ISolardexRouter02ABI from "../contracts/abis/ISolardexRouter02.json";
 import {
   calculateGasMargin,
   calculateSlippagePercent,
@@ -15,6 +17,8 @@ import {
   isZero,
   TX_DEADLINE,
 } from "../utils/for-swap";
+import addresses from "../utils/for-swap/addresses";
+import { getContract } from "../utils/for-swap/contract-helper";
 import { useSignTransaction } from "./use-sign-transaction";
 import { useWeb3 } from "./use-web3";
 
@@ -25,7 +29,8 @@ export enum SwapCallbackState {
 }
 
 interface SwapCall {
-  contract: any;
+  intf: Interface;
+  contract: Contract;
   parameters: SwapParameters;
 }
 
@@ -38,21 +43,23 @@ interface FailedCall extends SwapCallEstimate {
 }
 
 interface SwapCallEstimate {
-  functionAbi: any;
-  value: any;
+  encodeFunctionData?: string;
+  value?: string;
+  gasEstimate?: BigNumber;
+  error?: any;
 }
 
 function useTransactionDeadline() {
-  const { web3Instance } = useWeb3();
+  const { etherProvider } = useWeb3();
   const [timestamp, setTimestamp] = useState<number>();
   useEffect(() => {
-    if (!web3Instance) return;
+    if (!etherProvider) return;
     (async () => {
-      const blockNumber = await web3Instance?.eth.getBlockNumber();
-      const number = await web3Instance?.eth.getBlock(blockNumber);
+      const blockNumber = await etherProvider.getBlockNumber();
+      const number = await etherProvider.getBlock(blockNumber);
       setTimestamp(+number.timestamp + TX_DEADLINE);
     })();
-  }, [web3Instance]);
+  }, [etherProvider]);
   return timestamp;
 }
 // returns a function that will execute a swap, if the parameters are all valid
@@ -62,34 +69,23 @@ export function useSwapCallArguments(
   trade: Trade | undefined, // trade to execute, required
   allowedSlippage: number = INITIAL_ALLOWED_SLIPPAGE // in bips
 ): SwapCall[] {
-  const {
-    accountHex: account,
-    chainId,
-    etherProvider: library,
-    web3Instance,
-  } = useWeb3();
+  const { accountHex: account, chainId, etherProvider: library } = useWeb3();
 
   const chain = chainId || ChainId.TESTNET;
 
   const recipient = account;
   const deadline = useTransactionDeadline();
   return useMemo(() => {
-    if (
-      !trade ||
-      !recipient ||
-      !library ||
-      !account ||
-      !chainId ||
-      !deadline ||
-      !web3Instance
-    )
+    if (!trade || !recipient || !library || !account || !chainId || !deadline)
       return [];
 
-    const contract = new web3Instance.eth.Contract(
-      ISolardexRouter02 as any,
-      ADDRESSES.ROUTER[chain]
+    const intfContract = new Interface(ISolardexRouter02ABI);
+    const contract = getContract(
+      ISolardexRouter02ABI,
+      addresses.ROUTER[chain],
+      library
     );
-    if (!contract) {
+    if (!intfContract || !contract) {
       return [];
     }
     const swapMethods = [];
@@ -114,7 +110,11 @@ export function useSwapCallArguments(
       );
     }
 
-    return swapMethods.map((parameters) => ({ parameters, contract }));
+    return swapMethods.map((parameters) => ({
+      parameters,
+      contract,
+      intf: intfContract,
+    }));
   }, [
     account,
     allowedSlippage,
@@ -124,7 +124,6 @@ export function useSwapCallArguments(
     library,
     recipient,
     trade,
-    web3Instance,
   ]);
 }
 
@@ -213,29 +212,52 @@ export function useSwapCallback(
             const {
               parameters: { methodName, args, value },
               contract,
+              intf,
             } = call;
 
             const options = !value || isZero(value) ? {} : { value };
-            const contractFunction = contract.methods[methodName](...args);
-            const functionAbi = contractFunction.encodeABI();
+            const encodeFunctionData = intf.encodeFunctionData(
+              methodName,
+              args
+            );
             const opts = { ...options, from: accountHex };
-            return contractFunction
-              .estimateGas(opts)
-              .then((gasEstimate: any) => {
+            return contract.estimateGas[methodName](...args, opts)
+              .then((gasEstimate) => {
                 return {
-                  functionAbi,
+                  encodeFunctionData,
                   gasEstimate,
                   value,
                 };
               })
-              .catch((gasError: any) => {
+              .catch((gasError) => {
                 console.error(
                   "Gas estimate failed, trying eth_call to extract error",
-                  { gasError, call }
+                  call,
+                  gasError
                 );
-                return {
-                  error: gasError,
-                };
+
+                return contract.callStatic[methodName](...args, options)
+                  .then((result) => {
+                    console.error(
+                      "Unexpected successful call after failed estimate gas",
+                      call,
+                      gasError,
+                      result
+                    );
+                    return {
+                      call,
+                      error:
+                        "Unexpected issue with estimating the gas. Please try again.",
+                    };
+                  })
+                  .catch((callError) => {
+                    console.error("Call threw error", call, callError);
+
+                    return {
+                      call,
+                      error: swapErrorToUserReadableMessage(callError),
+                    };
+                  });
               });
           })
         );
@@ -258,17 +280,16 @@ export function useSwapCallback(
           );
         }
 
-        const { functionAbi, gasEstimate, value } = successfulEstimation;
-        return signTransaction(functionAbi, {
-          gas: calculateGasMargin(gasEstimate),
+        const { encodeFunctionData, gasEstimate, value } = successfulEstimation;
+        return signTransaction(encodeFunctionData || "", {
+          gasLimit: calculateGasMargin(gasEstimate).toHexString(),
           value,
         })
           .then((hash) => {
             return hash;
           })
           .catch((error) => {
-            console.log("🚀 -> onSwap -> error", error);
-            console.log(
+            console.error(
               `Swap failed: ${swapErrorToUserReadableMessage(error)}`
             );
             return "failed";

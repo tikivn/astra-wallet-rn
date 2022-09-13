@@ -18,7 +18,7 @@ export const SwapProvider: FunctionComponent<SwapProviderProps> = ({
     reducer,
     initialSwapReducerValue
   );
-  const { accountHex, chainId, getStore, WASA } = useWeb3();
+  const { chainId, getStore, WASA } = useWeb3();
 
   const { chainStore } = getStore();
 

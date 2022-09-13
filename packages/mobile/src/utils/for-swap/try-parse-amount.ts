@@ -1,3 +1,4 @@
+import { parseUnits } from "@ethersproject/units";
 import {
   Currency,
   CurrencyAmount,
@@ -5,8 +6,6 @@ import {
   Token,
   TokenAmount,
 } from "@solarswap/sdk";
-import Web3 from "web3";
-import { getUnitMapKey } from ".";
 // eslint-disable-next-line import/no-extraneous-dependencies
 
 // try to parse a user entered amount for a given token
@@ -19,9 +18,7 @@ export const tryParseAmount = (
     return undefined;
   }
   try {
-    const typedValueParsed = Web3.utils
-      .toWei(value, getUnitMapKey(currency.decimals))
-      .toString();
+    const typedValueParsed = parseUnits(value, currency.decimals).toString();
 
     if (typedValueParsed !== "0") {
       return currency.symbol !== WASA?.symbol

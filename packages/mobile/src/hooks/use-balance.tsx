@@ -1,3 +1,5 @@
+import { isAddress } from "@ethersproject/address";
+import { Provider, Web3Provider } from "@ethersproject/providers";
 import {
   ChainId,
   Currency,
@@ -7,22 +9,21 @@ import {
   TokenAmount,
 } from "@solarswap/sdk";
 import { useCallback, useMemo, useState } from "react";
-import Web3 from "web3";
 import erc20Abi from "../contracts/abis/erc20.json";
-import { CallProps, multicall } from "../providers/swap/multicall";
 import { INTERNAL_DELAY } from "../utils/for-swap";
+import { CallProps, multicall } from "../utils/for-swap/multicall";
 import { useInterval } from "./use-interval";
 import { useWeb3 } from "./use-web3";
 
 export const useTokenBalances = (
   account: string,
   tokens: Token[],
-  web3Instance: Web3,
-  chainId: number
+  chainId: ChainId,
+  provider: Provider
 ) => {
   const [balances, setBalances] = useState();
   const validTokens = useMemo(
-    () => tokens.filter((token) => Web3.utils.isAddress(token.address)),
+    () => tokens.filter((token) => isAddress(token.address)),
     [tokens]
   );
 
@@ -33,14 +34,18 @@ export const useTokenBalances = (
   const calls: CallProps[] = tokenAddress.map((addr) => ({
     methodName: "balanceOf",
     target: addr,
-    inputs: [account],
+    params: [account],
   }));
 
   useInterval(
     () => {
       (async () => {
-        const bls = await multicall(erc20Abi, calls, web3Instance, chainId);
-        setBalances(bls as any);
+        try {
+          const bls = await multicall(erc20Abi, calls, chainId, provider);
+          setBalances(bls as any);
+        } catch (e: any) {
+          console.error("Error fetch balances token:", { error: e });
+        }
       })();
     },
     INTERNAL_DELAY,
@@ -68,7 +73,7 @@ export const useTokenBalances = (
 export function useCurrencyBalances(
   currencies?: (Currency | undefined)[]
 ): (CurrencyAmount | undefined)[] {
-  const { web3Instance, accountHex, WASA, chainId } = useWeb3();
+  const { etherProvider, accountHex, WASA, chainId } = useWeb3();
 
   const tokens = useMemo(
     () =>
@@ -81,10 +86,10 @@ export function useCurrencyBalances(
   const tokenBalances = useTokenBalances(
     accountHex,
     tokens,
-    web3Instance,
-    chainId ?? ChainId.TESTNET
+    chainId ?? ChainId.TESTNET,
+    etherProvider
   );
-  const asaBalance = useASABalance(accountHex, web3Instance, WASA);
+  const asaBalance = useASABalance(accountHex, etherProvider, WASA);
   return useMemo(
     () =>
       currencies?.map((currency) => {
@@ -97,29 +102,23 @@ export function useCurrencyBalances(
   );
 }
 
-// export function useCurrencyBalance(
-//   account?: string,
-//   currency?: Currency
-// ): CurrencyAmount | undefined {
-//   return useCurrencyBalances(account, [currency])[0];
-// }
 export const useASABalance = (
   accountHex: string,
-  web3Instance: Web3,
+  etherProvider: Web3Provider,
   WASA: Token
 ) => {
   const [asaBalance, setAsaBalance] = useState("");
 
   const getBalance = useCallback(() => {
-    if (!web3Instance || !accountHex) return;
+    if (!etherProvider || !accountHex) return;
 
-    web3Instance.eth
+    etherProvider
       .getBalance(accountHex)
-      .then(setAsaBalance)
+      .then((res) => setAsaBalance(res.toString()))
       .catch((err) => {
         console.log("ERROR_ASA_BALANCE: ", err);
       });
-  }, [accountHex, web3Instance]);
+  }, [accountHex, etherProvider]);
 
   useInterval(
     () => {

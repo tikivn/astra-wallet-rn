@@ -1,53 +1,62 @@
+import { hexlify } from "@ethersproject/bytes";
+import { TransactionRequest } from "@ethersproject/providers";
+import { Wallet } from "@ethersproject/wallet";
 import { useCallback, useMemo } from "react";
-import { ADDRESSES } from "../contracts/addresses";
 import { useStore } from "../stores";
 import { GAS_PRICE_GWEI } from "../utils/for-swap";
+import addresses from "../utils/for-swap/addresses";
 import { useWeb3 } from "./use-web3";
 
 export const useSignTransaction = () => {
-  const { web3Instance, chainId } = useWeb3();
+  const { etherProvider, chainId } = useWeb3();
   const { keyRingStore } = useStore();
   const gasPrice = GAS_PRICE_GWEI.testnet;
 
-  const accountSignAsync = useMemo(async () => {
-    if (!web3Instance) return;
+  const walletSignAsync = useMemo(async () => {
+    if (!etherProvider) return;
     const privateKey = await keyRingStore.exportPrivateKey();
-    return web3Instance.eth.accounts.privateKeyToAccount("0x" + privateKey);
-  }, [keyRingStore, web3Instance]);
+    const wallet = new Wallet(`0x${privateKey}`, etherProvider);
+    return wallet;
+  }, [etherProvider, keyRingStore]);
 
   const signTransaction = useCallback(
-    async (functionAbi: any, opts: any = {}) => {
-      const accountSign = await accountSignAsync;
-      if (!web3Instance || !accountSign)
+    async (
+      encodeFunctionData: string,
+      opts: Partial<TransactionRequest> = {}
+    ) => {
+      const accountSign = await walletSignAsync;
+      if (!walletSignAsync || !accountSign)
         return Promise.reject("An error occurred!");
 
       return new Promise<string>((resolve, reject) => {
-        web3Instance.eth
+        etherProvider
           .getTransactionCount(accountSign.address)
           .then((_nonce) => {
-            const txParams = {
+            const txParams: TransactionRequest = {
               gasPrice,
-              to: ADDRESSES.ROUTER[chainId],
-              data: functionAbi,
+              to: addresses.ROUTER[chainId],
+              data: encodeFunctionData,
               from: accountSign.address,
-              nonce: web3Instance.utils.toHex(_nonce),
+              nonce: hexlify(_nonce),
+              chainId,
               ...opts,
             };
             accountSign
-              .signTransaction(txParams as any)
-              .then((signed) => {
-                web3Instance.eth
-                  .sendSignedTransaction(signed.rawTransaction || "")
-                  .on("transactionHash", (hash) => {
-                    resolve(hash);
-                  })
-                  .on("error", reject);
-              })
-              .catch(reject);
+              .signTransaction(txParams)
+              .then((signed) => etherProvider.sendTransaction(signed))
+              .then(({ hash }) => etherProvider.waitForTransaction(hash))
+              .then(({ transactionHash }) => resolve(transactionHash))
+              .catch((err) => {
+                console.log("Error Sign Data ", { error: err, opts });
+                reject(err);
+              });
+          })
+          .catch((err) => {
+            console.log("Error sign => ", { error: err });
           });
       });
     },
-    [accountSignAsync, chainId, gasPrice, web3Instance]
+    [chainId, etherProvider, gasPrice, walletSignAsync]
   );
 
   return signTransaction;

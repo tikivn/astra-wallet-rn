@@ -8,8 +8,8 @@ export function useInterval(
   valueDetect?: any
 ) {
   const savedCallback = useRef(() => {});
-  const timerIdRef = useRef<NodeJS.Timeout>();
-  const timeOutIdRef = useRef<NodeJS.Timeout>();
+  const timerIdRef = useRef<number>();
+  const timeOutIdRef = useRef<number>();
   const valueRef = useRef(valueDetect);
 
   // Remember the latest callback.
