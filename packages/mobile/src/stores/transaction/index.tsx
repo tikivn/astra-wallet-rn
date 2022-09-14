@@ -1,8 +1,6 @@
 import { Msg } from "@cosmjs/launchpad";
 import { AnyWithUnpacked, SignDocWrapper } from "@keplr-wallet/cosmos";
-import {
-  SignDocHelper,
-} from "@keplr-wallet/hooks";
+import { SignDocHelper } from "@keplr-wallet/hooks";
 import {
   AccountStore,
   CosmosAccount,
@@ -18,6 +16,7 @@ import {
 import { ChainStore } from "../chain";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { action, computed, makeObservable, observable } from "mobx";
+import { KeplrETCQueries } from "@keplr-wallet/stores-etc";
 
 export type TxState = "pending" | "success" | "failure" | undefined;
 
@@ -29,7 +28,7 @@ export class TransactionStore {
       [CosmosAccount, CosmwasmAccount, SecretAccount]
     >,
     protected readonly queriesStore: QueriesStore<
-      [CosmosQueries, CosmwasmQueries, SecretQueries]
+      [CosmosQueries, CosmwasmQueries, SecretQueries, KeplrETCQueries]
     >
   ) {
     makeObservable(this);
@@ -38,8 +37,8 @@ export class TransactionStore {
   @observable protected _txState: TxState = undefined;
   @observable protected _txHash?: Uint8Array = undefined;
   @observable protected _rawData?: {
-    type: string,
-    value: Record<string, any>,
+    type: string;
+    value: Record<string, any>;
   } = undefined;
   @observable protected _txAmount?: CoinPretty = undefined;
 
@@ -73,10 +72,12 @@ export class TransactionStore {
   }
 
   @computed
-  get rawData(): {
-    type: string,
-    value: Record<string, any>,
-  } | undefined {
+  get rawData():
+    | {
+        type: string;
+        value: Record<string, any>;
+      }
+    | undefined {
     return this._rawData;
   }
 
@@ -96,8 +97,7 @@ export class TransactionStore {
     if (value) {
       if (value["amount"]) {
         this._txAmount = value["amount"] as CoinPretty;
-      }
-      else if (value["totalRewards"]) {
+      } else if (value["totalRewards"]) {
         this._txAmount = value["totalRewards"] as CoinPretty;
       }
     }
@@ -111,10 +111,7 @@ export class TransactionStore {
   }
 
   @action
-  updateRawData(rawData: {
-    type: string,
-    value: Record<string, any>,
-  }) {
+  updateRawData(rawData: { type: string; value: Record<string, any> }) {
     this._rawData = rawData;
     this.setAmount();
   }
@@ -171,8 +168,12 @@ export class TransactionStore {
     const delegations = queryDelegations.delegations;
 
     return delegations.filter((del) => {
-      return (!delegatorAddress || delegatorAddress === del.delegation.delegator_address)
-        && (!validatorAddress || validatorAddress === del.delegation.validator_address);
+      return (
+        (!delegatorAddress ||
+          delegatorAddress === del.delegation.delegator_address) &&
+        (!validatorAddress ||
+          validatorAddress === del.delegation.validator_address)
+      );
     });
   }
 
