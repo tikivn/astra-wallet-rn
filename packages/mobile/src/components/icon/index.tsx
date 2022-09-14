@@ -32,3 +32,5 @@ export * from "./toast-icon";
 export * from "./expand";
 export * from "./eye-close";
 export * from "./eye-open";
+export * from "./astra-logo/astra-logo";
+export * from "./cannot-redelegate";

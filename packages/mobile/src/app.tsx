@@ -1,5 +1,5 @@
 import * as React from "react";
-import { FunctionComponent }  from "react";
+import { FunctionComponent } from "react";
 import { StoreProvider } from "./stores";
 import { StyleProvider } from "./styles";
 import { AppNavigation } from "./navigation";
@@ -15,6 +15,7 @@ import { ToastModalProvider } from "./providers/toast-modal";
 import Bugsnag from "@bugsnag/react-native";
 import { AppIntlProvider } from "./translations";
 import { autoUpdateBody, withAutoDownloadUI } from "./providers/auto-update";
+import { NetworkConnectionProvider } from "./providers/network-connection";
 
 if (Platform.OS === "android") {
   // https://github.com/web-ridge/react-native-paper-dates/releases/tag/v0.2.15
@@ -101,11 +102,13 @@ const AppBody: FunctionComponent = () => {
             <ModalsProvider>
               <LoadingScreenProvider>
                 <ConfirmModalProvider>
-                  <ToastModalProvider>
-                    <InteractionModalsProvider>
-                      <AppNavigationWithAutoUI />
-                    </InteractionModalsProvider>
-                  </ToastModalProvider>
+                  <NetworkConnectionProvider>
+                    <ToastModalProvider>
+                      <InteractionModalsProvider>
+                        <AppNavigationWithAutoUI />
+                      </InteractionModalsProvider>
+                    </ToastModalProvider>
+                  </NetworkConnectionProvider>
                 </ConfirmModalProvider>
               </LoadingScreenProvider>
             </ModalsProvider>
@@ -140,7 +143,7 @@ const useCodePush = (() => {
 const CodePushAppBody = autoUpdateBody(AppBody, useCodePush)
 
 export const App: FunctionComponent = () => {
-  return (ErrorBoundary ? 
+  return (ErrorBoundary ?
     <ErrorBoundary>
       <CodePushAppBody />
     </ErrorBoundary>

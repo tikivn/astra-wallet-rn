@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { Image, Text, View, ViewStyle } from "react-native";
 import { Card, CardBody, CardDivider } from "../../../components/card";
@@ -6,8 +6,10 @@ import { useSmartNavigation } from "../../../navigation-util";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { RectButton } from "../../../components/rect-button";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import { formatCoin } from "../../../common/utils";
+import { registerModal } from "../../../modals/base";
+import { Button, CannotRedelegateIcon } from "../../../components";
 
 export const DelegatedCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -21,6 +23,9 @@ export const DelegatedCard: FunctionComponent<{
   const smartNavigation = useSmartNavigation();
 
   const style = useStyle();
+  const intl = useIntl();
+
+  const [displayCannotRedelegateModal, setDisplayCannotRedelegateModal] = useState(false);
 
   const staked = queries.cosmos.queryDelegations
     .getQueryBech32Address(account.bech32Address)
@@ -29,6 +34,14 @@ export const DelegatedCard: FunctionComponent<{
   const rewards = queries.cosmos.queryRewards
     .getQueryBech32Address(account.bech32Address)
     .getStakableRewardOf(validatorAddress);
+
+  const canRedelegate = queries.cosmos.queryRedelegations
+    .getQueryBech32Address(account.bech32Address)
+    .redelegations
+    .filter((redelegation) => {
+      return redelegation.redelegation.validator_dst_address === validatorAddress;
+    })
+    .length === 0;
 
   return (
     <Card style={containerStyle}>
@@ -149,9 +162,14 @@ export const DelegatedCard: FunctionComponent<{
             <RectButton
               style={style.flatten(["items-center", "width-80"])}
               onPress={() => {
-                smartNavigation.navigateSmart("Redelegate", {
-                  validatorAddress,
-                });
+                if (canRedelegate) {
+                  smartNavigation.navigateSmart("Redelegate", {
+                    validatorAddress,
+                  });
+                  return;
+                }
+
+                setDisplayCannotRedelegateModal(true);
               }}
             >
               <Image
@@ -169,6 +187,18 @@ export const DelegatedCard: FunctionComponent<{
               >
                 <FormattedMessage id="validator.details.delegated.regelegate" />
               </Text>
+              <CannotRedelegateModal
+                isOpen={displayCannotRedelegateModal}
+                close={() => {
+                  setDisplayCannotRedelegateModal(false);
+                }}
+                title={intl.formatMessage({ id: "common.modal.cannotRedelegate.title" })}
+                content={intl.formatMessage({ id: "common.modal.cannotRedelegate.content" })}
+                buttonText={intl.formatMessage(
+                  { id: "common.text.understand" },
+                  { date: "" },
+                )}
+              />
             </RectButton>
 
             <RectButton
@@ -199,5 +229,48 @@ export const DelegatedCard: FunctionComponent<{
         </View>
       </CardBody>
     </Card>
+  );
+});
+
+const CannotRedelegateModal: FunctionComponent<{
+  isOpen: boolean;
+  close: () => void;
+  title: string;
+  content: string;
+  buttonText: string;
+}> = registerModal(({ close, title, content, buttonText }) => {
+  const style = useStyle();
+
+  return (
+    <View style={style.flatten([
+      "height-full",
+      "justify-center",
+    ])}>
+      <View style={style.flatten([
+        "items-center",
+        "content-stretch",
+        "margin-x-40",
+        "padding-16",
+        "border-radius-8",
+        "border-width-1",
+        "border-color-gray-60",
+        "background-color-gray-90"
+      ])}>
+        <CannotRedelegateIcon />
+        <Text style={style.flatten(["text-medium-semi-bold", "color-gray-10", "margin-top-16"])}>
+          {title}
+        </Text>
+        <Text style={style.flatten(["text-base-regular", "color-gray-30", "margin-top-8"])}>
+          {content}
+        </Text>
+        <View style={style.flatten(["width-full", "content-stretch"])}>
+          <Button
+            text={buttonText}
+            onPress={close}
+            containerStyle={style.flatten(["margin-top-16"])}
+          />
+        </View>
+      </View>
+    </View>
   );
 });

@@ -28,6 +28,35 @@ export type Delegation = {
   };
 };
 
+export type Redelegations = {
+  redelegation_responses: Redelegation[];
+  // pagination: {}
+};
+
+export type Redelegation = {
+  redelegation: {
+    delegator_address: string;
+    validator_src_address: string;
+    validator_dst_address: string;
+    entries:
+    {
+      creation_height: string;
+      completion_time: string;
+      initial_balance: string;
+      shares_dst: string;
+    }[];
+  };
+  entries: {
+    redelegation_entry: {
+      creation_height: string;
+      completion_time: string;
+      initial_balance: string;
+      shares_dst: string;
+    },
+    balance: string;
+  }[];
+};
+
 export type UnbondingDelegations = {
   unbonding_responses: UnbondingDelegation[];
   // pagination: {}
@@ -55,10 +84,10 @@ export type Validator = {
   };
   jailed: boolean;
   status:
-    | "BOND_STATUS_UNSPECIFIED"
-    | "BOND_STATUS_UNBONDED"
-    | "BOND_STATUS_UNBONDING"
-    | "BOND_STATUS_BONDED";
+  | "BOND_STATUS_UNSPECIFIED"
+  | "BOND_STATUS_UNBONDED"
+  | "BOND_STATUS_UNBONDING"
+  | "BOND_STATUS_BONDED";
   // Int
   tokens: string;
   // Dec
