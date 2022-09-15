@@ -5,9 +5,8 @@ import {
 import { Redelegation, Redelegations } from "./types";
 import { KVStore } from "@keplr-wallet/common";
 import { ChainGetter } from "../../../common";
-// import { CoinPretty, Int } from "@keplr-wallet/unit";
 import { computed, makeObservable } from "mobx";
-// import { computedFn } from "mobx-utils";
+import { computedFn } from "mobx-utils";
 
 export class ObservableQueryRedelegationsInner extends ObservableChainQuery<Redelegations> {
   protected bech32Address: string;
@@ -22,7 +21,7 @@ export class ObservableQueryRedelegationsInner extends ObservableChainQuery<Rede
       kvStore,
       chainId,
       chainGetter,
-      `/cosmos/staking/v1beta1/delegators/${bech32Address}/redelegations?`
+      `/cosmos/staking/v1beta1/delegators/${bech32Address}/redelegations`
     );
     makeObservable(this);
 
@@ -34,48 +33,6 @@ export class ObservableQueryRedelegationsInner extends ObservableChainQuery<Rede
     return this.bech32Address.length > 0;
   }
 
-  // @computed
-  // get total(): CoinPretty {
-  //   const stakeCurrency = this.chainGetter.getChain(this.chainId).stakeCurrency;
-
-  //   if (!this.response) {
-  //     return new CoinPretty(stakeCurrency, new Int(0)).ready(false);
-  //   }
-
-  //   let totalBalance = new Int(0);
-  //   for (const delegation of this.response.data.delegation_responses) {
-  //     totalBalance = totalBalance.add(new Int(delegation.balance.amount));
-  //   }
-
-  //   return new CoinPretty(stakeCurrency, totalBalance);
-  // }
-
-  // @computed
-  // get delegationBalances(): {
-  //   validatorAddress: string;
-  //   balance: CoinPretty;
-  // }[] {
-  //   if (!this.response) {
-  //     return [];
-  //   }
-
-  //   const stakeCurrency = this.chainGetter.getChain(this.chainId).stakeCurrency;
-
-  //   const result = [];
-
-  //   for (const delegation of this.response.data.delegation_responses) {
-  //     result.push({
-  //       validatorAddress: delegation.delegation.validator_address,
-  //       balance: new CoinPretty(
-  //         stakeCurrency,
-  //         new Int(delegation.balance.amount)
-  //       ),
-  //     });
-  //   }
-
-  //   return result;
-  // }
-
   @computed
   get redelegations(): Redelegation[] {
     if (!this.response) {
@@ -85,29 +42,23 @@ export class ObservableQueryRedelegationsInner extends ObservableChainQuery<Rede
     return this.response.data.redelegation_responses;
   }
 
-  // readonly getDelegationTo = computedFn(
-  //   (validatorAddress: string): CoinPretty => {
-  //     const delegations = this.delegations;
+  readonly getRedelegations = computedFn(
+    (params: {
+      srcValidatorAddress?: string,
+      dstValidatorAddress?: string,
+    } = {}): Redelegation[] => {
+      const { srcValidatorAddress: src = "", dstValidatorAddress: dst = "" } = params;
 
-  //     const stakeCurrency = this.chainGetter.getChain(this.chainId)
-  //       .stakeCurrency;
+      const redelegations = this.redelegations.filter((redelegation) => {
+        var condition = true;
+        condition = condition && (src.length !== 0 ? redelegation.redelegation.validator_src_address === src : true);
+        condition = condition && (dst.length !== 0 ? redelegation.redelegation.validator_dst_address === dst : true);
+        return condition;
+      });
 
-  //     if (!this.response) {
-  //       return new CoinPretty(stakeCurrency, new Int(0)).ready(false);
-  //     }
-
-  //     for (const delegation of delegations) {
-  //       if (delegation.delegation.validator_address === validatorAddress) {
-  //         return new CoinPretty(
-  //           stakeCurrency,
-  //           new Int(delegation.balance.amount)
-  //         );
-  //       }
-  //     }
-
-  //     return new CoinPretty(stakeCurrency, new Int(0));
-  //   }
-  // );
+      return redelegations;
+    }
+  );
 }
 
 export class ObservableQueryRedelegations extends ObservableChainQueryMap<Redelegations> {

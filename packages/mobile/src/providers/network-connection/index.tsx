@@ -1,9 +1,10 @@
 import React, { FunctionComponent, useContext, useEffect, useState } from "react";
-import { SafeAreaView, Text, View } from "react-native";
+import { Platform, SafeAreaView, Text, View } from "react-native";
 import NetInfo, { useNetInfo } from "@react-native-community/netinfo";
 import { useStyle } from "../../styles";
 import { AstraLogo, Button } from "../../components";
 import { useIntl } from "react-intl";
+import { useStore } from "../../stores";
 
 interface NetworkConnectionModal {
   onRetryHandler(): void;
@@ -57,6 +58,7 @@ const NetworkConnectionModal: FunctionComponent = () => {
 };
 
 export const NetworkConnectionProvider: FunctionComponent = ({ children }) => {
+  const { remoteConfigStore } = useStore();
   const netInfo = useNetInfo();
   const [isInternetReachable, setIsInternetReachable] = useState(() => {
     return netInfo.isInternetReachable;
@@ -82,12 +84,18 @@ export const NetworkConnectionProvider: FunctionComponent = ({ children }) => {
     });
   };
 
+  const isNetworkDetectionEnabled = () => {
+    return Platform.OS === "android" 
+    ? remoteConfigStore.getBool("feature_networkDetectionOnAndroid_enabled")
+    : true;
+  };
+
   return (
     <NetworkConnectionModalContext.Provider
       value={{ onRetryHandler }}
     >
       {children}
-      {isInternetReachable !== true && (
+      {(isInternetReachable !== true && isNetworkDetectionEnabled()) && (
         <NetworkConnectionModal />
       )}
     </NetworkConnectionModalContext.Provider>

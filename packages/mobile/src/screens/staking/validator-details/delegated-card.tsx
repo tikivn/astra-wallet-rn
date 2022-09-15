@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { Image, Text, View, ViewStyle } from "react-native";
 import { Card, CardBody, CardDivider } from "../../../components/card";
@@ -35,13 +35,26 @@ export const DelegatedCard: FunctionComponent<{
     .getQueryBech32Address(account.bech32Address)
     .getStakableRewardOf(validatorAddress);
 
-  const canRedelegate = queries.cosmos.queryRedelegations
+  const redelegation = queries.cosmos.queryRedelegations
     .getQueryBech32Address(account.bech32Address)
-    .redelegations
-    .filter((redelegation) => {
-      return redelegation.redelegation.validator_dst_address === validatorAddress;
-    })
-    .length === 0;
+    .getRedelegations({ dstValidatorAddress: validatorAddress })
+    .shift();
+
+  const redelegationCompletionTime = useMemo(() => {
+    const completionTime = redelegation?.entries.shift()?.redelegation_entry.completion_time;
+    return (
+      completionTime
+        ? new Date(completionTime)
+        : new Date()
+    )
+      .toLocaleString("vi-VN", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+  }, [redelegation]);
 
   return (
     <Card style={containerStyle}>
@@ -162,7 +175,7 @@ export const DelegatedCard: FunctionComponent<{
             <RectButton
               style={style.flatten(["items-center", "width-80"])}
               onPress={() => {
-                if (canRedelegate) {
+                if (!redelegation) {
                   smartNavigation.navigateSmart("Redelegate", {
                     validatorAddress,
                   });
@@ -193,11 +206,11 @@ export const DelegatedCard: FunctionComponent<{
                   setDisplayCannotRedelegateModal(false);
                 }}
                 title={intl.formatMessage({ id: "common.modal.cannotRedelegate.title" })}
-                content={intl.formatMessage({ id: "common.modal.cannotRedelegate.content" })}
-                buttonText={intl.formatMessage(
-                  { id: "common.text.understand" },
-                  { date: "" },
+                content={intl.formatMessage(
+                  { id: "common.modal.cannotRedelegate.content" },
+                  { date: redelegationCompletionTime },
                 )}
+                buttonText={intl.formatMessage({ id: "common.text.understand" })}
               />
             </RectButton>
 
@@ -257,10 +270,10 @@ const CannotRedelegateModal: FunctionComponent<{
         "background-color-gray-90"
       ])}>
         <CannotRedelegateIcon />
-        <Text style={style.flatten(["text-medium-semi-bold", "color-gray-10", "margin-top-16"])}>
+        <Text style={style.flatten(["text-medium-semi-bold", "color-gray-10", "margin-top-16", "text-center"])}>
           {title}
         </Text>
-        <Text style={style.flatten(["text-base-regular", "color-gray-30", "margin-top-8"])}>
+        <Text style={style.flatten(["text-base-regular", "color-gray-30", "margin-top-8", "text-center"])}>
           {content}
         </Text>
         <View style={style.flatten(["width-full", "content-stretch"])}>

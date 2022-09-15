@@ -40,7 +40,7 @@ export const AmountInput: FunctionComponent<{
     }, [amountText]);
 
     function onChangeTextHandler(amountText: string) {
-      const text = amountText.replaceAll(",", "");
+      const text = amountText.split(",").join("");
       amountConfig.setAmount(text);
 
       const amount = Number(text) ?? 0;

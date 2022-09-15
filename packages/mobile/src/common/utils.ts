@@ -23,7 +23,7 @@ export const formatDate = (date: Date) => {
 };
 
 export const formatNumber = (value: string) => {
-  const replacedValue = value.replaceAll(",", "");
+  const replacedValue = value.split(",").join("");
   const numValue = Number(replacedValue);
   if (!numValue) {
     return value;

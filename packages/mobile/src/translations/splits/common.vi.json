@@ -3,7 +3,7 @@
   "common.alert.content.notShareMnemonic": "Không chia sẻ cụm từ bí mật cho người khác. Nếu ai đó biết chuỗi mật mã, họ sẽ kiểm soát được ví của bạn.",
   "common.loading": "Loading...",
   "common.modal.cannotRedelegate.title": "Không thể chuyển đổi gói tích luỹ",
-  "common.modal.cannotRedelegate.content": "Gói tích luỹ này đã được chuyển đổi từ gói khác gần đây. Bạn cần chờ 48h để chuyển đổi tiếp từ gói này. Vui lòng thử lại vào {date}",
+  "common.modal.cannotRedelegate.content": "Gói tích luỹ này đã được chuyển đổi từ gói khác gần đây. Bạn cần chờ 48h để chuyển đổi tiếp từ gói này. Vui lòng thử lại vào {date}.",
   "common.text.accountHolder": "Tên tài khoản",
   "common.text.approve": "Cho phép",
   "common.text.backupNow": "Sao lưu ngay",
