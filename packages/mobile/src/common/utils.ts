@@ -19,7 +19,14 @@ export const formatCoin = (coin?: CoinPretty, hideDenom: boolean = false) => {
 };
 
 export const formatDate = (date: Date) => {
-  return date.toLocaleTimeString("vi-VN") + ", " + date.toLocaleDateString("vi-VN");
+  return date.toLocaleString("vi-VN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
 };
 
 export const formatNumber = (value: string) => {

@@ -13,7 +13,7 @@
   "history.action.MsgWithdrawDelegatorReward.sender": "",
   "history.action.notsupport": "",
   "history.emptyHistory": "",
-  "history.status.failure": "• Success",
-  "history.status.success": "• Failure",
+  "history.status.failure": "• Failure",
+  "history.status.success": "• Success",
   "history.status.unknown": "• Unknown"
 }

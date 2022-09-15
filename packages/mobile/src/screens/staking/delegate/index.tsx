@@ -108,8 +108,10 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.amountConfig,
     validatorAddress,
   );
-  sendConfigs.gasConfig.setGas(gasLimit);
-  sendConfigs.feeConfig.setFeeType(feeType);
+  if (!sendConfigs.feeConfig.fee || sendConfigs.feeConfig.fee?.toDec().isZero()) {
+    sendConfigs.gasConfig.setGas(gasLimit);
+    sendConfigs.feeConfig.setFeeType(feeType);
+  }
   const feeText = formatCoin(sendConfigs.feeConfig.fee);
 
   const chainInfo = chainStore.getChain(chainStore.current.chainId).raw;
@@ -247,6 +249,8 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         <AmountInput
           labelText={intl.formatMessage({ id: "stake.delegate.amount" })}
           amountConfig={sendConfigs.amountConfig}
+          availableAmount={userBalanceStore.getBalance()}
+          fee={sendConfigs.feeConfig.fee}
           containerStyle={style.flatten(["margin-top-24"])}
         />
         <ListRowView

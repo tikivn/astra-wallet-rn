@@ -247,6 +247,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         <AmountInput
           labelText={intl.formatMessage({ id: "stake.undelegate.amountLabel" })}
           amountConfig={sendConfigs.amountConfig}
+          availableAmount={staked}
           containerStyle={style.flatten(["margin-top-24"])}
         />
         <ListRowView
