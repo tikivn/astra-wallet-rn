@@ -36,7 +36,7 @@ import { useStyle } from "../../../styles";
         <View>
           <Text
             style={StyleSheet.flatten([
-              style.flatten(["body3", "color-white"]),
+              style.flatten(["body3", "color-label-text-1"]),
               labelStyle,
             ])}
           >
@@ -69,7 +69,7 @@ import { useStyle } from "../../../styles";
         <RectButton
           style={StyleSheet.flatten([
             style.flatten([
-              "background-color-background-secondary",
+              "background-color-card-background",
               "height-48",
               "padding-left-16",
               "padding-right-16",

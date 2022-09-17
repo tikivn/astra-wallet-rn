@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { KeyboardTypeOptions, Platform, TouchableOpacity, View, ViewStyle } from "react-native";
-import { Colors, useStyle } from "../../styles";
+import { useStyle } from "../../styles";
 import { EyeCloseIcon, EyeOpenIcon } from "../icon";
 import { TextInput } from "./input";
 
@@ -52,7 +52,7 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(({
   const labelStyle = {
     ...styleBuilder.flatten([
       "text-medium-medium",
-      "color-gray-30",
+      "color-input-label",
       "margin-bottom-4"
     ]),
   };
@@ -60,13 +60,13 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(({
   const errorLabelStyle = {
     ...styleBuilder.flatten([
       "text-base-regular",
-      (errorText && errorText.length != 0) ? "color-red-50" : "color-gray-30",
+      (errorText && errorText.length != 0) ? "color-input-error" : "color-input-label",
     ]),
   };
 
   const inputContainerStyle = {
     ...styleBuilder.flatten([
-      "background-color-gray-90",
+      "background-color-input-background",
     ]),
     ...borderColor(),
   };
@@ -80,7 +80,7 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(({
   const textInputStyle = {
     ...styleBuilder.flatten([
       "text-medium-regular",
-      "color-gray-10"
+      "color-input-value"
     ]),
     ...Platform.select({
       android: {
@@ -95,20 +95,18 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(({
   }, [error]);
 
   function borderColor() {
-    var borderStyle = { borderColor: Colors["gray-60"] };
+    var borderStyle = styleBuilder.get("border-color-input-inactive");
 
     if (isFocused) {
-      borderStyle = { borderColor: Colors["blue-70"] };
+      borderStyle = styleBuilder.get("border-color-input-active");
     }
 
     if (errorText && errorText.length != 0) {
-      borderStyle = { borderColor: Colors["red-50"] };
+      borderStyle = styleBuilder.get("border-color-input-error");
     }
 
     return borderStyle;
   }
-
-  // const [showPassword, setShowPassword] = useState(showPassword);
 
   function inputRightView(): React.ReactNode {
     return secureTextEntry
@@ -116,7 +114,6 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(({
         if (onShowPasswordChanged) {
           onShowPasswordChanged(!showPassword);
         }
-        // setShowPassword(!showPassword);
       }}>
         {showPassword ? <EyeCloseIcon /> : <EyeOpenIcon />}
       </TouchableOpacity>
@@ -151,6 +148,7 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(({
       labelStyle={labelStyle}
       error={errorText || info}
       errorLabelStyle={errorLabelStyle}
+      placeholderTextColor={styleBuilder.get("color-input-label").color}
       inputContainerStyle={inputContainerStyle}
       containerStyle={containerStyle}
       style={textInputStyle}

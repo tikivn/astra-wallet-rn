@@ -680,7 +680,7 @@ export const MainTabNavigation: FunctionComponent = () => {
         inactiveTintColor: style.get("color-text-black-very-very-low").color,
         style: {
           borderTopWidth: 1,
-          borderTopColor: style.get("color-gray-70").color,
+          borderTopColor: style.get("color-border").color,
           shadowColor: style.get("color-transparent").color,
           elevation: 0,
           // paddingLeft: 30,

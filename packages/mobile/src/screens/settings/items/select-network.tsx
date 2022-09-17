@@ -68,7 +68,7 @@ export const RightView: FunctionComponent<{
         <Text
           style={style.flatten([
             "body3",
-            "color-text-black-low",
+            "color-label-text-2",
             "margin-right-16",
           ])}
         >

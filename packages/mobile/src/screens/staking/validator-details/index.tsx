@@ -142,12 +142,12 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
               indicatorStyle={style.get("background-color-primary")}
               tabStyle={style.flatten(["flex-0"])}
               //   scrollEnabled={true}
-              style={style.flatten(["background-color-background", "border-width-bottom-1", "border-color-gray-70"])}
+              style={style.flatten(["background-color-background", "border-width-bottom-1", "border-color-border"])}
               renderLabel={({ route, focused }) => (
                 <Text
                   style={style.flatten(
-                    ["text-base-medium", "color-gray-30"],
-                    [focused && "color-blue-70"]
+                    ["text-base-medium", "color-label-text-2"],
+                    [focused && "color-primary"]
                   )}
                 >
                   {route.title}

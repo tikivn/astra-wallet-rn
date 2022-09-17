@@ -358,7 +358,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         <RectButton onPress={forgotPasswordHandler}>
           <Text style={style.flatten([
             "text-base-light",
-            "color-blue-70",
+            "color-link-text",
             "text-underline",
             "text-center",
             "margin-y-16"

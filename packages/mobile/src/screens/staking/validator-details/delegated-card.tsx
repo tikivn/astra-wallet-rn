@@ -62,8 +62,9 @@ export const DelegatedCard: FunctionComponent<{
         <View
           style={style.flatten([
             "padding-0",
+            "background-color-card-background",
             "border-radius-16",
-            "border-color-gray-60",
+            "border-color-card-border",
             "border-width-1",
           ])}
         >

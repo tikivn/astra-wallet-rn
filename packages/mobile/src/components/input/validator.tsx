@@ -20,10 +20,10 @@ export const ValidatorItem: FunctionComponent<{
           style.flatten([
             "border-radius-16",
             "border-width-1",
-            "border-color-gray-60",
+            "border-color-card-border",
             "padding-x-16",
             "height-56",
-            "background-color-gray-90",
+            "background-color-card-background",
             "flex-row",
             "items-center",
             "justify-between",

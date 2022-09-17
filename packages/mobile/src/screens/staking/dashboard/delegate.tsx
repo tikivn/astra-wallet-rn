@@ -130,6 +130,7 @@ export const DelegationsItem: FunctionComponent<{
                 >
                   <ValidatorItem
                     containerStyle={style.flatten([
+                      "background-color-card-background-header",
                       "border-width-0",
                       "border-radius-0",
                     ])}
@@ -165,6 +166,7 @@ export const DelegationsItem: FunctionComponent<{
                   />
                   <View
                     style={style.flatten([
+                      "background-color-card-background",
                       "margin-0",
                       "padding-16",
                       "flex-row",

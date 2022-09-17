@@ -62,8 +62,9 @@ export const RewardsItem: FunctionComponent<{
           "margin-x-16",
           "margin-y-16",
           "justify-between",
+          "background-color-card-background",
           "border-radius-16",
-          "border-color-gray-60",
+          "border-color-card-border",
           "border-width-1",
         ],
       )}
@@ -100,7 +101,7 @@ export const RewardsItem: FunctionComponent<{
           textStyle={style.flatten(["color-white", "subtitle3"])}
         />
       </View>
-      <CardDivider style={style.flatten(["background-color-gray-70"])} />
+      <CardDivider style={style.flatten(["background-color-card-border"])} />
       <View
         style={style.flatten([
           "padding-y-16",
