@@ -1,15 +1,19 @@
 import React, { FunctionComponent, useState } from "react";
-import { View, ViewStyle } from "react-native";
+import { Text, View, ViewStyle } from "react-native";
 import { Button, IRow, ListRowView } from "../../../components";
 import { useStore } from "../../../stores";
 import { renderAminoMessages } from "../models/amino";
 import { renderDirectMessages } from "../models/direct";
 import { useIntl } from "react-intl";
 import { useSmartNavigation } from "../../../navigation-util";
+import { RectButton } from "react-native-gesture-handler";
+import { useStyle } from "../../../styles";
 
 export const TransactionDetailsView: FunctionComponent<{
   style?: ViewStyle;
 }> = ({ style }) => {
+  const styleBuilder = useStyle();
+
   const { chainStore, transactionStore, accountStore } = useStore();
 
   const [hasData] = useState(() => {
@@ -60,15 +64,20 @@ export const TransactionDetailsView: FunctionComponent<{
     <View style={style}>
       {hasData && <ListRowView rows={rows} />}
       {chainInfo && chainInfo.raw.txExplorer && transactionStore.txHash && (
-        <Button
-          text={intl.formatMessage(
-            { id: "tx.result.viewDetails" },
-            { page: chainInfo.raw.txExplorer.name }
-          )}
-          mode="text"
-          containerStyle={{ marginTop: 16 }}
-          onPress={viewDetailsHandler}
-        />
+        <RectButton onPress={viewDetailsHandler} activeOpacity={0}>
+          <Text style={styleBuilder.flatten([
+            "text-base-regular",
+            "color-link-text",
+            "text-underline",
+            "text-center",
+            "margin-y-16"
+          ])}>
+            {intl.formatMessage(
+              { id: "tx.result.viewDetails" },
+              { page: chainInfo.raw.txExplorer.name }
+            )}
+          </Text>
+        </RectButton>
       )}
     </View>
   );

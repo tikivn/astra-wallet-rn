@@ -1,4 +1,4 @@
-import React, { Fragment, FunctionComponent, useEffect, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { View, Text, Image } from "react-native";
 import { observer } from "mobx-react-lite";
 import { RouteProp, useIsFocused, useRoute } from "@react-navigation/native";
@@ -12,7 +12,6 @@ import Clipboard from "expo-clipboard";
 
 import { useForm } from "react-hook-form";
 import { useSmartNavigation } from "../../../navigation-util";
-import { useSimpleTimer } from "../../../hooks";
 import { useBIP44Option } from "../bip44";
 
 import { AlertInline } from "../../../components";
@@ -108,12 +107,9 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
           id: "common.alert.content.notShareMnemonic",
         })}
       />
-      <View style={style.flatten(["height-24"])} />
+      <View style={style.flatten(["height-16"])} />
       <Button
-        containerStyle={style.flatten(["border-radius-4", "height-44"])}
-        textStyle={style.flatten(["subtitle2"])}
         text={intl.formatMessage({ id: "common.text.continue" })}
-        size="large"
         onPress={submit}
       />
       {/* Mock element for bottom padding */}

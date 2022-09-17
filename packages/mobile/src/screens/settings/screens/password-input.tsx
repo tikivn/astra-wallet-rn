@@ -284,10 +284,8 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
       <View style={style.flatten(["flex-1", "justify-end", "margin-bottom-12"])}>
         <View style={style.flatten(["height-1", "background-color-gray-70", "margin-bottom-12"])} />
         <Button
-          containerStyle={style.flatten(["border-radius-4", "height-44", "margin-x-page"])}
-          textStyle={style.flatten(["subtitle2"])}
+          containerStyle={style.flatten(["margin-x-page"])}
           text={getButtonText()}
-          size="large"
           onPress={onProceed}
           disabled={!inputDataValid}
           color={type === "deleteWallet" ? "danger" : "primary"}

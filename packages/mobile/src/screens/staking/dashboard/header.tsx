@@ -5,6 +5,7 @@ import { Button } from "../../../components/button";
 import { useStyle } from "../../../styles";
 import { useSmartNavigation } from "../../../navigation-util";
 import { FormattedMessage, useIntl } from "react-intl";
+import { RectButton } from "react-native-gesture-handler";
 
 export const DashboardHeader: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -26,19 +27,24 @@ export const DashboardHeader: FunctionComponent<{
         <Text style={style.flatten(["color-white", "h3"])}>
           <FormattedMessage id="staking.dashboard.title" />
         </Text>
-        <Button
-          style={style.get("padding-x-0")}
-          text={intl.formatMessage({ id: "staking.dashboard.learnMore" })}
-          mode="text"
-          size="default"
-          underlayColor={style.get("color-background").color}
-          textStyle={style.flatten(["text-underline", "body3"])}
+        <RectButton
+          activeOpacity={0}
           onPress={() => {
             smartNavigation.navigateSmart("WebView", {
               url: "https://tiki.vn/sep/home",
             });
           }}
-        />
+        >
+          <Text style={style.flatten([
+            "text-base-regular",
+            "color-link-text",
+            "text-underline",
+            "text-center",
+            "margin-top-8"
+          ])}>
+            {intl.formatMessage({ id: "staking.dashboard.learnMore" })}
+          </Text>
+        </RectButton>
       </View>
       <Image
         source={require("../../../assets/image/saving.png")}

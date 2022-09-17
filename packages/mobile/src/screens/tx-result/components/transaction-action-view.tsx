@@ -27,19 +27,15 @@ export const TransactionActionView: FunctionComponent<{
       <View style={{ flexDirection: "row", marginTop: 12, marginHorizontal: 16, }}>
         <Button
           text={intl.formatMessage({ id: "tx.result.action.homepage" })}
-          size="large"
           mode={txState == "failure" ? "text" : "fill"}
-          containerStyle={styleBuilder.flatten(["border-width-1", "border-color-button-primary", "border-radius-4", "flex-1"])}
-          textStyle={styleBuilder.flatten(["subtitle2"])}
+          containerStyle={styleBuilder.flatten(["flex-1"])}
           onPress={async () => {
             navigation.navigate("NewHome");
           }}
         />
         {txState == "failure" && (<Button
           text={intl.formatMessage({ id: "tx.result.action.reInvest" })}
-          size="large"
-          containerStyle={styleBuilder.flatten(["margin-left-8", "border-radius-4", "flex-1"])}
-          textStyle={styleBuilder.flatten(["subtitle2"])}
+          containerStyle={styleBuilder.flatten(["margin-left-8", "flex-1"])}
           onPress={async () => {
             navigation.goBack();
           }}

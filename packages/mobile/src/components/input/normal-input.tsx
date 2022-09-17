@@ -67,6 +67,7 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(({
   const inputContainerStyle = {
     ...styleBuilder.flatten([
       "background-color-input-background",
+      "input-container",
     ]),
     ...borderColor(),
   };

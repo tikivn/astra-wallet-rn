@@ -1,8 +1,7 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { StyleSheet, Text, TextStyle, View, ViewStyle } from "react-native";
-import { Colors, useStyle } from "../../styles";
-import { Typos } from "../../styles/typos";
+import { useStyle } from "../../styles";
 import { TextAlign } from "./text-style";
 
 export enum AlignItems {
@@ -30,21 +29,25 @@ interface IItemRow {
 }
 
 export function buildLeftColumn(config: ITextColumn): IColumn {
+  const style = useStyle();
+
   return {
     text: config.text,
-    textStyle: config.textStyle ?? Typos["text-base-regular"],
+    textStyle: config.textStyle ?? style.get("text-base-regular"),
     textAlign: config.textAlign,
-    textColor: config.textColor ?? Colors["gray-30"],
+    textColor: config.textColor ?? style.get("color-label-text-2").color,
     flex: config.flex,
   };
 }
 
 export function buildRightColumn(config: ITextColumn): IColumn {
+  const style = useStyle();
+
   return {
     text: config.text,
-    textStyle: config.textStyle ?? Typos["text-base-regular"],
+    textStyle: config.textStyle ?? style.get("text-base-regular"),
     textAlign: config.textAlign ?? TextAlign.right,
-    textColor: Colors["gray-10"],
+    textColor: style.get("color-label-text-1").color,
     flex: config.flex ?? 1,
   };
 }
@@ -62,7 +65,7 @@ export const ItemRow: FunctionComponent<IItemRow> = observer(
     const cols = columns.map((column, index) => {
       const {
         text,
-        textStyle = Typos["text-base-regular"],
+        textStyle = styleBuilder.get("text-base-regular"),
         textAlign = TextAlign.left,
         textColor,
         flex,

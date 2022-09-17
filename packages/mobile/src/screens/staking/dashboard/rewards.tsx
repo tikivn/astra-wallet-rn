@@ -86,18 +86,13 @@ export const RewardsItem: FunctionComponent<{
         <Button
           containerStyle={style.flatten([
             "self-center",
-            "border-radius-4",
-            // "border-color-gray-30",
-            // "border-width-1",
             "width-132",
           ])}
           onPress={() => {
             smartNavigation.navigateSmart("Validator.List", {});
           }}
           text={intl.formatMessage({ id: "staking.dashboard.rewards.invest" })}
-          mode="fill"
           size="small"
-          underlayColor={style.get("color-background").color}
           textStyle={style.flatten(["color-white", "subtitle3"])}
         />
       </View>
@@ -115,25 +110,19 @@ export const RewardsItem: FunctionComponent<{
             id: "staking.dashboard.rewards.totalProfit",
           })}
           value={"+" + formatCoin(pendingStakableReward)}
-          valueStyle={style.flatten(["color-green-50"])}
+          valueStyle={style.flatten(["color-rewards-text"])}
         />
 
         <Button
-          containerStyle={style.flatten(
-            [
-              "self-center",
-              "border-radius-4",
-              "border-color-gray-30",
-              "border-width-1",
-              "width-132",
-            ],
-          )}
+          containerStyle={style.flatten([
+            "self-center",
+            "width-132",
+          ])}
           text={intl.formatMessage({
             id: "staking.dashboard.rewards.withdrawProfit",
           })}
-          mode="text"
+          mode="outline"
           size="small"
-          underlayColor={style.get("color-background").color}
           textStyle={style.flatten(["color-gray-10", "subtitle3"])}
           disabled={!isRewardExist}
           onPress={() => {
@@ -159,22 +148,15 @@ export const RewardsItem: FunctionComponent<{
         />
 
         <Button
-          containerStyle={style.flatten(
-            [
-              "self-center",
-              "border-radius-4",
-              "border-color-gray-30",
-              "border-width-1",
-              "width-132",
-            ],
-            [!isRewardExist && "opacity-40"]
-          )}
+          containerStyle={style.flatten([
+            "self-center",
+            "width-132",
+          ])}
           text={intl.formatMessage({
             id: "staking.dashboard.rewards.follow",
           })}
-          mode="text"
+          mode="outline"
           size="small"
-          underlayColor={style.get("color-background").color}
           textStyle={style.flatten(["color-gray-10", "subtitle3"])}
           disabled={!isPending}
           onPress={() => {

@@ -105,3 +105,38 @@ export const V1Colors = {
   ...BlueColors,
   ...DarkBlueColors,
 };
+
+export const V1AlertInlineColors = {
+  "alert-inline-info-main": V1Colors["blue-60"],
+  "alert-inline-info-content": V1Colors["gray-10"],
+  "alert-inline-info-background": V1Colors["blue-overlay"],
+  "alert-inline-info-border": V1Colors["blue-60"],
+  "alert-inline-warning-main": V1Colors["yellow-60"],
+  "alert-inline-warning-content": V1Colors["gray-10"],
+  "alert-inline-warning-background": V1Colors["yellow-overlay"],
+  "alert-inline-warning-border": V1Colors["yellow-60"],
+  "alert-inline-success-main": V1Colors["green-50"],
+  "alert-inline-success-content": V1Colors["gray-10"],
+  "alert-inline-success-background": V1Colors["green-overlay"],
+  "alert-inline-success-border": V1Colors["green-50"],
+  "alert-inline-error-main": V1Colors["red-50"],
+  "alert-inline-error-content": V1Colors["gray-10"],
+  "alert-inline-error-background": V1Colors["red-overlay"],
+  "alert-inline-error-border": V1Colors["red-50"],
+};
+
+export const V1InputColors = {
+  "input-active": V1Colors["purple-50"],
+  "input-inactive": V1Colors["gray-70"],
+  "input-error": V1Colors["red-50"],
+  "input-value": V1Colors["gray-10"],
+  "input-label": V1Colors["gray-30"],
+  "input-background": V1Colors["gray-90"],
+};
+
+export const V1ToggleColors = {
+  "toggle-on": "white",
+  "toggle-background-on": V1Colors["purple-50"],
+  "toggle-off": "white",
+  "toggle-background-off": V1Colors["gray-20"],
+};

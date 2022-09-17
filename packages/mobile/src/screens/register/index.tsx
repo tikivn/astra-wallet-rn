@@ -44,7 +44,7 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
           backgroundColor={style.get("color-transparent").color}
           contentContainerStyle={style.get("flex-grow-1")}
           style={{
-            ...style.flatten(["padding-x-42"]),
+            ...style.flatten(["padding-x-16"]),
             paddingTop:
               Dimensions.get("window").height * 0.22 - actualHeightHeight,
             // paddingBottom: Dimensions.get("window").height * 0.11,
@@ -78,14 +78,7 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
             </Text>
           </View>
           <Button
-            textStyle={style.flatten(["subtitle2", "color-background"])}
-            containerStyle={style.flatten([
-              "margin-bottom-16",
-              "border-radius-52",
-            ])}
             text={intl.formatMessage({ id: "register.intro.button.create" })}
-            size="large"
-            mode="light"
             onPress={() => {
               const socialLoginEnabled = remoteConfigStore.getBool("feature_socialLogin_enabled");
               if (socialLoginEnabled) {
@@ -96,16 +89,11 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
             }}
           />
           <Button
-            textStyle={style.flatten(["subtitle2", "color-white"])}
             containerStyle={style.flatten([
-              "margin-bottom-16",
-              "border-radius-52",
-              "background-color-transparent",
-              "border-color-border-white",
+              "margin-y-16",
             ])}
             text={intl.formatMessage({ id: "register.intro.button.recover" })}
-            size="large"
-            mode="outline"
+            color="secondary"
             onPress={() => {
               smartNavigation.navigateSmart("Register.RecoverMnemonic", {
                 registerConfig,

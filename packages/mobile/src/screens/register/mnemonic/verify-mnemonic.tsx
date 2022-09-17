@@ -174,15 +174,9 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
           id: "seedphrase.important",
         })}
       />
+      <View style={style.flatten(["height-16"])} />
       <Button
-        containerStyle={style.flatten([
-          "border-radius-4",
-          "height-44",
-          "margin-top-12",
-        ])}
-        textStyle={style.flatten(["subtitle2"])}
         text={intl.formatMessage({ id: "common.text.continue" })}
-        size="large"
         loading={isCreating}
         disabled={wordSet.join(" ") !== newMnemonicConfig.mnemonic}
         onPress={submit}

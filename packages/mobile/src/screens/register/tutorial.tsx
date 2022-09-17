@@ -65,13 +65,6 @@ export const RegisterTutorialcreen: FunctionComponent = observer(() => {
           {intl.formatMessage({ id: "security.term.subdescription" })}
         </Text>
         <Button
-          containerStyle={style.flatten([
-            "border-radius-4",
-            "background-color-primary",
-            "height-44",
-          ])}
-          textStyle={style.flatten(["subtitle2"])}
-          size="large"
           text={intl.formatMessage({ id: "security.term.action.understand" })}
           onPress={() => {
             smartNavigation.navigateSmart("Register.NewMnemonic", {

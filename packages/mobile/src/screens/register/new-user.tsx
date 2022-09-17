@@ -57,9 +57,7 @@ export const RegisterNewUserScreen: FunctionComponent = observer(() => {
           }
           style={style.flatten(["background-color-white"])}
           textStyle={style.flatten(["color-black"])}
-          underlayColor="#00000020"
           size="large"
-          mode="light"
           onPress={() => {
             analyticsStore.logEvent("OAuth sign in started", {
               registerType: "apple",
@@ -80,7 +78,6 @@ export const RegisterNewUserScreen: FunctionComponent = observer(() => {
           </View>
         }
         size="large"
-        mode="light"
         onPress={() => {
           analyticsStore.logEvent("OAuth sign in started", {
             registerType: "google",
@@ -103,7 +100,6 @@ export const RegisterNewUserScreen: FunctionComponent = observer(() => {
       <Button
         text="Create new mnemonic"
         size="large"
-        mode="light"
         onPress={() => {
           analyticsStore.logEvent("Create account started", {
             registerType: "seed",

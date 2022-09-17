@@ -5,7 +5,6 @@ import {
   RefreshControl,
   View,
   Text,
-  TouchableHighlight,
   FlatList,
   SafeAreaView,
 } from "react-native";
@@ -22,6 +21,7 @@ import { TransactionItem } from "./transaction_history_item";
 import { TxResponse } from "@keplr-wallet/stores/build/query/cosmos/tx/types";
 import { useSmartNavigation } from "../../navigation-util";
 import { FormattedMessage, useIntl } from "react-intl";
+import { RectButton } from "react-native-gesture-handler";
 
 export type PageRequestInfo = {
   currentPage: number;
@@ -242,8 +242,9 @@ export const HistoryScreen: FunctionComponent = observer(() => {
         onEndReached={handleLoadMore}
         keyExtractor={(_item, index) => `transaction_${index}`}
         renderItem={({ item }) => (
-          <TouchableHighlight
+          <RectButton
             style={style.flatten(["margin-y-16"])}
+            activeOpacity={0}
             onPress={() => {
               let txExplorer = chainStore.getChain(chainId).raw.txExplorer;
               let txHash = item.raw?.txhash;
@@ -259,7 +260,7 @@ export const HistoryScreen: FunctionComponent = observer(() => {
             }}
           >
             <TransactionItem item={item} chainStore={chainStore} />
-          </TouchableHighlight>
+          </RectButton>
         )}
       />
       <View style={style.flatten(["height-44"])} />

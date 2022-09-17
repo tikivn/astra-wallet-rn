@@ -3,10 +3,11 @@ import { EnumTextTransform, EnumTextDecorationLine } from "./builder/types";
 import { Platform } from "react-native";
 import { getPlatformFontWeight } from "./builder/utils";
 import { Typos } from "./typos";
-import { Colors, V1Colors } from "./color-palette";
+import { AlertInlineColors, Colors, InputColors, ToggleColors, V1AlertInlineColors, V1Colors, V1InputColors, V1ToggleColors } from "./theme/color-palette";
+import { Custom, V1Custom } from "./theme/custom-styles";
 
 export * from "./typos";
-export * from "./color-palette";
+export * from "./theme/color-palette";
 
 export const {
   StyleProvider,
@@ -16,6 +17,7 @@ export const {
   {
     themes: supportedThemeVersions,
     custom: {
+      ...Custom,
       title1: {
         fontSize: 32,
         lineHeight: 40,
@@ -215,6 +217,9 @@ export const {
     typos: Typos,
     colors: {
       ...Colors,
+      ...AlertInlineColors,
+      ...InputColors,
+      ...ToggleColors,
       ...{
         // Belows are for the button props and may not be used as styles.
         "rect-button-default-ripple": "#CCCCCC",
@@ -271,16 +276,9 @@ export const {
         "border": Colors["gray-70"],
       },
       ...{
-        "input-active": Colors["blue-70"],
-        "input-inactive": Colors["gray-60"],
-        "input-error": Colors["red-50"],
-        "input-value": Colors["gray-10"],
-        "input-label": Colors["gray-30"],
-        "input-background": Colors["gray-90"],
-      },
-      ...{
         "heading-text": "white",
         "link-text": Colors["blue-70"],
+        "rewards-text": Colors["green-50"],
         "label-text-1": Colors["gray-10"],
         "label-text-2": Colors["gray-30"],
 
@@ -489,6 +487,7 @@ export const {
       "8": 8,
       "12": 12,
       "16": 16,
+      "22": 22,
       "32": 32,
       "52": 52,
       "64": 64,
@@ -509,8 +508,14 @@ export const {
   },
   {
     v1: {
+      custom: {
+        ...V1Custom,
+      },
       colors: {
         ...V1Colors,
+        ...V1AlertInlineColors,
+        ...V1InputColors,
+        ...V1ToggleColors,
         ...{
           // Theme defs
           "primary": V1Colors["purple-50"],
@@ -518,16 +523,9 @@ export const {
           "border": V1Colors["gray-70"],
         },
         ...{
-          "input-active": V1Colors["purple-50"],
-          "input-inactive": V1Colors["gray-70"],
-          "input-error": V1Colors["red-50"],
-          "input-value": V1Colors["gray-10"],
-          "input-label": V1Colors["gray-30"],
-          "input-background": V1Colors["gray-90"],
-        },
-        ...{
           "heading-text": "white",
           "link-text": V1Colors["purple-40"],
+          "rewards-text": Colors["green-50"],
           "label-text-1": V1Colors["gray-10"],
           "label-text-2": V1Colors["gray-30"],
 

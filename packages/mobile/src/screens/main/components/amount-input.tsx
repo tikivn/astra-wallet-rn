@@ -9,7 +9,7 @@ import { useIntl } from "react-intl";
 import { NormalInput } from "../../../components/input/normal-input";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { Text, View, ViewStyle } from "react-native";
-import { formatCoin, formatNumber, MIN_AMOUNT } from "../../../common/utils";
+import { formatNumber, MIN_AMOUNT } from "../../../common/utils";
 
 export const AmountInput: FunctionComponent<{
   labelText?: string;

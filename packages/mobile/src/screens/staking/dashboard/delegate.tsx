@@ -184,7 +184,7 @@ export const DelegationsItem: FunctionComponent<{
                         id: "staking.delegate.profit",
                       })}
                       value={"+" + formatCoin(rewards)}
-                      valueStyle={style.get("color-green-50")}
+                      valueStyle={style.get("color-rewards-text")}
                     />
                   </View>
                 </RectButton>

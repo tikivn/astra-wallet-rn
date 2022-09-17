@@ -48,10 +48,13 @@ export const Colors = {
   "blue-20": "#DBEEFF",
   "blue-30": "#C2E1FF",
   "blue-40": "#94CDFF",
+  "blue-60": "#0065FF",
   "blue-70": "#0B74E5",
   "blue-90": "#074183",
   "gray-10": "#D5D9E0",
+  "gray-20": "#A7B0C2",
   "gray-30": "#818DA6",
+  "gray-40": "#8C8FB8",
   "gray-50": "#4C5975",
   "gray-60": "#3A4561",
   "gray-70": "#2C364F",
@@ -100,4 +103,39 @@ export const Colors = {
   "big-image-placeholder": "#E7E4EF",
   "chain-list-element-dragging": "rgba(242, 242, 247, 0.8)",
   "black-transparent": "rgba(0, 0, 0, 0.2)",
+};
+
+export const AlertInlineColors = {
+  "alert-inline-info-main": Colors["blue-70"],
+  "alert-inline-info-content": Colors["gray-100"],
+  "alert-inline-info-background": Colors["blue-20"],
+  "alert-inline-info-border": Colors["blue-40"],
+  "alert-inline-warning-main": Colors["orange-60"],
+  "alert-inline-warning-content": Colors["gray-100"],
+  "alert-inline-warning-background": Colors["orange-10"],
+  "alert-inline-warning-border": Colors["orange-30"],
+  "alert-inline-success-main": Colors["orange-60"],
+  "alert-inline-success-content": Colors["gray-100"],
+  "alert-inline-success-background": Colors["green-10"],
+  "alert-inline-success-border": Colors["orange-30"],
+  "alert-inline-error-main": Colors["red-60"],
+  "alert-inline-error-content": Colors["gray-100"],
+  "alert-inline-error-background": Colors["red-10"],
+  "alert-inline-error-border": Colors["red-30"],
+};
+
+export const InputColors = {
+  "input-active": Colors["blue-70"],
+  "input-inactive": Colors["gray-60"],
+  "input-error": Colors["red-50"],
+  "input-value": Colors["gray-10"],
+  "input-label": Colors["gray-30"],
+  "input-background": Colors["gray-90"],
+};
+
+export const ToggleColors = {
+  "toggle-on": "white",
+  "toggle-background-on": Colors["blue-70"],
+  "toggle-off": "white",
+  "toggle-background-off": Colors["gray-20"],
 };
