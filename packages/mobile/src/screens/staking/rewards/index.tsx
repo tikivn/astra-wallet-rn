@@ -11,14 +11,19 @@ import { EthereumEndpoint } from "../../../config";
 import { useIntl } from "react-intl";
 import { formatCoin, MIN_REWARDS_AMOUNT } from "../../../common/utils";
 import { MsgWithdrawDelegatorReward } from "@keplr-wallet/proto-types/cosmos/distribution/v1beta1/tx";
-import { AccountStore, CosmosAccount, CosmwasmAccount, SecretAccount } from "@keplr-wallet/stores";
+import {
+  AccountStore,
+  CosmosAccount,
+  CosmwasmAccount,
+  SecretAccount,
+} from "@keplr-wallet/stores";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 
 export type StakableRewards = {
-  delegatorAddress?: string,
-  validatorAddress?: string,
-  validatorName?: string,
-  rewards?: CoinPretty,
+  delegatorAddress?: string;
+  validatorAddress?: string;
+  validatorName?: string;
+  rewards?: CoinPretty;
 };
 
 export const StakingRewardScreen: FunctionComponent = () => {
@@ -49,42 +54,52 @@ export const StakingRewardScreen: FunctionComponent = () => {
     EthereumEndpoint
   );
 
-  const stakableRewardsList = transactionStore.getDelegations({
-    chainId: chainStore.current.chainId,
-    delegatorAddress: account.bech32Address,
-  })?.map((delegation) => {
-    const validator = transactionStore.getValidator({
+  const stakableRewardsList = transactionStore
+    .getDelegations({
       chainId: chainStore.current.chainId,
-      validatorAddress: delegation.delegation.validator_address,
-    });
-    const rewards = queryReward.getStakableRewardOf(delegation.delegation.validator_address);
-
-    return {
       delegatorAddress: account.bech32Address,
-      validatorAddress: validator?.operator_address,
-      validatorName: validator?.description.moniker,
-      rewards,
-    }
-  }).filter((stakableRewards) => {
-    const { rewards } = stakableRewards;
-    return rewards.toDec().gte(new Dec(MIN_REWARDS_AMOUNT));
-  }).sort((a, b) => {
-    // Sort DESC
-    return Number(b.rewards.toDec()) - Number(a.rewards.toDec());
-  });
+    })
+    ?.map((delegation) => {
+      const validator = transactionStore.getValidator({
+        chainId: chainStore.current.chainId,
+        validatorAddress: delegation.delegation.validator_address,
+      });
+      const rewards = queryReward.getStakableRewardOf(
+        delegation.delegation.validator_address
+      );
+
+      return {
+        delegatorAddress: account.bech32Address,
+        validatorAddress: validator?.operator_address,
+        validatorName: validator?.description.moniker,
+        rewards,
+      };
+    })
+    .filter((stakableRewards) => {
+      const { rewards } = stakableRewards;
+      return rewards.toDec().gte(new Dec(MIN_REWARDS_AMOUNT));
+    })
+    .sort((a, b) => {
+      // Sort DESC
+      return Number(b.rewards.toDec()) - Number(a.rewards.toDec());
+    });
 
   const stakingReward = stakableRewardsList
-    ? stakableRewardsList?.map(({ rewards }) => rewards).reduce((oldRewards, newRewards) => {
-      return oldRewards.add(newRewards);
-    })
+    ? stakableRewardsList
+        ?.map(({ rewards }) => rewards)
+        .reduce((oldRewards, newRewards) => {
+          return oldRewards.add(newRewards);
+        })
     : undefined;
 
-  const validatorAddresses = stakableRewardsList?.map((info) => info.validatorAddress) as string[];
+  const validatorAddresses = stakableRewardsList?.map(
+    (info) => info.validatorAddress
+  ) as string[];
 
   const { gasPrice, gasLimit, feeType } = simulateWithdrawRewardGasFee(
     chainStore,
     accountStore,
-    validatorAddresses,
+    validatorAddresses
   );
   sendConfigs.gasConfig.setGas(gasLimit);
   sendConfigs.feeConfig.setFeeType(feeType);
@@ -106,13 +121,16 @@ export const StakingRewardScreen: FunctionComponent = () => {
         value: {
           totalRewards: stakingReward,
           fee: sendConfigs.feeConfig.fee,
-          validatorRewards: stakableRewardsList?.map(({ validatorAddress, validatorName, rewards }) => {
-            return {
-              validatorAddress,
-              validatorName,
-              rewards,
-            };
-          }) ?? [],
+          validatorRewards:
+            stakableRewardsList?.map(
+              ({ validatorAddress, validatorName, rewards }) => {
+                return {
+                  validatorAddress,
+                  validatorName,
+                  rewards,
+                };
+              }
+            ) ?? [],
         },
       });
 
@@ -155,7 +173,13 @@ export const StakingRewardScreen: FunctionComponent = () => {
   return (
     <View style={style.flatten(["flex-1", "background-color-background"])}>
       <View style={style.flatten(["height-24"])} />
-      <Text style={style.flatten(["color-gray-30", "text-base-regular", "text-center"])}>
+      <Text
+        style={style.flatten([
+          "color-gray-30",
+          "text-base-regular",
+          "text-center",
+        ])}
+      >
         {intl.formatMessage({ id: "staking.rewards.totalProfit" })}
       </Text>
       <Text
@@ -169,7 +193,13 @@ export const StakingRewardScreen: FunctionComponent = () => {
       >
         {formatCoin(stakingReward)}
       </Text>
-      <View style={style.flatten(["height-1", "background-color-gray-70", "margin-x-page"])} />
+      <View
+        style={style.flatten([
+          "height-1",
+          "background-color-gray-70",
+          "margin-x-page",
+        ])}
+      />
       <ScrollView style={style.flatten(["flex-1"])}>
         <RewardDetails
           stakableRewardsList={stakableRewardsList}
@@ -179,10 +209,7 @@ export const StakingRewardScreen: FunctionComponent = () => {
       </ScrollView>
       <View style={style.flatten(["height-1", "background-color-gray-70"])} />
       <Button
-        containerStyle={style.flatten([
-          "margin-y-12",
-          "margin-x-page"
-        ])}
+        containerStyle={style.flatten(["margin-y-12", "margin-x-page"])}
         text={intl.formatMessage({ id: "staking.rewards.withdrawRewards" })}
         onPress={withdrawAllRewards}
         loading={account.txTypeInProgress === "withdrawRewards"}
@@ -194,10 +221,8 @@ export const StakingRewardScreen: FunctionComponent = () => {
 
 const simulateWithdrawRewardGasFee = (
   chainStore: ChainStore,
-  accountStore: AccountStore<
-    [CosmosAccount, CosmwasmAccount, SecretAccount]
-  >,
-  validatorAddresses: string[],
+  accountStore: AccountStore<[CosmosAccount, CosmwasmAccount, SecretAccount]>,
+  validatorAddresses: string[]
 ) => {
   useEffect(() => {
     simulate();
@@ -228,21 +253,21 @@ const simulateWithdrawRewardGasFee = (
           }).finish(),
         };
       }),
-      { amount: [] },
+      { amount: [] }
     );
 
     const gasLimit = Math.ceil(gasUsed * 1.3);
     console.log("__DEBUG__ simulate gasUsed", gasUsed);
     console.log("__DEBUG__ simulate gasLimit", gasLimit);
     setGasLimit(gasLimit);
-  }
+  };
 
   const feeType = "average" as FeeType;
   var gasPrice = 0;
   if (chainStore.current.gasPriceStep) {
     const { [feeType]: wei } = chainStore.current.gasPriceStep;
 
-    const gwei = (new Dec(wei).mulTruncate(DecUtils.getTenExponentN(-9)));
+    const gwei = new Dec(wei).mulTruncate(DecUtils.getTenExponentN(-9));
     gasPrice = Number(gwei);
   }
 
@@ -250,5 +275,5 @@ const simulateWithdrawRewardGasFee = (
     gasPrice,
     gasLimit,
     feeType,
-  }
+  };
 };
