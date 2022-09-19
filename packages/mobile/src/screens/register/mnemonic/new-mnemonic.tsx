@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { View, Text, Image } from "react-native";
+import { View, Text } from "react-native";
 import { observer } from "mobx-react-lite";
 import { RouteProp, useIsFocused, useRoute } from "@react-navigation/native";
 import { RegisterConfig } from "@keplr-wallet/hooks";
@@ -71,38 +71,24 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
       contentContainerStyle={style.get("flex-grow-1")}
       style={style.flatten(["padding-x-page"])}
     >
-      {/* Mock for flexible margin top */}
-      <View style={style.flatten(["margin-y-32", "items-center"])}>
-        <Image
-          style={style.flatten(["height-16"])}
-          source={require("../../../assets/image/step-1.png")}
-          resizeMode="contain"
-        />
-      </View>
       <Text
         style={style.flatten([
           "text-x-large-semi-bold",
           "color-gray-10",
+          "margin-top-24",
           "margin-bottom-4",
           "text-center",
         ])}
       >
         {intl.formatMessage({ id: "register.text.backupMnemonic" })}
       </Text>
-      <Text
-        style={style.flatten([
-          "text-caption",
-          "color-gray-30",
-          "margin-bottom-4",
-          "text-center",
-        ])}
-      >
-        {intl.formatMessage({ id: "register.text.backupMnemonicDescription" })}
-      </Text>
       <WordsCard words={words} />
       <View style={style.flatten(["flex-1"])} />
       <AlertInline
         type="warning"
+        title={intl.formatMessage({
+          id: "common.alert.title.notShareMnemonic",
+        })}
         content={intl.formatMessage({
           id: "common.alert.content.notShareMnemonic",
         })}
@@ -150,10 +136,10 @@ const WordsCard: FunctionComponent<{
           "margin-bottom-4",
           "padding-top-16",
           "padding-left-16",
-          "background-color-background-secondary",
-          "border-radius-8",
+          "words-container",
           "flex-row",
           "flex-wrap",
+          "justify-center",
         ])}
       >
         {words.map((word, i) => {

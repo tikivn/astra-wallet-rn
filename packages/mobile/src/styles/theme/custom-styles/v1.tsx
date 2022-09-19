@@ -115,4 +115,10 @@ export const V1Custom = {
     backgroundColor: "transparent",
     opacity: 0.4,
   },
+  "words-container": {
+    borderWidth: 1,
+    borderRadius: 12,
+    borderColor: V1Colors["gray-70"],
+    backgroundColor: V1Colors["gray-90"],
+  },
 };

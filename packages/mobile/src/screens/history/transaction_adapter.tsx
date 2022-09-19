@@ -159,11 +159,6 @@ export function toUiItem(intl, bech32Address: string, txResponse: TxResponse): T
       break;
     }
     case "/ethermint.evm.v1.MsgEthereumTx":
-      console.log(type)
-      console.log(txResponse?.tx)
-      // const msg = (msgRaw as unknown) as MsgWithdrawDelegatorReward["cosmos"];
-      // action = msg.delegator_address === bech32Address ? "sender" : "receiver"
-      // action = intl.formatMessage({ id: `history.action.MsgWithdrawDelegatorReward.${action}` })
       amount = getAmountFromRawLog(txResponse?.raw_log, "coinbase");
       break;
     case undefined:

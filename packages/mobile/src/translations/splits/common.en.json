@@ -1,6 +1,7 @@
 {
   "common.alert.content.accessTestnet": "You are connecting to Astra Testnet.",
-  "common.alert.content.notShareMnemonic": "Do not share this phrase with others. Everyone that has the phrase can log in to your account",
+  "common.alert.content.notShareMnemonic": "Anyone has the phrase can log in to your account",
+  "common.alert.title.notShareMnemonic": "Do not share your mnemonic",
   "common.loading": "Loading...",
   "common.modal.cannotRedelegate.title": "Cannot Redelegate",
   "common.modal.cannotRedelegate.content": "Redelegating to this validator is in progress. Please wait within 48h, retry at {date}.",
@@ -33,7 +34,7 @@
   "common.text.retry": "Retry",
   "common.text.save": "Save",
   "common.text.securePassword": "Secured password",
-  "common.text.understand": "I understood",
+  "common.text.understand": "I understand",
   "common.text.updateWalletName": "Change wallet's name",
   "common.text.verify": "Verify",
   "common.text.view": "View",

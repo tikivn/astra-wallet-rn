@@ -1,7 +1,5 @@
 export const Colors = {
-  background: "#141828",
   "background-secondary": "#222940",
-  primary: "#0B74E5",
   "primary-10": "#F1F3FC",
   "primary-50": "#E2E8FF",
   "primary-100": "#B3BEF7",
@@ -105,6 +103,13 @@ export const Colors = {
   "black-transparent": "rgba(0, 0, 0, 0.2)",
 };
 
+export const MainColors = {
+  "primary": Colors["blue-70"],
+  "background": Colors["gray-100"],
+  "button-primary": Colors["blue-70"],
+  "border": Colors["gray-70"],
+};
+
 export const AlertInlineColors = {
   "alert-inline-info-main": Colors["blue-70"],
   "alert-inline-info-content": Colors["gray-100"],
@@ -138,4 +143,99 @@ export const ToggleColors = {
   "toggle-background-on": Colors["blue-70"],
   "toggle-off": "white",
   "toggle-background-off": Colors["gray-20"],
+};
+
+export const StepViewColors = {
+  "step-text-active": Colors["gray-10"],
+  "step-text-inactive": Colors["gray-50"],
+
+  "step-dot-active": Colors["blue-70"],
+  "step-dot-inactive": Colors["blue-90"],
+
+  "step-tick-active": Colors["blue-70"],
+  "step-tick-inactive": Colors["blue-90"],
+
+  "step-line-active": Colors["blue-90"],
+  "step-line-inactive": Colors["gray-90"],
+
+  "step-text-success-active": Colors["gray-10"],
+  "step-text-success-inactive": Colors["gray-50"],
+
+  "step-dot-success-active": Colors["green-50"],
+  "step-dot-success-inactive": Colors["green-2"],
+
+  "step-tick-success-active": Colors["green-50"],
+  "step-tick-success-inactive": Colors["green-2"],
+  
+  "step-line-success-active": Colors["green-2"],
+  "step-line-success-inactive": Colors["gray-90"],
+};
+
+export const AllColors = {
+  ...Colors,
+  ...MainColors,
+  ...AlertInlineColors,
+  ...InputColors,
+  ...ToggleColors,
+  ...StepViewColors,
+  ...{
+    // Belows are for the button props and may not be used as styles.
+    "rect-button-default-ripple": "#CCCCCC",
+    // Active opacity is 0.055 by default.
+    "rect-button-default-underlay": Colors["text-black-medium"],
+
+    "drawer-rect-button-underlay": "#F1F3FC",
+
+    // Belows are for the button props and may not be used as styles.
+    "button-secondary": Colors.secondary,
+    "button-danger": Colors.danger,
+    "button-primary-text-pressed": Colors["primary-500"],
+    "button-secondary-text-pressed": Colors["secondary-500"],
+    "button-danger-text-pressed": Colors["danger-500"],
+    "button-primary-disabled": Colors["text-black-very-very-low"],
+    "button-secondary-disabled": Colors["text-black-very-very-low"],
+    "button-danger-disabled": Colors["text-black-very-very-low"],
+    "button-primary-light": Colors["primary-50"],
+    "button-secondary-light": Colors["secondary-50"],
+    "button-danger-light": Colors["danger-50"],
+    // For Android, note that you can't set the opacity of the ripple color.
+    "button-primary-fill-ripple": Colors["primary-600"],
+    "button-primary-light-ripple": Colors["primary-100"],
+    "button-primary-outline-ripple": Colors["primary-100"],
+    "button-secondary-fill-ripple": Colors["secondary-600"],
+    "button-secondary-light-ripple": Colors["secondary-100"],
+    "button-secondary-outline-ripple": Colors["secondary-100"],
+    "button-danger-fill-ripple": Colors["danger-600"],
+    "button-danger-light-ripple": Colors["danger-100"],
+    "button-danger-outline-ripple": Colors["danger-100"],
+    // For IOS, note that we just set the active opacity as 1, thus, unlike Android, it is opaque.
+    "button-primary-fill-underlay": Colors["primary-500"],
+    "button-primary-light-underlay": Colors["primary-100"],
+    "button-primary-outline-underlay": Colors["primary-50"],
+    "button-secondary-fill-underlay": Colors["secondary-500"],
+    "button-secondary-light-underlay": Colors["secondary-100"],
+    "button-secondary-outline-underlay": Colors["secondary-50"],
+    "button-danger-fill-underlay": Colors["danger-500"],
+    "button-danger-light-underlay": Colors["danger-100"],
+    "button-danger-outline-underlay": Colors["danger-50"],
+    "button-background-main": Colors["background-secondary"],
+    // Belows are for the chip props and may not be used as styles.
+    "chip-light-primary": Colors["primary-50"],
+    "chip-light-secondary": Colors["secondary-50"],
+    "chip-light-danger": Colors["danger-100"],
+
+    // Belows are for the loading spinner props and may not be used as styles.
+    "loading-spinner": Colors["text-black-low"],
+  },
+  ...{
+    "heading-text": "white",
+    "link-text": Colors["blue-70"],
+    "rewards-text": Colors["green-50"],
+    "label-text-1": Colors["gray-10"],
+    "label-text-2": Colors["gray-30"],
+
+    "card-border": Colors["gray-70"],
+    "card-background-header": Colors["gray-80"],
+    "card-background": Colors["gray-90"],
+  },
 };

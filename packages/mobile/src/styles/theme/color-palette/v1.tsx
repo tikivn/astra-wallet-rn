@@ -106,6 +106,13 @@ export const V1Colors = {
   ...DarkBlueColors,
 };
 
+export const V1MainColors = {
+  "primary": V1Colors["purple-50"],
+  "background": V1Colors["gray-100"],
+  "button-primary": V1Colors["purple-50"],
+  "border": V1Colors["gray-70"],
+};
+
 export const V1AlertInlineColors = {
   "alert-inline-info-main": V1Colors["blue-60"],
   "alert-inline-info-content": V1Colors["gray-10"],
@@ -139,4 +146,50 @@ export const V1ToggleColors = {
   "toggle-background-on": V1Colors["purple-50"],
   "toggle-off": "white",
   "toggle-background-off": V1Colors["gray-20"],
+};
+
+export const V1StepViewColors = {
+  "step-text-active": V1Colors["gray-10"],
+  "step-text-inactive": V1Colors["gray-50"],
+
+  "step-dot-active": V1Colors["purple-50"],
+  "step-dot-inactive": V1Colors["purple-50"] + "66",//50%
+
+  "step-tick-active": V1Colors["purple-50"],
+  "step-tick-inactive": V1Colors["blue-90"],
+
+  "step-line-active": V1Colors["blue-90"],
+  "step-line-inactive": V1Colors["gray-90"],
+
+  "step-text-success-active": V1Colors["gray-10"],
+  "step-text-success-inactive": V1Colors["gray-50"],
+
+  "step-dot-success-active": V1Colors["green-50"],
+  "step-dot-success-inactive": V1Colors["green-overlay"],
+
+  "step-tick-success-active": V1Colors["green-50"],
+  "step-tick-success-inactive": V1Colors["green-overlay"],
+  
+  "step-line-success-active": V1Colors["green-overlay"],
+  "step-line-success-inactive": V1Colors["gray-90"],
+};
+
+export const V1AllColors = {
+  ...V1Colors,
+  ...V1MainColors,
+  ...V1AlertInlineColors,
+  ...V1InputColors,
+  ...V1ToggleColors,
+  ...V1StepViewColors,
+  ...{
+    "heading-text": "white",
+    "link-text": V1Colors["purple-40"],
+    "rewards-text": V1Colors["green-50"],
+    "label-text-1": V1Colors["gray-10"],
+    "label-text-2": V1Colors["gray-30"],
+
+    "card-border": V1Colors["gray-70"],
+    "card-background-header": V1Colors["gray-80"],
+    "card-background": V1Colors["gray-90"],
+  },
 };

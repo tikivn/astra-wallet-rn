@@ -215,14 +215,8 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
 
   return (
     <View style={style.flatten(["flex-1", "background-color-background"])}>
-      {route.params.registerType !== "recover" && (
-        <View style={style.flatten(["margin-top-32", "items-center"])}>
-          <Image style={style.flatten(["height-16"])} source={require('../../../assets/image/step-3.png')} resizeMode='contain' />
-        </View>
-      )}
-
       <KeyboardAwareScrollView
-        contentContainerStyle={style.flatten(["flex-grow-1", "padding-x-page", "padding-top-32"])}
+        contentContainerStyle={style.flatten(["flex-grow-1", "padding-x-page", "padding-top-24"])}
         enableOnAndroid
       >
         {(!userLoginStore.socialLoginData && !userLoginStore.isSocialLoginActive) && (

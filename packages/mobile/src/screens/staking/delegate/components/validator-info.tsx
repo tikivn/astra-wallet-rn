@@ -6,7 +6,7 @@ import FastImage from "react-native-fast-image";
 import { buildLeftColumn, buildRightColumn } from "../../../../components/foundation-view/item-row";
 import { IRow, ListRowView } from "../../../../components/foundation-view/list-row-view";
 import { PersonIcon } from "../../../../components/icon";
-import { Colors } from "../../../../styles";
+import { Colors, useStyle } from "../../../../styles";
 import { Typos } from "../../../../styles/typos";
 
 interface IValidatorInfo {
@@ -26,6 +26,8 @@ export const ValidatorInfo: FunctionComponent<{
   votingPower,
 }) => {
   const intl = useIntl();
+  const styleBuilder = useStyle();
+
   function thumbnailIcon(url: string): React.ReactNode {
     return url
       ? <FastImage
@@ -45,7 +47,7 @@ export const ValidatorInfo: FunctionComponent<{
         buildLeftColumn({
           text: name,
           textStyle: Typos["text-base-medium"],
-          textColor: Colors["gray-10"],
+          textColor: styleBuilder.get("color-label-text-1").color,
         }),
         buildRightColumn({ text: commission }),
       ]

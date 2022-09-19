@@ -9,7 +9,7 @@ import { CardDivider } from "../../../components/card";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
 import { useSmartNavigation } from "../../../navigation-util";
 import { useStore } from "../../../stores";
-import { Colors, useStyle } from "../../../styles";
+import { useStyle } from "../../../styles";
 
 export const UnbondingScreen: FunctionComponent = observer(() => {
   const smartNavigation = useSmartNavigation();
@@ -63,7 +63,7 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollView
-      backgroundColor={Colors["background"]}
+      backgroundColor={style.get("color-background").color}
       style={style.flatten(["padding-x-16"])}
       stickyHeaderIndices={[2]}
     >

@@ -29,8 +29,7 @@ export const RegisterTutorialcreen: FunctionComponent = observer(() => {
         "padding-16",
       ])}
     >
-      <View style={style.get("flex-1")} />
-      <View style={style.flatten(["items-center"])}>
+      <View style={style.flatten(["items-center", "margin-top-8"])}>
         <PrivacyIcon width={122} height={122} />
         <Text style={style.flatten(["h4", "color-gray-10", "margin-top-18"])}>
           {intl.formatMessage({ id: "security.term.title" })}

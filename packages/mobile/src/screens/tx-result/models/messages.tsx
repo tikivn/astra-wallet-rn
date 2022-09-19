@@ -512,6 +512,7 @@ export function renderMsgWithdrawDelegatorReward(
   value: MsgWithdrawDelegatorReward["value"],
 ): IRow[] {
   const intl = useIntl();
+  const style = useStyle();
 
   var rows: IRow[] = [
     {
@@ -533,7 +534,7 @@ export function renderMsgWithdrawDelegatorReward(
       cols: [
         buildLeftColumn({
           text: validatorName,
-          textColor: Colors["gray-10"],
+          textColor: style.get("color-label-text-1").color,
         }),
         buildRightColumn({ text: formatCoin(rewards) }),
       ],

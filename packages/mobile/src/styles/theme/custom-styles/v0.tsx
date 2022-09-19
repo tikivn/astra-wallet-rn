@@ -115,4 +115,10 @@ export const Custom = {
     backgroundColor: "transparent",
     opacity: 0.4,
   },
+  "words-container": {
+    borderWidth: 1,
+    borderRadius: 8,
+    borderColor: Colors["gray-70"],
+    backgroundColor: Colors["gray-90"],
+  },
 };

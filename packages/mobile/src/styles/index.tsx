@@ -3,7 +3,7 @@ import { EnumTextTransform, EnumTextDecorationLine } from "./builder/types";
 import { Platform } from "react-native";
 import { getPlatformFontWeight } from "./builder/utils";
 import { Typos } from "./typos";
-import { AlertInlineColors, Colors, InputColors, ToggleColors, V1AlertInlineColors, V1Colors, V1InputColors, V1ToggleColors } from "./theme/color-palette";
+import { AllColors, V1AllColors } from "./theme/color-palette";
 import { Custom, V1Custom } from "./theme/custom-styles";
 
 export * from "./typos";
@@ -215,78 +215,7 @@ export const {
       }),
     },
     typos: Typos,
-    colors: {
-      ...Colors,
-      ...AlertInlineColors,
-      ...InputColors,
-      ...ToggleColors,
-      ...{
-        // Belows are for the button props and may not be used as styles.
-        "rect-button-default-ripple": "#CCCCCC",
-        // Active opacity is 0.055 by default.
-        "rect-button-default-underlay": Colors["text-black-medium"],
-
-        "drawer-rect-button-underlay": "#F1F3FC",
-
-        // Belows are for the button props and may not be used as styles.
-        "button-secondary": Colors.secondary,
-        "button-danger": Colors.danger,
-        "button-primary-text-pressed": Colors["primary-500"],
-        "button-secondary-text-pressed": Colors["secondary-500"],
-        "button-danger-text-pressed": Colors["danger-500"],
-        "button-primary-disabled": Colors["text-black-very-very-low"],
-        "button-secondary-disabled": Colors["text-black-very-very-low"],
-        "button-danger-disabled": Colors["text-black-very-very-low"],
-        "button-primary-light": Colors["primary-50"],
-        "button-secondary-light": Colors["secondary-50"],
-        "button-danger-light": Colors["danger-50"],
-        // For Android, note that you can't set the opacity of the ripple color.
-        "button-primary-fill-ripple": Colors["primary-600"],
-        "button-primary-light-ripple": Colors["primary-100"],
-        "button-primary-outline-ripple": Colors["primary-100"],
-        "button-secondary-fill-ripple": Colors["secondary-600"],
-        "button-secondary-light-ripple": Colors["secondary-100"],
-        "button-secondary-outline-ripple": Colors["secondary-100"],
-        "button-danger-fill-ripple": Colors["danger-600"],
-        "button-danger-light-ripple": Colors["danger-100"],
-        "button-danger-outline-ripple": Colors["danger-100"],
-        // For IOS, note that we just set the active opacity as 1, thus, unlike Android, it is opaque.
-        "button-primary-fill-underlay": Colors["primary-500"],
-        "button-primary-light-underlay": Colors["primary-100"],
-        "button-primary-outline-underlay": Colors["primary-50"],
-        "button-secondary-fill-underlay": Colors["secondary-500"],
-        "button-secondary-light-underlay": Colors["secondary-100"],
-        "button-secondary-outline-underlay": Colors["secondary-50"],
-        "button-danger-fill-underlay": Colors["danger-500"],
-        "button-danger-light-underlay": Colors["danger-100"],
-        "button-danger-outline-underlay": Colors["danger-50"],
-        "button-background-main": Colors["background-secondary"],
-        // Belows are for the chip props and may not be used as styles.
-        "chip-light-primary": Colors["primary-50"],
-        "chip-light-secondary": Colors["secondary-50"],
-        "chip-light-danger": Colors["danger-100"],
-
-        // Belows are for the loading spinner props and may not be used as styles.
-        "loading-spinner": Colors["text-black-low"],
-      },
-      ...{
-        // Theme defs
-        "primary": Colors["blue-70"],
-        "button-primary": Colors["blue-70"],
-        "border": Colors["gray-70"],
-      },
-      ...{
-        "heading-text": "white",
-        "link-text": Colors["blue-70"],
-        "rewards-text": Colors["green-50"],
-        "label-text-1": Colors["gray-10"],
-        "label-text-2": Colors["gray-30"],
-
-        "card-border": Colors["gray-70"],
-        "card-background-header": Colors["gray-80"],
-        "card-background": Colors["gray-90"],
-      },
-    },
+    colors: AllColors,
     widths: {
       full: "100%",
       half: "50%",
@@ -511,29 +440,7 @@ export const {
       custom: {
         ...V1Custom,
       },
-      colors: {
-        ...V1Colors,
-        ...V1AlertInlineColors,
-        ...V1InputColors,
-        ...V1ToggleColors,
-        ...{
-          // Theme defs
-          "primary": V1Colors["purple-50"],
-          "button-primary": V1Colors["purple-50"],
-          "border": V1Colors["gray-70"],
-        },
-        ...{
-          "heading-text": "white",
-          "link-text": V1Colors["purple-40"],
-          "rewards-text": Colors["green-50"],
-          "label-text-1": V1Colors["gray-10"],
-          "label-text-2": V1Colors["gray-30"],
-
-          "card-border": V1Colors["gray-70"],
-          "card-background-header": V1Colors["gray-80"],
-          "card-background": V1Colors["gray-90"],
-        },
-      },
+      colors: V1AllColors,
     },
     v2: {
       colors: {
