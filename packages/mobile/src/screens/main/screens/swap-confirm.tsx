@@ -337,7 +337,7 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
             "flex-1",
             "margin-right-8",
           ])}
-          color="secondary"
+          color="neutral"
           style={style.flatten(["background-color-gray-70"])}
           textStyle={style.flatten(["subtitle2"])}
           onPress={() => smartNavigation.goBack()}

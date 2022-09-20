@@ -147,7 +147,7 @@ export const DelegatedCard: FunctionComponent<{
           >
             <View style={style.flatten(["items-center", "flex-1", "padding-x-16"])}>
               <Button
-                color="secondary"
+                color="neutral"
                 text=""
                 leftIcon={<UndelegateIcon />}
                 onPress={() => {
@@ -170,7 +170,7 @@ export const DelegatedCard: FunctionComponent<{
             </View>
             <View style={style.flatten(["items-center", "flex-1", "padding-x-16"])}>
               <Button
-                color="secondary"
+                color="neutral"
                 text=""
                 leftIcon={<RedelegateIcon />}
                 onPress={() => {

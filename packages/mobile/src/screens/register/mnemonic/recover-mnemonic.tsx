@@ -172,7 +172,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                     <View style={style.flatten(["flex-1"])} />
                     <Button
                       style={style.flatten(["padding-x-12"])}
-                      size="small"
+                      size="medium"
                       mode="text"
                       text={intl.formatMessage({ id: "common.text.paste" })}
                       onPress={async () => {

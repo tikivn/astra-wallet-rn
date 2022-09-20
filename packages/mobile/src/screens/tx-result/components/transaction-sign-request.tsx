@@ -168,7 +168,7 @@ export const TransactionSignRequestView: FunctionComponent<{
           ])}
         >
           <Button
-            size="small"
+            size="medium"
             containerStyle={style.flatten([
               "margin-right-12",
               "flex-1",
@@ -181,7 +181,7 @@ export const TransactionSignRequestView: FunctionComponent<{
             }}
           />
           <Button
-            size="small"
+            size="medium"
             text={intl.formatMessage({ id: "common.text.verify" })}
             onPress={async () => {
               onApprove(source);

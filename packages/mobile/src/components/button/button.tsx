@@ -4,12 +4,10 @@ import { Text, StyleSheet, TextStyle, View, ViewStyle } from "react-native";
 import { LoadingSpinner } from "../spinner";
 import { RectButton } from "../rect-button";
 
-type ButtonState = "active" | "highlighted" | "disabled";
-
 export const Button: FunctionComponent<{
-  color?: "primary" | "secondary" | "danger";
-  mode?: "fill" | "light" | "outline" | "text";
-  size?: "default" | "small" | "large";
+  color?: "primary" | "neutral" | "negative";
+  mode?: "fill" | "outline" | "text";
+  size?: "small" | "medium" | "large";
   text: string;
   leftIcon?: ReactElement;
   rightIcon?: ReactElement;
@@ -24,7 +22,7 @@ export const Button: FunctionComponent<{
 }> = ({
   color = "primary",
   mode = "fill",
-  size = "default",
+  size = "large",
   text,
   leftIcon,
   rightIcon,
@@ -40,7 +38,7 @@ export const Button: FunctionComponent<{
     const [isPressed, setIsPressed] = useState(false);
 
     const styleDefinition = (() => {
-      var state: ButtonState = "active";
+      var state = "default";
       if (disabled) {
         state = "disabled";
       }
@@ -48,70 +46,31 @@ export const Button: FunctionComponent<{
         state = "highlighted";
       }
 
-      switch (mode) {
-        // case "fill":
-        case "outline":
-        case "text":
-          return `button-${mode}-${state}`;
-        default:
-          return `button-${color ?? "primary"}-${state}`;
-          // return "background-color-transparent";
-      }
+      return `button-${color}-${mode}-${state}`;
     })();
 
     const textDefinition = (() => {
       switch (size) {
-        case "large":
-          return "text-medium-medium";
-        case "small":
+        case "medium":
           return "text-base-medium";
+        case "small":
+          return "text-small-medium";
         default:
           return "text-medium-medium";
       }
     })();
-
-    // const textColorDefinition = (() => {
-    //   switch (mode) {
-    //     case "fill":
-    //       return "color-white";
-    //     case "light":
-    //       if (disabled) {
-    //         return "color-white";
-    //       }
-    //       if (isPressed) {
-    //         return `color-button-${color}-text-pressed`;
-    //       }
-    //       return `color-${color}`;
-    //     case "outline":
-    //     case "text":
-    //       if (disabled) {
-    //         return `color-button-${color}-disabled`;
-    //       }
-    //       if (isPressed) {
-    //         return `color-button-${color}-text-pressed`;
-    //       }
-    //       return `color-button-${color}`;
-    //   }
-    // })();
 
     return (
       <View
         style={{
           ...StyleSheet.flatten([
-            style.flatten(
-              [
-                styleDefinition as any,
-                `button-${size}-container` as any,
-                "overflow-hidden",
-              ],
-              // [
-              //   mode === "outline" && "border-width-1",
-              //   outlineBorderDefinition as any,
-              // ]
-            ),
+            style.flatten([
+              styleDefinition as any,
+              `button-${size}-container` as any,
+              "overflow-hidden",
+            ]),
             containerStyle,
           ]),
-          // opacity: /*mode === "fill" && */disabled ? 0.4 : 1
         }}
       >
         <RectButton
@@ -121,7 +80,6 @@ export const Button: FunctionComponent<{
               "justify-center",
               "items-center",
               "height-full",
-              "padding-x-8",
             ]),
             buttonStyle,
           ])}
@@ -141,15 +99,13 @@ export const Button: FunctionComponent<{
           <Text
             style={StyleSheet.flatten([
               style.flatten(
-                // ["text-medium-medium"],
                 [
                   textDefinition,
                   "text-center",
-                  // textColorDefinition as any,
                   // loading && "opacity-transparent"
                 ],
               ),
-              {color: style.get(styleDefinition as any).color},
+              { color: style.get(styleDefinition as any).color },
               textStyle,
             ])}
           >
@@ -173,7 +129,7 @@ export const Button: FunctionComponent<{
             >
               <LoadingSpinner
                 color={
-                  mode === "fill" || (mode === "light" && disabled)
+                  mode === "fill"// || (mode === "light" && disabled)
                     ? style.get("color-white").color
                     : style.get(
                       `color-button-${color}${disabled ? "-disabled" : ""

@@ -56,7 +56,7 @@ export const AddressInput: FunctionComponent<{
           </TouchableOpacity>
           <Button
             containerStyle={style.flatten(["height-24", "margin-left-8"])}
-            size="small"
+            size="medium"
             mode="text"
             text={intl.formatMessage({ id: "common.text.paste" })}
             onPress={async () => {

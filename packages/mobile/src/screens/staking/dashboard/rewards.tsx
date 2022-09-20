@@ -92,7 +92,7 @@ export const RewardsItem: FunctionComponent<{
             smartNavigation.navigateSmart("Validator.List", {});
           }}
           text={intl.formatMessage({ id: "staking.dashboard.rewards.invest" })}
-          size="small"
+          size="medium"
           textStyle={style.flatten(["color-white", "subtitle3"])}
         />
       </View>
@@ -121,8 +121,9 @@ export const RewardsItem: FunctionComponent<{
           text={intl.formatMessage({
             id: "staking.dashboard.rewards.withdrawProfit",
           })}
+          color="neutral"
           mode="outline"
-          size="small"
+          size="medium"
           textStyle={style.flatten(["color-gray-10", "subtitle3"])}
           disabled={!isRewardExist}
           onPress={() => {
@@ -155,8 +156,9 @@ export const RewardsItem: FunctionComponent<{
           text={intl.formatMessage({
             id: "staking.dashboard.rewards.follow",
           })}
+          color="neutral"
           mode="outline"
-          size="small"
+          size="medium"
           textStyle={style.flatten(["color-gray-10", "subtitle3"])}
           disabled={!isPending}
           onPress={() => {

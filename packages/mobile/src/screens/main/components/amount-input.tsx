@@ -114,7 +114,7 @@ export const AmountInput: FunctionComponent<{
                 </Text>
               )}
               <Button text={intl.formatMessage({ id: "component.amount.input.max" })}
-                size="small"
+                size="medium"
                 mode="text"
                 containerStyle={style.flatten(["height-24"])}
                 onPress={() => {
