@@ -17,17 +17,17 @@ const V1ButtonCustom = {
     paddingHorizontal: 16,
   },
 
-  "button-primary-fill-default": {
+  "button-primary-solid-default": {
     color: "white",
     backgroundColor: V1Colors["purple-50"],
     opacity: 1,
   },
-  "button-primary-fill-highlighted": {
+  "button-primary-solid-highlighted": {
     color: "white",
     backgroundColor: V1Colors["purple-60"],
     opacity: 1,
   },
-  "button-primary-fill-disabled": {
+  "button-primary-solid-disabled": {
     color: "white",
     backgroundColor: V1Colors["purple-40"],
     opacity: 0.4,
@@ -53,33 +53,33 @@ const V1ButtonCustom = {
     borderWidth: 1,
     borderColor: V1Colors["purple-40"],
   },
-  "button-primary-text-default": {
+  "button-primary-ghost-default": {
     color: V1Colors["purple-40"],
     backgroundColor: "transparent",
     opacity: 1,
   },
-  "button-primary-text-highlighted": {
+  "button-primary-ghost-highlighted": {
     color: V1Colors["purple-50"],
     backgroundColor: V1Colors["purple-40-10"],
     opacity: 1,
   },
-  "button-primary-text-disabled": {
+  "button-primary-ghost-disabled": {
     color: V1Colors["purple-40"],
     backgroundColor: "transparent",
     opacity: 0.4,
   },
 
-  "button-neutral-fill-default": {
+  "button-neutral-solid-default": {
     color: V1Colors["gray-10"],
     backgroundColor: V1Colors["gray-80"],
     opacity: 1,
   },
-  "button-neutral-fill-highlighted": {
+  "button-neutral-solid-highlighted": {
     color: V1Colors["gray-10"],
     backgroundColor: V1Colors["gray-90"],
     opacity: 1,
   },
-  "button-neutral-fill-disabled": {
+  "button-neutral-solid-disabled": {
     color: V1Colors["gray-10"],
     backgroundColor: V1Colors["gray-80"],
     opacity: 0.4,
@@ -105,33 +105,33 @@ const V1ButtonCustom = {
     borderWidth: 1,
     borderColor: V1Colors["gray-60"],
   },
-  "button-neutral-text-default": {
+  "button-neutral-ghost-default": {
     color: V1Colors["gray-10"],
     backgroundColor: "transparent",
     opacity: 1,
   },
-  "button-neutral-text-highlighted": {
+  "button-neutral-ghost-highlighted": {
     color: V1Colors["gray-10"],
     backgroundColor: V1Colors["gray-70"],
     opacity: 1,
   },
-  "button-neutral-text-disabled": {
+  "button-neutral-ghost-disabled": {
     color: V1Colors["gray-10"],
     backgroundColor: "transparent",
     opacity: 0.4,
   },
 
-  "button-negative-fill-default": {
+  "button-negative-solid-default": {
     color: "white",
     backgroundColor: V1Colors["red-60"],
     opacity: 1,
   },
-  "button-negative-fill-highlighted": {
+  "button-negative-solid-highlighted": {
     color: "white",
     backgroundColor: V1Colors["red-70"],
     opacity: 1,
   },
-  "button-negative-fill-disabled": {
+  "button-negative-solid-disabled": {
     color: "white",
     backgroundColor: V1Colors["red-60"],
     opacity: 0.4,
@@ -157,17 +157,17 @@ const V1ButtonCustom = {
     borderWidth: 1,
     borderColor: V1Colors["red-50"],
   },
-  "button-negative-text-default": {
+  "button-negative-ghost-default": {
     color: V1Colors["red-50"],
     backgroundColor: "transparent",
     opacity: 1,
   },
-  "button-negative-text-highlighted": {
+  "button-negative-ghost-highlighted": {
     color: V1Colors["red-60"],
     backgroundColor: V1Colors["red-50-10"],
     opacity: 1,
   },
-  "button-negative-text-disabled": {
+  "button-negative-ghost-disabled": {
     color: V1Colors["red-50"],
     backgroundColor: "transparent",
     opacity: 0.4,
@@ -210,6 +210,9 @@ export const V1Custom = {
     borderTopRightRadius: 12,
     borderBottomLeftRadius: 12,
     borderBottomRightRadius: 12,
+    paddingTop: 6,
+    paddingBottom: 6,
+    minHeight: 44,
   },
   "words-container": {
     borderWidth: 1,

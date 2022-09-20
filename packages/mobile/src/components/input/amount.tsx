@@ -115,7 +115,7 @@ export const AmountInput: FunctionComponent<{
             </Text>
             <Button
               text={intl.formatMessage({ id: "component.amount.input.max" })}
-              mode="text"
+              mode="ghost"
               size="small"
               onPress={() => {
                 amountConfig.setFraction(1);

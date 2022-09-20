@@ -17,17 +17,17 @@ const ButtonCustom = {
     paddingHorizontal: 12,
   },
 
-  "button-primary-fill-default": {
+  "button-primary-solid-default": {
     color: "white",
     backgroundColor: Colors["blue-70"],
     opacity: 1,
   },
-  "button-primary-fill-highlighted": {
+  "button-primary-solid-highlighted": {
     color: "white",
     backgroundColor: Colors["blue-60"],
     opacity: 1,
   },
-  "button-primary-fill-disabled": {
+  "button-primary-solid-disabled": {
     color: "white",
     backgroundColor: Colors["blue-40"],
     opacity: 0.4,
@@ -53,33 +53,33 @@ const ButtonCustom = {
     borderWidth: 1,
     borderColor: Colors["blue-40"],
   },
-  "button-primary-text-default": {
+  "button-primary-ghost-default": {
     color: Colors["blue-40"],
     backgroundColor: "transparent",
     opacity: 1,
   },
-  "button-primary-text-highlighted": {
+  "button-primary-ghost-highlighted": {
     color: Colors["blue-70"],
     backgroundColor: Colors["blue-40-10"],
     opacity: 1,
   },
-  "button-primary-text-disabled": {
+  "button-primary-ghost-disabled": {
     color: Colors["blue-40"],
     backgroundColor: "transparent",
     opacity: 0.4,
   },
 
-  "button-neutral-fill-default": {
+  "button-neutral-solid-default": {
     color: Colors["gray-10"],
     backgroundColor: Colors["gray-80"],
     opacity: 1,
   },
-  "button-neutral-fill-highlighted": {
+  "button-neutral-solid-highlighted": {
     color: Colors["gray-10"],
     backgroundColor: Colors["gray-90"],
     opacity: 1,
   },
-  "button-neutral-fill-disabled": {
+  "button-neutral-solid-disabled": {
     color: Colors["gray-10"],
     backgroundColor: Colors["gray-80"],
     opacity: 0.4,
@@ -105,33 +105,33 @@ const ButtonCustom = {
     borderWidth: 1,
     borderColor: Colors["gray-60"],
   },
-  "button-neutral-text-default": {
+  "button-neutral-ghost-default": {
     color: Colors["gray-10"],
     backgroundColor: "transparent",
     opacity: 1,
   },
-  "button-neutral-text-highlighted": {
+  "button-neutral-ghost-highlighted": {
     color: Colors["gray-10"],
     backgroundColor: Colors["gray-70"],
     opacity: 1,
   },
-  "button-neutral-text-disabled": {
+  "button-neutral-ghost-disabled": {
     color: Colors["gray-10"],
     backgroundColor: "transparent",
     opacity: 0.4,
   },
 
-  "button-negative-fill-default": {
+  "button-negative-solid-default": {
     color: "white",
     backgroundColor: Colors["red-60"],
     opacity: 1,
   },
-  "button-negative-fill-highlighted": {
+  "button-negative-solid-highlighted": {
     color: "white",
     backgroundColor: Colors["red-70"],
     opacity: 1,
   },
-  "button-negative-fill-disabled": {
+  "button-negative-solid-disabled": {
     color: "white",
     backgroundColor: Colors["red-60"],
     opacity: 0.4,
@@ -157,17 +157,17 @@ const ButtonCustom = {
     borderWidth: 1,
     borderColor: Colors["red-50"],
   },
-  "button-negative-text-default": {
+  "button-negative-ghost-default": {
     color: Colors["red-50"],
     backgroundColor: "transparent",
     opacity: 1,
   },
-  "button-negative-text-highlighted": {
+  "button-negative-ghost-highlighted": {
     color: Colors["red-60"],
     backgroundColor: Colors["red-50-10"],
     opacity: 1,
   },
-  "button-negative-text-disabled": {
+  "button-negative-ghost-disabled": {
     color: Colors["red-50"],
     backgroundColor: "transparent",
     opacity: 0.4,
@@ -215,6 +215,9 @@ export const Custom = {
     borderTopRightRadius: 4,
     borderBottomLeftRadius: 4,
     borderBottomRightRadius: 4,
+    paddingTop: 6,
+    paddingBottom: 6,
+    minHeight: 44,
   },
   "words-container": {
     borderWidth: 1,

@@ -111,14 +111,16 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(({
 
   function inputRightView(): React.ReactNode {
     return secureTextEntry
-      ? <TouchableOpacity onPress={() => {
-        if (onShowPasswordChanged) {
-          onShowPasswordChanged(!showPassword);
-        }
-      }}>
+      ? <TouchableOpacity
+        style={{ justifyContent: "center", height: 36 }}
+        onPress={() => {
+          if (onShowPasswordChanged) {
+            onShowPasswordChanged(!showPassword);
+          }
+        }}>
         {showPassword ? <EyeCloseIcon /> : <EyeOpenIcon />}
       </TouchableOpacity>
-      : rightView;
+      : <View style={{ height: 36 }}>{rightView}</View>;
   }
 
   function checkValidations() {

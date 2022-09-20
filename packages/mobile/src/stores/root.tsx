@@ -17,6 +17,7 @@ import {
   IBCCurrencyRegsitrar,
   PermissionStore,
   ChainSuggestStore,
+  AccountSetBaseSuper,
 } from "@keplr-wallet/stores";
 import { AsyncKVStore } from "../common";
 import { APP_PORT } from "@keplr-wallet/router";
@@ -52,7 +53,8 @@ export class RootStore {
     [CosmosQueries, CosmwasmQueries, SecretQueries, KeplrETCQueries]
   >;
   public readonly accountStore: AccountStore<
-    [CosmosAccount, CosmwasmAccount, SecretAccount]
+    [CosmosAccount, CosmwasmAccount, SecretAccount],
+    AccountSetBaseSuper & CosmosAccount & CosmwasmAccount & SecretAccount
   >;
   public readonly priceStore: CoinGeckoPriceStore;
   public readonly tokensStore: TokensStore<ChainInfoWithEmbed>;

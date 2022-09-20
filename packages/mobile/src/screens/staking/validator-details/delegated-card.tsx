@@ -155,7 +155,7 @@ export const DelegatedCard: FunctionComponent<{
                     validatorAddress,
                   });
                 }}
-                containerStyle={style.flatten(["border-radius-22", "width-44"])}
+                containerStyle={style.flatten(["border-radius-22", "width-44", "padding-x-0"])}
               />
               <Text
                 style={style.flatten([
@@ -183,7 +183,7 @@ export const DelegatedCard: FunctionComponent<{
 
                   setDisplayCannotRedelegateModal(true);
                 }}
-                containerStyle={style.flatten(["border-radius-22", "width-44"])}
+                containerStyle={style.flatten(["border-radius-22", "width-44", "padding-x-0"])}
               />
               <Text
                 style={style.flatten([
@@ -217,7 +217,7 @@ export const DelegatedCard: FunctionComponent<{
                     validatorAddress,
                   });
                 }}
-                containerStyle={style.flatten(["border-radius-22", "width-44"])}
+                containerStyle={style.flatten(["border-radius-22", "width-44", "padding-x-0"])}
               />
               <Text
                 style={style.flatten([

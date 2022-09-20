@@ -30,7 +30,7 @@ export const BIP44AdvancedButton: FunctionComponent<{
       <Button
         containerStyle={style.flatten(["margin-bottom-16"])}
         text="Advanced"
-        mode="text"
+        mode="ghost"
         size="small"
         onPress={() => {
           setIsModalOpen(true);

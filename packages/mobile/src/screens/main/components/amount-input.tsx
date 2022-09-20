@@ -115,8 +115,7 @@ export const AmountInput: FunctionComponent<{
               )}
               <Button text={intl.formatMessage({ id: "component.amount.input.max" })}
                 size="medium"
-                mode="text"
-                containerStyle={style.flatten(["height-24"])}
+                mode="ghost"
                 onPress={() => {
                   if (availableAmount) {
                     let maxAmount: CoinPretty;

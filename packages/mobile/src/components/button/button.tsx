@@ -6,7 +6,7 @@ import { RectButton } from "../rect-button";
 
 export const Button: FunctionComponent<{
   color?: "primary" | "neutral" | "negative";
-  mode?: "fill" | "outline" | "text";
+  mode?: "solid" | "outline" | "ghost";
   size?: "small" | "medium" | "large";
   text: string;
   leftIcon?: ReactElement;
@@ -21,7 +21,7 @@ export const Button: FunctionComponent<{
   textStyle?: TextStyle;
 }> = ({
   color = "primary",
-  mode = "fill",
+  mode = "solid",
   size = "large",
   text,
   leftIcon,
@@ -42,7 +42,7 @@ export const Button: FunctionComponent<{
       if (disabled) {
         state = "disabled";
       }
-      else if (isPressed) {
+      else if (loading || isPressed) {
         state = "highlighted";
       }
 
@@ -60,18 +60,23 @@ export const Button: FunctionComponent<{
       }
     })();
 
+    const loadingSpinner = (() => {
+      return <LoadingSpinner
+        color={style.get(styleDefinition as any).color}
+        size={24}
+      />;
+    })();
+
     return (
       <View
-        style={{
-          ...StyleSheet.flatten([
-            style.flatten([
-              styleDefinition as any,
-              `button-${size}-container` as any,
-              "overflow-hidden",
-            ]),
-            containerStyle,
+        style={StyleSheet.flatten([
+          style.flatten([
+            styleDefinition as any,
+            `button-${size}-container` as any,
+            "overflow-hidden",
           ]),
-        }}
+          containerStyle,
+        ])}
       >
         <RectButton
           style={StyleSheet.flatten([
@@ -88,21 +93,20 @@ export const Button: FunctionComponent<{
           enabled={!loading && !disabled}
           activeOpacity={0}
         >
-          <View
-            style={style.flatten(
-              ["height-1", "justify-center"],
-              [loading && "opacity-transparent"]
-            )}
-          >
-            <View>{leftIcon}</View>
-          </View>
+          {(loading || leftIcon) && (
+            <View style={style.flatten(
+              ["justify-center"],
+              [text.length !== 0 && "margin-right-8"]
+            )}>
+              <View>{loading ? loadingSpinner : leftIcon}</View>
+            </View>
+          )}
           <Text
             style={StyleSheet.flatten([
               style.flatten(
                 [
                   textDefinition,
                   "text-center",
-                  // loading && "opacity-transparent"
                 ],
               ),
               { color: style.get(styleDefinition as any).color },
@@ -111,35 +115,14 @@ export const Button: FunctionComponent<{
           >
             {text}
           </Text>
-          <View
-            style={style.flatten(
-              ["height-1", "justify-center"],
-              [loading && "opacity-transparent"]
-            )}
-          >
-            <View>{rightIcon}</View>
-          </View>
-          {loading ? (
-            <View
-              style={style.flatten([
-                "absolute-fill",
-                "justify-center",
-                "items-center",
-              ])}
-            >
-              <LoadingSpinner
-                color={
-                  mode === "fill"// || (mode === "light" && disabled)
-                    ? style.get("color-white").color
-                    : style.get(
-                      `color-button-${color}${disabled ? "-disabled" : ""
-                      }` as any
-                    ).color
-                }
-                size={20}
-              />
+          {((loading && !leftIcon && rightIcon) || rightIcon) && (
+            <View style={style.flatten(
+              ["justify-center"],
+              [text.length !== 0 && "margin-left-8"]
+            )}>
+              <View>{(loading && !leftIcon) ? loadingSpinner : rightIcon}</View>
             </View>
-          ) : null}
+          )}
         </RectButton>
       </View>
     );

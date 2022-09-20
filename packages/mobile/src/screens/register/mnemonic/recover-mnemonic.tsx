@@ -171,9 +171,8 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                   <View style={style.flatten(["flex-row"])}>
                     <View style={style.flatten(["flex-1"])} />
                     <Button
-                      style={style.flatten(["padding-x-12"])}
                       size="medium"
-                      mode="text"
+                      mode="ghost"
                       text={intl.formatMessage({ id: "common.text.paste" })}
                       onPress={async () => {
                         const text = await Clipboard.getStringAsync();

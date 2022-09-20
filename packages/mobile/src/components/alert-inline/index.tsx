@@ -76,7 +76,7 @@ export const AlertInline: FunctionComponent<IAlertInline> = observer(({
     }
     // if (actionButton && actionButton.text.length != 0) {
     //   return <Button
-    //     mode="text"
+    //     mode="ghost"
     //     size="small"
     //     text={actionButton.text}
     //   />

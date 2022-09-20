@@ -97,7 +97,7 @@ export const ViewPrivateDataScreen: FunctionComponent = () => {
       <View style={style.flatten(["width-full"])}>
         <Button
           textStyle={style.flatten(["subtitle3", "color-primary"])}
-          mode="text"
+          mode="ghost"
           text={isTimedOut ? "Đã sao chép" : "Sao chép"}
           onPress={() => {
             Clipboard.setString(words.join(" "));

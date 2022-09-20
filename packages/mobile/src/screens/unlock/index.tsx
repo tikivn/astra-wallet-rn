@@ -321,7 +321,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         <Image
           style={style.flatten(["width-full", "height-full"])}
           resizeMode="cover"
-          source={require("../../assets/logo/splash-screen-background.png")}
+          source={require("../../assets/logo/main_background.png")}
         />
       </View>
       <View

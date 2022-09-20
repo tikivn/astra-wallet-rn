@@ -41,6 +41,9 @@ export const TxResultScreen: FunctionComponent = observer(() => {
   useUnmount(() => {
     signInteractionStore.rejectAll();
     transactionStore.rejectTransaction();
+    accountStore
+      .getAccount(chainStore.current.chainId)
+      .setTxTypeInProgress("");
   });
 
   const style = useStyle();
