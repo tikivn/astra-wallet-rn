@@ -198,7 +198,7 @@ export const SwapScreen: FunctionComponent = observer(() => {
               style.flatten(["color-gray-30", "text-caption"]),
             ])}
           >
-            {intl.formatMessage({ id: "swap.transactionFee" })}
+            {intl.formatMessage({ id: "swap.liquidityFee" })}
           </Text>
           <Text style={style.flatten(["color-gray-10", "body3"])}>
             {getTransactionFee(currencies, lpFee)}

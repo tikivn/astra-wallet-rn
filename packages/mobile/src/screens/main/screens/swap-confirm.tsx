@@ -307,7 +307,7 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
             ])}
           >
             <Text style={style.flatten(["text-caption", "color-gray-30"])}>
-              {intl.formatMessage({ id: "swap.transactionFee" })}
+              {intl.formatMessage({ id: "swap.liquidityFee" })}
             </Text>
             <Text style={style.flatten(["text-caption", "color-gray-10"])}>
               {viewData.liquidityFee}
