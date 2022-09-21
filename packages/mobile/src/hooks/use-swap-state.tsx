@@ -1,11 +1,13 @@
 import { parseUnits } from "@ethersproject/units";
-import { CurrencyAmount, Fraction, JSBI, Trade } from "@solarswap/sdk";
+import { CurrencyAmount, JSBI, Trade } from "@solarswap/sdk";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { SwapAction, SwapInfoState, SwapType } from "../providers/swap/reducer";
 import {
   calculateSlippagePercent,
   ERROR_KEY,
   FIXED_DECIMAL_PLACES,
+  MAXIMUM_PRICE_IMPACT,
+  SIGNIFICANT_DECIMAL_PLACES,
   SwapField,
   TIME_DEBOUNCE,
 } from "../utils/for-swap";
@@ -65,27 +67,31 @@ export const useSwapState = ({
       const { inputAmount, outputAmount } = trade;
       const pricePerInputCurrency =
         independentField === SwapField.Output
-          ? outputAmount.divide(inputAmount).toFixed(FIXED_DECIMAL_PLACES)
-          : inputAmount.divide(outputAmount).toFixed(FIXED_DECIMAL_PLACES);
+          ? outputAmount.divide(inputAmount).toSignificant(FIXED_DECIMAL_PLACES)
+          : inputAmount
+              .divide(outputAmount)
+              .toSignificant(SIGNIFICANT_DECIMAL_PLACES);
       const outputSwapValue =
         independentField === SwapField.Output
-          ? outputAmount.toFixed(FIXED_DECIMAL_PLACES)
-          : inputAmount.toFixed(FIXED_DECIMAL_PLACES);
+          ? outputAmount.toSignificant(SIGNIFICANT_DECIMAL_PLACES)
+          : inputAmount.toSignificant(SIGNIFICANT_DECIMAL_PLACES);
       const {
         realizedLPFee,
         priceImpactWithoutFee,
       } = computeTradePriceBreakdown(trade);
       const minimunReceived = trade
         .minimumAmountOut(calculateSlippagePercent(slippageTolerance))
-        .toFixed(FIXED_DECIMAL_PLACES);
+        .toSignificant(FIXED_DECIMAL_PLACES);
       const isPriceImpactTooHigh = priceImpactWithoutFee?.greaterThan(
-        new Fraction(15, 100)
+        MAXIMUM_PRICE_IMPACT
       );
 
       setOutputSwapValue(outputSwapValue);
       setAggregationValue({
-        lpFee: realizedLPFee?.toFixed(FIXED_DECIMAL_PLACES) || "",
-        priceImpact: priceImpactWithoutFee?.toFixed(FIXED_DECIMAL_PLACES) || "",
+        lpFee: realizedLPFee?.toSignificant(SIGNIFICANT_DECIMAL_PLACES) || "",
+        priceImpact:
+          priceImpactWithoutFee?.toSignificant(SIGNIFICANT_DECIMAL_PLACES) ||
+          "",
         trade,
         minimunReceived,
         pricePerInputCurrency,

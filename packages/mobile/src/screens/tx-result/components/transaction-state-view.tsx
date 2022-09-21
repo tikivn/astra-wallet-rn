@@ -44,45 +44,58 @@ export const TransactionStateView: FunctionComponent<{
         pending: intl.formatMessage({ id: "tx.result.state.send.pending" }),
         success: intl.formatMessage(
           { id: "tx.result.state.send.success" },
-          { denom: transactionStore.txAmount?.denom },
+          { denom: transactionStore.txAmount?.denom }
         ),
         failure: intl.formatMessage(
           { id: "tx.result.state.send.failure" },
-          { denom: transactionStore.txAmount?.denom },
+          { denom: transactionStore.txAmount?.denom }
         ),
       },
       [account.cosmos.msgOpts.delegate.type]: {
         pending: intl.formatMessage(
           { id: "tx.result.state.delegate.pending" },
-          { denom: transactionStore.txAmount?.denom },
+          { denom: transactionStore.txAmount?.denom }
         ),
         success: intl.formatMessage({ id: "tx.result.state.delegate.success" }),
         failure: intl.formatMessage({ id: "tx.result.state.delegate.failure" }),
       },
       [account.cosmos.msgOpts.undelegate.type]: {
-        pending: intl.formatMessage({ id: "tx.result.state.undelegate.pending", }),
+        pending: intl.formatMessage({
+          id: "tx.result.state.undelegate.pending",
+        }),
         success: intl.formatMessage(
           { id: "tx.result.state.undelegate.success" },
-          { denom: transactionStore.txAmount?.denom },
+          { denom: transactionStore.txAmount?.denom }
         ),
         failure: intl.formatMessage(
           { id: "tx.result.state.undelegate.failure" },
-          { denom: transactionStore.txAmount?.denom },
+          { denom: transactionStore.txAmount?.denom }
         ),
       },
       [account.cosmos.msgOpts.redelegate.type]: {
-        pending: intl.formatMessage({ id: "tx.result.state.redelegate.pending", }),
-        success: intl.formatMessage({ id: "tx.result.state.redelegate.success", }),
-        failure: intl.formatMessage({ id: "tx.result.state.redelegate.failure", }),
+        pending: intl.formatMessage({
+          id: "tx.result.state.redelegate.pending",
+        }),
+        success: intl.formatMessage({
+          id: "tx.result.state.redelegate.success",
+        }),
+        failure: intl.formatMessage({
+          id: "tx.result.state.redelegate.failure",
+        }),
       },
       [account.cosmos.msgOpts.withdrawRewards.type]: {
         pending: intl.formatMessage({ id: "tx.result.state.withdraw.pending" }),
         success: intl.formatMessage({ id: "tx.result.state.withdraw.success" }),
         failure: intl.formatMessage({ id: "tx.result.state.withdraw.failure" }),
       },
+      ["wallet-swap"]: {
+        pending: intl.formatMessage({ id: "tx.result.state.swap.pending" }),
+        success: intl.formatMessage({ id: "tx.result.state.swap.success" }),
+        failure: intl.formatMessage({ id: "tx.result.state.swap.failure" }),
+      },
     };
 
-    const mainText = allMainText[type]
+    const mainText = allMainText[type];
 
     if (!mainText) {
       return "";
@@ -92,34 +105,27 @@ export const TransactionStateView: FunctionComponent<{
 
     return mainText[txStateString] ?? "";
   }
+  const typeMsg =
+    msgs[0].type !== "sign/MsgSignData"
+      ? msgs[0].type
+      : transactionStore.rawData?.type || "";
 
-  const mainText = getMainText(msgs[0].type, txState);
+  const isShowStep = typeMsg !== "wallet-swap";
+  const mainText = getMainText(typeMsg, txState);
   const errorText = intl.formatMessage({ id: "tx.result.state.error" });
   const subText = isFailure ? errorText : amountText;
 
   const mainTextStyle = {
     ...(isFailure
-      ? styleBuilder.flatten([
-        "text-x-large-semi-bold",
-        "color-label-text-1",
-      ])
-      : styleBuilder.flatten([
-        "text-base-regular",
-        "color-label-text-2",
-      ])),
+      ? styleBuilder.flatten(["text-x-large-semi-bold", "color-label-text-1"])
+      : styleBuilder.flatten(["text-base-regular", "color-label-text-2"])),
     marginTop: 8,
   };
 
   const subTextStyle = {
-    ...(isFailure 
-      ? styleBuilder.flatten([
-        "text-base-regular",
-        "color-label-text-2",
-      ]) 
-      : styleBuilder.flatten([
-        "text-2x-large-medium",
-        "color-label-text-1",
-      ])),
+    ...(isFailure
+      ? styleBuilder.flatten(["text-base-regular", "color-label-text-2"])
+      : styleBuilder.flatten(["text-2x-large-medium", "color-label-text-1"])),
     marginTop: isFailure ? 8 : 4,
   };
 
@@ -169,37 +175,39 @@ export const TransactionStateView: FunctionComponent<{
         }}
       />
 
-      <View
-        style={{ alignItems: "center", paddingHorizontal: 16, width: "100%" }}
-      >
-        <Text style={mainTextStyle}>{mainText}</Text>
-        <Text style={subTextStyle}>{subText}</Text>
-
+      {isShowStep && (
         <View
-          style={{
-            flexDirection: "row",
-            alignContent: "stretch",
-            marginTop: 26,
-          }}
+          style={{ alignItems: "center", paddingHorizontal: 16, width: "100%" }}
         >
-          <StepView
-            text={initialStepText}
-            state="inactive"
-            stateColors={stateColors}
-            position="start"
-            type="dot"
-            lineState={lineState}
-          />
-          <StepView
-            text={finalStepText}
-            state="active"
-            stateColors={stateColors}
-            position="end"
-            type={type}
-            lineState={lineState}
-          />
+          <Text style={mainTextStyle}>{mainText}</Text>
+          <Text style={subTextStyle}>{subText}</Text>
+
+          <View
+            style={{
+              flexDirection: "row",
+              alignContent: "stretch",
+              marginTop: 26,
+            }}
+          >
+            <StepView
+              text={initialStepText}
+              state="inactive"
+              stateColors={stateColors}
+              position="start"
+              type="dot"
+              lineState={lineState}
+            />
+            <StepView
+              text={finalStepText}
+              state="active"
+              stateColors={stateColors}
+              position="end"
+              type={type}
+              lineState={lineState}
+            />
+          </View>
         </View>
-      </View>
+      )}
     </View>
   );
 });

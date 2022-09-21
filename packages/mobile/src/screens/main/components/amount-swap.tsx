@@ -7,7 +7,7 @@ import FastImage from "react-native-fast-image";
 import { VectorCharacter } from "../../../components";
 import { Button } from "../../../components/button";
 import { useStyle } from "../../../styles";
-import { FIXED_DECIMAL_PLACES, SwapField } from "../../../utils/for-swap";
+import { SIGNIFICANT_DECIMAL_PLACES, SwapField } from "../../../utils/for-swap";
 
 interface SwapAmountProps {
   currency?: Currency | undefined;
@@ -47,7 +47,7 @@ export const AmountSwap: FunctionComponent<SwapAmountProps> = observer(
         <View
           style={style.flatten([
             "padding-16",
-            "background-color-background-secondary",
+            "background-color-gray-90",
             "overflow-hidden",
             "border-radius-12",
           ])}
@@ -89,7 +89,7 @@ export const AmountSwap: FunctionComponent<SwapAmountProps> = observer(
                       // eslint-disable-next-line react/display-name
                       b: () => (
                         <Text style={{ fontWeight: "bold" }}>
-                          {balance?.toFixed(FIXED_DECIMAL_PLACES)}
+                          {balance?.toSignificant(SIGNIFICANT_DECIMAL_PLACES)}
                         </Text>
                       ),
                     }}

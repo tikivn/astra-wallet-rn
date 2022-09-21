@@ -6,6 +6,7 @@
   "swap.exchangeRate": "",
   "swap.exchangeRate.describe": "",
   "swap.transactionFee": "",
+  "swap.liquidityFee": "",
   "swap.transactionFee.describe": "",
   "swap.priceSlippage": "",
   "swap.priceSlippage.describe": "",

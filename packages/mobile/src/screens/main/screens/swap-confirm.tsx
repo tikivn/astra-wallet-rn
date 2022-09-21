@@ -17,6 +17,7 @@ import { useSwapCallback } from "../../../hooks";
 import { useSmartNavigation } from "../../../navigation-util";
 import { useDataSwapContext } from "../../../providers/swap/use-data-swap-context";
 import { useToastModal } from "../../../providers/toast-modal";
+import { useStore } from "../../../stores";
 import { Colors, useStyle } from "../../../styles";
 import {
   getExchangeRateString,
@@ -40,12 +41,33 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
     minimunReceived,
   } = useDataSwapContext();
 
+  const { transactionStore } = useStore();
+
   const { callback: swapCallback } = useSwapCallback(
     trade,
     swapInfos.slippageTolerance
   );
   const [loading, setLoading] = useState<boolean>();
   const toastModal = useToastModal();
+
+  const viewData = {
+    inputAmount: `${values[SwapField.Input]} ${
+      currencies[SwapField.Input]?.symbol
+    }`,
+    outputAmount: `${values[SwapField.Output]} ${
+      currencies[SwapField.Output]?.symbol
+    }`,
+    exchageRate: getExchangeRateString(
+      swapInfos,
+      currencies,
+      pricePerInputCurrency
+    ),
+    minimumReceived: `${minimunReceived} ${
+      currencies[SwapField.Output]?.symbol
+    }`,
+    liquidityFee: getTransactionFee(currencies, lpFee),
+    slippageTolerance: getSlippageTolaranceString(swapInfos),
+  };
 
   const handleSwap = useCallback(() => {
     if (loading) {
@@ -54,12 +76,9 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
     setLoading(true);
 
     if (swapCallback) {
+      transactionStore.updateRawData({ type: "wallet-swap", value: viewData });
       swapCallback()
-        .then((hash) => {
-          smartNavigation.navigateSmart("Swap.Success", {
-            transactionHash: hash,
-          });
-        })
+        .then((hash) => {})
         .catch((error) => {
           console.error("Error swap: ", { error });
           toastModal.makeToast({
@@ -70,7 +89,7 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
         })
         .finally(() => setLoading(false));
     }
-  }, [loading, smartNavigation, swapCallback]);
+  }, [loading, swapCallback]);
 
   const animatedButtonScale = new Animated.Value(0);
 
@@ -134,7 +153,7 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
               {intl.formatMessage({ id: "swap.confirm.fromText" })}
             </Text>
             <Text style={style.flatten(["subtitle2", "color-gray-10"])}>
-              {values[SwapField.Input]} {currencies[SwapField.Input]?.symbol}
+              {viewData.inputAmount}
             </Text>
           </View>
           <Image
@@ -172,7 +191,7 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
               {intl.formatMessage({ id: "swap.confirm.toText" })}
             </Text>
             <Text style={style.flatten(["subtitle2", "color-gray-10"])}>
-              {values[SwapField.Output]} {currencies[SwapField.Output]?.symbol}
+              {viewData.outputAmount}
             </Text>
           </View>
         </View>
@@ -248,11 +267,7 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
               {intl.formatMessage({ id: "swap.exchangeRate" })}
             </Text>
             <Text style={style.flatten(["text-caption", "color-gray-10"])}>
-              {getExchangeRateString(
-                swapInfos,
-                currencies,
-                pricePerInputCurrency
-              )}
+              {viewData.exchageRate}
             </Text>
           </View>
           <View
@@ -274,7 +289,7 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
               {intl.formatMessage({ id: "swap.confirm.minimumReceived" })}
             </Text>
             <Text style={style.flatten(["text-caption", "color-gray-10"])}>
-              {minimunReceived} {currencies[SwapField.Output]?.symbol}
+              {viewData.minimumReceived}
             </Text>
           </View>
           <View
@@ -292,10 +307,10 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
             ])}
           >
             <Text style={style.flatten(["text-caption", "color-gray-30"])}>
-              {intl.formatMessage({ id: "swap.transactionFee" })}
+              {intl.formatMessage({ id: "swap.liquidityFee" })}
             </Text>
             <Text style={style.flatten(["text-caption", "color-gray-10"])}>
-              {getTransactionFee(currencies, lpFee)}
+              {viewData.liquidityFee}
             </Text>
           </View>
           <View
@@ -312,7 +327,7 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
               {intl.formatMessage({ id: "swap.priceSlippage" })}
             </Text>
             <Text style={style.flatten(["text-caption", "color-gray-10"])}>
-              {getSlippageTolaranceString(swapInfos)}
+              {viewData.slippageTolerance}
             </Text>
           </View>
         </View>

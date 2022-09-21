@@ -1,13 +1,13 @@
-import { Card, CardBody } from "../../../components/card";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
-import { ViewStyle, View } from "react-native";
+import { useIntl } from "react-intl";
+import { View, ViewStyle } from "react-native";
+import { Button } from "../../../components/button";
+import { Card, CardBody } from "../../../components/card";
+import { ReceiveIcon, SendIcon, SwapIcon } from "../../../components/icon";
+import { useSmartNavigation } from "../../../navigation-util";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
-import { Button } from "../../../components/button";
-import { SwapIcon, SendIcon, ReceiveIcon } from "../../../components/icon";
-import { useSmartNavigation } from "../../../navigation-util";
-import { useIntl } from "react-intl";
 
 export const ActionsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -33,9 +33,7 @@ export const ActionsCard: FunctionComponent<{
             }}
           />
           <Button
-            containerStyle={style.flatten([
-              "margin-left-8",
-            ])}
+            containerStyle={style.flatten(["margin-left-8"])}
             text={intl.formatMessage({ id: "main.send" })}
             leftIcon={
               <SendIcon color={style.get("color-white").color} size={20} />
@@ -48,9 +46,7 @@ export const ActionsCard: FunctionComponent<{
           />
           {swapEnabled && (
             <Button
-              containerStyle={style.flatten([
-                "margin-left-8",
-              ])}
+              containerStyle={style.flatten(["margin-left-8"])}
               text={intl.formatMessage({ id: "main.swap" })}
               leftIcon={
                 <SwapIcon color={style.get("color-white").color} size={20} />

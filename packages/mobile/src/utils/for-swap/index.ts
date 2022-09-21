@@ -6,11 +6,12 @@ import {
   ChainId,
   Currency,
   CurrencyAmount,
+  ETHER,
   JSBI,
   Percent,
 } from "@solarswap/sdk";
 import { SwapInfoState } from "../../providers/swap/reducer";
-import { BIPS_BASE } from "./constant";
+import { BIPS_BASE, MIN_ASA } from "./constant";
 export * from "./compute-price";
 export * from "./constant";
 export * from "./wrapped-currency";
@@ -84,6 +85,9 @@ export const getExchangeRateString = (
   currencies: { [K in SwapField]: Currency | undefined },
   price?: string
 ) => {
+  if (!price) {
+    return "";
+  }
   return `1 ${currencies[dependentField]?.symbol} ≈ ${price || ""} ${
     currencies[independentField]?.symbol
   }`;
@@ -101,3 +105,20 @@ export const getSlippageTolaranceString = ({
 }: SwapInfoState) => {
   return `${slippageTolerance / 100} %`;
 };
+
+/**
+ * Given some token amount, return the max that can be spent of it
+ * @param currencyAmount to return max of
+ */
+export function maxAmountSpend(
+  currencyAmount?: CurrencyAmount
+): CurrencyAmount | undefined {
+  if (!currencyAmount) return undefined;
+  if (currencyAmount.currency.symbol === ETHER.symbol) {
+    if (JSBI.greaterThan(currencyAmount.raw, MIN_ASA)) {
+      return CurrencyAmount.ether(JSBI.subtract(currencyAmount.raw, MIN_ASA));
+    }
+    return CurrencyAmount.ether(JSBI.BigInt(0));
+  }
+  return currencyAmount;
+}

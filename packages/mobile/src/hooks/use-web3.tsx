@@ -9,7 +9,7 @@ import { RPC_ENPOINT } from "../utils/for-swap";
 import addresses from "../utils/for-swap/addresses";
 
 export const useWeb3 = () => {
-  const { chainStore, accountStore } = useStore();
+  const { chainStore, accountStore, transactionStore } = useStore();
   const { chainId: chainIdStr, chainIdNumber: chainId } = useMemo(
     () => chainStore.current as AppChainInfo,
     [chainStore]
@@ -47,8 +47,8 @@ export const useWeb3 = () => {
   );
 
   const getStore = useCallback(() => {
-    return { chainStore, accountStore };
-  }, [accountStore, chainStore]);
+    return { chainStore, accountStore, transactionStore };
+  }, [accountStore, chainStore, transactionStore]);
 
   return {
     etherProvider: etherProviderRef.current,

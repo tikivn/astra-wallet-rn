@@ -1,25 +1,30 @@
-import { AccountStore, CosmosAccount, CosmwasmAccount, SecretAccount } from "@keplr-wallet/stores";
+import {
+  AccountStore,
+  CosmosAccount,
+  CosmwasmAccount,
+  SecretAccount,
+} from "@keplr-wallet/stores";
 import { IRow } from "../../../components";
 import { TransactionStore } from "../../../stores";
 import {
   MsgBeginRedelegate,
   MsgDelegate,
   MsgSend,
+  MsgSwap,
   MsgUndelegate,
   MsgWithdrawDelegatorReward,
   renderMsgBeginRedelegate,
   renderMsgDelegate,
   renderMsgSend,
+  renderMsgSwap,
   renderMsgUndelegate,
   renderMsgWithdrawDelegatorReward,
 } from "./messages";
 
 export const renderAminoMessages = (
   chainId: string,
-  accountStore: AccountStore<
-    [CosmosAccount, CosmwasmAccount, SecretAccount]
-  >,
-  transactionStore: TransactionStore,
+  accountStore: AccountStore<[CosmosAccount, CosmwasmAccount, SecretAccount]>,
+  transactionStore: TransactionStore
 ): IRow[] => {
   // const msgs = transactionStore.txMsgs as readonly AminoMsg[];
   // console.log("---BEGIN---");
@@ -34,7 +39,6 @@ export const renderAminoMessages = (
   const account = accountStore.getAccount(chainId);
 
   const msg = transactionStore.rawData;
-  console.log("transactionStore.rawData", msg);
 
   if (!msg) {
     return [];
@@ -64,6 +68,23 @@ export const renderAminoMessages = (
     if (msg.type === account.cosmos.msgOpts.withdrawRewards.type) {
       const value = msg.value as MsgWithdrawDelegatorReward["value"];
       return renderMsgWithdrawDelegatorReward(value);
+    }
+
+    if (msg.type === "wallet-swap") {
+      const value = msg.value as MsgSwap;
+      const msgEther = transactionStore.txMsgs;
+      if (msgEther && msgEther.length > 0) {
+        const data = msgEther[0] as any;
+        if (data.type === "sign/MsgSignData") {
+          const dataAsciiStr = Buffer.from(data.value.data, "base64").toString(
+            "ascii"
+          );
+          const dataParse = JSON.parse(dataAsciiStr);
+          return renderMsgSwap(value, dataParse);
+        }
+        return [];
+      }
+      return [];
     }
   } catch (e) {
     console.log(e);

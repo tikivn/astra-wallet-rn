@@ -136,62 +136,12 @@ export function useSwapCallback(
   callback: null | (() => Promise<string>);
   error: string | null;
 } {
-  const { etherProvider: library, chainId, accountHex } = useWeb3();
+  const { etherProvider: library, chainId, accountHex, getStore } = useWeb3();
+  const { transactionStore } = getStore();
   const swapCalls = useSwapCallArguments(trade, allowedSlippage);
-  const signTransaction = useSignTransaction();
+  const { signTransaction, signEthereum } = useSignTransaction();
 
   const recipient = accountHex;
-
-  // const signEthereum = useCallback(
-  //   async (functionAbi: any, opts: { gas: any; value: any }) => {
-  //     const keplr = await accountStore
-  //       .getAccount(account.bech32Address)
-  //       .getKeplr();
-  //     const txParams = {
-  //       gasPrice: Web3.utils.stringToHex(gasPrice),
-  //       to: ADDRESSES.ROUTER[chain],
-  //       data: functionAbi,
-  //       from: accountHex,
-  //       chainId: chain,
-  //       nonce: Web3.utils.numberToHex(Math.floor(Math.random() * 1000)),
-  //       gas: Web3.utils.numberToHex(opts.gas),
-  //       value: opts.value,
-  //     };
-  //     transactionStore.updateTxType("swap");
-  //     const sign = await keplr?.signEthereum(
-  //       chainIdStr,
-  //       account.bech32Address,
-  //       JSON.stringify(txParams),
-  //       EthSignType.TRANSACTION
-  //     );
-  //     // if (sign) {
-  //     //   console.log("🚀 -> sign", sign);
-  //     //   const hex = Buffer.from(sign).toString("hex");
-  //     //   web3Instance.eth
-  //     //     .sendSignedTransaction("0x" + hex)
-  //     //     .on("transactionHash", (hash) => {
-  //     //       console.log("🚀 -> .on -> hash", hash);
-  //     //     })
-  //     //     .on("error", (err) => {
-  //     //       console.log("🚀 -> err", err);
-  //     //     });
-  //     // }
-
-  //     transactionStore.updateTxHash(sign);
-  //     // await transactionStore.startTransaction();
-  //     // return sign;
-  //   },
-  //   [
-  //     account.bech32Address,
-  //     accountHex,
-  //     accountStore,
-  //     chain,
-  //     chainIdStr,
-  //     chainStore,
-  //     gasPrice,
-  //     transactionStore,
-  //   ]
-  // )
 
   return useMemo(() => {
     if (!trade || !library || !accountHex || !chainId) {
@@ -207,6 +157,8 @@ export function useSwapCallback(
     return {
       state: SwapCallbackState.VALID,
       callback: async function onSwap(): Promise<string> {
+        transactionStore.updateTxState("pending");
+
         const estimatedCalls: SwapCallEstimate[] = await Promise.all(
           swapCalls.map((call) => {
             const {
@@ -281,9 +233,22 @@ export function useSwapCallback(
         }
 
         const { encodeFunctionData, gasEstimate, value } = successfulEstimation;
-        return signTransaction(encodeFunctionData || "", {
-          gasLimit: calculateGasMargin(gasEstimate).toHexString(),
-          value,
+        // return signTransaction(encodeFunctionData || "", {
+        //   gasLimit: calculateGasMargin(gasEstimate).toHexString(),
+        //   value,
+        // })
+        //   .then((hash) => {
+        //     return hash;
+        //   })
+        //   .catch((error) => {
+        //     console.error(
+        //       `Swap failed: ${swapErrorToUserReadableMessage(error)}`
+        //     );
+        //     return "failed";
+        //   });
+        return signEthereum(encodeFunctionData || "", {
+          gas: calculateGasMargin(gasEstimate).toHexString(),
+          value: value || "",
         })
           .then((hash) => {
             return hash;
@@ -303,8 +268,9 @@ export function useSwapCallback(
     accountHex,
     chainId,
     recipient,
+    transactionStore,
     swapCalls,
-    signTransaction,
+    signEthereum,
   ]);
 }
 

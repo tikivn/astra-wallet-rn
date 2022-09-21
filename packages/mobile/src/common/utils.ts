@@ -10,8 +10,8 @@ export const formatCoin = (coin?: CoinPretty, hideDenom: boolean = false) => {
   }
 
   const value = Number(coin.toDec());
-  const maximumFractionDigits = value >= 1000 ? 0 : (value > 1 ? 3 : 6);
-  var formattedText = value.toLocaleString("en-US", { maximumFractionDigits });
+  const maximumFractionDigits = value >= 1000 ? 0 : value > 1 ? 3 : 6;
+  let formattedText = value.toLocaleString("en-US", { maximumFractionDigits });
   if (!hideDenom) {
     formattedText += " " + coin.denom.toUpperCase();
   }
@@ -37,18 +37,25 @@ export const formatNumber = (value: string) => {
   }
 
   const idx = replacedValue.indexOf(".");
-  var fraction = "";
+  let fraction = "";
   if (idx !== -1) {
-    fraction = replacedValue.substring(idx, Math.min(idx + 4, replacedValue.length));
+    fraction = replacedValue.substring(
+      idx,
+      Math.min(idx + 4, replacedValue.length)
+    );
   }
 
-  return numValue.toLocaleString("en-US", { maximumFractionDigits: 0 }) + fraction;
+  return (
+    numValue.toLocaleString("en-US", { maximumFractionDigits: 0 }) + fraction
+  );
 };
 
 export const formatPercent = (value: any, hideSymbol: boolean = false) => {
-  return new IntPretty(new Dec(value ?? 0))
-    .moveDecimalPointRight(2)
-    .maxDecimals(2)
-    .trim(true)
-    .toString() + (hideSymbol ? "" : "%");
+  return (
+    new IntPretty(new Dec(value ?? 0))
+      .moveDecimalPointRight(2)
+      .maxDecimals(2)
+      .trim(true)
+      .toString() + (hideSymbol ? "" : "%")
+  );
 };
