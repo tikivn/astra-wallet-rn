@@ -10,7 +10,7 @@ import {
 import { useStyle } from "../../styles";
 import { registerModal } from "../../modals/base";
 import { RectButton } from "../rect-button";
-import DownIcon from "../../assets/svg/down.svg"
+import { ArrowDownIcon } from "../icon";
 export const SelectorModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
@@ -259,11 +259,7 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
     >
       <Text
         style={StyleSheet.flatten([
-          style.flatten([
-            "subtitle2",
-            "color-gray-30",
-            "margin-bottom-6",
-          ]),
+          style.flatten(["subtitle2", "color-gray-30", "margin-bottom-6"]),
           labelStyle,
         ])}
       >
@@ -278,7 +274,9 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
             "border-radius-4",
             "border-width-1",
             "border-color-gray-60",
-            "flex-row", "justify-between", "items-center"
+            "flex-row",
+            "justify-between",
+            "items-center",
           ]),
           selectorContainerStyle,
         ])}
@@ -295,7 +293,7 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
         >
           {selected ? selected.label : placeHolder ?? ""}
         </Text>
-        <DownIcon/>
+        <ArrowDownIcon />
       </RectButton>
     </View>
   );

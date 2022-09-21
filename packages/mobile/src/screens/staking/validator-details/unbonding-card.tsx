@@ -24,7 +24,6 @@ export const UnbondingCard: FunctionComponent<{
     .unbondingBalances.find(
       (unbonding) => unbonding.validatorAddress === validatorAddress
     );
-  console.log("__DEBUG__: ", unbonding);  
   const style = useStyle();
 
   const intl = useIntl();

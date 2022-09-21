@@ -35,3 +35,4 @@ export * from "./eye-open";
 export * from "./astra-logo/astra-logo";
 export * from "./cannot-redelegate";
 export * from "./stake";
+export * from "./arrow-down";
