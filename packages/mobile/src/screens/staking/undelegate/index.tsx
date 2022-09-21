@@ -370,7 +370,7 @@ const simulateUndelegateGasFee = (
   };
 
   const feeType = "average" as FeeType;
-  var gasPrice = 0;
+  let gasPrice = 0;
   if (chainStore.current.gasPriceStep) {
     const { [feeType]: wei } = chainStore.current.gasPriceStep;
 

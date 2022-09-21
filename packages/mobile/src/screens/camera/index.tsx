@@ -2,6 +2,7 @@ import React, {
   FunctionComponent,
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import { RNCamera } from "react-native-camera";
@@ -28,6 +29,7 @@ export const CameraScreen: FunctionComponent = observer(() => {
   // To prevent the reading while changing to other screen after processing the result.
   // Expectedly, screen should be moved to other after processing the result.
   const [isCompleted, setIsCompleted] = useState(false);
+  const qrCode = useRef("");
 
   useFocusEffect(
     useCallback(() => {
@@ -55,6 +57,12 @@ export const CameraScreen: FunctionComponent = observer(() => {
         captureAudio={false}
         isLoading={isLoading}
         onBarCodeRead={async ({ data }) => {
+          if (data === qrCode.current) {
+            return;
+          }
+          qrCode.current = data;
+          console.log("__CAMERA DEBUG__ data:", data);
+          console.log("__CAMERA DEBUG__ qrCode:", qrCode.current);
           if (!isLoading && !isCompleted) {
             analyticsStore.logEvent("astra_hub_scan_qr_code", {
               type: data.startsWith("wc:") ? "wallet_connect" : "address",
@@ -84,7 +92,7 @@ export const CameraScreen: FunctionComponent = observer(() => {
                       chainInfo.bech32Config.bech32PrefixAccAddr === prefix
                   );
                   if (chainInfo) {
-                    smartNavigation.pushSmart("Wallet.Send", {
+                    smartNavigation.replaceSmart("Wallet.Send", {
                       chainId: chainInfo.chainId,
                       recipient: data,
                     });
@@ -96,7 +104,7 @@ export const CameraScreen: FunctionComponent = observer(() => {
                     });
                   }
                 } else if (isHexAddress) {
-                  smartNavigation.pushSmart("Wallet.Send", {
+                  smartNavigation.replaceSmart("Wallet.Send", {
                     recipient: data,
                   });
                 } else {
@@ -117,6 +125,7 @@ export const CameraScreen: FunctionComponent = observer(() => {
               console.log(e);
             } finally {
               setIsLoading(false);
+              setIsCompleted(false);
             }
           }
         }}

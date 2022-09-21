@@ -32,7 +32,13 @@ import { useIntl } from "react-intl";
 export const MainScreen: FunctionComponent = observer(() => {
   const [refreshing, setRefreshing] = React.useState(false);
 
-  const { chainStore, accountStore, queriesStore, priceStore, analyticsStore } = useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    priceStore,
+    analyticsStore,
+  } = useStore();
 
   const style = useStyle();
   const intl = useIntl();

@@ -31,14 +31,14 @@ export const TokenItemNew: FunctionComponent<{
           "items-center",
           "padding-x-card-horizontal",
           "padding-y-14",
-          "margin-top-12"
+          "margin-top-12",
         ]),
         containerStyle,
       ])}
       onPress={() => {
-        smartNavigation.navigateSmart("Wallet.Send", {
-          currency: balance.currency.coinMinimalDenom,
-        });
+        // smartNavigation.navigateSmart("Wallet.Send", {
+        //   currency: balance.currency.coinMinimalDenom,
+        // });
       }}
     >
       <TokenSymbolNew
@@ -93,11 +93,9 @@ export const TokenItemNew: FunctionComponent<{
           </Text>
         </View> */}
       </View>
-
     </RectButton>
   );
 };
-
 
 export const TokenSymbolNew: FunctionComponent<{
   style?: ViewStyle;
@@ -106,51 +104,44 @@ export const TokenSymbolNew: FunctionComponent<{
   size: number;
 
   imageScale?: number;
-}> = ({
-  style: propStyle,
-  size,
-  currency,
-  imageScale = 1,
-}) => {
-    const style = useStyle();
+}> = ({ style: propStyle, size, currency, imageScale = 1 }) => {
+  const style = useStyle();
 
-    return (
-      <View
-        style={StyleSheet.flatten([
-          {
-            width: size,
-            height: size,
-            borderRadius: size,
-          },
-          style.flatten(
-            [
-              "items-center",
-              "justify-center",
-              "overflow-hidden",
-              "background-color-transparent",
-            ],
-          ),
-          propStyle,
-        ])}
-      >
-        {currency.coinImageUrl ? (
-          <FastImage
-            style={{
-              width: size * imageScale,
-              height: size * imageScale,
-            }}
-            resizeMode={FastImage.resizeMode.contain}
-            source={{
-              uri: currency.coinImageUrl,
-            }}
-          />
-        ) : (
-          <VectorCharacter
-            char={currency.coinDenom[0]}
-            height={Math.floor(size * 0.35)}
-            color="white"
-          />
-        )}
-      </View>
-    );
-  };
+  return (
+    <View
+      style={StyleSheet.flatten([
+        {
+          width: size,
+          height: size,
+          borderRadius: size,
+        },
+        style.flatten([
+          "items-center",
+          "justify-center",
+          "overflow-hidden",
+          "background-color-transparent",
+        ]),
+        propStyle,
+      ])}
+    >
+      {currency.coinImageUrl ? (
+        <FastImage
+          style={{
+            width: size * imageScale,
+            height: size * imageScale,
+          }}
+          resizeMode={FastImage.resizeMode.contain}
+          source={{
+            uri: currency.coinImageUrl,
+          }}
+        />
+      ) : (
+        <VectorCharacter
+          char={currency.coinDenom[0]}
+          height={Math.floor(size * 0.35)}
+          color="white"
+        />
+      )}
+    </View>
+  );
+};
