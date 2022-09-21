@@ -57,7 +57,7 @@ export const CameraScreen: FunctionComponent = observer(() => {
         onBarCodeRead={async ({ data }) => {
           if (!isLoading && !isCompleted) {
             analyticsStore.logEvent("astra_hub_scan_qr_code", {
-              type: data.startsWith("wc:") ? "wallet_connect" : "address"
+              type: data.startsWith("wc:") ? "wallet_connect" : "address",
             });
             setIsLoading(true);
             try {

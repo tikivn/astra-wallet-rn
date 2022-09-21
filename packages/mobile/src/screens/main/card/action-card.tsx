@@ -25,13 +25,6 @@ export const ActionsCard: FunctionComponent<{
       <CardBody style={style.flatten(["padding-y-0"])}>
         <View style={style.flatten(["flex-row", "justify-center"])}>
           <Button
-            color="primary"
-            containerStyle={style.flatten([
-              "border-radius-52",
-              "border-width-0",
-              "height-44",
-              "margin-right-12",
-            ])}
             text={intl.formatMessage({ id: "main.receive" })}
             leftIcon={
               <View style={style.flatten(["margin-right-6", "margin-left-6"])}>
@@ -40,20 +33,13 @@ export const ActionsCard: FunctionComponent<{
             }
             rightIcon={<View style={style.flatten(["margin-right-12"])} />}
             textStyle={style.flatten(["color-white", "subtitle3"])}
-            underlayColor="#00000020"
-            size="default"
-            mode="fill"
             onPress={() => {
               smartNavigation.navigateSmart("Receive", {});
             }}
           />
           <Button
-            color="primary"
             containerStyle={style.flatten([
-              "border-radius-52",
-              "border-width-0",
-              "height-44",
-              "margin-right-12",
+              "margin-left-8",
             ])}
             text={intl.formatMessage({ id: "main.send" })}
             leftIcon={
@@ -63,9 +49,6 @@ export const ActionsCard: FunctionComponent<{
             }
             rightIcon={<View style={style.flatten(["margin-right-12"])} />}
             textStyle={style.flatten(["color-white", "subtitle3"])}
-            underlayColor="#00000020"
-            size="default"
-            mode="fill"
             onPress={() => {
               smartNavigation.navigateSmart("Wallet.Send", {
                 currency: chainStore.current.stakeCurrency.coinMinimalDenom,
@@ -74,11 +57,8 @@ export const ActionsCard: FunctionComponent<{
           />
           {swapEnabled && (
             <Button
-              color="primary"
               containerStyle={style.flatten([
-                "border-radius-52",
-                "border-width-0",
-                "height-44",
+                "margin-left-8",
               ])}
               text={intl.formatMessage({ id: "main.swap" })}
               leftIcon={
@@ -90,9 +70,6 @@ export const ActionsCard: FunctionComponent<{
               }
               rightIcon={<View style={style.flatten(["margin-right-12"])} />}
               textStyle={style.flatten(["color-white", "subtitle3"])}
-              underlayColor="#00000020"
-              size="default"
-              mode="fill"
               onPress={() => {
                 smartNavigation.navigateSmart("Swap.Home", {});
               }}

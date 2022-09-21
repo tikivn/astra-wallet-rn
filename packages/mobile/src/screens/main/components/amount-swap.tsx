@@ -154,7 +154,6 @@ export const AmountSwap: FunctionComponent<SwapAmountProps> = observer(
                   "border-radius-4",
                   "background-color-transparent",
                 ])}
-                underlayColor="transparent"
                 onPress={handleClickSwapAll}
               />
             )}

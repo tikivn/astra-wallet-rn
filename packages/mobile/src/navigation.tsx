@@ -61,7 +61,7 @@ import { PageScrollPositionProvider } from "./providers/page-scroll-position";
 import {
   BlurredHeaderScreenOptionsPreset,
   HeaderRightButton,
-  NormalHeaderScreenOptions,
+  WalletHeaderScreenOptionsPreset,
 } from "./components/header";
 import { TokensScreen } from "./screens/tokens";
 import { CameraScreen } from "./screens/camera";
@@ -116,9 +116,16 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 export const NewMainNavigation: FunctionComponent = () => {
+  const style = useStyle();
+  const screenOptions = {
+    ...WalletHeaderScreenOptionsPreset,
+    headerStyle: style.flatten(["background-color-background"]),
+    headerTitleStyle: style.flatten(["color-white", "text-large-bold"]),
+  };
+
   return (
     <Stack.Navigator
-      screenOptions={NormalHeaderScreenOptions}
+      screenOptions={screenOptions}
       initialRouteName="NewHome"
       headerMode="screen"
     >
@@ -135,9 +142,16 @@ export const NewMainNavigation: FunctionComponent = () => {
 
 export const HistoryNavigation: FunctionComponent = () => {
   const intl = useIntl();
+  const style = useStyle();
+  const screenOptions = {
+    ...WalletHeaderScreenOptionsPreset,
+    headerStyle: style.flatten(["background-color-background"]),
+    headerTitleStyle: style.flatten(["color-white", "text-large-bold"]),
+  };
+
   return (
     <Stack.Navigator
-      screenOptions={NormalHeaderScreenOptions}
+      screenOptions={screenOptions}
       initialRouteName="History"
       headerMode="screen"
     >
@@ -154,9 +168,16 @@ export const HistoryNavigation: FunctionComponent = () => {
 
 export const RegisterNavigation: FunctionComponent = () => {
   const intl = useIntl();
+  const style = useStyle();
+  const screenOptions = {
+    ...WalletHeaderScreenOptionsPreset,
+    headerStyle: style.flatten(["background-color-background"]),
+    headerTitleStyle: style.flatten(["color-white", "text-large-bold"]),
+  };
+
   return (
     <Stack.Navigator
-      screenOptions={NormalHeaderScreenOptions}
+      screenOptions={screenOptions}
       initialRouteName="Register.Intro"
       headerMode="screen"
     >
@@ -267,9 +288,16 @@ export const RegisterNavigation: FunctionComponent = () => {
 };
 
 export const TransactionNavigation: FunctionComponent = () => {
+  const style = useStyle();
+  const screenOptions = {
+    ...WalletHeaderScreenOptionsPreset,
+    headerStyle: style.flatten(["background-color-background"]),
+    headerTitleStyle: style.flatten(["color-white", "text-large-bold"]),
+  };
+
   return (
     <Stack.Navigator
-      screenOptions={NormalHeaderScreenOptions}
+      screenOptions={screenOptions}
       headerMode="screen"
       initialRouteName="Tx.Result"
     >
@@ -286,9 +314,16 @@ export const TransactionNavigation: FunctionComponent = () => {
 
 export const StakingNavigation: FunctionComponent = () => {
   const intl = useIntl();
+  const style = useStyle();
+  const screenOptions = {
+    ...WalletHeaderScreenOptionsPreset,
+    headerStyle: style.flatten(["background-color-background"]),
+    headerTitleStyle: style.flatten(["color-white", "text-large-bold"]),
+  };
+
   return (
     <Stack.Navigator
-      screenOptions={NormalHeaderScreenOptions}
+      screenOptions={screenOptions}
       initialRouteName="Staking.Dashboard"
       headerMode="screen"
     >
@@ -305,9 +340,16 @@ export const StakingNavigation: FunctionComponent = () => {
 
 export const OtherNavigation: FunctionComponent = () => {
   const intl = useIntl();
+  const style = useStyle();
+  const screenOptions = {
+    ...WalletHeaderScreenOptionsPreset,
+    headerStyle: style.flatten(["background-color-background"]),
+    headerTitleStyle: style.flatten(["color-white", "text-large-bold"]),
+  };
+
   return (
     <Stack.Navigator
-      screenOptions={NormalHeaderScreenOptions}
+      screenOptions={screenOptions}
       headerMode="screen"
     >
       <Stack.Screen
@@ -352,9 +394,16 @@ export const OtherNavigation: FunctionComponent = () => {
 export const WalletNavigation: FunctionComponent = () => {
   const navigation = useNavigation();
   const intl = useIntl();
+  const style = useStyle();
+  const screenOptions = {
+    ...WalletHeaderScreenOptionsPreset,
+    headerStyle: style.flatten(["background-color-background"]),
+    headerTitleStyle: style.flatten(["color-white", "text-large-bold"]),
+  };
+
   return (
     <Stack.Navigator
-      screenOptions={NormalHeaderScreenOptions}
+      screenOptions={screenOptions}
       headerMode="screen"
     >
       <Stack.Screen
@@ -513,9 +562,16 @@ export const WalletNavigation: FunctionComponent = () => {
 };
 
 export const SettingsStackScreen: FunctionComponent = () => {
+  const style = useStyle();
+  const screenOptions = {
+    ...WalletHeaderScreenOptionsPreset,
+    headerStyle: style.flatten(["background-color-background"]),
+    headerTitleStyle: style.flatten(["color-white", "text-large-bold"]),
+  };
+
   return (
     <Stack.Navigator
-      screenOptions={NormalHeaderScreenOptions}
+      screenOptions={screenOptions}
       headerMode="screen"
     >
       <Stack.Screen
@@ -531,10 +587,17 @@ export const SettingsStackScreen: FunctionComponent = () => {
 
 export const SwapStackScreen: FunctionComponent = () => {
   const intl = useIntl();
+  const style = useStyle();
+  const screenOptions = {
+    ...WalletHeaderScreenOptionsPreset,
+    headerStyle: style.flatten(["background-color-background"]),
+    headerTitleStyle: style.flatten(["color-white", "text-large-bold"]),
+  };
+
   return (
     <SwapProvider>
       <Stack.Navigator
-        screenOptions={NormalHeaderScreenOptions}
+        screenOptions={screenOptions}
         headerMode="screen"
       >
         <Stack.Screen
@@ -675,7 +738,7 @@ export const MainTabNavigation: FunctionComponent = () => {
         inactiveTintColor: style.get("color-text-black-very-very-low").color,
         style: {
           borderTopWidth: 1,
-          borderTopColor: style.get("color-gray-70").color,
+          borderTopColor: style.get("color-border").color,
           shadowColor: style.get("color-transparent").color,
           elevation: 0,
           // paddingLeft: 30,

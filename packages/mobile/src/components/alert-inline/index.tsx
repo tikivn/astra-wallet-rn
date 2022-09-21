@@ -1,11 +1,10 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
-import { StyleSheet, Text, TouchableOpacity, View, ViewStyle } from "react-native";
-import { Colors, useStyle } from "../../styles";
+import { Text, TouchableOpacity, View, ViewStyle } from "react-native";
+import { useStyle } from "../../styles";
 import { Button } from "../button";
 import { AlertErrorIcon, AlertInfoIcon, AlertSuccessIcon, AlertWarningIcon } from "../icon";
 import { CloseLargeIcon } from "../icon/outlined/navigation";
-import { allStyles, styles } from "./styles";
 
 export type AlertInlineType = "info" | "success" | "error" | "warning";
 
@@ -30,13 +29,11 @@ export const AlertInline: FunctionComponent<IAlertInline> = observer(({
 }) => {
   const styleBuilder = useStyle();
 
-  const viewContainer = allStyles[type].container;
-
   function getIcon() {
     const props = {
       style: { marginRight: 8, },
       size: 20,
-      color: allStyles[type].logo.color
+      color: styleBuilder.get(`color-alert-inline-${type}-main`).color,
     };
 
     var Icon = AlertInfoIcon;
@@ -73,7 +70,7 @@ export const AlertInline: FunctionComponent<IAlertInline> = observer(({
         }}>
         <CloseLargeIcon
           size={20}
-          color={Colors["gray-100"]}
+          color={styleBuilder.get(`color-alert-inline-${type}-content`).color}
         />
       </TouchableOpacity>;
     }
@@ -98,13 +95,30 @@ export const AlertInline: FunctionComponent<IAlertInline> = observer(({
   }
 
   return (
-    <View style={{ ...styles.container, ...viewContainer, ...overrideContainerStyles(), ...style }}>
+    <View style={{
+      ...styleBuilder.flatten([
+        "flex-row",
+        "items-start",
+        "content-stretch",
+        "alert-inline-container",
+        `background-color-alert-inline-${type}-background`,
+        `border-color-alert-inline-${type}-border`,
+      ]),
+      ...overrideContainerStyles(),
+      ...style
+    }}>
       {!hideIcon && getIcon()}
       <View style={{ flex: 1, }}>
         {title && (
-          <Text style={styleBuilder.flatten(["text-base-medium"])}>{title}</Text>
+          <Text style={styleBuilder.flatten([
+            "text-base-medium",
+            `color-alert-inline-${type}-main`,
+          ])}>{title}</Text>
         )}
-        <Text style={styleBuilder.flatten(["text-base-regular", "color-gray-90"])}>{content}</Text>
+        <Text style={styleBuilder.flatten([
+          "text-base-regular",
+          `color-alert-inline-${type}-content`,
+        ])}>{content}</Text>
       </View>
       {actionButton && getButton()}
     </View >

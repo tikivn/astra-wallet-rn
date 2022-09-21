@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { StyleSheet, View, ViewStyle } from "react-native";
-import { Colors } from "../../styles";
+import { Colors, useStyle } from "../../styles";
 import { HairLine } from "./hair-line";
 import { AlignItems, IColumn, ItemRow } from "./item-row";
 
@@ -20,6 +20,8 @@ export const ListRowView: FunctionComponent<{
   clearBackground?: boolean;
   hideBorder?: boolean;
 }> = observer(({ style, rows, clearBackground, hideBorder }) => {
+  const styleBuilder = useStyle();
+
   const items = rows.map((row, index) => {
     return buildItem(row, index);
   });
@@ -30,10 +32,10 @@ export const ListRowView: FunctionComponent<{
       return (
         <HairLine
           key={key}
-          style={{
-            backgroundColor: Colors["gray-70"],
-            marginHorizontal: 0,
-          }}
+          style={styleBuilder.flatten([
+            "background-color-card-border",
+            "margin-x-0"
+          ])}
         />
       );
     }
@@ -52,6 +54,10 @@ export const ListRowView: FunctionComponent<{
   return (
     <View
       style={{
+        ...styleBuilder.flatten([
+          "border-color-card-border",
+          "background-color-card-background",
+        ]),
         ...styles.container,
         ...style,
         ...(clearBackground ? { backgroundColor: undefined } : {}),
@@ -67,8 +73,6 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: Colors["gray-60"],
-    backgroundColor: Colors["gray-90"],
     paddingHorizontal: 16,
     paddingVertical: 8,
   },

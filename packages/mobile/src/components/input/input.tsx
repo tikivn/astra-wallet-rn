@@ -137,8 +137,7 @@ export const TextInput = React.forwardRef<
                 "absolute",
                 "text-caption2",
                 "color-error",
-                "margin-top-2",
-                "margin-left-4",
+                "margin-top-4",
               ]),
               props.errorLabelStyle,
             ])}

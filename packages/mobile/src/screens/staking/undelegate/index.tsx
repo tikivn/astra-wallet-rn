@@ -3,13 +3,22 @@ import { observer } from "mobx-react-lite";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { ChainStore, useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
-import { FeeType, IAmountConfig, useUndelegateTxConfig } from "@keplr-wallet/hooks";
-import { PageWithScrollView } from "../../../components/page";
+import {
+  FeeType,
+  IAmountConfig,
+  useUndelegateTxConfig,
+} from "@keplr-wallet/hooks";
 import { ValidatorItem } from "../../../components/input";
 import { AmountInput } from "../../main/components";
-import { View } from "react-native";
+import { Text, View } from "react-native";
 import { Button } from "../../../components/button";
-import { AccountStore, CosmosAccount, CosmwasmAccount, SecretAccount, Staking } from "@keplr-wallet/stores";
+import {
+  AccountStore,
+  CosmosAccount,
+  CosmwasmAccount,
+  SecretAccount,
+  Staking,
+} from "@keplr-wallet/stores";
 import { useSmartNavigation } from "../../../navigation-util";
 import { AlertInline } from "../../../components/alert-inline";
 import {
@@ -17,10 +26,12 @@ import {
   buildRightColumn,
 } from "../../../components/foundation-view/item-row";
 import { useIntl } from "react-intl";
-import { formatCoin } from "../../../common/utils";
+import { formatCoin, formatPercent } from "../../../common/utils";
 import { MsgUndelegate } from "@keplr-wallet/proto-types/cosmos/staking/v1beta1/tx";
 import { CoinPretty, Dec, DecUtils, IntPretty } from "@keplr-wallet/unit";
 import { IRow, ListRowView } from "../../../components";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 
 export const UndelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -65,14 +76,14 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
 
   const validatorThumbnail = validator
     ? queries.cosmos.queryValidators
-      .getQueryStatus(Staking.BondStatus.Bonded)
-      .getValidatorThumbnail(validatorAddress) ||
-    queries.cosmos.queryValidators
-      .getQueryStatus(Staking.BondStatus.Unbonding)
-      .getValidatorThumbnail(validatorAddress) ||
-    queries.cosmos.queryValidators
-      .getQueryStatus(Staking.BondStatus.Unbonded)
-      .getValidatorThumbnail(validatorAddress)
+        .getQueryStatus(Staking.BondStatus.Bonded)
+        .getValidatorThumbnail(validatorAddress) ||
+      queries.cosmos.queryValidators
+        .getQueryStatus(Staking.BondStatus.Unbonding)
+        .getValidatorThumbnail(validatorAddress) ||
+      queries.cosmos.queryValidators
+        .getQueryStatus(Staking.BondStatus.Unbonded)
+        .getValidatorThumbnail(validatorAddress)
     : undefined;
 
   const staked = queries.cosmos.queryDelegations
@@ -104,7 +115,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
     chainStore,
     accountStore,
     sendConfigs.amountConfig,
-    validatorAddress,
+    validatorAddress
   );
   sendConfigs.gasConfig.setGas(gasLimit);
   sendConfigs.feeConfig.setFeeType(feeType);
@@ -138,16 +149,20 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
     {
       type: "items",
       cols: [
-        buildLeftColumn({ text: intl.formatMessage({ id: "stake.undelegate.available" }) }),
+        buildLeftColumn({
+          text: intl.formatMessage({ id: "stake.undelegate.available" }),
+        }),
         buildRightColumn({ text: formatCoin(staked) }),
-      ]
+      ],
     },
     {
       type: "items",
       cols: [
-        buildLeftColumn({ text: intl.formatMessage({ id: "stake.undelegate.fee" }) }),
+        buildLeftColumn({
+          text: intl.formatMessage({ id: "stake.undelegate.fee" }),
+        }),
         buildRightColumn({ text: feeText }),
-      ]
+      ],
     },
   ];
 
@@ -161,12 +176,18 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         gas_price: gasPrice,
         validator_address: validatorAddress,
         validator_name: validator?.description.moniker,
-        commission: 100 * Number(validator?.commission.commission_rates.rate ?? "0"),
+        commission: Number(
+          formatPercent(validator?.commission.commission_rates.rate, true)
+        ),
       };
 
       try {
         let dec = new Dec(sendConfigs.amountConfig.amount);
-        dec = dec.mulTruncate(DecUtils.getTenExponentN(sendConfigs.amountConfig.sendCurrency.coinDecimals));
+        dec = dec.mulTruncate(
+          DecUtils.getTenExponentN(
+            sendConfigs.amountConfig.sendCurrency.coinDecimals
+          )
+        );
         const amount = new CoinPretty(
           sendConfigs.amountConfig.sendCurrency,
           dec
@@ -179,7 +200,9 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
             fee: sendConfigs.feeConfig.fee,
             validatorAddress,
             validatorName: validator?.description.moniker,
-            commission: new IntPretty(new Dec(validator?.commission.commission_rates.rate ?? 0)),
+            commission: new IntPretty(
+              new Dec(validator?.commission.commission_rates.rate ?? 0)
+            ),
           },
         });
         const tx = account.cosmos.makeUndelegateTx(
@@ -221,64 +244,83 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
   };
 
   return (
-    <PageWithScrollView
-      backgroundColor={style.get("color-background").color}
-      style={style.flatten(["padding-x-page"])}
-      contentContainerStyle={style.get("flex-grow-1")}
-    >
-      <View style={style.flatten(["height-page-pad"])} />
-      <AlertInline
-        type="warning"
-        content={intl.formatMessage(
-          { id: "stake.undelegate.noticeWithdrawalPeriod" },
-          { coin: "ASA", days: unbondingTimeText }
-        )}
-      />
-      <ValidatorItem
-        containerStyle={style.flatten(["margin-y-16"])}
-        name={validator ? validator.description.moniker : "..."}
-        thumbnail={validatorThumbnail}
-        value={formatCoin(staked)}
-      />
-      <AmountInput
-        labelText={intl.formatMessage({ id: "stake.undelegate.amountLabel" })}
-        amountConfig={sendConfigs.amountConfig}
-      />
-      <ListRowView
-        rows={rows}
-        style={{ paddingHorizontal: 0, paddingVertical: 0, marginTop: 24 }}
-        hideBorder
-        clearBackground
-      />
-      {/* <MemoInput label="Memo (Optional)" memoConfig={sendConfigs.memoConfig} />
+    <View style={style.flatten(["flex-1", "background-color-background"])}>
+      <KeyboardAwareScrollView
+        contentContainerStyle={style.flatten(["padding-x-page"])}
+        enableOnAndroid
+      >
+        <View style={style.flatten(["height-page-pad"])} />
+        <AlertInline
+          type="warning"
+          content={intl.formatMessage(
+            { id: "stake.undelegate.noticeWithdrawalPeriod" },
+            { coin: staked.denom, days: unbondingTimeText }
+          )}
+        />
+        <Text
+          style={style.flatten([
+            "color-gray-30",
+            "text-medium-medium",
+            "margin-top-24",
+          ])}
+        >
+          {intl.formatMessage({ id: "stake.undelegate.validatorLabel" })}
+        </Text>
+        <ValidatorItem
+          containerStyle={style.flatten(["margin-top-8"])}
+          name={validator ? validator.description.moniker : "..."}
+          thumbnail={validatorThumbnail}
+          value={formatCoin(staked)}
+        />
+        <AmountInput
+          labelText={intl.formatMessage({ id: "stake.undelegate.amountLabel" })}
+          amountConfig={sendConfigs.amountConfig}
+          availableAmount={staked}
+          containerStyle={style.flatten(["margin-top-24"])}
+        />
+        <ListRowView
+          rows={rows}
+          style={{ paddingHorizontal: 0, paddingVertical: 0, marginTop: 16 }}
+          hideBorder
+          clearBackground
+        />
+        {/* <MemoInput label="Memo (Optional)" memoConfig={sendConfigs.memoConfig} />
       <FeeButtons
         label="Fee"
         gasLabel="gas"
         feeConfig={sendConfigs.feeConfig}
         gasConfig={sendConfigs.gasConfig}
       /> */}
-      <View style={style.flatten(["flex-1"])} />
-      <Button
-        containerStyle={style.flatten(["border-radius-4", "height-44"])}
-        textStyle={style.flatten(["subtitle2"])}
-        text={intl.formatMessage({ id: "stake.undelegate.undelegate" })}
-        size="large"
-        disabled={!account.isReadyToSendTx || !txStateIsValid}
-        loading={account.txTypeInProgress === "undelegate"}
-        onPress={onContinueHandler}
-      />
-      <View style={style.flatten(["height-page-pad"])} />
-    </PageWithScrollView>
+      </KeyboardAwareScrollView>
+      <View
+        style={style.flatten(["flex-1", "justify-end", "margin-bottom-12"])}
+      >
+        <View style={style.flatten(["height-1", "background-color-gray-70"])} />
+        <View
+          style={{
+            ...style.flatten(["background-color-background"]),
+            height: 56,
+          }}
+        >
+          <Button
+            text={intl.formatMessage({ id: "stake.undelegate.undelegate" })}
+            disabled={!account.isReadyToSendTx || !txStateIsValid}
+            loading={account.txTypeInProgress === "redelegate"}
+            onPress={onContinueHandler}
+            containerStyle={style.flatten(["margin-x-page", "margin-top-12"])}
+          />
+        </View>
+        <AvoidingKeyboardBottomView />
+      </View>
+    </View>
   );
 });
 
 const simulateUndelegateGasFee = (
   chainStore: ChainStore,
-  accountStore: AccountStore<
-    [CosmosAccount, CosmwasmAccount, SecretAccount]
-  >,
+  accountStore: AccountStore<[CosmosAccount, CosmwasmAccount, SecretAccount]>,
   amountConfig: IAmountConfig,
-  validatorAddress: string,
+  validatorAddress: string
 ) => {
   useEffect(() => {
     simulate();
@@ -290,9 +332,11 @@ const simulateUndelegateGasFee = (
   const simulate = async () => {
     const account = accountStore.getAccount(chainId);
 
-    const amount = amountConfig.amount || "0"
+    const amount = amountConfig.amount || "0";
     let dec = new Dec(amount);
-    dec = dec.mulTruncate(DecUtils.getTenExponentN(amountConfig.sendCurrency.coinDecimals));
+    dec = dec.mulTruncate(
+      DecUtils.getTenExponentN(amountConfig.sendCurrency.coinDecimals)
+    );
 
     const msg = {
       type: account.cosmos.msgOpts.undelegate.type,
@@ -306,29 +350,31 @@ const simulateUndelegateGasFee = (
       },
     };
     const { gasUsed } = await account.cosmos.simulateTx(
-      [{
-        typeUrl: "/cosmos.staking.v1beta1.MsgUndelegate",
-        value: MsgUndelegate.encode({
-          delegatorAddress: msg.value.delegator_address,
-          validatorAddress: msg.value.validator_address,
-          amount: msg.value.amount,
-        }).finish(),
-      }],
-      { amount: [] },
+      [
+        {
+          typeUrl: "/cosmos.staking.v1beta1.MsgUndelegate",
+          value: MsgUndelegate.encode({
+            delegatorAddress: msg.value.delegator_address,
+            validatorAddress: msg.value.validator_address,
+            amount: msg.value.amount,
+          }).finish(),
+        },
+      ],
+      { amount: [] }
     );
 
     const gasLimit = Math.ceil(gasUsed * 1.3);
     console.log("__DEBUG__ simulate gasUsed", gasUsed);
     console.log("__DEBUG__ simulate gasLimit", gasLimit);
     setGasLimit(gasLimit);
-  }
+  };
 
   const feeType = "average" as FeeType;
   var gasPrice = 0;
   if (chainStore.current.gasPriceStep) {
     const { [feeType]: wei } = chainStore.current.gasPriceStep;
 
-    const gwei = (new Dec(wei).mulTruncate(DecUtils.getTenExponentN(-9)));
+    const gwei = new Dec(wei).mulTruncate(DecUtils.getTenExponentN(-9));
     gasPrice = Number(gwei);
   }
 
@@ -336,5 +382,5 @@ const simulateUndelegateGasFee = (
     gasPrice,
     gasLimit,
     feeType,
-  }
+  };
 };

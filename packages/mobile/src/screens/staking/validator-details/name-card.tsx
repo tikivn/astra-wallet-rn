@@ -2,9 +2,8 @@ import React, { FunctionComponent, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 
 import { Staking } from "@keplr-wallet/stores";
-import { Image, ImageBackground, Text, View, ViewStyle } from "react-native";
+import { ImageBackground, Text, View, ViewStyle } from "react-native";
 
-import { Dec, IntPretty } from "@keplr-wallet/unit";
 import { Card, CardBody } from "../../../components/card";
 
 import { useStore } from "../../../stores";
@@ -12,6 +11,7 @@ import { useStyle } from "../../../styles";
 import { TooltipLabel } from "../component";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
 import { useIntl } from "react-intl";
+import { formatPercent } from "../../../common/utils";
 
 export const ValidatorNameCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -76,15 +76,7 @@ export const ValidatorNameCard: FunctionComponent<{
               textStyle={style.flatten(["color-green-50"])}
               text={intl.formatMessage(
                 { id: "validator.details.commission.percent" },
-                {
-                  percent: new IntPretty(
-                    new Dec(validator.commission.commission_rates.rate)
-                  )
-                    .moveDecimalPointRight(2)
-                    .maxDecimals(2)
-                    .trim(true)
-                    .toString(),
-                }
+                { percent: formatPercent(validator.commission.commission_rates.rate, true) },
               )}
             />
           </CardBody>

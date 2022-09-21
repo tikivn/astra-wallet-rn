@@ -10,6 +10,7 @@
   "stake.redelegate.available": "Balance",
   "stake.redelegate.fee": "Fee",
   "stake.redelegate.from": "From",
+  "stake.redelegate.listValidators": "All Active Validators",
   "stake.redelegate.redelagate": "Change provider",
   "stake.redelegate.selectValidator": "Select provider",
   "stake.redelegate.to": "To",
@@ -17,5 +18,6 @@
   "stake.undelegate.available": "Balance",
   "stake.undelegate.fee": "Fee",
   "stake.undelegate.noticeWithdrawalPeriod": "You will receive {coin} {days}",
-  "stake.undelegate.undelegate": "Unstake"
+  "stake.undelegate.undelegate": "Unstake",
+  "stake.undelegate.validatorLabel": "From validator"
 }

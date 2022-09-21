@@ -5,14 +5,15 @@
   "history.action.MsgDelegate.sender": "Staking",
   "history.action.MsgMultiSend.receiver": "",
   "history.action.MsgMultiSend.sender": "",
-  "history.action.MsgSend.receiver": "",
-  "history.action.MsgSend.sender": "",
+  "history.action.MsgSend.receiver": "Receive",
+  "history.action.MsgSend.sender": "Send",
   "history.action.MsgUndelegate.receiver": "",
   "history.action.MsgUndelegate.sender": "",
   "history.action.MsgWithdrawDelegatorReward.receiver": "",
   "history.action.MsgWithdrawDelegatorReward.sender": "",
   "history.action.notsupport": "",
   "history.emptyHistory": "",
-  "history.status.success": "",
-  "history.status.unknown": ""
+  "history.status.failure": "• Failure",
+  "history.status.success": "• Success",
+  "history.status.unknown": "• Unknown"
 }

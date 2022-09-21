@@ -7,13 +7,11 @@ import {
   StepView,
   StepViewState,
   StepViewStateColors,
-  StepViewStateColorsBlue,
-  StepViewStateColorsGreen,
   StepViewType,
 } from "../../../components/foundation-view/step-view";
 import { useStore } from "../../../stores";
 import { TxState } from "../../../stores/transaction";
-import { Typos, Colors } from "../../../styles";
+import { Typos, Colors, useStyle } from "../../../styles";
 import { Msg as AminoMsg } from "@cosmjs/launchpad";
 import { formatCoin } from "../../../common/utils";
 
@@ -37,17 +35,27 @@ export const TransactionStateView: FunctionComponent<{
   const isFailure = txState == "failure";
 
   const intl = useIntl();
+  const styleBuilder = useStyle();
 
   function getMainText(type: string, state: TxState): string {
     const account = accountStore.getAccount(chainStore.current.chainId);
     const allMainText: Record<string, Record<string, string>> = {
       [account.cosmos.msgOpts.send.native.type]: {
         pending: intl.formatMessage({ id: "tx.result.state.send.pending" }),
-        success: intl.formatMessage({ id: "tx.result.state.send.success" }),
-        failure: intl.formatMessage({ id: "tx.result.state.send.failure" }),
+        success: intl.formatMessage(
+          { id: "tx.result.state.send.success" },
+          { denom: transactionStore.txAmount?.denom }
+        ),
+        failure: intl.formatMessage(
+          { id: "tx.result.state.send.failure" },
+          { denom: transactionStore.txAmount?.denom }
+        ),
       },
       [account.cosmos.msgOpts.delegate.type]: {
-        pending: intl.formatMessage({ id: "tx.result.state.delegate.pending" }),
+        pending: intl.formatMessage(
+          { id: "tx.result.state.delegate.pending" },
+          { denom: transactionStore.txAmount?.denom }
+        ),
         success: intl.formatMessage({ id: "tx.result.state.delegate.success" }),
         failure: intl.formatMessage({ id: "tx.result.state.delegate.failure" }),
       },
@@ -55,12 +63,14 @@ export const TransactionStateView: FunctionComponent<{
         pending: intl.formatMessage({
           id: "tx.result.state.undelegate.pending",
         }),
-        success: intl.formatMessage({
-          id: "tx.result.state.undelegate.success",
-        }),
-        failure: intl.formatMessage({
-          id: "tx.result.state.undelegate.failure",
-        }),
+        success: intl.formatMessage(
+          { id: "tx.result.state.undelegate.success" },
+          { denom: transactionStore.txAmount?.denom }
+        ),
+        failure: intl.formatMessage(
+          { id: "tx.result.state.undelegate.failure" },
+          { denom: transactionStore.txAmount?.denom }
+        ),
       },
       [account.cosmos.msgOpts.redelegate.type]: {
         pending: intl.formatMessage({
@@ -107,15 +117,15 @@ export const TransactionStateView: FunctionComponent<{
 
   const mainTextStyle = {
     ...(isFailure
-      ? Typos["text-x-large-semi-bold"]
-      : Typos["text-base-regular"]),
-    color: isFailure ? Colors["gray-10"] : Colors["gray-30"],
+      ? styleBuilder.flatten(["text-x-large-semi-bold", "color-label-text-1"])
+      : styleBuilder.flatten(["text-base-regular", "color-label-text-2"])),
     marginTop: 8,
   };
 
   const subTextStyle = {
-    ...(isFailure ? Typos["text-base-regular"] : Typos["text-2x-large-medium"]),
-    color: isFailure ? Colors["gray-30"] : Colors["gray-10"],
+    ...(isFailure
+      ? styleBuilder.flatten(["text-base-regular", "color-label-text-2"])
+      : styleBuilder.flatten(["text-2x-large-medium", "color-label-text-1"])),
     marginTop: isFailure ? 8 : 4,
   };
 
@@ -125,13 +135,13 @@ export const TransactionStateView: FunctionComponent<{
   let finalStepText = intl.formatMessage({ id: "tx.result.state.processing" });
   let lineState: StepViewState = "inactive";
   let type: StepViewType = "dot";
-  let stateColors: StepViewStateColors = StepViewStateColorsBlue;
+  let stateColors: StepViewStateColors = "default";
 
   if (txState == "success") {
     finalStepText = intl.formatMessage({ id: "tx.result.state.sucess" });
     lineState = "active";
     type = "tick";
-    stateColors = StepViewStateColorsGreen;
+    stateColors = "success";
   }
 
   function animationSource() {

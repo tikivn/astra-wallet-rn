@@ -231,22 +231,21 @@ export function renderMsgSend(value: MsgSend["value"]): IRow[] {
             text: intl.formatMessage({
               id: "tx.result.models.msgSend.reveiver",
             }),
-            flex: 3,
+            flex: 4,
           }),
-          buildRightColumn({ text: _toAddress, flex: 7 }),
+          buildRightColumn({ text: _toAddress, flex: 6 }),
         ],
       },
       {
         ...common,
         cols: [
           buildLeftColumn({
-            text: intl.formatMessage(
-              { id: "tx.result.models.msgSend.amount" },
-              { coin: "Astra" }
-            ),
-            flex: 3,
+            text: intl.formatMessage({
+              id: "tx.result.models.msgSend.time"
+            }),
+            flex: 4,
           }),
-          buildRightColumn({ text: formatCoin(value.amount), flex: 7 }),
+          buildRightColumn({ text: formatDate(new Date()), flex: 6 }),
         ],
       },
       {
@@ -610,6 +609,7 @@ export function renderMsgWithdrawDelegatorReward(
   value: MsgWithdrawDelegatorReward["value"]
 ): IRow[] {
   const intl = useIntl();
+  const style = useStyle();
 
   let rows: IRow[] = [
     {
@@ -625,18 +625,16 @@ export function renderMsgWithdrawDelegatorReward(
     },
   ];
 
-  const validatorRows = value.validatorRewards.map(
-    ({ validatorName, rewards }) => {
-      return {
-        ...common,
-        cols: [
-          buildLeftColumn({
-            text: validatorName,
-            textColor: Colors["gray-10"],
-          }),
-          buildRightColumn({ text: formatCoin(rewards) }),
-        ],
-      };
+  const validatorRows = value.validatorRewards.map(({ validatorName, rewards }) => {
+    return {
+      ...common,
+      cols: [
+        buildLeftColumn({
+          text: validatorName,
+          textColor: style.get("color-label-text-1").color,
+        }),
+        buildRightColumn({ text: formatCoin(rewards) }),
+      ],
     }
   );
 

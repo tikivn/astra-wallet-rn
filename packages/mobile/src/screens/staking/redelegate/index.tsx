@@ -16,7 +16,7 @@ import {
 } from "../../../components/foundation-view/item-row";
 import { useIntl } from "react-intl";
 import { SelectValidatorItem } from "./select-validator";
-import { formatCoin } from "../../../common/utils";
+import { formatCoin, formatPercent } from "../../../common/utils";
 import { MsgBeginRedelegate } from "@keplr-wallet/proto-types/cosmos/staking/v1beta1/tx";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -157,10 +157,10 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
         gas_price: gasPrice,
         from_validator_address: sendConfigs.srcValidatorAddress,
         from_validator_name: srcValidator?.description.moniker,
-        from_commission: 100 * Number(srcValidator?.commission.commission_rates.rate ?? "0"),
+        from_commission: Number(formatPercent(srcValidator?.commission.commission_rates.rate, true)),
         to_validator_address: sendConfigs.dstValidatorAddress,
         to_validator_name: dstValidator?.description.moniker,
-        to_commission: 100 * Number(dstValidator?.commission.commission_rates.rate ?? "0"),
+        to_commission: Number(formatPercent(dstValidator?.commission.commission_rates.rate, true)),
       };
 
       try {
@@ -235,7 +235,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           containerStyle={style.flatten(["margin-top-8", "margin-bottom-24"])}
           name={srcValidator ? srcValidator.description.moniker : "..."}
           thumbnail={srcValidatorThumbnail}
-          value={formatCoin(staked)}
+          // value={formatCoin(staked)}
         />
         <SelectValidatorItem
           currentValidator={validatorAddress}
@@ -246,10 +246,12 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
         <AmountInput
           labelText={intl.formatMessage({ id: "stake.redelegate.amountLabel" })}
           amountConfig={sendConfigs.amountConfig}
-        />
+          availableAmount={staked}
+          containerStyle={style.flatten(["margin-top-24"])}
+          />
         <ListRowView
           rows={rows}
-          style={{ paddingHorizontal: 0, paddingVertical: 0, marginTop: 24 }}
+          style={{ paddingHorizontal: 0, paddingVertical: 0, marginTop: 16 }}
           hideBorder
           clearBackground
         />

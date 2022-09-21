@@ -22,7 +22,7 @@ import {
 } from "../../../components/foundation-view/list-row-view";
 import { AlertInline } from "../../../components";
 import { useIntl } from "react-intl";
-import { formatCoin } from "../../../common/utils";
+import { formatCoin, formatPercent } from "../../../common/utils";
 import { MsgDelegate } from "@keplr-wallet/proto-types/cosmos/staking/v1beta1/tx";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -84,19 +84,16 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   );
 
   const validator = bondedValidators.getValidator(validatorAddress);
-  // console.log("__DEBUG__ validator:", JSON.stringify(validator));
 
   const balanceText = userBalanceStore.getBalanceString();
 
   const name = validator?.description.moniker ?? "";
   const thumbnailUrl = bondedValidators.getValidatorThumbnail(validatorAddress);
 
-  const commission =
-    new IntPretty(new Dec(validator?.commission.commission_rates.rate || 0))
-      .moveDecimalPointRight(2)
-      .maxDecimals(2)
-      .trim(true)
-      .toString() + "%";
+  const commissionText = intl.formatMessage(
+    { id: "validator.details.commission.percent" },
+    { percent: formatPercent(validator?.commission.commission_rates.rate, true) },
+  );
 
   const votingPower = new CoinPretty(
     chainStore.current.stakeCurrency,
@@ -111,8 +108,10 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.amountConfig,
     validatorAddress,
   );
-  sendConfigs.gasConfig.setGas(gasLimit);
-  sendConfigs.feeConfig.setFeeType(feeType);
+  if (!sendConfigs.feeConfig.fee || sendConfigs.feeConfig.fee?.toDec().isZero()) {
+    sendConfigs.gasConfig.setGas(gasLimit);
+    sendConfigs.feeConfig.setFeeType(feeType);
+  }
   const feeText = formatCoin(sendConfigs.feeConfig.fee);
 
   const chainInfo = chainStore.getChain(chainStore.current.chainId).raw;
@@ -170,7 +169,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         gas_price: gasPrice,
         validator_address: validatorAddress,
         validator_name: validator?.description.moniker,
-        commission: 100 * Number(validator?.commission.commission_rates.rate ?? "0"),
+        commission: Number(formatPercent(validator?.commission.commission_rates.rate, true)),
       };
 
       try {
@@ -245,18 +244,18 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         />
         <ValidatorInfo
           style={{ marginTop: 24 }}
-          {...{ name, thumbnailUrl, commission, votingPower }}
+          {...{ name, thumbnailUrl, commission: commissionText, votingPower }}
         />
         <AmountInput
-          containerStyle={{
-            marginTop: 24,
-          }}
           labelText={intl.formatMessage({ id: "stake.delegate.amount" })}
           amountConfig={sendConfigs.amountConfig}
+          availableAmount={userBalanceStore.getBalance()}
+          fee={sendConfigs.feeConfig.fee}
+          containerStyle={style.flatten(["margin-top-24"])}
         />
         <ListRowView
           rows={rows}
-          style={{ paddingHorizontal: 0, paddingVertical: 0, marginTop: 24 }}
+          style={{ paddingHorizontal: 0, paddingVertical: 0, marginTop: 16 }}
           hideBorder
           clearBackground
         />

@@ -12,7 +12,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Card } from "../../../components/card";
 import { useSmartNavigation } from "../../../navigation-util";
-import { Colors, useStyle } from "../../../styles";
+import { useStyle } from "../../../styles";
 import { LeftArrowIcon } from "../../../components";
 
 export const ValidatorHeaderCard: FunctionComponent<{
@@ -23,11 +23,11 @@ export const ValidatorHeaderCard: FunctionComponent<{
   const paddingTop = useSafeAreaInsets().top;
   const style = useStyle();
   const smartNavigation = useSmartNavigation();
-  const backgroundColor = Colors["background"];
+  const backgroundColor = style.get("color-background").color;
   const backgroundButtonAnim = {
     backgroundColor: animOpacity.interpolate({
       inputRange: [0, 200],
-      outputRange: ["rgba(0, 0, 0, 0.2)", Colors.transparent],
+      outputRange: ["rgba(0, 0, 0, 0.2)", style.get("color-transparent").color],
     }),
   };
   const viewAnimOpacity = {
@@ -58,7 +58,7 @@ export const ValidatorHeaderCard: FunctionComponent<{
             smartNavigation.goBack();
           }}
         >
-          <LeftArrowIcon size={24} color={Colors.white} />
+          <LeftArrowIcon size={24} color={style.get("color-white").color} />
         </TouchableOpacity>
       </Animated.View>
     </Card>

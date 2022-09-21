@@ -1,5 +1,5 @@
-import React, { FunctionComponent, useMemo, useRef } from "react";
-import { ScrollView, Text, View } from "react-native";
+import React, { FunctionComponent, useMemo, useRef, useState } from "react";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { RectButton } from "react-native-gesture-handler";
 import { registerModal } from "../../../modals/base";
 import { useStore } from "../../../stores";
@@ -9,7 +9,11 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { TooltipLabel } from "../component";
 import { CardDivider } from "../../../components/card";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
-import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { formatCoin, formatPercent } from "../../../common/utils";
+import { Button } from "../../../components";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { CloseLargeIcon } from "../../../components/icon/outlined";
 
 export const ValidatorsBottomSheet: FunctionComponent<{
   label: string;
@@ -28,7 +32,7 @@ export const ValidatorsBottomSheet: FunctionComponent<{
     setSelectedValidator,
     maxItemsToShow,
     modalPersistent,
-    currentValidator,
+    currentValidator: currentValidatorAddress,
   }) => {
     const style = useStyle();
     const { chainStore, queriesStore } = useStore();
@@ -38,19 +42,22 @@ export const ValidatorsBottomSheet: FunctionComponent<{
       Staking.BondStatus.Bonded
     );
 
+    const [toValidator, setToValidator] = useState(selectedValidator);
+    const safeAreaInsets = useSafeAreaInsets();
+
     const data = useMemo(() => {
       const data = bondedValidators.validators;
       return data.filter((validator) => {
-        return validator.operator_address !== currentValidator;
+        return validator.operator_address !== currentValidatorAddress;
       });
-    }, [bondedValidators.validators, currentValidator]);
+    }, [bondedValidators.validators, currentValidatorAddress]);
 
     const renderBall = (selected: boolean) => {
       if (selected) {
         return (
           <View
             style={style.flatten([
-              "margin-left-4",
+              "margin-left-8",
               "width-18",
               "height-18",
               "border-radius-32",
@@ -75,7 +82,7 @@ export const ValidatorsBottomSheet: FunctionComponent<{
         return (
           <View
             style={style.flatten([
-              "margin-left-4",
+              "margin-left-8",
               "width-18",
               "height-18",
               "border-radius-32",
@@ -99,7 +106,7 @@ export const ValidatorsBottomSheet: FunctionComponent<{
           if (maxItemsToShow) {
             const selectedIndex = data.findIndex(
               (val) =>
-                val.operator_address === selectedValidator?.operator_address
+                val.operator_address === toValidator?.operator_address
             );
 
             if (selectedIndex) {
@@ -114,6 +121,13 @@ export const ValidatorsBottomSheet: FunctionComponent<{
 
           initOnce.current = true;
         }
+      }
+    };
+
+    const onContinueHandler = async () => {
+      setSelectedValidator(toValidator);
+      if (!modalPersistent) {
+        close();
       }
     };
 
@@ -136,16 +150,28 @@ export const ValidatorsBottomSheet: FunctionComponent<{
             "background-color-gray-90",
           ])}
         >
-          <View style={style.flatten(["height-60", "justify-center"])}>
+          <View style={style.flatten(["flex-row", "items-center"])}>
+            <TouchableOpacity
+              onPress={close}
+              style={style.flatten(["margin-16"])}>
+              <CloseLargeIcon
+                size={24}
+                color={style.get("color-gray-10").color}
+              />
+            </TouchableOpacity>
             <Text
               style={style.flatten([
-                "subtitle2",
+                "flex-1",
+                "text-medium-medium",
                 "color-gray-10",
                 "text-center",
               ])}
             >
               {label}
             </Text>
+            <View
+              style={style.flatten(["margin-16", "height-24", "width-24"])}
+            />
           </View>
           <CardDivider
             style={style.flatten(["background-color-gray-70", "margin-x-0"])}
@@ -177,7 +203,7 @@ export const ValidatorsBottomSheet: FunctionComponent<{
           </View>
           <ScrollView
             style={{
-              maxHeight: maxItemsToShow ? 64 * maxItemsToShow + 72 : undefined,
+              maxHeight: maxItemsToShow ? 64 * maxItemsToShow : undefined,
             }}
             ref={scrollViewRef}
             persistentScrollbar={true}
@@ -189,21 +215,16 @@ export const ValidatorsBottomSheet: FunctionComponent<{
                   <RectButton
                     key={val.operator_address}
                     style={style.flatten([
-                      "height-64",
-                      "padding-left-16",
-                      "padding-right-16",
+                      "padding-16",
                       "flex-row",
                       "items-center",
                     ])}
                     onPress={() => {
-                      setSelectedValidator(val);
-                      if (!modalPersistent) {
-                        close();
-                      }
+                      setToValidator(val);
                     }}
                   >
                     <ValidatorThumbnail
-                      style={style.flatten(["margin-right-8"])}
+                      style={style.flatten(["margin-right-12"])}
                       size={40}
                       url={bondedValidators.getValidatorThumbnail(
                         val.operator_address
@@ -220,7 +241,7 @@ export const ValidatorsBottomSheet: FunctionComponent<{
                       >
                         <Text
                           style={style.flatten([
-                            "subtitle3",
+                            "text-base-medium",
                             "color-gray-10",
                             "max-width-160",
                           ])}
@@ -238,40 +259,30 @@ export const ValidatorsBottomSheet: FunctionComponent<{
                         >
                           <Text
                             style={style.flatten([
-                              "subtitle3",
+                              "text-base-medium",
                               "color-gray-10",
                             ])}
                           >
-                            {new CoinPretty(
+                            {formatCoin(new CoinPretty(
                               chainStore.current.stakeCurrency,
                               new Dec(val.tokens)
-                            )
-                              .maxDecimals(0)
-                              .toString()}
+                            ))}
                           </Text>
                           {renderBall(
                             val.operator_address ===
-                              selectedValidator?.operator_address
+                            toValidator?.operator_address
                           )}
                         </View>
                       </View>
                       <Text
                         style={style.flatten([
-                          "text-caption2",
+                          "text-small-regular",
                           "color-gray-30",
                         ])}
                       >
                         {intl.formatMessage(
                           { id: "validator.details.commission.percent" },
-                          {
-                            percent: new IntPretty(
-                              new Dec(val.commission.commission_rates.rate)
-                            )
-                              .moveDecimalPointRight(2)
-                              .maxDecimals(2)
-                              .trim(true)
-                              .toString(),
-                          }
+                          { percent: formatPercent(val.commission.commission_rates.rate, true) },
                         )}
                       </Text>
                     </View>
@@ -287,7 +298,14 @@ export const ValidatorsBottomSheet: FunctionComponent<{
               );
             })}
           </ScrollView>
-          <View style={style.get("height-24")} />
+          <View style={style.flatten(["height-1", "background-color-gray-70"])} />
+          <Button
+            text={intl.formatMessage({ id: "common.text.verify" })}
+            disabled={!toValidator}
+            onPress={onContinueHandler}
+            containerStyle={style.flatten(["margin-x-page", "margin-top-12"])}
+          />
+          <View style={{ height: 12 + safeAreaInsets.bottom }} />
         </View>
       </View>
     );

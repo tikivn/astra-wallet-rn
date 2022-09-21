@@ -89,7 +89,7 @@ export const BalanceCard: FunctionComponent<{
             <TokenItemNew
               containerStyle={style.flatten([
                 "height-74",
-                "background-color-background-secondary",
+                "background-color-card-background",
                 "border-radius-16",
               ])}
               key={token.item.currency.coinMinimalDenom}

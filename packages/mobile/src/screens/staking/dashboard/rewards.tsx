@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { useIntl } from "react-intl";
 import { View } from "react-native";
-import { formatCoin } from "../../../common/utils";
+import { formatCoin, MIN_REWARDS_AMOUNT } from "../../../common/utils";
 import { Button } from "../../../components/button";
 import { CardDivider } from "../../../components/card";
 import { useSmartNavigation } from "../../../navigation-util";
@@ -47,7 +47,7 @@ export const RewardsItem: FunctionComponent<{
   const delegated = queryDelegated.total;
   const isRewardExist = queryDelegated.delegations.filter((delegation) => {
     const stakableRewards = rewardsQueries.getStakableRewardOf(delegation.delegation.validator_address);
-    return stakableRewards.toDec().gte(new Dec(0.001));
+    return stakableRewards.toDec().gte(new Dec(MIN_REWARDS_AMOUNT));
   })?.length !== 0;
 
   const isPending = unbondingBalances.length > 0;
@@ -62,8 +62,9 @@ export const RewardsItem: FunctionComponent<{
           "margin-x-16",
           "margin-y-16",
           "justify-between",
+          "background-color-card-background",
           "border-radius-16",
-          "border-color-gray-60",
+          "border-color-card-border",
           "border-width-1",
         ],
       )}
@@ -85,22 +86,17 @@ export const RewardsItem: FunctionComponent<{
         <Button
           containerStyle={style.flatten([
             "self-center",
-            "border-radius-4",
-            // "border-color-gray-30",
-            // "border-width-1",
             "width-132",
           ])}
           onPress={() => {
             smartNavigation.navigateSmart("Validator.List", {});
           }}
           text={intl.formatMessage({ id: "staking.dashboard.rewards.invest" })}
-          mode="fill"
           size="small"
-          underlayColor={style.get("color-background").color}
           textStyle={style.flatten(["color-white", "subtitle3"])}
         />
       </View>
-      <CardDivider style={style.flatten(["background-color-gray-70"])} />
+      <CardDivider style={style.flatten(["background-color-card-border"])} />
       <View
         style={style.flatten([
           "padding-y-16",
@@ -113,26 +109,20 @@ export const RewardsItem: FunctionComponent<{
           label={intl.formatMessage({
             id: "staking.dashboard.rewards.totalProfit",
           })}
-          value={formatCoin(pendingStakableReward)}
-          valueStyle={style.flatten(["color-green-50"])}
+          value={"+" + formatCoin(pendingStakableReward)}
+          valueStyle={style.flatten(["color-rewards-text"])}
         />
 
         <Button
-          containerStyle={style.flatten(
-            [
-              "self-center",
-              "border-radius-4",
-              "border-color-gray-30",
-              "border-width-1",
-              "width-132",
-            ],
-          )}
+          containerStyle={style.flatten([
+            "self-center",
+            "width-132",
+          ])}
           text={intl.formatMessage({
             id: "staking.dashboard.rewards.withdrawProfit",
           })}
-          mode="text"
+          mode="outline"
           size="small"
-          underlayColor={style.get("color-background").color}
           textStyle={style.flatten(["color-gray-10", "subtitle3"])}
           disabled={!isRewardExist}
           onPress={() => {
@@ -150,29 +140,23 @@ export const RewardsItem: FunctionComponent<{
         ])}
       >
         <PropertyView
-          label={intl.formatMessage({
-            id: "staking.dashboard.rewards.totalWithdrawals",
-          })}
+          label={intl.formatMessage(
+            { id: "staking.dashboard.rewards.totalWithdrawals" },
+            { denom: unboding.denom },
+          )}
           value={formatCoin(unboding)}
         />
 
         <Button
-          containerStyle={style.flatten(
-            [
-              "self-center",
-              "border-radius-4",
-              "border-color-gray-30",
-              "border-width-1",
-              "width-132",
-            ],
-            [!isRewardExist && "opacity-40"]
-          )}
+          containerStyle={style.flatten([
+            "self-center",
+            "width-132",
+          ])}
           text={intl.formatMessage({
             id: "staking.dashboard.rewards.follow",
           })}
-          mode="text"
+          mode="outline"
           size="small"
-          underlayColor={style.get("color-background").color}
           textStyle={style.flatten(["color-gray-10", "subtitle3"])}
           disabled={!isPending}
           onPress={() => {

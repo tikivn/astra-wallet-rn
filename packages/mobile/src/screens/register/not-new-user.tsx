@@ -57,9 +57,7 @@ export const RegisterNotNewUserScreen: FunctionComponent = observer(() => {
           }
           style={style.flatten(["background-color-white"])}
           textStyle={style.flatten(["color-black"])}
-          underlayColor="#00000020"
           size="large"
-          mode="light"
           onPress={() => {
             analyticsStore.logEvent("OAuth sign in started", {
               registerType: "apple",
@@ -80,7 +78,6 @@ export const RegisterNotNewUserScreen: FunctionComponent = observer(() => {
           </View>
         }
         size="large"
-        mode="light"
         onPress={() => {
           analyticsStore.logEvent("OAuth sign in started", {
             registerType: "google",
@@ -104,7 +101,6 @@ export const RegisterNotNewUserScreen: FunctionComponent = observer(() => {
         containerStyle={style.flatten(["margin-bottom-16"])}
         text="Import from Keplr Extension"
         size="large"
-        mode="light"
         onPress={() => {
           analyticsStore.logEvent("Import account started", {
             registerType: "qr",
@@ -117,7 +113,6 @@ export const RegisterNotNewUserScreen: FunctionComponent = observer(() => {
       <Button
         text="Import existing wallet"
         size="large"
-        mode="light"
         onPress={() => {
           analyticsStore.logEvent("Import account started", {
             registerType: "seed",

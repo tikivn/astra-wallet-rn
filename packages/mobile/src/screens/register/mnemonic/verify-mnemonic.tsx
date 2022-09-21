@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { PageWithScrollView } from "../../../components/page";
-import { Image, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { useStyle } from "../../../styles";
 import { WordChip } from "../../../components/mnemonic";
 import { Button } from "../../../components/button";
@@ -93,23 +93,40 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
     });
   });
 
+  const onWordButtonHandler = (candidateWord: { word: string, usedIndex: number }, i: number) => {
+    const { word, usedIndex } = candidateWord;
+    const newWordSet = wordSet.slice();
+    const newCandiateWords = candidateWords.slice();
+    if (usedIndex < 0) {
+      if (firstEmptyWordSetIndex < 0) {
+        return;
+      }
+
+      newWordSet[firstEmptyWordSetIndex] = word;
+      setWordSet(newWordSet);
+
+      newCandiateWords[i].usedIndex = firstEmptyWordSetIndex;
+      setCandidateWords(newCandiateWords);
+    } else {
+      newWordSet[usedIndex] = undefined;
+      setWordSet(newWordSet);
+
+      newCandiateWords[i].usedIndex = -1;
+      setCandidateWords(newCandiateWords);
+    }
+  }
+
   return (
     <PageWithScrollView
       backgroundColor={style.get("color-background").color}
       contentContainerStyle={style.get("flex-grow-1")}
       style={style.flatten(["padding-x-page"])}
     >
-      <View style={style.flatten(["margin-y-32", "items-center"])}>
-        <Image
-          style={style.flatten(["height-16"])}
-          source={require("../../../assets/image/step-2.png")}
-          resizeMode="contain"
-        />
-      </View>
       <Text
         style={style.flatten([
-          "h4",
-          "color-text-gray",
+          "text-x-large-semi-bold",
+          "color-label-text-1",
+          "margin-top-24",
           "margin-bottom-4",
           "text-center",
         ])}
@@ -118,19 +135,42 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
       </Text>
       <Text
         style={style.flatten([
-          "text-caption",
-          "color-text-black-low",
+          "text-base-regular",
+          "color-label-text-2",
           "margin-bottom-4",
+          "text-center",
         ])}
       >
         {intl.formatMessage({ id: "seedphrase.action.rearrange.description" })}
       </Text>
       <WordsCard
         wordSet={wordSet.map((word, i) => {
+          const isInteractive = word
+            ? candidateWords.map(({ word }) => word).indexOf(word) !== -1
+            : false;
+
           return {
             word: word ?? "",
             empty: word === undefined,
-            dashed: i === firstEmptyWordSetIndex,
+            isInteractive,
+            onPress: () => {
+              const wordParams = candidateWords.map((w, i) => {
+                return {
+                  word: w.word,
+                  usedIndex: w.usedIndex,
+                  index: i
+                };
+              }).filter((candidateWord) => {
+                return candidateWord.word === word;
+              }).shift();
+
+              if (!wordParams) {
+                return;
+              }
+
+              const { index: i, ...candidateWord } = wordParams;
+              onWordButtonHandler(candidateWord, i);
+            },
           };
         })}
       />
@@ -142,25 +182,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
               word={word}
               used={usedIndex >= 0}
               onPress={() => {
-                const newWordSet = wordSet.slice();
-                const newCandiateWords = candidateWords.slice();
-                if (usedIndex < 0) {
-                  if (firstEmptyWordSetIndex < 0) {
-                    return;
-                  }
-
-                  newWordSet[firstEmptyWordSetIndex] = word;
-                  setWordSet(newWordSet);
-
-                  newCandiateWords[i].usedIndex = firstEmptyWordSetIndex;
-                  setCandidateWords(newCandiateWords);
-                } else {
-                  newWordSet[usedIndex] = undefined;
-                  setWordSet(newWordSet);
-
-                  newCandiateWords[i].usedIndex = -1;
-                  setCandidateWords(newCandiateWords);
-                }
+                onWordButtonHandler({ word, usedIndex }, i);
               }}
             />
           );
@@ -174,15 +196,9 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
           id: "seedphrase.important",
         })}
       />
+      <View style={style.flatten(["height-16"])} />
       <Button
-        containerStyle={style.flatten([
-          "border-radius-4",
-          "height-44",
-          "margin-top-12",
-        ])}
-        textStyle={style.flatten(["subtitle2"])}
         text={intl.formatMessage({ id: "common.text.continue" })}
-        size="large"
         loading={isCreating}
         disabled={wordSet.join(" ") !== newMnemonicConfig.mnemonic}
         onPress={submit}
@@ -226,7 +242,8 @@ const WordsCard: FunctionComponent<{
   wordSet: {
     word: string;
     empty: boolean;
-    dashed: boolean;
+    isInteractive: boolean;
+    onPress?: () => void;
   }[];
 }> = ({ wordSet }) => {
   const style = useStyle();
@@ -238,10 +255,10 @@ const WordsCard: FunctionComponent<{
         "margin-bottom-20",
         "padding-top-16",
         "padding-left-16",
-        "background-color-background-secondary",
-        "border-radius-8",
+        "words-container",
         "flex-row",
         "flex-wrap",
+        "justify-center",
       ])}
     >
       {wordSet.map((word, i) => {
@@ -251,7 +268,8 @@ const WordsCard: FunctionComponent<{
             index={i + 1}
             word={word.word}
             empty={word.empty}
-            dashedBorder={word.dashed}
+            isInteractive={word.isInteractive}
+            onPress={word.onPress}
           />
         );
       })}

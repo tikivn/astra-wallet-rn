@@ -159,21 +159,20 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                 autoFocus={true}
                 multiline={true}
                 numberOfLines={4}
-                // containerStyle={{ paddingBottom: errors.mnemonic?.message ? 28 : 0 }}
                 inputContainerStyle={style.flatten([
-                  "padding-x-20",
-                  "padding-y-16",
-                  "background-color-background-secondary",
-                  isFocused ? "border-color-blue-70" : "border-color-gray-60",
-                  "border-radius-12",
+                  "padding-x-16",
+                  "padding-top-16",
+                  "background-color-input-background",
+                  isFocused ? "border-color-input-active" : "border-color-input-inactive",
+                  "input-container",
                   "margin-top-12",
                 ])}
                 bottomInInputContainer={
                   <View style={style.flatten(["flex-row"])}>
                     <View style={style.flatten(["flex-1"])} />
                     <Button
-                      containerStyle={style.flatten(["height-36"])}
                       style={style.flatten(["padding-x-12"])}
+                      size="small"
                       mode="text"
                       text={intl.formatMessage({ id: "common.text.paste" })}
                       onPress={async () => {
@@ -191,12 +190,11 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                 }
                 style={StyleSheet.flatten([
                   style.flatten([
-                    "h6",
+                    "text-base-regular",
                     "color-text-gray",
-                    "background-color-background-secondary",
                   ]),
                   {
-                    minHeight: 20 * 4,
+                    minHeight: 24 * 2,
                     textAlignVertical: "top",
                   },
                 ])}

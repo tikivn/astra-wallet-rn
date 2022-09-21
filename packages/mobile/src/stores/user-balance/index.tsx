@@ -8,6 +8,7 @@ import {
   SecretAccount,
   SecretQueries,
 } from "@keplr-wallet/stores";
+import { KeplrETCQueries } from "@keplr-wallet/stores-etc";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { formatCoin } from "../../common/utils";
 import { ChainStore } from "../chain";
@@ -19,7 +20,7 @@ export class UserBalanceStore {
       [CosmosAccount, CosmwasmAccount, SecretAccount]
     >,
     protected readonly queriesStore: QueriesStore<
-      [CosmosQueries, CosmwasmQueries, SecretQueries]
+      [CosmosQueries, CosmwasmQueries, SecretQueries, KeplrETCQueries]
     >
   ) {}
 

@@ -64,7 +64,6 @@ export const AddressQRCodeItem: FunctionComponent<{
           "width-122",
         ])}
         textStyle={style.flatten(["subtitle3", "color-background"])}
-        underlayColor={style.get("color-rect-button-default-underlay").color}
         size={"small"}
         text={intl.formatMessage({
           id: "component.text.copy",

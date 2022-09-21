@@ -4,6 +4,8 @@ import { Text, StyleSheet, TextStyle, View, ViewStyle } from "react-native";
 import { LoadingSpinner } from "../spinner";
 import { RectButton } from "../rect-button";
 
+type ButtonState = "active" | "highlighted" | "disabled";
+
 export const Button: FunctionComponent<{
   color?: "primary" | "secondary" | "danger";
   mode?: "fill" | "light" | "outline" | "text";
@@ -19,9 +21,6 @@ export const Button: FunctionComponent<{
   containerStyle?: ViewStyle;
   style?: ViewStyle;
   textStyle?: TextStyle;
-
-  rippleColor?: string;
-  underlayColor?: string;
 }> = ({
   color = "primary",
   mode = "fill",
@@ -35,107 +34,65 @@ export const Button: FunctionComponent<{
   containerStyle,
   style: buttonStyle,
   textStyle,
-  rippleColor: propRippleColor,
-  underlayColor: propUnderlayColor,
 }) => {
     const style = useStyle();
 
     const [isPressed, setIsPressed] = useState(false);
 
-    const backgroundColorDefinition = (() => {
+    const styleDefinition = (() => {
+      var state: ButtonState = "active";
+      if (disabled) {
+        state = "disabled";
+      }
+      else if (isPressed) {
+        state = "highlighted";
+      }
+
       switch (mode) {
-        case "fill":
-          return `background-color-button-${color}`;
-        case "light":
-          if (disabled) {
-            return `background-color-button-${color}-disabled`;
-          }
-          return `background-color-button-${color}-light`;
+        // case "fill":
         case "outline":
-          return "background-color-white";
+        case "text":
+          return `button-${mode}-${state}`;
         default:
-          return "background-color-transparent";
+          return `button-${color ?? "primary"}-${state}`;
+          // return "background-color-transparent";
       }
     })();
 
     const textDefinition = (() => {
       switch (size) {
         case "large":
-          return "text-button1";
+          return "text-medium-medium";
         case "small":
-          return "text-button3";
+          return "text-base-medium";
         default:
-          return "text-button2";
+          return "text-medium-medium";
       }
     })();
 
-    const textColorDefinition = (() => {
-      switch (mode) {
-        case "fill":
-          return "color-white";
-        case "light":
-          if (disabled) {
-            return "color-white";
-          }
-          if (isPressed) {
-            return `color-button-${color}-text-pressed`;
-          }
-          return `color-${color}`;
-        case "outline":
-        case "text":
-          if (disabled) {
-            return `color-button-${color}-disabled`;
-          }
-          if (isPressed) {
-            return `color-button-${color}-text-pressed`;
-          }
-          return `color-button-${color}`;
-      }
-    })();
-
-    const rippleColor = (() => {
-      if (propRippleColor) {
-        return propRippleColor;
-      }
-
-      switch (mode) {
-        case "fill":
-          return style.get(`color-button-${color}-fill-ripple` as any).color;
-        case "light":
-          return style.get(`color-button-${color}-light-ripple` as any).color;
-        default:
-          return style.get(`color-button-${color}-outline-ripple` as any).color;
-      }
-    })();
-
-    const underlayColor = (() => {
-      if (propUnderlayColor) {
-        return propUnderlayColor;
-      }
-
-      switch (mode) {
-        case "fill":
-          return style.get(`color-button-${color}-fill-underlay` as any).color;
-        case "light":
-          return style.get(`color-button-${color}-light-underlay` as any).color;
-        default:
-          return style.get(`color-button-${color}-outline-underlay` as any).color;
-      }
-    })();
-
-    const outlineBorderDefinition = (() => {
-      if (mode !== "outline") {
-        return undefined;
-      }
-
-      if (disabled) {
-        return `border-color-button-${color}-disabled`;
-      }
-      if (isPressed) {
-        return `border-color-button-${color}-text-pressed`;
-      }
-      return `border-color-button-${color}`;
-    })();
+    // const textColorDefinition = (() => {
+    //   switch (mode) {
+    //     case "fill":
+    //       return "color-white";
+    //     case "light":
+    //       if (disabled) {
+    //         return "color-white";
+    //       }
+    //       if (isPressed) {
+    //         return `color-button-${color}-text-pressed`;
+    //       }
+    //       return `color-${color}`;
+    //     case "outline":
+    //     case "text":
+    //       if (disabled) {
+    //         return `color-button-${color}-disabled`;
+    //       }
+    //       if (isPressed) {
+    //         return `color-button-${color}-text-pressed`;
+    //       }
+    //       return `color-button-${color}`;
+    //   }
+    // })();
 
     return (
       <View
@@ -143,20 +100,18 @@ export const Button: FunctionComponent<{
           ...StyleSheet.flatten([
             style.flatten(
               [
-                backgroundColorDefinition as any,
-                `height-button-${size}` as any,
-                "border-radius-8",
+                styleDefinition as any,
+                `button-${size}-container` as any,
                 "overflow-hidden",
-                "height-44"
               ],
-              [
-                mode === "outline" && "border-width-1",
-                outlineBorderDefinition as any,
-              ]
+              // [
+              //   mode === "outline" && "border-width-1",
+              //   outlineBorderDefinition as any,
+              // ]
             ),
             containerStyle,
           ]),
-          opacity: /*mode === "fill" && */disabled ? 0.4 : 1
+          // opacity: /*mode === "fill" && */disabled ? 0.4 : 1
         }}
       >
         <RectButton
@@ -173,9 +128,7 @@ export const Button: FunctionComponent<{
           onPress={onPress}
           onActiveStateChange={(active) => setIsPressed(active)}
           enabled={!loading && !disabled}
-          rippleColor={rippleColor}
-          underlayColor={underlayColor}
-          activeOpacity={1}
+          activeOpacity={0}
         >
           <View
             style={style.flatten(
@@ -188,10 +141,15 @@ export const Button: FunctionComponent<{
           <Text
             style={StyleSheet.flatten([
               style.flatten(
-                ["text-medium-medium"],
-                [textDefinition, "text-center", textColorDefinition as any],
-                [loading && "opacity-transparent"]
+                // ["text-medium-medium"],
+                [
+                  textDefinition,
+                  "text-center",
+                  // textColorDefinition as any,
+                  // loading && "opacity-transparent"
+                ],
               ),
+              {color: style.get(styleDefinition as any).color},
               textStyle,
             ])}
           >

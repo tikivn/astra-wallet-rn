@@ -26,7 +26,7 @@ export const SelectValidatorItem: FunctionComponent<{
   return (
     <React.Fragment>
       <ValidatorsBottomSheet
-        label={intl.formatMessage({ id: "settings.network" })}
+        label={intl.formatMessage({ id: "stake.redelegate.listValidators" })}
         isOpen={isOpenModal}
         close={() => setIsOpenModal(false)}
         maxItemsToShow={8}
@@ -51,6 +51,7 @@ export const SelectValidatorItem: FunctionComponent<{
         onPress={() => {
           setIsOpenModal(true);
         }}
+        containerStyle={{ paddingBottom: 0 }}
       />
     </React.Fragment>
   );

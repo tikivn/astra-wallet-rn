@@ -5,7 +5,6 @@ import { Text, View, ViewStyle, Image } from "react-native";
 import { useStyle } from "../../../styles";
 import {
   AccountStore,
-  CoinGeckoPriceStore,
   CosmosAccount,
   CosmosQueries,
   CosmwasmAccount,
@@ -19,20 +18,18 @@ import { ChainStore } from "../../../stores/chain";
 import { RightArrowIcon } from "../../../components/icon";
 import { useSmartNavigation } from "../../../navigation-util";
 import { RectButton } from "../../../components/rect-button";
-import { Dec, IntPretty } from "@keplr-wallet/unit";
 import { PropertyView } from "../component/property";
 import { ValidatorItem } from "../../../components/input";
 import { FormattedMessage, useIntl } from "react-intl";
-import { formatCoin } from "../../../common/utils";
+import { formatCoin, formatPercent } from "../../../common/utils";
 
 export const DelegationsItem: FunctionComponent<{
   containerStyle?: ViewStyle;
   chainStore: ChainStore;
   accountStore: AccountStore<[CosmosAccount, CosmwasmAccount, SecretAccount]>;
   queriesStore: QueriesStore<[CosmosQueries, CosmwasmQueries, SecretQueries]>;
-  priceStore: CoinGeckoPriceStore;
 }> = observer(
-  ({ containerStyle, chainStore, accountStore, queriesStore, priceStore }) => {
+  ({ containerStyle, chainStore, accountStore, queriesStore }) => {
     const account = accountStore.getAccount(chainStore.current.chainId);
     const queries = queriesStore.get(chainStore.current.chainId);
 
@@ -44,7 +41,9 @@ export const DelegationsItem: FunctionComponent<{
       account.bech32Address
     );
 
-    const delegations = queryDelegations.delegations;
+    const delegations = queryDelegations.delegations.sort((a, b) => {
+      return Number(b.balance.amount) - Number(a.balance.amount);
+    });
 
     const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
       Staking.BondStatus.Bonded
@@ -131,19 +130,17 @@ export const DelegationsItem: FunctionComponent<{
                 >
                   <ValidatorItem
                     containerStyle={style.flatten([
+                      "background-color-card-background-header",
                       "border-width-0",
                       "border-radius-0",
                     ])}
                     thumbnail={thumbnail}
                     name={val.description.moniker}
                     value={
-                      new IntPretty(
-                        new Dec(val.commission.commission_rates.rate)
+                      intl.formatMessage(
+                        { id: "validator.details.commission.percent" },
+                        { percent: formatPercent(val.commission.commission_rates.rate, true) },
                       )
-                        .moveDecimalPointRight(2)
-                        .maxDecimals(2)
-                        .trim(true)
-                        .toString() + "%"
                     }
                     right={
                       <View
@@ -169,6 +166,7 @@ export const DelegationsItem: FunctionComponent<{
                   />
                   <View
                     style={style.flatten([
+                      "background-color-card-background",
                       "margin-0",
                       "padding-16",
                       "flex-row",
@@ -185,8 +183,8 @@ export const DelegationsItem: FunctionComponent<{
                       label={intl.formatMessage({
                         id: "staking.delegate.profit",
                       })}
-                      value={formatCoin(rewards)}
-                      valueStyle={style.get("color-green-50")}
+                      value={"+" + formatCoin(rewards)}
+                      valueStyle={style.get("color-rewards-text")}
                     />
                   </View>
                 </RectButton>

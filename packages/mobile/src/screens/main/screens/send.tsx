@@ -80,8 +80,11 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
     accountStore,
     sendConfigs.amountConfig,
   );
-  sendConfigs.gasConfig.setGas(gasLimit);
-  sendConfigs.feeConfig.setFeeType(feeType);
+  console.log("sendConfigs.feeConfig.fee", sendConfigs.feeConfig.fee);
+  if (!sendConfigs.feeConfig.fee || sendConfigs.feeConfig.fee?.toDec().isZero()) {
+    sendConfigs.gasConfig.setGas(gasLimit);
+    sendConfigs.feeConfig.setFeeType(feeType);
+  }
   const feeText = formatCoin(sendConfigs.feeConfig.fee);
 
   const sendConfigError =
@@ -192,11 +195,12 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
           hideDenom
           labelText={intl.formatMessage({ id: "component.amount.input.sendindAmount" })}
           amountConfig={sendConfigs.amountConfig}
+          availableAmount={userBalanceStore.getBalance()}
+          fee={sendConfigs.feeConfig.fee}
         />
-        <View style={{ height: 24 }} />
         <ListRowView
           rows={rows}
-          style={{ paddingHorizontal: 0, paddingVertical: 0 }}
+          style={{ paddingHorizontal: 0, paddingVertical: 0, marginTop: 16 }}
           hideBorder
           clearBackground
         />

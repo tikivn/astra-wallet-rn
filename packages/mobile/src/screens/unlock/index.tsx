@@ -355,10 +355,10 @@ export const UnlockScreen: FunctionComponent = observer(() => {
           style={{ marginBottom: isFailed ? 24 : 0 }}
         />
 
-        <RectButton onPress={forgotPasswordHandler}>
+        <RectButton onPress={forgotPasswordHandler} activeOpacity={0}>
           <Text style={style.flatten([
             "text-base-light",
-            "color-blue-70",
+            "color-link-text",
             "text-underline",
             "text-center",
             "margin-y-16"
@@ -405,8 +405,6 @@ export const UnlockScreen: FunctionComponent = observer(() => {
 
           <Button
             text={intl.formatMessage({ id: "unlock.button.login.text" })}
-            color="primary"
-            mode="fill"
             loading={isLoading}
             onPress={tryUnlock}
             disabled={password.length < MIN_PASSWORD_LENGTH}
