@@ -175,7 +175,6 @@ export const TransactionSignRequestView: FunctionComponent<{
               "background-color-gray-70",
             ])}
             text={intl.formatMessage({ id: "common.text.reject" })}
-            mode="fill"
             onPress={async () => {
               onReject(source, isWC);
             }}

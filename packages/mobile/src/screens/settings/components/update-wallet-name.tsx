@@ -90,7 +90,6 @@ export const UpdateWalletName: FunctionComponent = observer(() => {
           onPress={dismiss}
           containerStyle={{ flex: 1 }} />
         <Button
-          mode="fill"
           text={intl.formatMessage({ id: "common.text.save" })}
           onPress={updateName}
           disabled={name.length == 0}

@@ -5,7 +5,7 @@ import { useIntl } from "react-intl";
 import { View, ViewStyle } from "react-native";
 import { Button } from "../../../components";
 import { useStore } from "../../../stores";
-import { Colors, useStyle } from "../../../styles";
+import { useStyle } from "../../../styles";
 
 export const TransactionActionView: FunctionComponent<{
   style?: ViewStyle
@@ -27,7 +27,7 @@ export const TransactionActionView: FunctionComponent<{
       <View style={{ flexDirection: "row", marginTop: 12, marginHorizontal: 16, }}>
         <Button
           text={intl.formatMessage({ id: "tx.result.action.homepage" })}
-          mode={txState == "failure" ? "text" : "fill"}
+          color={txState == "failure" ? "neutral" : "primary"}
           containerStyle={styleBuilder.flatten(["flex-1"])}
           onPress={async () => {
             navigation.navigate("NewHome");

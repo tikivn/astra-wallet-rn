@@ -218,7 +218,6 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
               "background-color-gray-70",
             ])}
             text={intl.formatMessage({ id: "common.text.reject" })}
-            mode="fill"
             onPress={onRejectSession}
           />
           <Button
