@@ -22,22 +22,22 @@ export const AddressQRCodeItem: FunctionComponent<{
       style={StyleSheet.flatten([
         style.flatten([
           "margin-x-16",
-          "border-radius-8",
+          "border-radius-16",
           "items-center",
           "padding-top-16",
           "padding-bottom-24",
-          "background-color-gray-90",
-          "border-color-gray-60",
+          "background-color-card-background",
+          "border-color-card-border",
           "border-width-1",
         ]),
         propStyle,
       ])}
     >
-      <View style={{
-        padding: 16,
-        borderRadius: 8,
-        backgroundColor: Colors["white"]
-      }}>
+      <View style={style.flatten([
+        "padding-16",
+        "border-radius-16",
+        "background-color-white",
+      ])}>
         <QRCode
           size={200}
           color={"black"}
@@ -58,13 +58,8 @@ export const AddressQRCodeItem: FunctionComponent<{
         {hexAddress}
       </Text>
       <Button
-        style={style.flatten([
-          "border-radius-4",
-          "background-color-white",
-          "width-122",
-        ])}
-        textStyle={style.flatten(["subtitle3", "color-background"])}
-        size={"small"}
+        size="medium"
+        mode="outline"
         text={intl.formatMessage({
           id: "component.text.copy",
         })}
@@ -77,7 +72,7 @@ export const AddressQRCodeItem: FunctionComponent<{
           Clipboard.setString(hexAddress);
           toast.makeToast({
             title: intl.formatMessage({ id: "component.text.copied" }),
-            type: "success",
+            type: "neutral",
             displayTime: 1500,
           });
         }}

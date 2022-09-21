@@ -78,7 +78,7 @@ export const TxResultScreen: FunctionComponent = observer(() => {
           { id: "walletconnect.rejected" },
           { name: name }
         ),
-        type: "infor",
+        type: "neutral",
         displayTime: 2000,
       });
       if (smartNavigation.canGoBack()) {
@@ -188,7 +188,7 @@ export const TxResultScreen: FunctionComponent = observer(() => {
     signInteractionStore.waitingData,
   ]);
 
-  function getPendingSigningView(): React.ReactNode {
+  function getPendingSigningView(): React.ReactElement {
     return (
       <PageWithScrollView
         backgroundColor={style.get("color-background").color}
@@ -206,7 +206,7 @@ export const TxResultScreen: FunctionComponent = observer(() => {
     );
   }
 
-  function getResultView(): React.ReactNode {
+  function getResultView(): React.ReactElement {
     return (
       <View style={style.flatten(["flex-1", "background-color-background"])}>
         <ScrollView style={style.flatten(["flex-1"])}>

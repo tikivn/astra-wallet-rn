@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect } from "react";
 import { registerModal } from "../../modals/base";
 import { useStyle } from "../../styles";
 import { Text, View } from "react-native";
-import { ToastIcon } from "../../components/icon";
+import { AlertErrorIcon, AlertInfoIcon, AlertSuccessIcon } from "../../components/icon";
 
 export const ToastModal: FunctionComponent<{
   isOpen: boolean;
@@ -21,6 +21,32 @@ export const ToastModal: FunctionComponent<{
     const style = useStyle();
     const styleDefinition = style.get(`toast-${type}` as any);
 
+    function getIcon() {
+      const props = {
+        style: { marginRight: 8, },
+        size: 20,
+        color: styleDefinition.color,
+      };
+
+      var Icon = AlertInfoIcon;
+
+      switch (type) {
+        case "success":
+          Icon = AlertSuccessIcon;
+          break;
+        case "infor":
+          Icon = AlertInfoIcon;
+          break;
+        case "error":
+          Icon = AlertErrorIcon;
+          break;
+        default:
+          return;
+      }
+
+      return <Icon {...props} />
+    }
+
     return (
       <View style={style.flatten(["padding-page"])}>
         <View
@@ -35,12 +61,11 @@ export const ToastModal: FunctionComponent<{
             "justify-between",
           ])}
         >
-          <ToastIcon height={15} color={styleDefinition.color} />
+          {getIcon()}
           <Text
             style={{
               ...style.flatten([
                 "text-base-regular",
-                "margin-left-8",
                 "flex-1",
               ]),
               color: styleDefinition.color,

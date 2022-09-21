@@ -60,6 +60,7 @@ export const UnbondingCard: FunctionComponent<{
               "margin-y-8",
               "color-gray-30",
               "text-caption2",
+              "text-center",
             ])}
           >
             <FormattedMessage

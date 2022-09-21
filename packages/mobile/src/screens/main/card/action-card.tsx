@@ -18,7 +18,6 @@ export const ActionsCard: FunctionComponent<{
   const intl = useIntl();
 
   const swapEnabled = remoteConfigStore.getBool("feature_swap_enabled");
-  // const swapEnabled = true;
 
   return (
     <Card style={containerStyle}>
@@ -27,12 +26,8 @@ export const ActionsCard: FunctionComponent<{
           <Button
             text={intl.formatMessage({ id: "main.receive" })}
             leftIcon={
-              <View style={style.flatten(["margin-right-6", "margin-left-6"])}>
-                <ReceiveIcon color={style.get("color-white").color} size={20} />
-              </View>
+              <ReceiveIcon color={style.get("color-white").color} size={20} />
             }
-            rightIcon={<View style={style.flatten(["margin-right-12"])} />}
-            textStyle={style.flatten(["color-white", "subtitle3"])}
             onPress={() => {
               smartNavigation.navigateSmart("Receive", {});
             }}
@@ -43,12 +38,8 @@ export const ActionsCard: FunctionComponent<{
             ])}
             text={intl.formatMessage({ id: "main.send" })}
             leftIcon={
-              <View style={style.flatten(["margin-right-6", "margin-left-6"])}>
-                <SendIcon color={style.get("color-white").color} size={20} />
-              </View>
+              <SendIcon color={style.get("color-white").color} size={20} />
             }
-            rightIcon={<View style={style.flatten(["margin-right-12"])} />}
-            textStyle={style.flatten(["color-white", "subtitle3"])}
             onPress={() => {
               smartNavigation.navigateSmart("Wallet.Send", {
                 currency: chainStore.current.stakeCurrency.coinMinimalDenom,
@@ -62,14 +53,8 @@ export const ActionsCard: FunctionComponent<{
               ])}
               text={intl.formatMessage({ id: "main.swap" })}
               leftIcon={
-                <View
-                  style={style.flatten(["margin-right-6", "margin-left-6"])}
-                >
-                  <SwapIcon color={style.get("color-white").color} size={20} />
-                </View>
+                <SwapIcon color={style.get("color-white").color} size={20} />
               }
-              rightIcon={<View style={style.flatten(["margin-right-12"])} />}
-              textStyle={style.flatten(["color-white", "subtitle3"])}
               onPress={() => {
                 smartNavigation.navigateSmart("Swap.Home", {});
               }}
