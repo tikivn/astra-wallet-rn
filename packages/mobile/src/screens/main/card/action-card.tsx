@@ -1,13 +1,13 @@
-import { Card, CardBody } from "../../../components/card";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
-import { ViewStyle, View } from "react-native";
+import { useIntl } from "react-intl";
+import { View, ViewStyle } from "react-native";
+import { Button } from "../../../components/button";
+import { Card, CardBody } from "../../../components/card";
+import { ReceiveIcon, SendIcon, SwapIcon } from "../../../components/icon";
+import { useSmartNavigation } from "../../../navigation-util";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
-import { Button } from "../../../components/button";
-import { SwapIcon, SendIcon, ReceiveIcon } from "../../../components/icon";
-import { useSmartNavigation } from "../../../navigation-util";
-import { useIntl } from "react-intl";
 
 export const ActionsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -17,8 +17,8 @@ export const ActionsCard: FunctionComponent<{
   const { chainStore, remoteConfigStore } = useStore();
   const intl = useIntl();
 
-  const swapEnabled = remoteConfigStore.getBool("feature_swap_enabled");
-  // const swapEnabled = true;
+  // const swapEnabled = remoteConfigStore.getBool("feature_swap_enabled");
+  const swapEnabled = true;
 
   return (
     <Card style={containerStyle}>

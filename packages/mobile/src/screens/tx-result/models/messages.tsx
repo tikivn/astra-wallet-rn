@@ -1,12 +1,7 @@
 /* eslint-disable react/display-name */
 
 import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
-import {
-  CoinUtils,
-  Coin,
-  IntPretty,
-  CoinPretty,
-} from "@keplr-wallet/unit";
+import { CoinUtils, Coin, IntPretty, CoinPretty } from "@keplr-wallet/unit";
 import { AppCurrency, Currency } from "@keplr-wallet/types";
 import yaml from "js-yaml";
 import { CoinPrimitive } from "@keplr-wallet/stores";
@@ -32,6 +27,8 @@ import {
 import { useIntl } from "react-intl";
 import converter from "bech32-converting";
 import { formatCoin, formatDate } from "../../../common/utils";
+import { formatUnits, parseUnits } from "@ethersproject/units";
+import { BigNumber } from "@ethersproject/bignumber";
 
 const h = new Hypher(english);
 
@@ -94,11 +91,13 @@ export interface MsgWithdrawDelegatorReward {
   value: {
     totalRewards: CoinPretty | undefined;
     fee: CoinPretty;
-    validatorRewards: [{
-      validatorAddress: string;
-      validatorName: string;
-      rewards: CoinPretty;
-    }]
+    validatorRewards: [
+      {
+        validatorAddress: string;
+        validatorName: string;
+        rewards: CoinPretty;
+      }
+    ];
   };
 }
 
@@ -179,6 +178,17 @@ export interface MsgLink {
   };
 }
 
+export interface MsgSwap {
+  inputAmount: string;
+  outputAmount: string;
+  exchageRate: string;
+  minimumReceived: string;
+  liquidityFee: string;
+  slippageTolerance: string;
+  timestamp?: number;
+  transactionHash: string;
+}
+
 // eslint-disable-next-line @typescript-eslint/ban-types
 export function renderUnknownMessage(msg: object) {
   return {
@@ -199,9 +209,7 @@ const common: {
   itemSpacing: 12,
 };
 
-export function renderMsgSend(
-  value: MsgSend["value"]
-): IRow[] {
+export function renderMsgSend(value: MsgSend["value"]): IRow[] {
   const intl = useIntl();
 
   let _toAddress = value.recipient;
@@ -209,7 +217,7 @@ export function renderMsgSend(
     try {
       _toAddress = converter("astra").toHex(value.recipient);
       console.log("toAddress: ", _toAddress);
-    } catch { }
+    } catch {}
   }
 
   const separatorRow: IRow = { type: "separator" };
@@ -249,6 +257,100 @@ export function renderMsgSend(
             flex: 3,
           }),
           buildRightColumn({ text: formatCoin(value.fee), flex: 7 }),
+        ],
+      },
+    ],
+    separatorRow
+  );
+
+  return rows;
+}
+
+export function renderMsgSwap(data: MsgSwap, dataSign: any): IRow[] {
+  const intl = useIntl();
+
+  const separatorRow: IRow = { type: "separator" };
+  // const total = BigNumber.from(dataSign.value).add(
+  //   BigNumber.from(dataSign.gas)
+  // );
+  const rows: IRow[] = join(
+    [
+      // {
+      //   ...common,
+      //   cols: [
+      //     buildLeftColumn({
+      //       text: "Hex Data",
+      //       flex: 3,
+      //     }),
+      //     buildRightColumn({
+      //       text: data.data,
+      //       flex: 7,
+      //     }),
+      //   ],
+      // },
+      {
+        ...common,
+        cols: [
+          buildLeftColumn({
+            text: intl.formatMessage({ id: "swap.exchangeRate" }),
+            flex: 3,
+          }),
+          buildRightColumn({
+            text: data.exchageRate,
+            flex: 7,
+          }),
+        ],
+      },
+      {
+        ...common,
+        cols: [
+          buildLeftColumn({
+            text: intl.formatMessage({ id: "tx.result.models.msgSend.fee" }),
+            flex: 3,
+          }),
+          buildRightColumn({
+            text: formatUnits(BigNumber.from(dataSign.gas), "gwei").toString(),
+            flex: 7,
+          }),
+        ],
+      },
+      {
+        ...common,
+        cols: [
+          buildLeftColumn({
+            text: intl.formatMessage({ id: "swap.liquidityFee" }),
+            flex: 5,
+          }),
+          buildRightColumn({
+            text: data.liquidityFee,
+            flex: 5,
+          }),
+        ],
+      },
+      {
+        ...common,
+        cols: [
+          buildLeftColumn({
+            text: intl.formatMessage({ id: "swap.titleSlippageDescribe" }),
+            flex: 3,
+          }),
+          buildRightColumn({
+            text: data.slippageTolerance,
+            flex: 7,
+          }),
+        ],
+      },
+      {
+        ...common,
+        cols: [
+          buildLeftColumn({
+            text: intl.formatMessage({
+              id: "tx.result.sign.time",
+            }),
+          }),
+          buildRightColumn({
+            text: formatDate(new Date()),
+          }),
         ],
       },
     ],
@@ -338,9 +440,7 @@ export function renderMsgTransfer(
   return rows;
 }
 
-export function renderMsgBeginRedelegate(
-  value: MsgBeginRedelegate["value"]
-) {
+export function renderMsgBeginRedelegate(value: MsgBeginRedelegate["value"]) {
   const intl = useIntl();
 
   const rows: IRow[] = join(
@@ -396,9 +496,7 @@ export function renderMsgBeginRedelegate(
   return rows;
 }
 
-export function renderMsgUndelegate(
-  value: MsgUndelegate["value"]
-): IRow[] {
+export function renderMsgUndelegate(value: MsgUndelegate["value"]): IRow[] {
   const intl = useIntl();
 
   const rows: IRow[] = join(
@@ -443,16 +541,15 @@ export function renderMsgUndelegate(
   return rows;
 }
 
-export function renderMsgDelegate(
-  value: MsgDelegate["value"]
-) {
+export function renderMsgDelegate(value: MsgDelegate["value"]) {
   const intl = useIntl();
 
-  const commissionText = value.commission
-    .moveDecimalPointRight(2)
-    .maxDecimals(2)
-    .trim(true)
-    .toString() + "%";
+  const commissionText =
+    value.commission
+      .moveDecimalPointRight(2)
+      .maxDecimals(2)
+      .trim(true)
+      .toString() + "%";
 
   const rows: IRow[] = join(
     [
@@ -510,11 +607,11 @@ export function renderMsgDelegate(
 }
 
 export function renderMsgWithdrawDelegatorReward(
-  value: MsgWithdrawDelegatorReward["value"],
+  value: MsgWithdrawDelegatorReward["value"]
 ): IRow[] {
   const intl = useIntl();
 
-  var rows: IRow[] = [
+  let rows: IRow[] = [
     {
       ...common,
       cols: [
@@ -528,18 +625,20 @@ export function renderMsgWithdrawDelegatorReward(
     },
   ];
 
-  const validatorRows = value.validatorRewards.map(({ validatorName, rewards }) => {
-    return {
-      ...common,
-      cols: [
-        buildLeftColumn({
-          text: validatorName,
-          textColor: Colors["gray-10"],
-        }),
-        buildRightColumn({ text: formatCoin(rewards) }),
-      ],
+  const validatorRows = value.validatorRewards.map(
+    ({ validatorName, rewards }) => {
+      return {
+        ...common,
+        cols: [
+          buildLeftColumn({
+            text: validatorName,
+            textColor: Colors["gray-10"],
+          }),
+          buildRightColumn({ text: formatCoin(rewards) }),
+        ],
+      };
     }
-  });
+  );
 
   rows = [
     ...rows,
@@ -966,7 +1065,7 @@ export function clearDecimals(dec: string): string {
 }
 
 export function join<T extends any>(items: T[], separtor?: T): T[] {
-  var newItems: T[] = [];
+  let newItems: T[] = [];
   items.forEach((item, index) => {
     newItems = [
       ...newItems,

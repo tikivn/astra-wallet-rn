@@ -53,5 +53,7 @@
   "tx.result.viewDetails": "View detail on ASA Scan",
   "tx.result.state.swap.pending": "Swap",
   "tx.result.state.swap.success": "Swap successfully",
-  "tx.result.state.swap.failure": "Swap failed"
+  "tx.result.state.swap.failure": "Swap failed",
+  "tx.result.sign.total": "Total",
+  "tx.result.sign.hexData": "Hex Data"
 }

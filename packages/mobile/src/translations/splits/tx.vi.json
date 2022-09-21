@@ -53,5 +53,8 @@
   "tx.result.viewDetails": "Xem chi tiết trên {page}",
   "tx.result.state.swap.pending": "Đang chuyển đổi",
   "tx.result.state.swap.success": "Chuyển đổi thành công",
-  "tx.result.state.swap.failure": "Chuyển đổi thất bại"
+  "tx.result.state.swap.failure": "Chuyển đổi thất bại",
+  "tx.result.sign.total": "Tổng",
+  "tx.result.sign.hexData": "Giá trị Hex",
+  "tx.result.sign.time": "Thời gian thực hiện"
 }

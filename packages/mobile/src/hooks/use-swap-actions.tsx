@@ -1,7 +1,7 @@
 import { CurrencyAmount } from "@solarswap/sdk";
 import { useCallback } from "react";
 import { SwapAction, SwapType } from "../providers/swap/reducer";
-import { SwapField } from "../utils/for-swap";
+import { maxAmountSpend, SwapField } from "../utils/for-swap";
 
 interface UseSwapActionsProps {
   tokenBalances: {
@@ -54,7 +54,7 @@ export const useSwapActions = ({
 
   const handleSwapAll = useCallback(
     (field: SwapField = SwapField.Input) => {
-      const amount = tokenBalances[field]?.toExact();
+      const amount = maxAmountSpend(tokenBalances[field])?.toExact();
       dispatch &&
         dispatch({
           type: SwapType.SET_SWAP_VALUE,

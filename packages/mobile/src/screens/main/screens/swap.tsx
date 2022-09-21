@@ -1,5 +1,10 @@
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useCallback, useState } from "react";
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Button, SlippageDescribe, SlippageInput } from "../../../components";
@@ -13,6 +18,7 @@ import {
   useApproveCallbackFromTrade,
 } from "../../../hooks/use-approve";
 import { useSmartNavigation } from "../../../navigation-util";
+import { useLoadingScreen } from "../../../providers/loading-screen";
 import { useDataSwapContext } from "../../../providers/swap/use-data-swap-context";
 import { Colors, useStyle } from "../../../styles";
 import {
@@ -60,15 +66,6 @@ export const SwapScreen: FunctionComponent = observer(() => {
     swapInfos.slippageTolerance
   );
 
-  // useEffect(() => {
-  //   if (currencies[SwapField.Input]?.symbol === "USDT") {
-  //     console.log("run appove 0");
-  //     (async () => {
-  //       await approve0();
-  //     })();
-  //   }
-  // }, [approve0, currencies]);
-
   const handleClickContinue = useCallback(() => {
     if (approvalState === ApprovalState.APPROVED) {
       smartNavigation.navigateSmart("Swap.Confirm", {});
@@ -85,6 +82,16 @@ export const SwapScreen: FunctionComponent = observer(() => {
       smartNavigation.navigateSmart("Swap.Confirm", {});
     }
   }, [approvalState, onApproval, smartNavigation]);
+
+  const loadingScreen = useLoadingScreen();
+
+  useEffect(() => {
+    if (tokenBalances[SwapField.Input] && tokenBalances[SwapField.Output]) {
+      loadingScreen.setIsLoading(false);
+    } else {
+      loadingScreen.setIsLoading(true);
+    }
+  }, [tokenBalances, loadingScreen]);
 
   return (
     <View
@@ -234,6 +241,9 @@ export const SwapScreen: FunctionComponent = observer(() => {
             />
           </TouchableOpacity>
         </View>
+        {/* <View>
+          <Button onPress={approve0} text="Click Approve 0" />
+        </View> */}
         {/* end describe */}
 
         <SlippageDescribe

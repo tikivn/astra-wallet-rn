@@ -551,11 +551,6 @@ export const SwapStackScreen: FunctionComponent = () => {
           name="Swap.Confirm"
           component={SwapConfirmScreen}
         />
-        <Stack.Screen
-          options={{ headerShown: false }}
-          name="Swap.Success"
-          component={SwapSuccessScreen}
-        />
       </Stack.Navigator>
     </SwapProvider>
   );

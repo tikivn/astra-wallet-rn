@@ -1,16 +1,17 @@
 import React, { FunctionComponent, useState } from "react";
+import { useIntl } from "react-intl";
 import { View, ViewStyle } from "react-native";
 import { Button, IRow, ListRowView } from "../../../components";
+import { useSmartNavigation } from "../../../navigation-util";
 import { useStore } from "../../../stores";
 import { renderAminoMessages } from "../models/amino";
 import { renderDirectMessages } from "../models/direct";
-import { useIntl } from "react-intl";
-import { useSmartNavigation } from "../../../navigation-util";
+import { MsgSwap } from "../models/messages";
 
 export const TransactionDetailsView: FunctionComponent<{
   style?: ViewStyle;
 }> = ({ style }) => {
-  const { chainStore, transactionStore, accountStore, queriesStore } = useStore();
+  const { chainStore, transactionStore, accountStore } = useStore();
 
   const [hasData] = useState(() => {
     if (transactionStore.txMsgsMode && transactionStore.txMsgs) {
@@ -22,6 +23,7 @@ export const TransactionDetailsView: FunctionComponent<{
   const mode = transactionStore.txMsgsMode;
   const chainId = chainStore.current.chainId;
   const chainInfo = chainStore.getChain(chainId);
+  const rawData = transactionStore.rawData;
 
   const intl = useIntl();
   const smartNavigation = useSmartNavigation();
@@ -33,7 +35,7 @@ export const TransactionDetailsView: FunctionComponent<{
       rows = renderAminoMessages(
         chainStore.current.chainId,
         accountStore,
-        transactionStore,
+        transactionStore
       );
     } else if (mode === "direct") {
       rows = renderDirectMessages();
@@ -45,11 +47,19 @@ export const TransactionDetailsView: FunctionComponent<{
       const txHash = Buffer.from(transactionStore.txHash)
         .toString("hex")
         .toUpperCase();
-      const url = chainInfo.raw.txExplorer.txUrl.replace(
-        "{txHash}",
-        txHash
-      );
+      const url = chainInfo.raw.txExplorer.txUrl.replace("{txHash}", txHash);
       console.log("___URL___", url);
+      smartNavigation.pushSmart("WebView", {
+        url: url,
+      });
+    }
+  };
+
+  const viewOnAstraExplorer = () => {
+    if (chainInfo.raw.txExplorer && transactionStore.rawData) {
+      const rawDataValue = transactionStore.rawData.value;
+      const transactionHash = (rawDataValue as MsgSwap).transactionHash;
+      const url = "https://explorer.astranaut.dev/tx/" + transactionHash;
       smartNavigation.pushSmart("WebView", {
         url: url,
       });
@@ -68,6 +78,17 @@ export const TransactionDetailsView: FunctionComponent<{
           mode="text"
           containerStyle={{ marginTop: 16 }}
           onPress={viewDetailsHandler}
+        />
+      )}
+      {rawData && rawData.type === "wallet-swap" && (
+        <Button
+          text={intl.formatMessage(
+            { id: "tx.result.viewDetails" },
+            { page: "Astra Explorer" }
+          )}
+          mode="text"
+          containerStyle={{ marginTop: 16 }}
+          onPress={viewOnAstraExplorer}
         />
       )}
     </View>

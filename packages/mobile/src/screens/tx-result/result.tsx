@@ -25,6 +25,7 @@ import { useToastModal } from "../../providers/toast-modal";
 import { useIntl } from "react-intl";
 import { TransactionSignRequestView } from "./components/transaction-sign-request";
 import { ScrollView, View, SafeAreaView } from "react-native";
+import { TransactionTitleView } from "./components/transaction-title-view";
 
 export const TxResultScreen: FunctionComponent = observer(() => {
   const {
@@ -208,6 +209,7 @@ export const TxResultScreen: FunctionComponent = observer(() => {
       <View style={style.flatten(["flex-1", "background-color-background"])}>
         <ScrollView style={style.flatten(["flex-1"])}>
           <TransactionStateView />
+          <TransactionTitleView />
           <TransactionDetailsView
             style={{
               marginTop: 38,

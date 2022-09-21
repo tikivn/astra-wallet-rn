@@ -1,6 +1,7 @@
 import { hexlify } from "@ethersproject/bytes";
 import { TransactionRequest } from "@ethersproject/providers";
 import { Wallet } from "@ethersproject/wallet";
+import { EthSignType } from "@keplr-wallet/types";
 import { useCallback, useMemo } from "react";
 import { useStore } from "../stores";
 import { GAS_PRICE_GWEI } from "../utils/for-swap";
@@ -8,8 +9,8 @@ import addresses from "../utils/for-swap/addresses";
 import { useWeb3 } from "./use-web3";
 
 export const useSignTransaction = () => {
-  const { etherProvider, chainId } = useWeb3();
-  const { keyRingStore } = useStore();
+  const { etherProvider, chainId, account, accountHex, chainIdStr } = useWeb3();
+  const { keyRingStore, accountStore, transactionStore } = useStore();
   const gasPrice = GAS_PRICE_GWEI.testnet;
 
   const walletSignAsync = useMemo(async () => {
@@ -23,7 +24,7 @@ export const useSignTransaction = () => {
     async (
       encodeFunctionData: string,
       opts: Partial<TransactionRequest> = {}
-    ) => {
+    ): Promise<string> => {
       const accountSign = await walletSignAsync;
       if (!walletSignAsync || !accountSign)
         return Promise.reject("An error occurred!");
@@ -59,5 +60,80 @@ export const useSignTransaction = () => {
     [chainId, etherProvider, gasPrice, walletSignAsync]
   );
 
-  return signTransaction;
+  const signEthereum = useCallback(
+    async (
+      encodeFunctionData: string,
+      { gas, value, ...opts }: { [key: string]: string }
+    ): Promise<string> => {
+      const keplr = await accountStore
+        .getAccount(account.bech32Address)
+        .getKeplr();
+
+      return new Promise((resolve, reject) => {
+        etherProvider
+          .getTransactionCount(accountHex)
+          .then((_nonce) => {
+            const txParams = {
+              gasPrice,
+              to: addresses.ROUTER[chainId],
+              data: encodeFunctionData,
+              from: accountHex,
+              chainId: chainId,
+              nonce: hexlify(_nonce),
+              gas,
+              value,
+              ...opts,
+            };
+            if (!keplr) {
+              throw new Error("Error with Keplr provider");
+            }
+            return keplr?.signEthereum(
+              chainIdStr,
+              account.bech32Address,
+              JSON.stringify(txParams),
+              EthSignType.TRANSACTION
+            );
+          })
+          .then((sign) => {
+            if (!sign) {
+              throw new Error("Sign with error");
+            }
+            const hex = Buffer.from(sign).toString("hex");
+            return etherProvider.sendTransaction("0x" + hex);
+          })
+          .then(({ hash }) => {
+            return etherProvider.waitForTransaction(hash);
+          })
+          .then(({ transactionHash }) => {
+            transactionStore.updateTxState("success");
+            const rawData = transactionStore.rawData;
+            if (rawData) {
+              transactionStore.updateRawData({
+                type: rawData.type,
+                value: { ...rawData.value, transactionHash },
+              });
+            }
+            resolve(transactionHash);
+          })
+          .catch((err) => {
+            transactionStore.updateTxState("failure");
+
+            console.error("Error Sign Data ", { error: err });
+            reject(err);
+          });
+      });
+    },
+    [
+      account.bech32Address,
+      accountHex,
+      accountStore,
+      chainId,
+      chainIdStr,
+      etherProvider,
+      gasPrice,
+      transactionStore,
+    ]
+  );
+
+  return { signTransaction, signEthereum };
 };

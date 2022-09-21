@@ -77,8 +77,9 @@ export function useApproveCallback(
   const token =
     amountToApprove instanceof TokenAmount ? amountToApprove.token : undefined;
   const currentAllowance = useTokenAllowance(token);
+  console.log("🚀 -> currentAllowance", currentAllowance?.toSignificant());
 
-  const signTransaction = useSignTransaction();
+  const { signTransaction } = useSignTransaction();
 
   // check the current approval status
   const approvalState: ApprovalState = useMemo(() => {
@@ -87,7 +88,6 @@ export function useApproveCallback(
     if (amountToApprove.currency === ETHER) return ApprovalState.APPROVED;
     // we might not have enough data to know whether or not we need to approve
     if (!currentAllowance) return ApprovalState.UNKNOWN;
-    console.log("currentAllowance", currentAllowance.toFixed(4));
     // amountToApprove will be defined if currentAllowance is
     return currentAllowance.lessThan(amountToApprove)
       ? ApprovalState.NOT_APPROVED
@@ -148,7 +148,7 @@ export function useApproveCallback(
       useExact ? amountToApprove.raw.toString() : MaxUint256,
     ]);
     return signTransaction(encodeFunctionData, {
-      value: Zero,
+      value: Zero.toHexString(),
       to: token?.address,
       from: accountHex,
       gasLimit: calculateGasMargin(estimatedGas).toHexString(),
@@ -175,8 +175,6 @@ export function useApproveCallback(
       if (!tokenContract) {
         return;
       }
-      const az = await tokenContract.symbol();
-      console.log("🚀 -> approveTest -> az", az);
       const estimatedGas = await tokenContract.estimateGas.approve(
         spender,
         Zero,
@@ -184,22 +182,20 @@ export function useApproveCallback(
           from: accountHex,
         }
       );
-      console.log("🚀 -> approveTest -> estimatedGas", estimatedGas);
       const intfErc20 = new Interface(erc20Abi);
       const encodeFunctionData = intfErc20.encodeFunctionData("approve", [
         spender,
         0,
       ]);
       const params = {
-        value: 0,
-        to: token?.address,
+        value: Zero.toHexString(),
+        to: token?.address ?? "",
         from: accountHex,
         gasLimit: calculateGasMargin(estimatedGas).toHexString(),
         gasPrice: GAS_PRICE_GWEI.testnet,
       };
-      console.log("🚀 -> approveTest -> params", params);
       const a = await signTransaction(encodeFunctionData, params);
-      console.log("success", { asd: a });
+      console.log("success", { hash: a });
     } catch (error) {
       console.error("Failed to approve", { error });
     }

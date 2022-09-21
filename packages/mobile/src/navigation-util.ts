@@ -79,9 +79,6 @@ const {
     "Swap.Confirm": {
       upperScreenName: "Swap",
     },
-    "Swap.Success": {
-      upperScreenName: "Swap",
-    },
     NewHome: {
       upperScreenName: "NewMain",
     },
