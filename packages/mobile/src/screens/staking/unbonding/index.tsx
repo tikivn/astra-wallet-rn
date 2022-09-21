@@ -188,7 +188,10 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
                       <ValidatorThumbnail size={24} url={thumbnail} />
                       <View style={style.flatten(["padding-x-16", "flex"])}>
                         <Text
-                          style={style.flatten(["text-base-medium", "color-gray-10"])}
+                          style={style.flatten([
+                            "text-base-medium",
+                            "color-gray-10",
+                          ])}
                         >
                           {validator?.description.moniker ?? "..."}
                         </Text>
@@ -202,7 +205,12 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
                         </Text>
                       </View>
                     </View>
-                    <Text style={style.flatten(["text-base-medium", "color-gray-10"])}>
+                    <Text
+                      style={style.flatten([
+                        "text-base-medium",
+                        "color-gray-10",
+                      ])}
+                    >
                       {remainingText}
                     </Text>
                   </View>

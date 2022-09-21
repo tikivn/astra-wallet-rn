@@ -10,7 +10,7 @@ import {
 import { useStyle } from "../../styles";
 import { registerModal } from "../../modals/base";
 import { RectButton } from "../rect-button";
-import DownIcon from "../../assets/svg/down.svg"
+import { ArrowDownIcon } from "../icon";
 export const SelectorModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
@@ -22,140 +22,139 @@ export const SelectorModal: FunctionComponent<{
   selectedKey: string | undefined;
   setSelectedKey: (key: string | undefined) => void;
   modalPersistent?: boolean;
-}> = registerModal(
-  ({
-    close,
-    items,
-    selectedKey,
-    setSelectedKey,
-    maxItemsToShow,
-    modalPersistent,
-  }) => {
-    const style = useStyle();
+}> = registerModal(({
+  close,
+  items,
+  selectedKey,
+  setSelectedKey,
+  maxItemsToShow,
+  modalPersistent,
+}) => {
+  const style = useStyle();
 
-    const renderBall = (selected: boolean) => {
-      if (selected) {
-        return (
-          <View
-            style={style.flatten([
-              "width-24",
-              "height-24",
-              "border-radius-32",
-              "background-color-primary",
-              "items-center",
-              "justify-center",
-            ])}
-          >
-            <View
-              style={style.flatten([
-                "width-12",
-                "height-12",
-                "border-radius-32",
-                "background-color-white",
-              ])}
-            />
-          </View>
-        );
-      } else {
-        return (
-          <View
-            style={style.flatten([
-              "width-24",
-              "height-24",
-              "border-radius-32",
-              "background-color-white",
-              "border-width-1",
-              "border-color-text-black-very-low",
-            ])}
-          />
-        );
-      }
-    };
-
-    const scrollViewRef = useRef<ScrollView | null>(null);
-    const initOnce = useRef<boolean>(false);
-
-    const onInit = () => {
-      if (!initOnce.current) {
-        if (scrollViewRef.current) {
-          scrollViewRef.current.flashScrollIndicators();
-
-          if (maxItemsToShow) {
-            const selectedIndex = items.findIndex(
-              (item) => item.key === selectedKey
-            );
-
-            if (selectedIndex) {
-              const scrollViewHeight = maxItemsToShow * 64;
-
-              scrollViewRef.current.scrollTo({
-                y: selectedIndex * 64 - scrollViewHeight / 2 + 32,
-                animated: false,
-              });
-            }
-          }
-
-          initOnce.current = true;
-        }
-      }
-    };
-
-    return (
-      <View style={style.flatten(["padding-page"])}>
+  const renderBall = (selected: boolean) => {
+    if (selected) {
+      return (
         <View
           style={style.flatten([
-            "border-radius-8",
-            "overflow-hidden",
-            "background-color-white",
+            "width-24",
+            "height-24",
+            "border-radius-32",
+            "background-color-primary",
+            "items-center",
+            "justify-center",
           ])}
         >
-          <ScrollView
-            style={{
-              maxHeight: maxItemsToShow ? 64 * maxItemsToShow : undefined,
-            }}
-            ref={scrollViewRef}
-            persistentScrollbar={true}
-            onLayout={onInit}
-          >
-            {items.map((item) => {
-              return (
-                <RectButton
-                  key={item.key}
-                  style={style.flatten(
-                    [
-                      "height-64",
-                      "padding-left-36",
-                      "padding-right-28",
-                      "flex-row",
-                      "items-center",
-                      "justify-between",
-                    ],
-                    [item.key === selectedKey && "background-color-primary-10"]
-                  )}
-                  onPress={() => {
-                    setSelectedKey(item.key);
-                    if (!modalPersistent) {
-                      close();
-                    }
-                  }}
-                >
-                  <Text
-                    style={style.flatten([
-                      "subtitle1",
-                      "color-text-black-medium",
-                    ])}
-                  >
-                    {item.label}
-                  </Text>
-                  {renderBall(item.key === selectedKey)}
-                </RectButton>
-              );
-            })}
-          </ScrollView>
+          <View
+            style={style.flatten([
+              "width-12",
+              "height-12",
+              "border-radius-32",
+              "background-color-white",
+            ])}
+          />
         </View>
+      );
+    } else {
+      return (
+        <View
+          style={style.flatten([
+            "width-24",
+            "height-24",
+            "border-radius-32",
+            "background-color-white",
+            "border-width-1",
+            "border-color-text-black-very-low",
+          ])}
+        />
+      );
+    }
+  };
+
+  const scrollViewRef = useRef<ScrollView | null>(null);
+  const initOnce = useRef<boolean>(false);
+
+  const onInit = () => {
+    if (!initOnce.current) {
+      if (scrollViewRef.current) {
+        scrollViewRef.current.flashScrollIndicators();
+
+        if (maxItemsToShow) {
+          const selectedIndex = items.findIndex(
+            (item) => item.key === selectedKey
+          );
+
+          if (selectedIndex) {
+            const scrollViewHeight = maxItemsToShow * 64;
+
+            scrollViewRef.current.scrollTo({
+              y: selectedIndex * 64 - scrollViewHeight / 2 + 32,
+              animated: false,
+            });
+          }
+        }
+
+        initOnce.current = true;
+      }
+    }
+  };
+
+  return (
+    <View style={style.flatten(["padding-page"])}>
+      <View
+        style={style.flatten([
+          "border-radius-8",
+          "overflow-hidden",
+          "background-color-white",
+        ])}
+      >
+        <ScrollView
+          style={{
+            maxHeight: maxItemsToShow ? 64 * maxItemsToShow : undefined,
+          }}
+          ref={scrollViewRef}
+          persistentScrollbar={true}
+          onLayout={onInit}
+        >
+          {items.map((item) => {
+            return (
+              <RectButton
+                key={item.key}
+                style={style.flatten(
+                  [
+                    "height-64",
+                    "padding-left-36",
+                    "padding-right-28",
+                    "flex-row",
+                    "items-center",
+                    "justify-between",
+                  ],
+                  [item.key === selectedKey && "background-color-primary-10"]
+                )}
+                onPress={() => {
+                  setSelectedKey(item.key);
+                  if (!modalPersistent) {
+                    close();
+                  }
+                }}
+              >
+                <Text
+                  style={style.flatten([
+                    "subtitle1",
+                    "color-text-black-medium",
+                  ])}
+                >
+                  {item.label}
+                </Text>
+                {renderBall(item.key === selectedKey)}
+              </RectButton>
+            );
+          })}
+        </ScrollView>
       </View>
-    );
-  }
+    </View>
+  );
+}
 );
 
 export const Selector: FunctionComponent<{
@@ -190,36 +189,36 @@ export const Selector: FunctionComponent<{
   setSelectedKey,
   modalPersistent,
 }) => {
-  const selected = useMemo(() => {
-    return items.find((item) => item.key === selectedKey);
-  }, [items, selectedKey]);
+    const selected = useMemo(() => {
+      return items.find((item) => item.key === selectedKey);
+    }, [items, selectedKey]);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
-  return (
-    <React.Fragment>
-      <SelectorModal
-        isOpen={isModalOpen}
-        close={() => setIsModalOpen(false)}
-        items={items}
-        selectedKey={selectedKey}
-        setSelectedKey={setSelectedKey}
-        maxItemsToShow={maxItemsToShow}
-        modalPersistent={modalPersistent}
-      />
-      <SelectorButtonWithoutModal
-        labelStyle={labelStyle}
-        containerStyle={containerStyle}
-        selectorContainerStyle={selectorContainerStyle}
-        textStyle={textStyle}
-        label={label}
-        placeHolder={placeHolder}
-        selected={selected}
-        onPress={() => setIsModalOpen(true)}
-      />
-    </React.Fragment>
-  );
-};
+    return (
+      <React.Fragment>
+        <SelectorModal
+          isOpen={isModalOpen}
+          close={() => setIsModalOpen(false)}
+          items={items}
+          selectedKey={selectedKey}
+          setSelectedKey={setSelectedKey}
+          maxItemsToShow={maxItemsToShow}
+          modalPersistent={modalPersistent}
+        />
+        <SelectorButtonWithoutModal
+          labelStyle={labelStyle}
+          containerStyle={containerStyle}
+          selectorContainerStyle={selectorContainerStyle}
+          textStyle={textStyle}
+          label={label}
+          placeHolder={placeHolder}
+          selected={selected}
+          onPress={() => setIsModalOpen(true)}
+        />
+      </React.Fragment>
+    );
+  };
 
 export const SelectorButtonWithoutModal: FunctionComponent<{
   labelStyle?: TextStyle;
@@ -231,11 +230,11 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
   placeHolder?: string;
 
   selected:
-    | {
-        label: string;
-        key: string;
-      }
-    | undefined;
+  | {
+    label: string;
+    key: string;
+  }
+  | undefined;
 
   onPress: () => void;
 }> = ({
@@ -248,55 +247,59 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
   selected,
   onPress,
 }) => {
-  const style = useStyle();
+    const style = useStyle();
 
-  return (
-    <View
-      style={StyleSheet.flatten([
-        style.flatten(["padding-bottom-28"]),
-        containerStyle,
-      ])}
-    >
-      <Text
+    return (
+      <View
         style={StyleSheet.flatten([
-          style.flatten([
-            "subtitle2",
-            "color-gray-30",
-            "margin-bottom-6",
-          ]),
-          labelStyle,
+          style.flatten(["padding-bottom-28"]),
+          containerStyle,
         ])}
-      >
-        {label}
-      </Text>
-      <RectButton
-        style={StyleSheet.flatten([
-          style.flatten([
-            "background-color-gray-90",
-            "padding-x-11",
-            "padding-y-12",
-            "border-radius-4",
-            "border-width-1",
-            "border-color-gray-60",
-            "flex-row", "justify-between", "items-center"
-          ]),
-          selectorContainerStyle,
-        ])}
-        onPress={onPress}
       >
         <Text
           style={StyleSheet.flatten([
-            style.flatten(
-              ["body2", "color-gray-10", "padding-0"],
-              [!selected && "color-gray-10"]
-            ),
-            textStyle,
+            style.flatten(["subtitle2", "color-gray-30", "margin-bottom-6"]),
+            labelStyle,
           ])}
         >
-          {selected ? selected.label : placeHolder ?? ""}
+          {label}
         </Text>
-        <DownIcon/>
-      </RectButton>
-    </View>
-  );
-};
+        <RectButton
+          style={StyleSheet.flatten([
+            style.flatten(
+              [
+                "input-container",
+                "background-color-input-background",
+                "padding-x-12",
+                "border-width-1",
+                "border-color-gray-60",
+                "flex-row",
+                "justify-between",
+                "items-center",
+              ],
+              [
+                selected
+                  ? "border-color-input-active"
+                  : "border-color-input-inactive"
+              ]
+            ),
+            selectorContainerStyle,
+          ])}
+          onPress={onPress}
+        >
+          <Text
+            style={StyleSheet.flatten([
+              style.flatten([
+                "text-medium-regular",
+                "color-gray-10",
+              ]),
+              textStyle,
+            ])}
+          >
+            {selected ? selected.label : placeHolder ?? ""}
+          </Text>
+          <ArrowDownIcon />
+        </RectButton>
+      </View>
+    );
+  };

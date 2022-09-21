@@ -84,7 +84,7 @@ export const ConfirmModal: FunctionComponent<{
             />
             <View style={style.flatten(["width-12"])} />
             <Button
-              color="danger"
+              color="negative"
               containerStyle={style.flatten(["flex-1"])}
               text={yesButtonText}
               onPress={() => {

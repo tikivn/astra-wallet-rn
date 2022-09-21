@@ -1,4 +1,13 @@
-import { AccountStore, CosmosAccount, CosmosQueries, CosmwasmAccount, CosmwasmQueries, QueriesStore, SecretAccount, SecretQueries } from "@keplr-wallet/stores";
+import {
+  AccountStore,
+  CosmosAccount,
+  CosmosQueries,
+  CosmwasmAccount,
+  CosmwasmQueries,
+  QueriesStore,
+  SecretAccount,
+  SecretQueries,
+} from "@keplr-wallet/stores";
 import { Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
@@ -15,12 +24,8 @@ import { PropertyView } from "../component/property";
 
 export const RewardsItem: FunctionComponent<{
   chainStore: ChainStore;
-  accountStore: AccountStore<
-    [CosmosAccount, CosmwasmAccount, SecretAccount]
-  >,
-  queriesStore: QueriesStore<
-    [CosmosQueries, CosmwasmQueries, SecretQueries]
-  >,
+  accountStore: AccountStore<[CosmosAccount, CosmwasmAccount, SecretAccount]>;
+  queriesStore: QueriesStore<[CosmosQueries, CosmwasmQueries, SecretQueries]>;
 }> = observer(({ chainStore, accountStore, queriesStore }) => {
   const smartNavigation = useSmartNavigation();
   const style = useStyle();
@@ -45,10 +50,13 @@ export const RewardsItem: FunctionComponent<{
   const unbondingBalances = unbondingsQueries.unbondingBalances;
 
   const delegated = queryDelegated.total;
-  const isRewardExist = queryDelegated.delegations.filter((delegation) => {
-    const stakableRewards = rewardsQueries.getStakableRewardOf(delegation.delegation.validator_address);
-    return stakableRewards.toDec().gte(new Dec(MIN_REWARDS_AMOUNT));
-  })?.length !== 0;
+  const isRewardExist =
+    queryDelegated.delegations.filter((delegation) => {
+      const stakableRewards = rewardsQueries.getStakableRewardOf(
+        delegation.delegation.validator_address
+      );
+      return stakableRewards.toDec().gte(new Dec(MIN_REWARDS_AMOUNT));
+    })?.length !== 0;
 
   const isPending = unbondingBalances.length > 0;
 
@@ -56,18 +64,16 @@ export const RewardsItem: FunctionComponent<{
 
   return (
     <View
-      style={style.flatten(
-        [
-          "padding-0",
-          "margin-x-16",
-          "margin-y-16",
-          "justify-between",
-          "background-color-card-background",
-          "border-radius-16",
-          "border-color-card-border",
-          "border-width-1",
-        ],
-      )}
+      style={style.flatten([
+        "padding-0",
+        "margin-x-16",
+        "margin-y-16",
+        "justify-between",
+        "background-color-card-background",
+        "border-radius-16",
+        "border-color-card-border",
+        "border-width-1",
+      ])}
     >
       <View
         style={style.flatten([
@@ -84,15 +90,12 @@ export const RewardsItem: FunctionComponent<{
           value={formatCoin(delegated)}
         />
         <Button
-          containerStyle={style.flatten([
-            "self-center",
-            "width-132",
-          ])}
+          containerStyle={style.flatten(["self-center", "width-132"])}
           onPress={() => {
             smartNavigation.navigateSmart("Validator.List", {});
           }}
           text={intl.formatMessage({ id: "staking.dashboard.rewards.invest" })}
-          size="small"
+          size="medium"
           textStyle={style.flatten(["color-white", "subtitle3"])}
         />
       </View>
@@ -114,15 +117,13 @@ export const RewardsItem: FunctionComponent<{
         />
 
         <Button
-          containerStyle={style.flatten([
-            "self-center",
-            "width-132",
-          ])}
+          containerStyle={style.flatten(["self-center", "width-132"])}
           text={intl.formatMessage({
             id: "staking.dashboard.rewards.withdrawProfit",
           })}
+          color="neutral"
           mode="outline"
-          size="small"
+          size="medium"
           textStyle={style.flatten(["color-gray-10", "subtitle3"])}
           disabled={!isRewardExist}
           onPress={() => {
@@ -142,21 +143,19 @@ export const RewardsItem: FunctionComponent<{
         <PropertyView
           label={intl.formatMessage(
             { id: "staking.dashboard.rewards.totalWithdrawals" },
-            { denom: unboding.denom },
+            { denom: unboding.denom }
           )}
           value={formatCoin(unboding)}
         />
 
         <Button
-          containerStyle={style.flatten([
-            "self-center",
-            "width-132",
-          ])}
+          containerStyle={style.flatten(["self-center", "width-132"])}
           text={intl.formatMessage({
             id: "staking.dashboard.rewards.follow",
           })}
+          color="neutral"
           mode="outline"
-          size="small"
+          size="medium"
           textStyle={style.flatten(["color-gray-10", "subtitle3"])}
           disabled={!isPending}
           onPress={() => {

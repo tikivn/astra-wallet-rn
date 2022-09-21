@@ -42,17 +42,20 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
       <View style={style.get("flex-1")} />
       <View style={style.flatten(["items-center"])}>
         <LottieView
-          source={require("../../assets/lottie/login_success.json")}
+          source={require("../../assets/lottie/tx-loading-complete.json")}
           autoPlay
-          loop
-          style={style.flatten(["width-300", "flex-grow-1"])}
-          resizeMode="cover"
+          loop={false}
+          style={{
+            width: 120,
+            height: 120,
+          }}
         />
         <Text
           style={style.flatten([
             "text-center",
-            "text-button2",
-            "color-gray-10",
+            "text-x-large-semi-bold",
+            "color-label-text-1",
+            "margin-top-16",
           ])}
         >
           {successText}

@@ -288,7 +288,7 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
           text={getButtonText()}
           onPress={onProceed}
           disabled={!inputDataValid}
-          color={type === "deleteWallet" ? "danger" : "primary"}
+          color={type === "deleteWallet" ? "negative" : "primary"}
         />
         <AvoidingKeyboardBottomView />
       </View>

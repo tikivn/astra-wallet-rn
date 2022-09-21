@@ -39,11 +39,11 @@ const NetworkConnectionModal: FunctionComponent = () => {
           {intl.formatMessage({ id: "register.intro.appName" })}
         </Text>
       </View>
-      <View style={style.flatten(["flex-1", "items-center", "justify-center", "padding-x-page"])}>
-        <Text style={style.flatten(["text-x-large-semi-bold", "color-gray-10"])}>
+      <View style={style.flatten(["flex-1", "items-stretch", "justify-center", "padding-x-page"])}>
+        <Text style={style.flatten(["text-x-large-semi-bold", "color-gray-10", "text-center"])}>
           {intl.formatMessage({ id: "common.text.noConnection.title" })}
         </Text>
-        <Text style={style.flatten(["text-base-regular", "color-gray-30", "margin-top-8"])}>
+        <Text style={style.flatten(["text-base-regular", "color-gray-30", "margin-top-8", "text-center"])}>
           {intl.formatMessage({ id: "common.text.noConnection.desc" })}
         </Text>
         <Button

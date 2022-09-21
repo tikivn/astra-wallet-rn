@@ -1,14 +1,18 @@
 import React, { FunctionComponent, useEffect } from "react";
 import { registerModal } from "../../modals/base";
-import { Colors, useStyle } from "../../styles";
+import { useStyle } from "../../styles";
 import { Text, View } from "react-native";
-import { ToastIcon } from "../../components/icon";
+import {
+  AlertErrorIcon,
+  AlertInfoIcon,
+  AlertSuccessIcon,
+} from "../../components/icon";
 
 export const ToastModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
   title: string;
-  type: "success" | "error" | "infor";
+  type: "success" | "error" | "infor" | "neutral";
   displayTime?: number;
 }> = registerModal(
   ({ close, title, type = "infor", displayTime = 2000 }) => {
@@ -19,69 +23,54 @@ export const ToastModal: FunctionComponent<{
     }, []);
 
     const style = useStyle();
-    const backgroundColorDefinition = (() => {
-      switch (type) {
-        case "infor":
-          return "background-color-blue-20";
-        case "error":
-          return "background-color-red-10";
-        case "success":
-          return "background-color-green-10";
-        default:
-          return "background-color-white";
-      }
-    })();
+    const styleDefinition = style.get(`toast-${type}` as any);
 
-    const colorDefinition = (() => {
-      switch (type) {
-        case "infor":
-          return "blue-40";
-        case "error":
-          return "red-30";
-        case "success":
-          return "green-30";
-        default:
-          return "white";
-      }
-    })();
+    function getIcon() {
+      const props = {
+        style: { marginRight: 8 },
+        size: 20,
+        color: styleDefinition.color,
+      };
 
-    const toastColorDefinition = (() => {
+      let Icon = AlertInfoIcon;
+
       switch (type) {
-        case "infor":
-          return Colors["blue-70"];
-        case "error":
-          return Colors["red-60"];
         case "success":
-          return Colors["green-60"];
+          Icon = AlertSuccessIcon;
+          break;
+        case "infor":
+          Icon = AlertInfoIcon;
+          break;
+        case "error":
+          Icon = AlertErrorIcon;
+          break;
         default:
-          return Colors["white"];
+          return;
       }
-    })();
+
+      return <Icon {...props} />;
+    }
 
     return (
       <View style={style.flatten(["padding-page"])}>
         <View
           style={style.flatten([
-            "border-radius-8",
             "overflow-hidden",
-            backgroundColorDefinition as any,
+            "toast-container",
+            `toast-${type}` as any,
             "padding-y-12",
             "padding-x-16",
-            "border-width-1",
-            `border-color-${colorDefinition}` as any,
             "flex-row",
             "items-center",
             "justify-between",
           ])}
         >
-          <ToastIcon height={15} color={toastColorDefinition} />
+          {getIcon()}
           <Text
-            style={style.flatten([
-              "body3",
-              "color-gray-100",
-              "margin-left-8",
-              "flex-1",
-            ])}
+            style={{
+              ...style.flatten(["text-base-regular", "flex-1"]),
+              color: styleDefinition.color,
+            }}
           >
             {title}
           </Text>
@@ -93,5 +82,6 @@ export const ToastModal: FunctionComponent<{
     align: "bottom",
     disableBackdrop: true,
     blurBackdropOnIOS: false,
+    transitionVelocity: 0,
   }
 );

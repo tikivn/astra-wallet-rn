@@ -12,10 +12,7 @@ import { formatCoin } from "../../../common/utils";
 export const UnbondingCard: FunctionComponent<{
   containerStyle?: ViewStyle;
   validatorAddress: string;
-}> = observer(({
-  containerStyle,
-  validatorAddress,
-}) => {
+}> = observer(({ containerStyle, validatorAddress }) => {
   const smartNavigation = useSmartNavigation();
   const { chainStore, accountStore, queriesStore } = useStore();
 
@@ -63,11 +60,15 @@ export const UnbondingCard: FunctionComponent<{
               "margin-y-8",
               "color-gray-30",
               "text-caption2",
+              "text-center",
             ])}
           >
             <FormattedMessage
               id="validator.details.unbonding.noticeWithdrawalPeroid"
-              values={{ coin: unbonding.entries.shift()?.balance.denom, days: unbondingTimeText }}
+              values={{
+                coin: chainStore.current.stakeCurrency.coinDenom,
+                days: unbondingTimeText,
+              }}
             />
             <Text
               style={style.flatten(["text-underline", "color-primary"])}
@@ -140,10 +141,14 @@ export const UnbondingCard: FunctionComponent<{
                   "margin-y-16",
                 ])}
               >
-                <Text style={style.flatten(["text-base-medium", "color-gray-10"])}>
+                <Text
+                  style={style.flatten(["text-base-medium", "color-gray-10"])}
+                >
                   {formatCoin(entry.balance)}
                 </Text>
-                <Text style={style.flatten(["text-base-medium", "color-gray-10"])}>
+                <Text
+                  style={style.flatten(["text-base-medium", "color-gray-10"])}
+                >
                   {remainingText}
                 </Text>
               </View>

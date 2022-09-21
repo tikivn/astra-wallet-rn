@@ -93,7 +93,7 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
               "margin-y-16",
             ])}
             text={intl.formatMessage({ id: "register.intro.button.recover" })}
-            color="secondary"
+            color="neutral"
             onPress={() => {
               smartNavigation.navigateSmart("Register.RecoverMnemonic", {
                 registerConfig,

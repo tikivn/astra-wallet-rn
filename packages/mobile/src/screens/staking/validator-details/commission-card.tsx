@@ -55,7 +55,7 @@ export const CommissionsCard: FunctionComponent<{
 
   const style = useStyle();
 
-  var totalStakingText = "";
+  let totalStakingText = "";
   if (validator) {
     const total = new CoinPretty(
       chainStore.current.stakeCurrency,
@@ -82,12 +82,7 @@ export const CommissionsCard: FunctionComponent<{
               ) : null}
             </Text>
           ) : null}
-          <View
-            style={style.flatten([
-              "flex-row",
-              "padding-y-24",
-            ])}
-          >
+          <View style={style.flatten(["flex-row", "padding-y-24"])}>
             <View style={style.flatten(["items-center", "flex-1"])}>
               <TooltipLabel
                 text={intl.formatMessage({
@@ -158,7 +153,9 @@ export const CommissionsCard: FunctionComponent<{
               "margin-top-24",
             ])}
           >
-            <Text style={style.flatten(["color-gray-10", "text-base-semi-bold"])}>
+            <Text
+              style={style.flatten(["color-gray-10", "text-base-semi-bold"])}
+            >
               {intl.formatMessage({
                 id: "validator.details.commission.details",
               })}
@@ -180,7 +177,10 @@ export const CommissionsCard: FunctionComponent<{
               <FormattedMessage
                 id="validator.details.percentValue"
                 values={{
-                  percent: formatPercent(validator.commission.commission_rates.max_rate, true)
+                  percent: formatPercent(
+                    validator.commission.commission_rates.max_rate,
+                    true
+                  ),
                 }}
               />
             </Text>
@@ -203,7 +203,10 @@ export const CommissionsCard: FunctionComponent<{
               <FormattedMessage
                 id="validator.details.percentValue"
                 values={{
-                  percent: formatPercent(validator.commission.commission_rates.max_change_rate, true)
+                  percent: formatPercent(
+                    validator.commission.commission_rates.max_change_rate,
+                    true
+                  ),
                 }}
               />
             </Text>
@@ -220,7 +223,9 @@ export const CommissionsCard: FunctionComponent<{
               text={intl.formatMessage({ id: "validator.details.updateTime" })}
               textStyle={style.flatten(["text-base-regular"])}
             />
-            <Text style={style.flatten(["color-gray-10", "text-base-regular"])}>{dateText}</Text>
+            <Text style={style.flatten(["color-gray-10", "text-base-regular"])}>
+              {dateText}
+            </Text>
           </View>
         </CardBody>
       ) : null}

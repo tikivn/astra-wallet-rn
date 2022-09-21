@@ -24,6 +24,10 @@ const PurpleColors = {
   "purple-90": "#1600A8",
   "purple-100": "#100075",
   "purple-overlay": "#6D4DFF26",
+
+  "purple-40-10": "#866BFF1A",
+  "purple-40-15": "#866BFF26",
+  "purple-50-50": "#6D4DFF66",
 }
 
 const RedColors = {
@@ -38,6 +42,9 @@ const RedColors = {
   "red-90": "#750B25",
   "red-100": "#5C0017",
   "red-overlay": "#FD567F26",
+
+  "red-50-10": "#FD72941A",
+  "red-50-15": "#FD729426",
 }
 
 const YellowColors = {
@@ -82,20 +89,6 @@ const BlueColors = {
   "blue-overlay": "#3BAFF726",
 }
 
-const DarkBlueColors = {
-  "dark-blue-10": "#EBF3FF",
-  "dark-blue-20": "#AACCFF",
-  "dark-blue-30": "#80B2FF",
-  "dark-blue-40": "#5598FF",
-  "dark-blue-50": "#2B7FFF",
-  "dark-blue-60": "#0065FF",
-  "dark-blue-70": "#0054D4",
-  "dark-blue-80": "#0043AA",
-  "dark-blue-90": "#003380",
-  "dark-blue-100": "#002255",
-  "dark-blue-overlay": "#2A7FFF26",
-}
-
 export const V1Colors = {
   ...GrayColors,
   ...PurpleColors,
@@ -103,7 +96,6 @@ export const V1Colors = {
   ...YellowColors,
   ...GreenColors,
   ...BlueColors,
-  ...DarkBlueColors,
 };
 
 export const V1MainColors = {
@@ -133,9 +125,10 @@ export const V1AlertInlineColors = {
 };
 
 export const V1InputColors = {
-  "input-active": V1Colors["purple-50"],
+  "input-active": V1Colors["gray-50"],
   "input-inactive": V1Colors["gray-70"],
   "input-error": V1Colors["red-50"],
+  "input-success": V1Colors["green-50"],
   "input-value": V1Colors["gray-10"],
   "input-label": V1Colors["gray-30"],
   "input-background": V1Colors["gray-90"],
@@ -153,7 +146,7 @@ export const V1StepViewColors = {
   "step-text-inactive": V1Colors["gray-50"],
 
   "step-dot-active": V1Colors["purple-50"],
-  "step-dot-inactive": V1Colors["purple-50"] + "66",//50%
+  "step-dot-inactive": V1Colors["purple-50-50"],
 
   "step-tick-active": V1Colors["purple-50"],
   "step-tick-inactive": V1Colors["blue-90"],
@@ -169,7 +162,7 @@ export const V1StepViewColors = {
 
   "step-tick-success-active": V1Colors["green-50"],
   "step-tick-success-inactive": V1Colors["green-overlay"],
-  
+
   "step-line-success-active": V1Colors["green-overlay"],
   "step-line-success-inactive": V1Colors["gray-90"],
 };

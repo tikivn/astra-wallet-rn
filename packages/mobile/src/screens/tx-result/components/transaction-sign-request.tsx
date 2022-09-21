@@ -116,7 +116,7 @@ export const TransactionSignRequestView: FunctionComponent<{
             "margin-16",
           ])}
         >
-          <Text style={style.flatten(["color-blue-70", "subtitle3"])}>
+          <Text style={style.flatten(["color-primary", "text-base-medium"])}>
             <FormattedMessage
               id={
                 isOpen
@@ -126,9 +126,9 @@ export const TransactionSignRequestView: FunctionComponent<{
             />
           </Text>
           {isOpen ? (
-            <CollapseIcon size={20} color={style.get("color-blue-70").color} />
+            <CollapseIcon size={20} color={style.get("color-primary").color} />
           ) : (
-            <ExpandIcon size={20} color={style.get("color-blue-70").color} />
+            <ExpandIcon size={20} color={style.get("color-primary").color} />
           )}
         </TouchableOpacity>
       </View>
@@ -137,8 +137,8 @@ export const TransactionSignRequestView: FunctionComponent<{
           style={style.flatten([
             "flex",
             "border-radius-16",
-            "border-color-gray-60",
-            "background-color-gray-90",
+            "border-color-card-border",
+            "background-color-card-background",
             "border-width-1",
             "margin-x-16",
             "padding-16",
@@ -168,20 +168,17 @@ export const TransactionSignRequestView: FunctionComponent<{
           ])}
         >
           <Button
-            size="small"
             containerStyle={style.flatten([
               "margin-right-12",
               "flex-1",
-              "background-color-gray-70",
             ])}
+            color="neutral"
             text={intl.formatMessage({ id: "common.text.reject" })}
-            mode="fill"
             onPress={async () => {
               onReject(source, isWC);
             }}
           />
           <Button
-            size="small"
             text={intl.formatMessage({ id: "common.text.verify" })}
             onPress={async () => {
               onApprove(source);

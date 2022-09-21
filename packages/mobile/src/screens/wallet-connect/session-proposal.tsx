@@ -211,18 +211,17 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
           ])}
         >
           <Button
-            size="small"
+            size="medium"
             containerStyle={style.flatten([
               "margin-right-12",
               "flex-1",
               "background-color-gray-70",
             ])}
             text={intl.formatMessage({ id: "common.text.reject" })}
-            mode="fill"
             onPress={onRejectSession}
           />
           <Button
-            size="small"
+            size="medium"
             text={intl.formatMessage({ id: "common.text.connect" })}
             onPress={onApproveSession}
             containerStyle={style.flatten(["flex-1"])}

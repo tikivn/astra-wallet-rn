@@ -1,56 +1,23 @@
 import React, { FunctionComponent } from "react";
-import Svg, { Circle } from "react-native-svg";
+import Svg, { ClipPath, Defs, G, Path, Rect } from "react-native-svg";
 import Animated from "react-native-reanimated";
 import { useSpinAnimated } from "./hooks";
 
-export const SVGLoadingIcon: FunctionComponent<{
+const SVGLoadingIcon: FunctionComponent<{
   color: string;
   size: number;
 }> = ({ color, size }) => {
   return (
-    <Svg width={size} height={size} fill="none" viewBox="0 0 17 17">
-      <Circle cx="8.5" cy="1.5" r="1.5" fill={color} />
-      <Circle cx="8.5" cy="15.5" r="1.5" fill={color} opacity="0.4" />
-      <Circle
-        cx="15.5"
-        cy="8.5"
-        r="1.5"
-        fill={color}
-        opacity="0.1"
-        transform="rotate(90 15.5 8.5)"
-      />
-      <Circle
-        cx="1.5"
-        cy="8.5"
-        r="1.5"
-        fill={color}
-        opacity="0.75"
-        transform="rotate(90 1.5 8.5)"
-      />
-      <Circle
-        cx="3.55"
-        cy="13.45"
-        r="1.5"
-        fill={color}
-        opacity="0.55"
-        transform="rotate(45 3.55 13.45)"
-      />
-      <Circle
-        cx="13.45"
-        cy="13.45"
-        r="1.5"
-        fill={color}
-        opacity="0.25"
-        transform="rotate(135 13.45 13.45)"
-      />
-      <Circle
-        cx="3.551"
-        cy="3.55"
-        r="1.5"
-        fill={color}
-        opacity="0.9"
-        transform="rotate(135 3.55 3.55)"
-      />
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <G clipPath="url(#clip0_5281_96233)">
+        <Path opacity="0.4" fillRule="evenodd" clipRule="evenodd" d="M12 2.4C6.69807 2.4 2.4 6.69807 2.4 12C2.4 17.3019 6.69807 21.6 12 21.6C17.3019 21.6 21.6 17.3019 21.6 12C21.6 6.69807 17.3019 2.4 12 2.4ZM0 12C0 5.37258 5.37258 0 12 0C18.6274 0 24 5.37258 24 12C24 18.6274 18.6274 24 12 24C5.37258 24 0 18.6274 0 12Z" fill={color} />
+        <Path fillRule="evenodd" clipRule="evenodd" d="M10.8 1.2C10.8 0.537258 11.3373 0 12 0C15.1826 0 18.2349 1.26428 20.4853 3.51472C22.7358 5.76515 24 8.8174 24 12C24 12.6627 23.4628 13.2 22.8 13.2C22.1373 13.2 21.6 12.6627 21.6 12C21.6 9.45392 20.5886 7.01212 18.7883 5.21177C16.9879 3.41143 14.5461 2.4 12 2.4C11.3373 2.4 10.8 1.86274 10.8 1.2Z" fill={color} />
+      </G>
+      <Defs>
+        <ClipPath id="clip0_5281_96233">
+          <Rect width={size} height={size} fill={color} />
+        </ClipPath>
+      </Defs>
     </Svg>
   );
 };

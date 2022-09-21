@@ -129,11 +129,10 @@ const WordsCard: FunctionComponent<{
   }, [isFocused]);
 
   return (
-    <React.Fragment>
+    <View style={style.flatten(["justify-center"])}>
       <View
         style={style.flatten([
-          "margin-top-14",
-          "margin-bottom-4",
+          "margin-y-16",
           "padding-top-16",
           "padding-left-16",
           "words-container",
@@ -153,20 +152,17 @@ const WordsCard: FunctionComponent<{
           );
         })}
       </View>
-      <View style={style.flatten(["width-full"])}>
-        <Button
-          textStyle={style.flatten(["subtitle3", "color-primary"])}
-          mode="text"
-          text={intl.formatMessage({ id: "component.text.copy" })}
-          onPress={() => {
-            Clipboard.setString(words.join(" "));
-            toast.makeToast({
-              title: intl.formatMessage({ id: "seedphrase.copied" }),
-              type: "success",
-            });
-          }}
-        />
-      </View>
-    </React.Fragment>
+      <Button
+        mode="outline"
+        text={intl.formatMessage({ id: "component.text.copy" })}
+        onPress={() => {
+          Clipboard.setString(words.join(" "));
+          toast.makeToast({
+            title: intl.formatMessage({ id: "seedphrase.copied" }),
+            type: "success",
+          });
+        }}
+      />
+    </View>
   );
 };

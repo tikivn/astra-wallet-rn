@@ -40,13 +40,11 @@ export const AddressInput: FunctionComponent<{
         recipientConfig.setRawRecipient(text);
       }}
       rightView={
-        <View style={{ flexDirection: "row", marginLeft: 16, alignSelf: "flex-start" }}>
+        <View style={{ flexDirection: "row", marginLeft: 16, alignItems: "center" }}>
           <TouchableOpacity
             style={style.flatten([
               "width-24",
               "height-24",
-              "self-center",
-              "items-center",
             ])}
             onPress={() => {
               smartNavigation.navigateSmart("Camera", {});
@@ -55,9 +53,9 @@ export const AddressInput: FunctionComponent<{
             <ScanIcon size={24} color={"#818DA6"} />
           </TouchableOpacity>
           <Button
-            containerStyle={style.flatten(["height-24", "margin-left-8"])}
-            size="small"
-            mode="text"
+            containerStyle={style.flatten(["margin-left-8"])}
+            size="medium"
+            mode="ghost"
             text={intl.formatMessage({ id: "common.text.paste" })}
             onPress={async () => {
               const text = await Clipboard.getStringAsync();
