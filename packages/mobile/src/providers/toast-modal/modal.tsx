@@ -2,7 +2,11 @@ import React, { FunctionComponent, useEffect } from "react";
 import { registerModal } from "../../modals/base";
 import { useStyle } from "../../styles";
 import { Text, View } from "react-native";
-import { AlertErrorIcon, AlertInfoIcon, AlertSuccessIcon } from "../../components/icon";
+import {
+  AlertErrorIcon,
+  AlertInfoIcon,
+  AlertSuccessIcon,
+} from "../../components/icon";
 
 export const ToastModal: FunctionComponent<{
   isOpen: boolean;
@@ -23,12 +27,12 @@ export const ToastModal: FunctionComponent<{
 
     function getIcon() {
       const props = {
-        style: { marginRight: 8, },
+        style: { marginRight: 8 },
         size: 20,
         color: styleDefinition.color,
       };
 
-      var Icon = AlertInfoIcon;
+      let Icon = AlertInfoIcon;
 
       switch (type) {
         case "success":
@@ -44,7 +48,7 @@ export const ToastModal: FunctionComponent<{
           return;
       }
 
-      return <Icon {...props} />
+      return <Icon {...props} />;
     }
 
     return (
@@ -64,10 +68,7 @@ export const ToastModal: FunctionComponent<{
           {getIcon()}
           <Text
             style={{
-              ...style.flatten([
-                "text-base-regular",
-                "flex-1",
-              ]),
+              ...style.flatten(["text-base-regular", "flex-1"]),
               color: styleDefinition.color,
             }}
           >
@@ -81,5 +82,6 @@ export const ToastModal: FunctionComponent<{
     align: "bottom",
     disableBackdrop: true,
     blurBackdropOnIOS: false,
+    transitionVelocity: 0,
   }
 );
