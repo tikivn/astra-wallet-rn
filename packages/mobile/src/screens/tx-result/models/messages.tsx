@@ -241,7 +241,7 @@ export function renderMsgSend(value: MsgSend["value"]): IRow[] {
         cols: [
           buildLeftColumn({
             text: intl.formatMessage({
-              id: "tx.result.models.msgSend.time"
+              id: "tx.result.models.msgSend.time",
             }),
             flex: 4,
           }),
@@ -625,16 +625,18 @@ export function renderMsgWithdrawDelegatorReward(
     },
   ];
 
-  const validatorRows = value.validatorRewards.map(({ validatorName, rewards }) => {
-    return {
-      ...common,
-      cols: [
-        buildLeftColumn({
-          text: validatorName,
-          textColor: style.get("color-label-text-1").color,
-        }),
-        buildRightColumn({ text: formatCoin(rewards) }),
-      ],
+  const validatorRows = value.validatorRewards.map(
+    ({ validatorName, rewards }) => {
+      return {
+        ...common,
+        cols: [
+          buildLeftColumn({
+            text: validatorName,
+            textColor: style.get("color-label-text-1").color,
+          }),
+          buildRightColumn({ text: formatCoin(rewards) }),
+        ],
+      };
     }
   );
 

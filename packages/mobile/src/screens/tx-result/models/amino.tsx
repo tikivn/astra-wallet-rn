@@ -16,7 +16,6 @@ import {
   renderMsgBeginRedelegate,
   renderMsgDelegate,
   renderMsgSend,
-  renderMsgSign,
   renderMsgSwap,
   renderMsgUndelegate,
   renderMsgWithdrawDelegatorReward,
