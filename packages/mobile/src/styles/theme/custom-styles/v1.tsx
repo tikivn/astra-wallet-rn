@@ -196,9 +196,25 @@ const V1ToastCustom = {
   },
 };
 
+const V1AlertCustom = {
+  "alert-success": {
+    color: V1Colors["green-60"],
+  },
+  "alert-error": {
+    color: V1Colors["red-60"],
+  },
+  "alert-infor": {
+    color: V1Colors["blue-70"],
+  },
+  "alert-neutral": {
+    color: V1Colors["gray-70"],
+  },
+};
+
 export const V1Custom = {
   ...V1ButtonCustom,
   ...V1ToastCustom,
+  ...V1AlertCustom,
   "alert-inline-container": {
     borderWidth: 1,
     borderRadius: 12,

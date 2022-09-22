@@ -16,6 +16,7 @@ import Bugsnag from "@bugsnag/react-native";
 import { AppIntlProvider } from "./translations";
 import { autoUpdateBody, withAutoDownloadUI } from "./providers/auto-update";
 import { NetworkConnectionProvider } from "./providers/network-connection";
+import { AlertModalProvider } from "./providers/alert-modal";
 
 if (Platform.OS === "android") {
   // https://github.com/web-ridge/react-native-paper-dates/releases/tag/v0.2.15
@@ -65,12 +66,12 @@ if (Platform.OS === "android") {
 
 // Prevent native splash screen from autohiding.
 // UnlockScreen/ AutoUpdate screen will hide the splash screen
-SplashScreen.preventAutoHideAsync()
+SplashScreen.preventAutoHideAsync();
 
-const AppNavigationWithAutoUI = withAutoDownloadUI(AppNavigation)
+const AppNavigationWithAutoUI = withAutoDownloadUI(AppNavigation);
 
 const AppBody: FunctionComponent = () => {
-  const additionalMessages = {}
+  const additionalMessages = {};
   return (
     <StyleProvider>
       <StoreProvider>
@@ -103,11 +104,13 @@ const AppBody: FunctionComponent = () => {
               <LoadingScreenProvider>
                 <ConfirmModalProvider>
                   <NetworkConnectionProvider>
-                    <ToastModalProvider>
-                      <InteractionModalsProvider>
-                        <AppNavigationWithAutoUI />
-                      </InteractionModalsProvider>
-                    </ToastModalProvider>
+                    <AlertModalProvider>
+                      <ToastModalProvider>
+                        <InteractionModalsProvider>
+                          <AppNavigationWithAutoUI />
+                        </InteractionModalsProvider>
+                      </ToastModalProvider>
+                    </AlertModalProvider>
                   </NetworkConnectionProvider>
                 </ConfirmModalProvider>
               </LoadingScreenProvider>
@@ -132,21 +135,22 @@ const ErrorBoundary = (() => {
   }
 })();
 
-// should only use codePush in release version, 
-// other versions like dev and RC, UAT should use local code 
+// should only use codePush in release version,
+// other versions like dev and RC, UAT should use local code
 // set below value = true to use codePush from AppCenter
 const useCodePush = (() => {
   // return false here if want to use local bundle instead of check for update in AppCenter
-  if (__DEV__) return false
-  return true
-})()
-const CodePushAppBody = autoUpdateBody(AppBody, useCodePush)
+  if (__DEV__) return false;
+  return true;
+})();
+const CodePushAppBody = autoUpdateBody(AppBody, useCodePush);
 
 export const App: FunctionComponent = () => {
-  return (ErrorBoundary ?
+  return ErrorBoundary ? (
     <ErrorBoundary>
       <CodePushAppBody />
     </ErrorBoundary>
-    : <CodePushAppBody />
-  )
+  ) : (
+    <CodePushAppBody />
+  );
 };

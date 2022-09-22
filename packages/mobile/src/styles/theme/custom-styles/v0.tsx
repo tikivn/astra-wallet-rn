@@ -201,9 +201,25 @@ const ToastCustom = {
   },
 };
 
+const AlertCustom = {
+  "alert-success": {
+    color: Colors["green-60"],
+  },
+  "alert-error": {
+    color: Colors["red-60"],
+  },
+  "alert-infor": {
+    color: Colors["blue-70"],
+  },
+  "alert-neutral": {
+    color: Colors["gray-70"],
+  },
+};
+
 export const Custom = {
   ...ButtonCustom,
   ...ToastCustom,
+  ...AlertCustom,
   "alert-inline-container": {
     borderWidth: 1,
     borderRadius: 8,

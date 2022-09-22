@@ -28,7 +28,7 @@ export const CameraScreen: FunctionComponent = observer(() => {
   const intl = useIntl();
   // To prevent the reading while changing to other screen after processing the result.
   // Expectedly, screen should be moved to other after processing the result.
-  const [isCompleted, setIsCompleted] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(true);
   const qrCode = useRef("");
 
   useFocusEffect(
@@ -36,7 +36,7 @@ export const CameraScreen: FunctionComponent = observer(() => {
       // If the other screen is pushed according to the qr code data,
       // the `isCompleted` state would remain as true because the screen in the stack is not unmounted.
       // So, we should reset the `isComplete` state whenever getting focused.
-      setIsCompleted(false);
+      setIsCompleted(true);
     }, [])
   );
 
@@ -61,13 +61,12 @@ export const CameraScreen: FunctionComponent = observer(() => {
             return;
           }
           qrCode.current = data;
-          console.log("__CAMERA DEBUG__ data:", data);
-          console.log("__CAMERA DEBUG__ qrCode:", qrCode.current);
-          if (!isLoading && !isCompleted) {
+          if (!isLoading && isCompleted) {
             analyticsStore.logEvent("astra_hub_scan_qr_code", {
               type: data.startsWith("wc:") ? "wallet_connect" : "address",
             });
             setIsLoading(true);
+            setIsCompleted(false);
             try {
               if (data.startsWith("wc:")) {
                 await signClientStore.pair(data);
@@ -115,7 +114,6 @@ export const CameraScreen: FunctionComponent = observer(() => {
                   });
                 }
               }
-              setIsCompleted(true);
             } catch (e) {
               toastModal.makeToast({
                 title: intl.formatMessage({ id: "camera.qrcode.error" }),
@@ -125,7 +123,7 @@ export const CameraScreen: FunctionComponent = observer(() => {
               console.log(e);
             } finally {
               setIsLoading(false);
-              setIsCompleted(false);
+              setIsCompleted(true);
             }
           }
         }}
