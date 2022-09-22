@@ -1,102 +1,100 @@
-import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FunctionComponent, useState } from "react";
 import { useIntl } from "react-intl";
 import { Text, TouchableOpacity, View } from "react-native";
 import { Button } from "../../../components";
 import { CloseLargeIcon } from "../../../components/icon/outlined/navigation";
 import { NormalInput } from "../../../components/input/normal-input";
+import { registerModal } from "../../../modals/base";
 import { useStore } from "../../../stores";
-import { Colors, useStyle } from "../../../styles";
+import { useStyle } from "../../../styles";
 
-export const UpdateWalletName: FunctionComponent = observer(() => {
+export const UpdateWalletNameModal: FunctionComponent<{
+  isOpen: boolean;
+  close: () => void;
+  title: string;
+}> = registerModal(({ close }) => {
   const styleBuilder = useStyle();
   const intl = useIntl();
   const { keyRingStore } = useStore();
 
   const [name, setName] = useState("");
 
-  // useEffect(() => {
-
-  // }, [name]);
-
   async function updateName() {
     const index = keyRingStore.multiKeyStoreInfo.findIndex((keyStore) => {
       return keyStore.selected;
     });
     await keyRingStore.updateNameKeyRing(index, name);
-    dismiss();
-  }
-
-  function dismiss() {
-
+    close();
   }
 
   return (
-    <View style={{
-      marginHorizontal: 16,
-      alignContent: "stretch",
-      alignItems: "stretch",
-      backgroundColor: Colors["gray-90"],
-      borderColor: Colors["gray-60"],
-      borderWidth: 1,
-      borderRadius: 8,
-    }}>
-      <View style={{
-        flexDirection: "row",
-        alignContent: "stretch",
-        alignItems: "center"
-      }}>
-        <Text style={{
-          ...styleBuilder.flatten([
-            "flex-1",
-            "text-medium-medium",
-            "color-gray-10",
-            "margin-left-16"
-          ]),
-          marginVertical: 12,
-        }}>{intl.formatMessage({ id: "common.text.updateWalletName" })}</Text>
-        <TouchableOpacity
-          onPress={dismiss}
-          style={{ marginRight: 12 }}>
-          <CloseLargeIcon size={24} color={Colors["gray-10"]} />
-        </TouchableOpacity>
-      </View>
-      <View style={{
-        backgroundColor: Colors["gray-70"],
-        height: 1
-      }} />
-      <NormalInput
-        value={name}
-        onChangeText={setName}
-        style={{
-          marginHorizontal: 16,
-          marginVertical: 12
-        }} />
-      <View style={{
-        backgroundColor: Colors["gray-70"],
-        height: 1
-      }} />
-      <View style={{
-        flexDirection: "row",
-        justifyContent: "center",
-        alignContent: "stretch",
-        alignItems: "center",
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-      }}>
-        <Button
-          mode="outline"
-          text={intl.formatMessage({ id: "common.text.cancel" })}
-          onPress={dismiss}
-          containerStyle={{ flex: 1 }} />
-        <Button
-          text={intl.formatMessage({ id: "common.text.save" })}
-          onPress={updateName}
-          disabled={name.length == 0}
-          containerStyle={{
-            flex: 1,
-            marginLeft: 8,
+    <View style={styleBuilder.flatten(["height-full", "justify-center"])}>
+      <View style={styleBuilder.flatten([
+        "margin-x-page",
+        "content-stretch",
+        "items-stretch",
+        "background-color-background",
+        "border-color-border",
+        "border-width-1",
+        "border-radius-8",
+      ])}>
+        <View style={{
+          flexDirection: "row",
+          alignContent: "stretch",
+          alignItems: "center"
+        }}>
+          <Text style={{
+            ...styleBuilder.flatten([
+              "flex-1",
+              "text-medium-medium",
+              "color-gray-10",
+              "margin-left-16"
+            ]),
+            marginVertical: 12,
+          }}>{intl.formatMessage({ id: "common.text.updateWalletName" })}</Text>
+          <TouchableOpacity
+            onPress={close}
+            style={{ marginRight: 12 }}>
+            <CloseLargeIcon size={24} color={styleBuilder.get("color-gray-10").color} />
+          </TouchableOpacity>
+        </View>
+        <View style={styleBuilder.flatten([
+          "height-1",
+          "background-color-border",
+        ])} />
+        <NormalInput
+          value={name}
+          onChangeText={setName}
+          style={{
+            marginHorizontal: 16,
+            marginVertical: 12
           }} />
+        <View style={styleBuilder.flatten([
+          "height-1",
+          "background-color-border",
+        ])} />
+        <View style={{
+          flexDirection: "row",
+          justifyContent: "center",
+          alignContent: "stretch",
+          alignItems: "center",
+          paddingHorizontal: 16,
+          paddingVertical: 12,
+        }}>
+          <Button
+            mode="outline"
+            text={intl.formatMessage({ id: "common.text.cancel" })}
+            onPress={close}
+            containerStyle={{ flex: 1 }} />
+          <Button
+            text={intl.formatMessage({ id: "common.text.save" })}
+            onPress={updateName}
+            disabled={name.length == 0}
+            containerStyle={{
+              flex: 1,
+              marginLeft: 8,
+            }} />
+        </View>
       </View>
     </View>
   );

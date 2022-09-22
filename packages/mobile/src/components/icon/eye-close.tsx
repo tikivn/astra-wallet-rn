@@ -1,13 +1,16 @@
 import React, { FunctionComponent } from "react";
 import { View, ViewStyle } from "react-native";
 import Svg, { Path } from "react-native-svg";
-import { Colors } from "../../styles";
+import { useStyle } from "../../styles";
 
 export const EyeCloseIcon: FunctionComponent<{
   style?: ViewStyle;
   size?: number;
   color?: string;
-}> = ({ style, size = 24, color = Colors["gray-30"] }) => {
+}> = ({ style, size = 24, color }) => {
+  const styleBuilder = useStyle();
+  color = color ?? styleBuilder.get("color-icon-default").color;
+
   return (
     <View style={style}>
       <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">

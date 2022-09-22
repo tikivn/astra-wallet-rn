@@ -118,7 +118,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
             {...accountItemProps}
             label={intl.formatMessage({ id: "settings.changePassword" })}
             left={<LockIcon />}
-            right={<AllIcon color={style.get("color-white").color} />}
+            right={<AllIcon />}
             onPress={() => {
               smartNavigation.navigateSmart("Settings.PasswordInput", {
                 type: "updatePassword",
@@ -129,7 +129,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
           <AccountItem
             {...accountItemProps}
             label={intl.formatMessage({ id: "settings.viewPassphase" })}
-            right={<AllIcon color={style.get("color-white").color} />}
+            right={<AllIcon />}
             left={<KeyIcon />}
             onPress={() => {
               smartNavigation.navigateSmart("Settings.PasswordInput", {
@@ -171,7 +171,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
           <AccountItem
             {...accountItemProps}
             label={intl.formatMessage({ id: "settings.faq" })}
-            right={<AllIcon color={style.get("color-white").color} />}
+            right={<AllIcon />}
             left={<FaqIcon />}
             onPress={() => {
               smartNavigation.navigateSmart("WebView", {
@@ -184,7 +184,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
           <AccountItem
             {...accountItemProps}
             label={intl.formatMessage({ id: "settings.community" })}
-            right={<AllIcon color={style.get("color-white").color} />}
+            right={<AllIcon />}
             left={<SocialIcon />}
             onPress={() => {
               Linking.openURL("https://t.me/AstraOfficialChannel");

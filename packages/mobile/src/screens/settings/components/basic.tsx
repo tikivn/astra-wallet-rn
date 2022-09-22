@@ -36,7 +36,7 @@ import { useStyle } from "../../../styles";
         <View>
           <Text
             style={StyleSheet.flatten([
-              style.flatten(["body3", "color-label-text-1"]),
+              style.flatten(["text-base-regular", "color-label-text-1"]),
               labelStyle,
             ])}
           >
@@ -45,7 +45,7 @@ import { useStyle } from "../../../styles";
           {paragraph ? (
             <Text
               style={StyleSheet.flatten([
-                style.flatten(["body3", "color-text-black-low"]),
+                style.flatten(["text-base-regular", "color-label-text-2"]),
                 paragraphStyle,
               ])}
             >

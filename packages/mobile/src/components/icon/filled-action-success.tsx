@@ -1,12 +1,15 @@
 import React, { FunctionComponent } from "react";
 import { View, ViewStyle } from "react-native";
 import Svg, { ClipPath, Defs, G, Path, Rect } from "react-native-svg";
-import { Colors } from "../../styles";
+import { useStyle } from "../../styles";
 
 export const FilledActionIcon: FunctionComponent<{ style?: ViewStyle, color?: string }> = ({
   style,
-  color = Colors["blue-70"],
+  color,
 }) => {
+  const styleBuilder = useStyle();
+  color = color ?? styleBuilder.get("color-primary").color;
+
   return (
     <View style={style}>
       <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">

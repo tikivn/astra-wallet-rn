@@ -3,7 +3,7 @@ import React, { FunctionComponent } from "react";
 import { useIntl } from "react-intl";
 import { Text, View, SafeAreaView, Platform } from "react-native";
 import { AllIcon, PageWithView } from "../../../components";
-import { Colors, useStyle } from "../../../styles";
+import { useStyle } from "../../../styles";
 import { AppleIcon, GoogleIcon, MnemonicIcon, TikiIcon } from "./icons";
 import { useSmartNavigation } from "../../../navigation-util";
 import { InfoIcon } from "../../../components/icon/outlined";
@@ -152,7 +152,7 @@ export const EntryItem: FunctionComponent<{
         paddingHorizontal: 16,
         paddingVertical: 8,
         borderRadius: 8,
-        backgroundColor: Colors["gray-80"],
+        backgroundColor: styleBuilder.get("color-background").color,
         flexDirection: "row",
         alignContent: "stretch",
         alignItems: "center"

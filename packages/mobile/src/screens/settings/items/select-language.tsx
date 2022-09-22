@@ -68,15 +68,15 @@ export const RightView: FunctionComponent<{
       {paragraph ? (
         <Text
           style={style.flatten([
-            "body3",
-            "color-text-black-low",
+            "text-base-regular",
+            "color-label-text-2",
             "margin-right-16",
           ])}
         >
           {paragraph}
         </Text>
       ) : null}
-      <AllIcon color={style.get("color-white").color} />
+      <AllIcon />
     </React.Fragment>
   );
 };

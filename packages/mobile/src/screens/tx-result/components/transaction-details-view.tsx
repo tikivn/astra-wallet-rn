@@ -1,7 +1,6 @@
 import React, { FunctionComponent, useState } from "react";
 import { useIntl } from "react-intl";
-import { Text, View, ViewStyle } from "react-native";
-import { RectButton } from "react-native-gesture-handler";
+import { View, ViewStyle } from "react-native";
 import { IRow, ListRowView } from "../../../components";
 import { TextLink } from "../../../components/button/text";
 import { useSmartNavigation } from "../../../navigation-util";
