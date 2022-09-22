@@ -238,9 +238,11 @@ export const AllColors = {
   ...{
     "heading-text": "white",
     "link-text": Colors["blue-70"],
+    "link-text-active": Colors["blue-70"],
     "rewards-text": Colors["green-50"],
     "label-text-1": Colors["gray-10"],
     "label-text-2": Colors["gray-30"],
+    "icon-default": Colors["gray-30"],
 
     "card-border": Colors["gray-70"],
     "card-background-header": Colors["gray-80"],

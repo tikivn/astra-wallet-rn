@@ -177,9 +177,11 @@ export const V1AllColors = {
   ...{
     "heading-text": "white",
     "link-text": V1Colors["purple-40"],
+    "link-text-active": V1Colors["purple-50"],
     "rewards-text": V1Colors["green-50"],
     "label-text-1": V1Colors["gray-10"],
     "label-text-2": V1Colors["gray-30"],
+    "icon-default": V1Colors["gray-30"],
 
     "card-border": V1Colors["gray-70"],
     "card-background-header": V1Colors["gray-80"],

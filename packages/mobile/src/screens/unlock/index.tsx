@@ -37,6 +37,7 @@ import { AvoidingKeyboardBottomView } from "../../components/avoiding-keyboard/a
 import { hideSplashScreen } from "../splash";
 import { useLanguage } from "../../translations";
 import { MIN_PASSWORD_LENGTH } from "../../common/utils";
+import { TextLink } from "../../components/button/text";
 
 async function waitAccountLoad(
   accountStore: IAccountStore,
@@ -355,17 +356,13 @@ export const UnlockScreen: FunctionComponent = observer(() => {
           style={{ marginBottom: isFailed ? 24 : 0 }}
         />
 
-        <RectButton onPress={forgotPasswordHandler} activeOpacity={0}>
-          <Text style={style.flatten([
-            "text-base-light",
-            "color-link-text",
-            "text-underline",
-            "text-center",
-            "margin-y-16"
-          ])}>
-            {intl.formatMessage({ id: "unlock.button.forgotPassword.text" })}
-          </Text>
-        </RectButton>
+        <TextLink
+          size="medium"
+          onPress={forgotPasswordHandler}
+          style={style.flatten(["margin-y-16"])}
+        >
+          {intl.formatMessage({ id: "unlock.button.forgotPassword.text" })}
+        </TextLink>
 
         <View style={{ flex: 1, justifyContent: "flex-end", marginBottom: 12 }}>
           {keychainStore.isBiometryOn ? (
@@ -380,6 +377,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
               }}
             >
               <BiometricsIcon
+                color={style.get("color-gray-10").color}
                 type={
                   keychainStore.isBiometryType === BIOMETRY_TYPE.FACE
                     || keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID

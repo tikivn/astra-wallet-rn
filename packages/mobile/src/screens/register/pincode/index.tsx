@@ -266,6 +266,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
         {keychainStore.isBiometrySupported && (
           <View style={{ flexDirection: "row", alignContent: "stretch", alignItems: "center", marginBottom: 16, }}>
             <BiometricsIcon
+              color={style.get("color-gray-10").color}
               type={
                 keychainStore.isBiometryType === BIOMETRY_TYPE.FACE
                   || keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID

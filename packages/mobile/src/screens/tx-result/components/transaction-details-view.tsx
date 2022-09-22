@@ -3,6 +3,7 @@ import { useIntl } from "react-intl";
 import { Text, View, ViewStyle } from "react-native";
 import { RectButton } from "react-native-gesture-handler";
 import { IRow, ListRowView } from "../../../components";
+import { TextLink } from "../../../components/button/text";
 import { useSmartNavigation } from "../../../navigation-util";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
@@ -74,40 +75,28 @@ export const TransactionDetailsView: FunctionComponent<{
     <View style={style}>
       {hasData && <ListRowView rows={rows} />}
       {chainInfo && chainInfo.raw.txExplorer && transactionStore.txHash && (
-        <RectButton onPress={viewDetailsHandler} activeOpacity={0}>
-          <Text
-            style={styleBuilder.flatten([
-              "text-base-regular",
-              "color-link-text",
-              "text-underline",
-              "text-center",
-              "margin-y-16",
-            ])}
-          >
-            {intl.formatMessage(
-              { id: "tx.result.viewDetails" },
-              { page: chainInfo.raw.txExplorer.name }
-            )}
-          </Text>
-        </RectButton>
+        <TextLink
+          size="medium"
+          onPress={viewDetailsHandler}
+          style={styleBuilder.flatten(["margin-y-16"])}
+        >
+          {intl.formatMessage(
+            { id: "tx.result.viewDetails" },
+            { page: chainInfo.raw.txExplorer.name }
+          )}
+        </TextLink>
       )}
       {rawData && rawData.type === "wallet-swap" && (
-        <RectButton onPress={viewOnAstraExplorer} activeOpacity={0}>
-          <Text
-            style={styleBuilder.flatten([
-              "text-base-regular",
-              "color-link-text",
-              "text-underline",
-              "text-center",
-              "margin-y-16",
-            ])}
-          >
-            {intl.formatMessage(
-              { id: "tx.result.viewDetails" },
-              { page: "Astra Explorer" }
-            )}
-          </Text>
-        </RectButton>
+        <TextLink
+          size="medium"
+          onPress={viewOnAstraExplorer}
+          style={styleBuilder.flatten(["margin-y-16"])}
+        >
+          {intl.formatMessage(
+            { id: "tx.result.viewDetails" },
+            { page: "Astra Explorer" }
+          )}
+        </TextLink>
       )}
     </View>
   );
