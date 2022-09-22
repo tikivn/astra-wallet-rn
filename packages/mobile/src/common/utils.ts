@@ -31,23 +31,24 @@ export const formatDate = (date: Date) => {
 
 export const formatNumber = (value: string) => {
   const replacedValue = value.split(",").join("");
-  const numValue = Number(replacedValue);
-  if (!numValue) {
-    return value;
-  }
+  return replacedValue;
+  // const numValue = Number(replacedValue);
+  // if (!numValue) {
+  //   return value;
+  // }
 
-  const idx = replacedValue.indexOf(".");
-  let fraction = "";
-  if (idx !== -1) {
-    fraction = replacedValue.substring(
-      idx,
-      Math.min(idx + 4, replacedValue.length)
-    );
-  }
+  // const idx = replacedValue.indexOf(".");
+  // let fraction = "";
+  // if (idx !== -1) {
+  //   fraction = replacedValue.substring(
+  //     idx,
+  //     Math.min(idx + 4, replacedValue.length)
+  //   );
+  // }
 
-  return (
-    numValue.toLocaleString("en-US", { maximumFractionDigits: 0 }) + fraction
-  );
+  // return (
+  //   numValue.toLocaleString("en-US", { maximumFractionDigits: 0 }) + fraction
+  // );
 };
 
 export const formatPercent = (value: any, hideSymbol: boolean = false) => {
