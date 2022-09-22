@@ -184,5 +184,10 @@ export const V1AllColors = {
     "card-border": V1Colors["gray-70"],
     "card-background-header": V1Colors["gray-80"],
     "card-background": V1Colors["gray-90"],
+
+    "tab-icon-active": V1Colors["purple-40"],
+    "tab-text-active": V1Colors["gray-10"],
+    "tab-icon-inactive": V1Colors["gray-30"],
+    "tab-text-inactive": V1Colors["gray-30"],
   },
 };

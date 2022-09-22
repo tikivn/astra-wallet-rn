@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
 import React, { FunctionComponent, useEffect, useRef } from "react";
-import { View } from "react-native";
+import { Text, View } from "react-native";
 import { KeyRingStatus } from "@keplr-wallet/background";
 import {
   NavigationContainer,
@@ -109,7 +109,6 @@ import { useIntl } from "react-intl";
 import { SmartNavigatorProvider } from "./navigation-util";
 import { RegisterCreateEntryScreen } from "./screens/register/create-entry";
 import { SwapConfirmScreen } from "./screens/main/screens/swap-confirm";
-import { SwapSuccessScreen } from "./screens/main/screens/swap-success";
 import { SwapProvider } from "./providers/swap/provider";
 
 const Stack = createStackNavigator();
@@ -695,8 +694,10 @@ export const MainTabNavigation: FunctionComponent = () => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        tabBarIcon: ({ color }) => {
+        tabBarIcon: ({ focused }) => {
+          const color = style.get(`color-tab-icon-${focused ? "active" : "inactive"}`).color;
           const size = 24;
+
           switch (route.name) {
             case "NewMain":
               return <HomeTabbarIcon size={size} color={color} />;
@@ -710,6 +711,35 @@ export const MainTabNavigation: FunctionComponent = () => {
               return <StakeTabbarIcon size={size} color={color} />;
           }
         },
+        tabBarLabel: ({ focused }) => {
+          var name = "";
+          switch (route.name) {
+            case "NewMain":
+              name = intl.formatMessage({ id: "tabs.main" });
+              break;
+            case "Stake":
+              name = intl.formatMessage({ id: "tabs.stake" });
+              break;
+            case "D-apps":
+              name = intl.formatMessage({ id: "tabs.d-apps" });
+              break;
+            case "History":
+              name = intl.formatMessage({ id: "tabs.history" });
+              break;
+            case "Setting":
+              name = intl.formatMessage({ id: "tabs.setting" });
+              break;
+          }
+          return (
+            <Text style={style.flatten([
+              "text-x-small-medium",
+              "text-center",
+              `color-tab-text-${focused ? "active" : "inactive"}` as any,
+            ])}>
+              {name}
+            </Text>
+          );
+        },
         tabBarButton: (props) => (
           <View
             style={{
@@ -717,6 +747,10 @@ export const MainTabNavigation: FunctionComponent = () => {
               flex: 1,
               justifyContent: "center",
               alignItems: "center",
+              borderTopWidth: 2,
+              borderColor: props.accessibilityState?.selected === true
+                ? style.get("color-tab-icon-active").color
+                : "transparent",
             }}
           >
             {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
@@ -734,15 +768,11 @@ export const MainTabNavigation: FunctionComponent = () => {
         ),
       })}
       tabBarOptions={{
-        activeTintColor: style.get("color-primary").color,
-        inactiveTintColor: style.get("color-text-black-very-very-low").color,
         style: {
           borderTopWidth: 1,
           borderTopColor: style.get("color-border").color,
           shadowColor: style.get("color-transparent").color,
           elevation: 0,
-          // paddingLeft: 30,
-          // paddingRight: 30,
         },
         showLabel: true,
       }}
@@ -753,24 +783,15 @@ export const MainTabNavigation: FunctionComponent = () => {
       <Tab.Screen
         name="NewMain"
         component={NewMainNavigation}
-        options={{
-          tabBarLabel: intl.formatMessage({ id: "tabs.main" }),
-        }}
       />
       <Tab.Screen
         name="Stake"
         component={StakingNavigation}
-        options={{
-          tabBarLabel: intl.formatMessage({ id: "tabs.stake" }),
-        }}
       />
       {dappsEnabled && (
         <Tab.Screen
           name="D-apps"
           component={WebNavigation}
-          options={{
-            tabBarLabel: intl.formatMessage({ id: "tabs.d-apps" }),
-          }}
         />
       )}
       <Tab.Screen
@@ -778,15 +799,11 @@ export const MainTabNavigation: FunctionComponent = () => {
         component={HistoryNavigation}
         options={{
           unmountOnBlur: true,
-          tabBarLabel: intl.formatMessage({ id: "tabs.history" }),
         }}
       />
       <Tab.Screen
         name="Setting"
         component={SettingsStackScreen}
-        options={{
-          tabBarLabel: intl.formatMessage({ id: "tabs.setting" }),
-        }}
       />
     </Tab.Navigator>
   );

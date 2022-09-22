@@ -245,5 +245,10 @@ export const AllColors = {
     "card-border": Colors["gray-70"],
     "card-background-header": Colors["gray-80"],
     "card-background": Colors["gray-90"],
+
+    "tab-icon-active": MainColors["primary"],
+    "tab-text-active": MainColors["primary"],
+    "tab-icon-inactive": Colors["gray-30"],
+    "tab-text-inactive": Colors["gray-30"],
   },
 };

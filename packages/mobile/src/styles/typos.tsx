@@ -1,5 +1,13 @@
 import { getPlatformFontWeight } from "./builder/utils";
 
+const XSmallTypos = {
+  "text-x-small-medium": {
+    fontSize: 10,
+    lineHeight: 12,
+    ...getPlatformFontWeight("500"),
+  },
+};
+
 const SmallTypos = {
   "text-small-regular": {
     fontSize: 12,
@@ -107,6 +115,7 @@ const XXXXLargeTypos = {
 };
 
 export const Typos = {
+  ...XSmallTypos,
   ...SmallTypos,
   ...BaseTypos,
   ...MediumTypos,
