@@ -29,26 +29,20 @@ export const formatDate = (date: Date) => {
   });
 };
 
-export const formatNumber = (value: string) => {
-  const replacedValue = value.split(",").join("");
+export const formatTextNumber = (value: string) => {
+  var replacedValue = value.split(",").join(".");
+  const idx = replacedValue.indexOf(".");
+  if (idx !== -1) {
+    replacedValue =
+      replacedValue.substring(0, idx)
+      + "."
+      + replacedValue
+        .substring(idx + 1, replacedValue.length)
+        .split(".")
+        .join("");
+  }
+
   return replacedValue;
-  // const numValue = Number(replacedValue);
-  // if (!numValue) {
-  //   return value;
-  // }
-
-  // const idx = replacedValue.indexOf(".");
-  // let fraction = "";
-  // if (idx !== -1) {
-  //   fraction = replacedValue.substring(
-  //     idx,
-  //     Math.min(idx + 4, replacedValue.length)
-  //   );
-  // }
-
-  // return (
-  //   numValue.toLocaleString("en-US", { maximumFractionDigits: 0 }) + fraction
-  // );
 };
 
 export const formatPercent = (value: any, hideSymbol: boolean = false) => {

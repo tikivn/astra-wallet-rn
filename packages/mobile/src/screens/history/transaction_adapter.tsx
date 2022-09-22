@@ -159,6 +159,7 @@ export function toUiItem(intl, bech32Address: string, txResponse: TxResponse): T
       break;
     }
     case "/ethermint.evm.v1.MsgEthereumTx":
+      action = intl.formatMessage({ id: "history.action.swap" });
       amount = getAmountFromRawLog(txResponse?.raw_log, "coinbase");
       break;
     case undefined:

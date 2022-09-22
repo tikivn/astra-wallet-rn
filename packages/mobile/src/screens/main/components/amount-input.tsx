@@ -9,7 +9,7 @@ import { useIntl } from "react-intl";
 import { NormalInput } from "../../../components/input/normal-input";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { Text, View, ViewStyle } from "react-native";
-import { formatNumber, MIN_AMOUNT } from "../../../common/utils";
+import { formatTextNumber, MIN_AMOUNT } from "../../../common/utils";
 
 export const AmountInput: FunctionComponent<{
   labelText?: string;
@@ -31,7 +31,7 @@ export const AmountInput: FunctionComponent<{
     const intl = useIntl();
     const feeUpdated = useRef(false);
 
-    const [amountText, setAmountText] = useState(formatNumber(amountConfig.amount));
+    const [amountText, setAmountText] = useState(formatTextNumber(amountConfig.amount));
     const [errorText, setErrorText] = useState("");
     const infoText = intl.formatMessage(
       { id: "component.amount.input.error.minimum" },
@@ -96,7 +96,7 @@ export const AmountInput: FunctionComponent<{
           info={infoText}
           error={errorText}
           onChangeText={(text) => {
-            setAmountText(formatNumber(text));
+            setAmountText(formatTextNumber(text));
           }}
           placeholder="0"
           keyboardType="numeric"
