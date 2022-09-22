@@ -4,17 +4,20 @@ const ButtonCustom = {
   "button-small-container": {
     height: 24,
     borderRadius: 4,
-    paddingHorizontal: 12,
+    paddingLeft: 12,
+    paddingRight: 12,
   },
   "button-medium-container": {
     height: 32,
     borderRadius: 4,
-    paddingHorizontal: 12,
+    paddingLeft: 12,
+    paddingRight: 12,
   },
   "button-large-container": {
     height: 40,
     borderRadius: 4,
-    paddingHorizontal: 12,
+    paddingLeft: 12,
+    paddingRight: 12,
   },
 
   "button-primary-solid-default": {

@@ -30,24 +30,18 @@ export const Approval = (props: ApprovalProps) => {
             text={intl.formatMessage({
               id: "swap.slippage.input.button.clear",
             })}
-            size="large"
             containerStyle={style.flatten([
-              "border-radius-4",
               "flex-1",
               "margin-right-8",
             ])}
             color="neutral"
-            style={style.flatten(["background-color-gray-70"])}
-            textStyle={style.flatten(["subtitle2"])}
             onPress={() => props.close && props.close()}
           />
           <Button
             text={intl.formatMessage({
               id: "swap.slippage.input.button.confirm",
             })}
-            size="large"
-            containerStyle={style.flatten(["border-radius-4", "flex-1"])}
-            textStyle={style.flatten(["subtitle2"])}
+            containerStyle={style.flatten(["flex-1"])}
             onPress={handleConfirm}
           />
         </View>

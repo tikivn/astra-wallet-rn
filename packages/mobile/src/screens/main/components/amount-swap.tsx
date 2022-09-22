@@ -146,13 +146,10 @@ export const AmountSwap: FunctionComponent<SwapAmountProps> = observer(
                 text={intl.formatMessage({
                   id: "swap.amount.swapAll",
                 })}
-                style={style.flatten(["width-56", "height-20", "margin-top-8"])}
-                size="large"
-                textStyle={style.flatten(["color-primary", "subtitle3"])}
+                mode="ghost"
+                size="medium"
                 containerStyle={style.flatten([
-                  "height-24",
-                  "border-radius-4",
-                  "background-color-transparent",
+                  "padding-right-0",
                 ])}
                 onPress={handleClickSwapAll}
               />

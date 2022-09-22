@@ -4,17 +4,20 @@ const V1ButtonCustom = {
   "button-small-container": {
     height: 24,
     borderRadius: 6,
-    paddingHorizontal: 12,
+    paddingLeft: 12,
+    paddingRight: 12,
   },
   "button-medium-container": {
     height: 36,
     borderRadius: 8,
-    paddingHorizontal: 12,
+    paddingLeft: 12,
+    paddingRight: 12,
   },
   "button-large-container": {
     height: 44,
     borderRadius: 12,
-    paddingHorizontal: 16,
+    paddingLeft: 16,
+    paddingRight: 16,
   },
 
   "button-primary-solid-default": {

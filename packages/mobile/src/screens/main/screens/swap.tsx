@@ -285,9 +285,6 @@ export const SwapScreen: FunctionComponent = observer(() => {
             text={intl.formatMessage({
               id: "swap.buttonText" + swapInfos.error,
             })}
-            size="large"
-            containerStyle={style.flatten(["border-radius-4"])}
-            textStyle={style.flatten(["subtitle2"])}
             disabled={!isReadyToSwap || !!swapInfos.error}
             onPress={handleClickContinue}
           />

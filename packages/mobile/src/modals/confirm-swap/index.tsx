@@ -204,7 +204,6 @@ export const ConfirmSwapModal: FunctionComponent<{
 
         <Button
           text="Confirm"
-          size="large"
           loading={loading}
           onPress={handleConfirmSwap}
         />
