@@ -30,12 +30,15 @@ cd packages/mobile/android/
 
 for UAT/RC:
 ```sh
+# default versionName: 1.0.0, versionCode 6
 ./gradlew assembleReleaseUAT
+# or
+./gradlew assembleReleaseUAT -PASTRA_WALLET_ANDROID_VERSION_NAME="0.20220923.0" -PASTRA_WALLET_ANDROID_VERSION_CODE=7
 ```
 
 for Release:
 ```sh
-./gradlew assembleRelease
+./gradlew assembleRelease -PASTRA_WALLET_ANDROID_VERSION_NAME="0.20220923.0" -PASTRA_WALLET_ANDROID_VERSION_CODE=7
 ```
 
 options for build apk: 

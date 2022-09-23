@@ -9,3 +9,13 @@ def getProp(key) {
 }
 
 ext.getProp = this.&getProp
+
+def getPropOrDefault(key, defaultVal) {
+  def val = getProp(key)
+  if (val == null || ((val instanceof String) && val.isEmpty())) {
+    return defaultVal
+  }
+  return val
+}
+
+ext.getPropOrDefault = this.&getPropOrDefault
