@@ -213,9 +213,8 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
         if (e?.message === "Request rejected") {
           return;
         }
-        transactionStore.rejectTransaction();
         console.log(e);
-        smartNavigation.navigateSmart("NewHome", {});
+        transactionStore.updateTxState("failure");
       }
     }
   };

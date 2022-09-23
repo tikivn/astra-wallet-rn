@@ -40,6 +40,7 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [inputDataValid, setInputDataValid] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const getInputLabel = () => {
     let title;
@@ -109,11 +110,13 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
   };
 
   const onProceed = async () => {
+    setIsLoading(true);
     const index = keyRingStore.multiKeyStoreInfo.findIndex(
       (keyStore: any) => keyStore.selected
     );
 
     if (index === -1) {
+      setIsLoading(false);
       return;
     }
 
@@ -126,6 +129,7 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
         error: intl.formatMessage({ id: "common.text.wrongPassword" }),
       });
       showError();
+      setIsLoading(false);
       return;
     }
 
@@ -136,12 +140,14 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
 
     switch (type) {
       case "updatePassword":
+        setIsLoading(false);
         smartNavigation.navigate("Settings.NewPasswordInput", {
           currentPassword: password,
         });
         break;
       case "viewMnemonic":
         const privateData = await keyRingStore.showKeyRing(index, password);
+        setIsLoading(false);
         smartNavigation.replaceSmart("Setting.ViewPrivateData", {
           privateData,
           privateDataType: keyRingStore.keyRingType,
@@ -161,7 +167,8 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
           analyticsStore.setUserProperties({
             astra_hub_from_address: null,
           });
-        
+
+          setIsLoading(false);
           smartNavigation.reset({
             index: 0,
             routes: [
@@ -170,6 +177,9 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
               },
             ],
           });
+        }
+        else {
+          setIsLoading(false);
         }
         break;
     }
@@ -288,6 +298,7 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
           text={getButtonText()}
           onPress={onProceed}
           disabled={!inputDataValid}
+          loading={isLoading}
           color={type === "deleteWallet" ? "negative" : "primary"}
         />
         <AvoidingKeyboardBottomView />

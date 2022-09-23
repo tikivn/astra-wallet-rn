@@ -127,13 +127,9 @@ export const CommissionsCard: FunctionComponent<{
           {showStake ? (
             <Button
               containerStyle={style.flatten([
-                "border-radius-4",
-                "height-44",
                 "margin-bottom-12",
               ])}
-              textStyle={style.flatten(["subtitle2"])}
               text={intl.formatMessage({ id: "validator.details.invest" })}
-              size="large"
               onPress={() => {
                 smartNavigation.navigateSmart("Delegate", {
                   validatorAddress,

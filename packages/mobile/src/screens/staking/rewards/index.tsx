@@ -164,9 +164,8 @@ export const StakingRewardScreen: FunctionComponent = () => {
       if (e?.message === "Request rejected") {
         return;
       }
-      transactionStore.rejectTransaction();
       console.log("got e", e);
-      smartNavigation.navigateSmart("NewHome", {});
+      transactionStore.updateTxState("failure");
     }
   };
 

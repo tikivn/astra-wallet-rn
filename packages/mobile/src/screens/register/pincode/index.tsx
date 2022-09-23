@@ -267,6 +267,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
           <View style={{ flexDirection: "row", alignContent: "stretch", alignItems: "center", marginBottom: 16, }}>
             <BiometricsIcon
               color={style.get("color-gray-10").color}
+              size={32}
               type={
                 keychainStore.isBiometryType === BIOMETRY_TYPE.FACE
                   || keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID

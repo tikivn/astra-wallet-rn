@@ -11,7 +11,7 @@ import {
 } from "../../../components/foundation-view/step-view";
 import { useStore } from "../../../stores";
 import { TxState } from "../../../stores/transaction";
-import { Typos, Colors, useStyle } from "../../../styles";
+import { useStyle } from "../../../styles";
 import { Msg as AminoMsg } from "@cosmjs/launchpad";
 import { formatCoin } from "../../../common/utils";
 

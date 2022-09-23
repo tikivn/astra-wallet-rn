@@ -171,9 +171,8 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
         if (e?.message === "Request rejected") {
           return;
         }
-        transactionStore.rejectTransaction();
         console.log("__DEBUG_ sendErr: ", e);
-        smartNavigation.navigateSmart("NewHome", {});
+        transactionStore.updateTxState("failure");
       }
     }
   };
