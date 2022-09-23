@@ -22,7 +22,7 @@ import {
 } from "../../../components/foundation-view/list-row-view";
 import { AlertInline } from "../../../components";
 import { useIntl } from "react-intl";
-import { formatCoin, formatPercent } from "../../../common/utils";
+import { formatCoin, formatPercent, TX_GAS_DEFAULT } from "../../../common/utils";
 import { MsgDelegate } from "@keplr-wallet/proto-types/cosmos/staking/v1beta1/tx";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -75,8 +75,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.recipientConfig.error ??
     sendConfigs.amountConfig.error ??
     sendConfigs.memoConfig.error ??
-    sendConfigs.gasConfig.error/* ??
-    sendConfigs.feeConfig.error;*/
+    sendConfigs.gasConfig.error;
   const txStateIsValid = sendConfigError == null;
 
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
@@ -108,10 +107,8 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.amountConfig,
     validatorAddress,
   );
-  if (!sendConfigs.feeConfig.fee || sendConfigs.feeConfig.fee?.toDec().isZero()) {
-    sendConfigs.gasConfig.setGas(gasLimit);
-    sendConfigs.feeConfig.setFeeType(feeType);
-  }
+  sendConfigs.gasConfig.setGas(gasLimit);
+  sendConfigs.feeConfig.setFeeType(feeType);
   const feeText = formatCoin(sendConfigs.feeConfig.fee);
 
   const chainInfo = chainStore.getChain(chainStore.current.chainId).raw;
@@ -290,7 +287,7 @@ const simulateDelegateGasFee = (
   }, [amountConfig.amount]);
 
   const chainId = chainStore.current.chainId;
-  const [gasLimit, setGasLimit] = useState(250000);
+  const [gasLimit, setGasLimit] = useState(TX_GAS_DEFAULT.delegate);
 
   const simulate = async () => {
     const account = accountStore.getAccount(chainId);
@@ -310,22 +307,29 @@ const simulateDelegateGasFee = (
         },
       },
     };
-    const { gasUsed } = await account.cosmos.simulateTx(
-      [{
-        typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
-        value: MsgDelegate.encode({
-          delegatorAddress: msg.value.delegator_address,
-          validatorAddress: msg.value.validator_address,
-          amount: msg.value.amount,
-        }).finish(),
-      }],
-      { amount: [] },
-    );
 
-    const gasLimit = Math.ceil(gasUsed * 1.3);
-    console.log("__DEBUG__ simulate gasUsed", gasUsed);
-    console.log("__DEBUG__ simulate gasLimit", gasLimit);
-    setGasLimit(gasLimit);
+    try {
+      const { gasUsed } = await account.cosmos.simulateTx(
+        [{
+          typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
+          value: MsgDelegate.encode({
+            delegatorAddress: msg.value.delegator_address,
+            validatorAddress: msg.value.validator_address,
+            amount: msg.value.amount,
+          }).finish(),
+        }],
+        { amount: [] },
+      );
+
+      const gasLimit = Math.ceil(gasUsed * 1.3);
+      console.log("__DEBUG__ simulate gasUsed", gasUsed);
+      console.log("__DEBUG__ simulate gasLimit", gasLimit);
+      setGasLimit(gasLimit);
+    }
+    catch (e) {
+      console.log("simulateDelegateGasFee error", e);
+      setGasLimit(TX_GAS_DEFAULT.delegate); // default gas
+    }
   }
 
   const feeType = "average" as FeeType;

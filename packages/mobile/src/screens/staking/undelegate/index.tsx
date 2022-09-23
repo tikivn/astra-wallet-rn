@@ -26,7 +26,7 @@ import {
   buildRightColumn,
 } from "../../../components/foundation-view/item-row";
 import { useIntl } from "react-intl";
-import { formatCoin, formatPercent } from "../../../common/utils";
+import { formatCoin, formatPercent, TX_GAS_DEFAULT } from "../../../common/utils";
 import { MsgUndelegate } from "@keplr-wallet/proto-types/cosmos/staking/v1beta1/tx";
 import { CoinPretty, Dec, DecUtils, IntPretty } from "@keplr-wallet/unit";
 import { IRow, ListRowView } from "../../../components";
@@ -76,14 +76,14 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
 
   const validatorThumbnail = validator
     ? queries.cosmos.queryValidators
-        .getQueryStatus(Staking.BondStatus.Bonded)
-        .getValidatorThumbnail(validatorAddress) ||
-      queries.cosmos.queryValidators
-        .getQueryStatus(Staking.BondStatus.Unbonding)
-        .getValidatorThumbnail(validatorAddress) ||
-      queries.cosmos.queryValidators
-        .getQueryStatus(Staking.BondStatus.Unbonded)
-        .getValidatorThumbnail(validatorAddress)
+      .getQueryStatus(Staking.BondStatus.Bonded)
+      .getValidatorThumbnail(validatorAddress) ||
+    queries.cosmos.queryValidators
+      .getQueryStatus(Staking.BondStatus.Unbonding)
+      .getValidatorThumbnail(validatorAddress) ||
+    queries.cosmos.queryValidators
+      .getQueryStatus(Staking.BondStatus.Unbonded)
+      .getValidatorThumbnail(validatorAddress)
     : undefined;
 
   const staked = queries.cosmos.queryDelegations
@@ -107,8 +107,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.recipientConfig.error ??
     sendConfigs.amountConfig.error ??
     sendConfigs.memoConfig.error ??
-    sendConfigs.gasConfig.error ??
-    sendConfigs.feeConfig.error;
+    sendConfigs.gasConfig.error;
   const txStateIsValid = sendConfigError == null;
 
   const { gasPrice, gasLimit, feeType } = simulateUndelegateGasFee(
@@ -327,7 +326,7 @@ const simulateUndelegateGasFee = (
   }, [amountConfig.amount]);
 
   const chainId = chainStore.current.chainId;
-  const [gasLimit, setGasLimit] = useState(250000);
+  const [gasLimit, setGasLimit] = useState(TX_GAS_DEFAULT.undelegate);
 
   const simulate = async () => {
     const account = accountStore.getAccount(chainId);
@@ -349,24 +348,30 @@ const simulateUndelegateGasFee = (
         },
       },
     };
-    const { gasUsed } = await account.cosmos.simulateTx(
-      [
-        {
-          typeUrl: "/cosmos.staking.v1beta1.MsgUndelegate",
-          value: MsgUndelegate.encode({
-            delegatorAddress: msg.value.delegator_address,
-            validatorAddress: msg.value.validator_address,
-            amount: msg.value.amount,
-          }).finish(),
-        },
-      ],
-      { amount: [] }
-    );
+    try {
+      const { gasUsed } = await account.cosmos.simulateTx(
+        [
+          {
+            typeUrl: "/cosmos.staking.v1beta1.MsgUndelegate",
+            value: MsgUndelegate.encode({
+              delegatorAddress: msg.value.delegator_address,
+              validatorAddress: msg.value.validator_address,
+              amount: msg.value.amount,
+            }).finish(),
+          },
+        ],
+        { amount: [] }
+      );
 
-    const gasLimit = Math.ceil(gasUsed * 1.3);
-    console.log("__DEBUG__ simulate gasUsed", gasUsed);
-    console.log("__DEBUG__ simulate gasLimit", gasLimit);
-    setGasLimit(gasLimit);
+      const gasLimit = Math.ceil(gasUsed * 1.3);
+      console.log("__DEBUG__ simulate gasUsed", gasUsed);
+      console.log("__DEBUG__ simulate gasLimit", gasLimit);
+      setGasLimit(gasLimit);
+    }
+    catch (e) {
+      console.log("simulateUndelegateGasFee error", e);
+      setGasLimit(TX_GAS_DEFAULT.undelegate); // default gas
+    }
   };
 
   const feeType = "average" as FeeType;

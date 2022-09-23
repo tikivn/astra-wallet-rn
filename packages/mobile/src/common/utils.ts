@@ -10,6 +10,13 @@ export const LOCALE_FORMAT = {
     return value >= 1000 ? 0 : value > 1 ? 3 : 6;
   },
 };
+export const TX_GAS_DEFAULT = {
+  send: 200000,
+  delegate: 250000,
+  undelegate: 250000,
+  redelegate: 250000,
+  withdraw: 250000,
+}
 
 export const formatCoin = (coin?: CoinPretty, hideDenom: boolean = false) => {
   if (!coin) {

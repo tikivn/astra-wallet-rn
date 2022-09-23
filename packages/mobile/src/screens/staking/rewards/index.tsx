@@ -9,7 +9,7 @@ import { RewardDetails } from "./rewards";
 import { FeeType, useSendTxConfig } from "@keplr-wallet/hooks";
 import { EthereumEndpoint } from "../../../config";
 import { useIntl } from "react-intl";
-import { formatCoin, MIN_REWARDS_AMOUNT } from "../../../common/utils";
+import { formatCoin, MIN_REWARDS_AMOUNT, TX_GAS_DEFAULT } from "../../../common/utils";
 import { MsgWithdrawDelegatorReward } from "@keplr-wallet/proto-types/cosmos/distribution/v1beta1/tx";
 import {
   AccountStore,
@@ -86,10 +86,10 @@ export const StakingRewardScreen: FunctionComponent = () => {
 
   const stakingReward = stakableRewardsList
     ? stakableRewardsList
-        ?.map(({ rewards }) => rewards)
-        .reduce((oldRewards, newRewards) => {
-          return oldRewards.add(newRewards);
-        })
+      ?.map(({ rewards }) => rewards)
+      .reduce((oldRewards, newRewards) => {
+        return oldRewards.add(newRewards);
+      })
     : undefined;
 
   const validatorAddresses = stakableRewardsList?.map(
@@ -229,7 +229,7 @@ const simulateWithdrawRewardGasFee = (
   }, []);
 
   const chainId = chainStore.current.chainId;
-  const [gasLimit, setGasLimit] = useState(250000);
+  const [gasLimit, setGasLimit] = useState(TX_GAS_DEFAULT.withdraw);
 
   const simulate = async () => {
     const account = accountStore.getAccount(chainId);
@@ -243,23 +243,29 @@ const simulateWithdrawRewardGasFee = (
         },
       };
     });
-    const { gasUsed } = await account.cosmos.simulateTx(
-      msgs.map((msg) => {
-        return {
-          typeUrl: "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
-          value: MsgWithdrawDelegatorReward.encode({
-            delegatorAddress: msg.value.delegator_address,
-            validatorAddress: msg.value.validator_address,
-          }).finish(),
-        };
-      }),
-      { amount: [] }
-    );
+    try {
+      const { gasUsed } = await account.cosmos.simulateTx(
+        msgs.map((msg) => {
+          return {
+            typeUrl: "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
+            value: MsgWithdrawDelegatorReward.encode({
+              delegatorAddress: msg.value.delegator_address,
+              validatorAddress: msg.value.validator_address,
+            }).finish(),
+          };
+        }),
+        { amount: [] }
+      );
 
-    const gasLimit = Math.ceil(gasUsed * 1.3);
-    console.log("__DEBUG__ simulate gasUsed", gasUsed);
-    console.log("__DEBUG__ simulate gasLimit", gasLimit);
-    setGasLimit(gasLimit);
+      const gasLimit = Math.ceil(gasUsed * 1.3);
+      console.log("__DEBUG__ simulate gasUsed", gasUsed);
+      console.log("__DEBUG__ simulate gasLimit", gasLimit);
+      setGasLimit(gasLimit);
+    }
+    catch (e) {
+      console.log("simulateWithdrawRewardGasFee error", e);
+      setGasLimit(TX_GAS_DEFAULT.withdraw); // default gas
+    }
   };
 
   const feeType = "average" as FeeType;

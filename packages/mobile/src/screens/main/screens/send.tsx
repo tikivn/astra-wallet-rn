@@ -14,7 +14,7 @@ import { useIntl } from "react-intl";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 import { buildLeftColumn, buildRightColumn, IRow, ListRowView } from "../../../components";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { formatCoin } from "../../../common/utils";
+import { formatCoin, TX_GAS_DEFAULT } from "../../../common/utils";
 import { MsgSend } from "@keplr-wallet/proto-types/cosmos/bank/v1beta1/tx";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { AccountStore, CosmosAccount, CosmwasmAccount, SecretAccount } from "@keplr-wallet/stores";
@@ -88,8 +88,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
     sendConfigs.recipientConfig.error ??
     sendConfigs.amountConfig.error ??
     sendConfigs.memoConfig.error ??
-    sendConfigs.gasConfig.error/* ??
-    sendConfigs.feeConfig.error;*/
+    sendConfigs.gasConfig.error;
   console.log("__DEBUG__ error === ", sendConfigError);
 
   const txStateIsValid = sendConfigError == null;
@@ -231,7 +230,7 @@ const simulateSendGasFee = (
   }, [amountConfig.amount]);
 
   const chainId = chainStore.current.chainId;
-  const [gasLimit, setGasLimit] = useState(200000);
+  const [gasLimit, setGasLimit] = useState(TX_GAS_DEFAULT.send);
 
   const simulate = async () => {
     const account = accountStore.getAccount(chainId);
@@ -256,22 +255,28 @@ const simulateSendGasFee = (
         ],
       },
     };
-    const { gasUsed } = await account.cosmos.simulateTx(
-      [{
-        typeUrl: "/cosmos.bank.v1beta1.MsgSend",
-        value: MsgSend.encode({
-          fromAddress: msg.value.from_address,
-          toAddress: msg.value.to_address,
-          amount: msg.value.amount,
-        }).finish(),
-      }],
-      { amount: [] },
-    );
+    try {
+      const { gasUsed } = await account.cosmos.simulateTx(
+        [{
+          typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+          value: MsgSend.encode({
+            fromAddress: msg.value.from_address,
+            toAddress: msg.value.to_address,
+            amount: msg.value.amount,
+          }).finish(),
+        }],
+        { amount: [] },
+      );
 
-    const gasLimit = Math.ceil(gasUsed * 1.3);
-    console.log("__DEBUG__ simulate gasUsed", gasUsed);
-    console.log("__DEBUG__ simulate gasLimit", gasLimit);
-    setGasLimit(gasLimit);
+      const gasLimit = Math.ceil(gasUsed * 1.3);
+      console.log("__DEBUG__ simulate gasUsed", gasUsed);
+      console.log("__DEBUG__ simulate gasLimit", gasLimit);
+      setGasLimit(gasLimit);
+    }
+    catch (e) {
+      console.log("simulateSendGasFee error", e);
+      setGasLimit(TX_GAS_DEFAULT.send); // default gas
+    }
   }
 
   const feeType = "average" as FeeType;

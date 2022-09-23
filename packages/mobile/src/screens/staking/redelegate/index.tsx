@@ -16,7 +16,7 @@ import {
 } from "../../../components/foundation-view/item-row";
 import { useIntl } from "react-intl";
 import { SelectValidatorItem } from "./select-validator";
-import { formatCoin, formatPercent } from "../../../common/utils";
+import { formatCoin, formatPercent, TX_GAS_DEFAULT } from "../../../common/utils";
 import { MsgBeginRedelegate } from "@keplr-wallet/proto-types/cosmos/staking/v1beta1/tx";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -111,8 +111,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.recipientConfig.error ??
     sendConfigs.amountConfig.error ??
     sendConfigs.memoConfig.error ??
-    sendConfigs.gasConfig.error ??
-    sendConfigs.feeConfig.error;
+    sendConfigs.gasConfig.error;
   const txStateIsValid = sendConfigError == null;
 
   const { gasPrice, gasLimit, feeType } = simulateRedelegateGasFee(
@@ -235,7 +234,6 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           containerStyle={style.flatten(["margin-top-8", "margin-bottom-24"])}
           name={srcValidator ? srcValidator.description.moniker : "..."}
           thumbnail={srcValidatorThumbnail}
-          // value={formatCoin(staked)}
         />
         <SelectValidatorItem
           currentValidator={validatorAddress}
@@ -248,7 +246,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           amountConfig={sendConfigs.amountConfig}
           availableAmount={staked}
           containerStyle={style.flatten(["margin-top-24"])}
-          />
+        />
         <ListRowView
           rows={rows}
           style={{ paddingHorizontal: 0, paddingVertical: 0, marginTop: 16 }}
@@ -287,7 +285,7 @@ const simulateRedelegateGasFee = (
   }, [amountConfig.amount]);
 
   const chainId = chainStore.current.chainId;
-  const [gasLimit, setGasLimit] = useState(250000);
+  const [gasLimit, setGasLimit] = useState(TX_GAS_DEFAULT.redelegate);
 
   const simulate = async () => {
     const account = accountStore.getAccount(chainId);
@@ -308,23 +306,29 @@ const simulateRedelegateGasFee = (
         },
       },
     };
-    const { gasUsed } = await account.cosmos.simulateTx(
-      [{
-        typeUrl: "/cosmos.staking.v1beta1.MsgBeginRedelegate",
-        value: MsgBeginRedelegate.encode({
-          delegatorAddress: msg.value.delegator_address,
-          validatorSrcAddress: msg.value.validator_src_address,
-          validatorDstAddress: msg.value.validator_dst_address,
-          amount: msg.value.amount,
-        }).finish(),
-      }],
-      { amount: [] },
-    );
+    try {
+      const { gasUsed } = await account.cosmos.simulateTx(
+        [{
+          typeUrl: "/cosmos.staking.v1beta1.MsgBeginRedelegate",
+          value: MsgBeginRedelegate.encode({
+            delegatorAddress: msg.value.delegator_address,
+            validatorSrcAddress: msg.value.validator_src_address,
+            validatorDstAddress: msg.value.validator_dst_address,
+            amount: msg.value.amount,
+          }).finish(),
+        }],
+        { amount: [] },
+      );
 
-    const gasLimit = Math.ceil(gasUsed * 1.3);
-    console.log("__DEBUG__ simulate gasUsed", gasUsed);
-    console.log("__DEBUG__ simulate gasLimit", gasLimit);
-    setGasLimit(gasLimit);
+      const gasLimit = Math.ceil(gasUsed * 1.3);
+      console.log("__DEBUG__ simulate gasUsed", gasUsed);
+      console.log("__DEBUG__ simulate gasLimit", gasLimit);
+      setGasLimit(gasLimit);
+    }
+    catch (e) {
+      console.log("simulateRedelegateGasFee error", e);
+      setGasLimit(TX_GAS_DEFAULT.redelegate); // default gas
+    }
   }
 
   const feeType = "average" as FeeType;
