@@ -87,7 +87,7 @@ import { useStyle } from "../../../styles";
         <View
           style={StyleSheet.flatten([
             style.flatten([ 
-              "background-color-background-secondary",
+              "background-color-card-background",
               "height-48",
               "padding-left-16",
               "flex-row",

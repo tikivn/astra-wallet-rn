@@ -287,7 +287,7 @@ const simulateRedelegateGasFee = (
   }, [amountConfig.amount]);
 
   const chainId = chainStore.current.chainId;
-  const [gasLimit, setGasLimit] = useState(0);
+  const [gasLimit, setGasLimit] = useState(250000);
 
   const simulate = async () => {
     const account = accountStore.getAccount(chainId);

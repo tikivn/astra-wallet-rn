@@ -80,19 +80,16 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
     accountStore,
     sendConfigs.amountConfig,
   );
-  console.log("sendConfigs.feeConfig.fee", sendConfigs.feeConfig.fee);
-  if (!sendConfigs.feeConfig.fee || sendConfigs.feeConfig.fee?.toDec().isZero()) {
-    sendConfigs.gasConfig.setGas(gasLimit);
-    sendConfigs.feeConfig.setFeeType(feeType);
-  }
+  sendConfigs.gasConfig.setGas(gasLimit);
+  sendConfigs.feeConfig.setFeeType(feeType);
   const feeText = formatCoin(sendConfigs.feeConfig.fee);
 
   const sendConfigError =
     sendConfigs.recipientConfig.error ??
     sendConfigs.amountConfig.error ??
     sendConfigs.memoConfig.error ??
-    sendConfigs.gasConfig.error ??
-    sendConfigs.feeConfig.error;
+    sendConfigs.gasConfig.error/* ??
+    sendConfigs.feeConfig.error;*/
   console.log("__DEBUG__ error === ", sendConfigError);
 
   const txStateIsValid = sendConfigError == null;
@@ -234,7 +231,7 @@ const simulateSendGasFee = (
   }, [amountConfig.amount]);
 
   const chainId = chainStore.current.chainId;
-  const [gasLimit, setGasLimit] = useState(0);
+  const [gasLimit, setGasLimit] = useState(200000);
 
   const simulate = async () => {
     const account = accountStore.getAccount(chainId);

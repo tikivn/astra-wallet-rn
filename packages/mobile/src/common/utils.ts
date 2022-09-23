@@ -3,6 +3,13 @@ import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
 export const MIN_PASSWORD_LENGTH = 8;
 export const MIN_AMOUNT = 10;
 export const MIN_REWARDS_AMOUNT = 0.001;
+export const LOCALE_FORMAT = {
+  locale: "en-US",
+  fractionDelimitter: ".",
+  maximumFractionDigits: (value: number): number => {
+    return value >= 1000 ? 0 : value > 1 ? 3 : 6;
+  },
+};
 
 export const formatCoin = (coin?: CoinPretty, hideDenom: boolean = false) => {
   if (!coin) {
@@ -10,8 +17,30 @@ export const formatCoin = (coin?: CoinPretty, hideDenom: boolean = false) => {
   }
 
   const value = Number(coin.toDec());
-  const maximumFractionDigits = value >= 1000 ? 0 : value > 1 ? 3 : 6;
-  let formattedText = value.toLocaleString("en-US", { maximumFractionDigits });
+  let formattedText = value.toLocaleString(
+    LOCALE_FORMAT.locale,
+    { minimumFractionDigits: 18 }
+  );
+
+  // Prevent rounded value
+  const maximumFractionDigits = LOCALE_FORMAT.maximumFractionDigits(value);
+  const parts = formattedText.split(LOCALE_FORMAT.fractionDelimitter);
+
+  if (maximumFractionDigits != 0) {
+    formattedText =
+      parts[0]
+      + LOCALE_FORMAT.fractionDelimitter
+      + parts[1].substring(0, maximumFractionDigits);
+  }
+  else {
+    formattedText = parts[0];
+  }
+
+  formattedText = formattedText.replace(
+    LOCALE_FORMAT.fractionDelimitter + "0".repeat(maximumFractionDigits),
+    ""
+  );
+
   if (!hideDenom) {
     formattedText += " " + coin.denom.toUpperCase();
   }
@@ -30,15 +59,15 @@ export const formatDate = (date: Date) => {
 };
 
 export const formatTextNumber = (value: string) => {
-  var replacedValue = value.split(",").join(".");
-  const idx = replacedValue.indexOf(".");
+  var replacedValue = value.split(",").join(LOCALE_FORMAT.fractionDelimitter);
+  const idx = replacedValue.indexOf(LOCALE_FORMAT.fractionDelimitter);
   if (idx !== -1) {
     replacedValue =
       replacedValue.substring(0, idx)
-      + "."
+      + LOCALE_FORMAT.fractionDelimitter
       + replacedValue
         .substring(idx + 1, replacedValue.length)
-        .split(".")
+        .split(LOCALE_FORMAT.fractionDelimitter)
         .join("");
   }
 

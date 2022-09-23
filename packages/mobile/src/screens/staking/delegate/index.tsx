@@ -75,8 +75,8 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.recipientConfig.error ??
     sendConfigs.amountConfig.error ??
     sendConfigs.memoConfig.error ??
-    sendConfigs.gasConfig.error ??
-    sendConfigs.feeConfig.error;
+    sendConfigs.gasConfig.error/* ??
+    sendConfigs.feeConfig.error;*/
   const txStateIsValid = sendConfigError == null;
 
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
@@ -290,7 +290,7 @@ const simulateDelegateGasFee = (
   }, [amountConfig.amount]);
 
   const chainId = chainStore.current.chainId;
-  const [gasLimit, setGasLimit] = useState(0);
+  const [gasLimit, setGasLimit] = useState(250000);
 
   const simulate = async () => {
     const account = accountStore.getAccount(chainId);

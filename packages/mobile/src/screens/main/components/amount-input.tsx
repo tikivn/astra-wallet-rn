@@ -18,122 +18,125 @@ export const AmountInput: FunctionComponent<{
   availableAmount?: CoinPretty;
   fee?: CoinPretty;
   containerStyle?: ViewStyle;
-}> = observer(
-  ({
-    labelText,
-    hideDenom,
-    amountConfig,
-    availableAmount,
-    fee,
-    containerStyle,
-  }) => {
-    const style = useStyle();
-    const intl = useIntl();
-    const feeUpdated = useRef(false);
+}> = observer(({
+  labelText,
+  hideDenom,
+  amountConfig,
+  availableAmount,
+  fee,
+  containerStyle,
+}) => {
+  const style = useStyle();
+  const intl = useIntl();
+  const feeUpdated = useRef(false);
 
-    const [amountText, setAmountText] = useState(formatTextNumber(amountConfig.amount));
-    const [errorText, setErrorText] = useState("");
-    const infoText = intl.formatMessage(
-      { id: "component.amount.input.error.minimum" },
-      { amount: MIN_AMOUNT, denom: amountConfig.sendCurrency.coinDenom },
-    );
+  const [amountText, setAmountText] = useState(formatTextNumber(amountConfig.amount));
+  const [errorText, setErrorText] = useState("");
+  const infoText = intl.formatMessage(
+    { id: "component.amount.input.error.minimum" },
+    { amount: MIN_AMOUNT, denom: amountConfig.sendCurrency.coinDenom },
+  );
 
-    useEffect(() => {
-      onChangeTextHandler(amountText);
-    }, [amountText]);
+  useEffect(() => {
+    onChangeTextHandler(amountText);
+  }, [amountText]);
 
-    useEffect(() => {
-      console.log("fee", fee?.toDec().toString());
-      console.log("feeUpdated", feeUpdated);
-      const amount = new Dec(Number(amountConfig.amount));
-      if (!feeUpdated.current && amount.gt(new Dec(0)) && fee?.toDec().gt(new Dec(0))) {
-        feeUpdated.current = true;
+  useEffect(() => {
+    console.log("fee", fee?.toDec().toString());
+    console.log("feeUpdated", feeUpdated);
+    const amount = new Dec(Number(amountConfig.amount));
+    if (!feeUpdated.current && amount.gt(new Dec(0)) && fee?.toDec().gt(new Dec(0))) {
+      feeUpdated.current = true;
 
-        if (availableAmount) {
-          const maxAvailableAmount = availableAmount.sub(fee).toDec();
-          if (amount.gt(maxAvailableAmount)) {
-            setAmountText(Number(maxAvailableAmount.toString(3)).toString());
-          }
+      if (availableAmount) {
+        const maxAvailableAmount = availableAmount.sub(fee).toDec();
+        if (amount.gt(maxAvailableAmount)) {
+          setAmountText(Number(maxAvailableAmount).toString());
         }
       }
-    }, [fee]);
+    }
+  }, [fee]);
 
-    function onChangeTextHandler(amountText: string) {
-      const text = amountText.split(",").join("");
-      amountConfig.setAmount(text);
+  function onChangeTextHandler(amountText: string) {
+    const text = amountText.split(",").join("");
+    amountConfig.setAmount(text);
 
-      const amount = Number(text) ?? 0;
+    const amount = Number(text) ?? 0;
 
-      if (text.length === 0) {
-        setErrorText("");
-        return;
-      }
-
-      if (!amount || amount < 0) {
-        setErrorText(intl.formatMessage({ id: "component.amount.input.error.invalid" }));
-        return;
-      }
-
-      if (amount < MIN_AMOUNT) {
-        setErrorText(intl.formatMessage(
-          { id: "component.amount.input.error.minimum" },
-          { amount: MIN_AMOUNT, denom: amountConfig.sendCurrency.coinDenom },
-        ));
-      }
-      else if (availableAmount && availableAmount.toDec().lt(new Dec(amount))) {
-        setErrorText(intl.formatMessage({ id: "component.amount.input.error.insufficient" }));
-      }
-      else {
-        setErrorText("");
-      }
+    if (text.length === 0) {
+      setErrorText("");
+      return;
     }
 
-    return (
-      <View style={containerStyle}>
-        <NormalInput
-          value={amountText}
-          label={labelText}
-          info={infoText}
-          error={errorText}
-          onChangeText={(text) => {
-            setAmountText(formatTextNumber(text));
-          }}
-          placeholder="0"
-          keyboardType="numeric"
-          rightView={availableAmount && (
-            <View style={{ flexDirection: "row", marginLeft: 16, alignItems: "center" }}>
-              {!hideDenom && (
-                <Text
-                  style={style.flatten([
-                    "text-base-regular",
-                    "color-gray-50",
-                    "margin-right-16",
-                  ])}
-                >
-                  {amountConfig.sendCurrency.coinDenom}
-                </Text>
-              )}
-              <Button text={intl.formatMessage({ id: "component.amount.input.max" })}
-                size="medium"
-                mode="ghost"
-                onPress={() => {
-                  if (availableAmount) {
-                    let maxAmount: CoinPretty;
-                    if (fee) {
-                      maxAmount = availableAmount.sub(fee);
-                    }
-                    else {
-                      maxAmount = availableAmount;
-                    }
-                    setAmountText(Number(maxAmount.toDec().toString(3)).toString());
-                  }
-                }}
-              />
-            </View>
-          )}
-          style={{ marginBottom: (errorText || infoText) ? 24 : 0 }}
-        />
-      </View>
-    );
+    if (!amount || amount < 0) {
+      setErrorText(intl.formatMessage({ id: "component.amount.input.error.invalid" }));
+      return;
+    }
+
+    if (amount < MIN_AMOUNT) {
+      setErrorText(intl.formatMessage(
+        { id: "component.amount.input.error.minimum" },
+        { amount: MIN_AMOUNT, denom: amountConfig.sendCurrency.coinDenom },
+      ));
+    }
+    else if (availableAmount && availableAmount.toDec().lt(new Dec(amount))) {
+      setErrorText(intl.formatMessage({ id: "component.amount.input.error.insufficient" }));
+    }
+    else {
+      setErrorText("");
+    }
   }
+
+  const onMaxHandler = () => {
+    if (!availableAmount) {
+      return;
+    }
+
+    let maxAmount: CoinPretty;
+    if (fee) {
+      maxAmount = availableAmount.sub(fee);
+    }
+    else {
+      maxAmount = availableAmount;
+    }
+    setAmountText(Number(maxAmount.toDec()).toString());
+  };
+
+  return (
+    <View style={containerStyle}>
+      <NormalInput
+        value={amountText}
+        label={labelText}
+        info={infoText}
+        error={errorText}
+        onChangeText={(text) => {
+          setAmountText(formatTextNumber(text));
+        }}
+        placeholder="0"
+        keyboardType="numeric"
+        rightView={availableAmount && (
+          <View style={{ flexDirection: "row", marginLeft: 16, alignItems: "center" }}>
+            {!hideDenom && (
+              <Text
+                style={style.flatten([
+                  "text-base-regular",
+                  "color-gray-50",
+                  "margin-right-16",
+                ])}
+              >
+                {amountConfig.sendCurrency.coinDenom}
+              </Text>
+            )}
+            <Button text={intl.formatMessage({ id: "component.amount.input.max" })}
+              size="medium"
+              mode="ghost"
+              onPress={onMaxHandler}
+            />
+          </View>
+        )}
+        style={{ marginBottom: (errorText || infoText) ? 24 : 0 }}
+      />
+    </View>
+  );
+}
 );
