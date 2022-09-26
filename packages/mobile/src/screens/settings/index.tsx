@@ -26,7 +26,12 @@ import { Toggle } from "../../components/toggle";
 import { BIOMETRY_TYPE } from "react-native-keychain";
 
 export const SettingsScreen: FunctionComponent = observer(() => {
-  const { keyRingStore, signClientStore, keychainStore } = useStore();
+  const {
+    keyRingStore,
+    signClientStore,
+    keychainStore,
+    chainStore,
+  } = useStore();
 
   const connect = signClientStore.sessions.length;
 
@@ -44,6 +49,8 @@ export const SettingsScreen: FunctionComponent = observer(() => {
     ]),
     labelStyle: style.flatten(["margin-left-12"]),
   };
+  const documentsUrl = chainStore.getChain(chainStore.current.chainId).raw
+    .documentsUrl;
   const route = useRoute<
     RouteProp<
       Record<
@@ -141,14 +148,13 @@ export const SettingsScreen: FunctionComponent = observer(() => {
             <View style={style.get("margin-top-8")}>
               <AccountItem
                 {...accountItemProps}
-                label={
-                  intl.formatMessage({
-                    id: keychainStore.isBiometryType === BIOMETRY_TYPE.FACE
-                      || keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
+                label={intl.formatMessage({
+                  id:
+                    keychainStore.isBiometryType === BIOMETRY_TYPE.FACE ||
+                    keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
                       ? "settings.unlockBiometrics.face"
-                      : "settings.unlockBiometrics.touch"
-                  })
-                }
+                      : "settings.unlockBiometrics.touch",
+                })}
                 right={
                   <View style={{ marginRight: 12 }}>
                     <Toggle on={isBiometricOn} onChange={tryUnlock} />
@@ -157,11 +163,12 @@ export const SettingsScreen: FunctionComponent = observer(() => {
                 left={
                   <BiometricsIcon
                     type={
-                      keychainStore.isBiometryType === BIOMETRY_TYPE.FACE
-                        || keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
+                      keychainStore.isBiometryType === BIOMETRY_TYPE.FACE ||
+                      keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
                         ? "face"
                         : "touch"
-                    } />
+                    }
+                  />
                 }
               />
             </View>
@@ -174,10 +181,11 @@ export const SettingsScreen: FunctionComponent = observer(() => {
             right={<AllIcon />}
             left={<FaqIcon />}
             onPress={() => {
-              smartNavigation.navigateSmart("WebView", {
-                url:
-                  "https://hotro.tiki.vn/s/article/chuong-trinh-sep-mua-sam-co-loi",
-              });
+              if (documentsUrl) {
+                smartNavigation.navigateSmart("WebView", {
+                  url: `${documentsUrl}/docs/guide/introduction`,
+                });
+              }
             }}
           />
           <View style={style.get("height-8")} />

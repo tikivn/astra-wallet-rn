@@ -1,19 +1,21 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { View, Image, Text, ViewStyle } from "react-native";
-import { Button } from "../../../components/button";
 import { useStyle } from "../../../styles";
 import { useSmartNavigation } from "../../../navigation-util";
 import { FormattedMessage, useIntl } from "react-intl";
-import { RectButton } from "react-native-gesture-handler";
 import { TextLink } from "../../../components/button/text";
+import { useStore } from "../../../stores";
 
 export const DashboardHeader: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
   const style = useStyle();
   const intl = useIntl();
+  const { chainStore } = useStore();
   const smartNavigation = useSmartNavigation();
+  const documentUrl = chainStore.getChain(chainStore.current.chainId).raw
+    .documentsUrl;
   return (
     <View
       style={style.flatten([
@@ -31,9 +33,11 @@ export const DashboardHeader: FunctionComponent<{
         <TextLink
           size="medium"
           onPress={() => {
-            smartNavigation.navigateSmart("WebView", {
-              url: "https://tiki.vn/sep/home",
-            });
+            if (documentUrl) {
+              smartNavigation.navigateSmart("WebView", {
+                url: `${documentUrl}/docs/guide/staking`,
+              });
+            }
           }}
           style={style.flatten(["margin-top-8"])}
         >

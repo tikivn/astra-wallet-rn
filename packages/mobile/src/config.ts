@@ -25,6 +25,7 @@ export interface AppChainInfo extends ChainInfo {
   };
   readonly chainIdNumber?: ChainId;
   readonly unbondingTime?: number;
+  readonly documentsUrl?: string;
 }
 
 export const EmbedChainInfos: AppChainInfo[] = [
@@ -101,6 +102,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       },
     },
     unbondingTime: 172800000,
+    documentsUrl: "https://wallet.astranaut.dev",
   },
 ];
 
