@@ -73,3 +73,17 @@ export interface FiatCurrency {
   readonly locale: string;
   readonly isCustom?: boolean;
 }
+
+export type WithGasPriceStep<T> = T & {
+  /**
+   * This is used to set the fee of the transaction.
+   * If this field is empty, it just use the default gas price step (low: 0.01, average: 0.025, high: 0.04).
+   */
+  readonly gasPriceStep?: {
+    readonly low: number;
+    readonly average: number;
+    readonly high: number;
+  };
+};
+
+export type FeeCurrency = WithGasPriceStep<AppCurrency>;
