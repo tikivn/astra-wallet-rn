@@ -170,20 +170,26 @@ export const SwapScreen: FunctionComponent = observer(() => {
             "margin-bottom-16",
           ])}
         >
-          <Text
-            style={StyleSheet.flatten([
-              style.flatten(["color-gray-30", "text-caption"]),
-            ])}
-          >
-            {intl.formatMessage({ id: "swap.exchangeRate" })}
-          </Text>
-          <Text style={style.flatten(["color-gray-10", "body3"])}>
-            {getExchangeRateString(
-              swapInfos,
-              currencies,
-              pricePerInputCurrency
-            )}
-          </Text>
+          {pricePerInputCurrency ? (
+            <>
+              <Text
+                style={StyleSheet.flatten([
+                  style.flatten(["color-gray-30", "text-caption"]),
+                ])}
+              >
+                {intl.formatMessage({ id: "swap.exchangeRate" })}
+              </Text>
+              <Text style={style.flatten(["color-gray-10", "body3"])}>
+                {getExchangeRateString(
+                  swapInfos,
+                  currencies,
+                  pricePerInputCurrency
+                )}
+              </Text>
+            </>
+          ) : (
+            <></>
+          )}
         </View>
         <View
           style={style.flatten([

@@ -148,9 +148,7 @@ export const AmountSwap: FunctionComponent<SwapAmountProps> = observer(
                 })}
                 mode="ghost"
                 size="medium"
-                containerStyle={style.flatten([
-                  "padding-right-0",
-                ])}
+                containerStyle={style.flatten(["padding-right-0"])}
                 onPress={handleClickSwapAll}
               />
             )}

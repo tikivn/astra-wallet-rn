@@ -35,7 +35,7 @@ export const BalanceCard: FunctionComponent<{
 
   const getBalanceErc20 = useCallback(
     (currency: Erc20Currency) => {
-      if (!accountHex) return null;
+      if (!accountHex || !currency.contractAddress) return null;
       const balance = queriesStore
         .get(chainStore.current.chainId)
         .keplrETC.queryERC20Balance.getBalance({
