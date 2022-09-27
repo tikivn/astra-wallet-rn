@@ -2,7 +2,7 @@ import React, { FunctionComponent, useState } from "react";
 import { useIntl } from "react-intl";
 import { View, ViewStyle } from "react-native";
 import { IRow, ListRowView } from "../../../components";
-import { TextLink } from "../../../components/button/text";
+import { TextLink } from "../../../components/button";
 import { useSmartNavigation } from "../../../navigation-util";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";

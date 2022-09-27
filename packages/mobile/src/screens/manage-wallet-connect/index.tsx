@@ -36,7 +36,7 @@ export const ManageWalletConnectScreen: FunctionComponent = observer(() => {
           },
           { name: infor.name }
         ),
-        type: infor.isConnect ? "success" : "infor",
+        type: infor.isConnect ? "success" : "neutral",
         displayTime: 2000,
       });
     });
@@ -164,8 +164,8 @@ export const ManageWalletConnectScreen: FunctionComponent = observer(() => {
                       >
                         <Text
                           style={style.flatten([
-                            "color-blue-70",
-                            "text-caption2",
+                            "color-link-text",
+                            "text-small-regular",
                           ])}
                         >
                           {intl.formatMessage({

@@ -203,14 +203,14 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "uosmo",
         coinDecimals: 6,
         coinGeckoId: "osmosis",
+        gasPriceStep: {
+          low: 0,
+          average: 0.025,
+          high: 0.04,
+        },
       },
     ],
-    gasPriceStep: {
-      low: 0,
-      average: 0.025,
-      high: 0.04,
-    },
-    features: ["ibc-transfer", "ibc-go", "cosmwasm"],
+    features: ["ibc-transfer", "ibc-go", "cosmwasm", "osmosis-txfees"],
   },
   {
     rpc: SECRET_NETWORK_RPC_ENDPOINT,
@@ -256,14 +256,14 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "uscrt",
         coinDecimals: 6,
         coinGeckoId: "secret",
+        gasPriceStep: {
+          low: 0.0125,
+          average: 0.1,
+          high: 0.25,
+        },
       },
     ],
     coinType: 529,
-    gasPriceStep: {
-      low: 0.0125,
-      average: 0.1,
-      high: 0.25,
-    },
     features: ["secretwasm", "ibc-go", "ibc-transfer"],
   },
   {
@@ -355,13 +355,13 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "basecro",
         coinDecimals: 8,
         coinGeckoId: "crypto-com-chain",
+        gasPriceStep: {
+          low: 0.025,
+          average: 0.03,
+          high: 0.04,
+        },
       },
     ],
-    gasPriceStep: {
-      low: 0.025,
-      average: 0.03,
-      high: 0.04,
-    },
     features: ["ibc-transfer"],
   },
   {
@@ -403,13 +403,13 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "uiov",
         coinDecimals: 6,
         coinGeckoId: "starname",
+        gasPriceStep: {
+          low: 1,
+          average: 2,
+          high: 3,
+        },
       },
     ],
-    gasPriceStep: {
-      low: 1,
-      average: 2,
-      high: 3,
-    },
     features: ["ibc-transfer"],
   },
   {
@@ -871,13 +871,13 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "rowan",
         coinDecimals: 18,
         coinGeckoId: "sifchain",
+        gasPriceStep: {
+          low: 1000000000000,
+          average: 1500000000000,
+          high: 2000000000000,
+        },
       },
     ],
-    gasPriceStep: {
-      low: 1000000000000,
-      average: 1500000000000,
-      high: 2000000000000,
-    },
     features: [],
   },
   {
@@ -974,13 +974,13 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "uiris",
         coinDecimals: 6,
         coinGeckoId: "iris-network",
+        gasPriceStep: {
+          low: 0.2,
+          average: 0.3,
+          high: 0.4,
+        },
       },
     ],
-    gasPriceStep: {
-      low: 0.2,
-      average: 0.3,
-      high: 0.4,
-    },
     features: ["ibc-transfer", "ibc-go"],
   },
   {
@@ -1022,13 +1022,13 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "uregen",
         coinDecimals: 6,
         coinGeckoId: "regen",
+        gasPriceStep: {
+          low: 0.015,
+          average: 0.025,
+          high: 0.04,
+        },
       },
     ],
-    gasPriceStep: {
-      low: 0.015,
-      average: 0.025,
-      high: 0.04,
-    },
     features: ["ibc-go", "ibc-transfer"],
   },
   {
@@ -1070,13 +1070,13 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "uxprt",
         coinDecimals: 6,
         coinGeckoId: "persistence",
+        gasPriceStep: {
+          low: 0,
+          average: 0.025,
+          high: 0.04,
+        },
       },
     ],
-    gasPriceStep: {
-      low: 0,
-      average: 0.025,
-      high: 0.04,
-    },
     features: ["ibc-transfer", "ibc-go"],
   },
   {
@@ -1118,13 +1118,13 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "udvpn",
         coinDecimals: 6,
         coinGeckoId: "sentinel",
+        gasPriceStep: {
+          low: 0.1,
+          average: 0.25,
+          high: 0.4,
+        },
       },
     ],
-    gasPriceStep: {
-      low: 0.1,
-      average: 0.25,
-      high: 0.4,
-    },
     features: ["ibc-transfer"],
   },
   {
@@ -1202,13 +1202,13 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "ukava",
         coinDecimals: 6,
         coinGeckoId: "kava",
+        gasPriceStep: {
+          low: 0.05,
+          average: 0.1,
+          high: 0.25,
+        },
       },
     ],
-    gasPriceStep: {
-      low: 0.05,
-      average: 0.1,
-      high: 0.25,
-    },
     coinType: 459,
     beta: true,
   },
@@ -1317,13 +1317,13 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "ungm",
         coinDecimals: 6,
         coinGeckoId: "e-money",
+        gasPriceStep: {
+          low: 1,
+          average: 1,
+          high: 1,
+        },
       },
     ],
-    gasPriceStep: {
-      low: 1,
-      average: 1,
-      high: 1,
-    },
     features: ["ibc-transfer"],
   },
   {
@@ -1369,13 +1369,13 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinDenom: "IST",
         coinMinimalDenom: "uist",
         coinDecimals: 6,
+        gasPriceStep: {
+          low: 0,
+          average: 0,
+          high: 0,
+        },
       },
     ],
-    gasPriceStep: {
-      low: 0,
-      average: 0,
-      high: 0,
-    },
     features: ["ibc-go"],
   },
   {
@@ -1434,13 +1434,13 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinDenom: "BOOT",
         coinMinimalDenom: "boot",
         coinDecimals: 0,
+        gasPriceStep: {
+          low: 0,
+          average: 0,
+          high: 0.01,
+        },
       },
     ],
-    gasPriceStep: {
-      low: 0,
-      average: 0,
-      high: 0.01,
-    },
     features: ["ibc-transfer", "cosmwasm", "ibc-go"],
   },
   {
@@ -1482,13 +1482,24 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "ujuno",
         coinDecimals: 6,
         coinGeckoId: "juno-network",
+        gasPriceStep: {
+          low: 0.001,
+          average: 0.0025,
+          high: 0.004,
+        },
+      },
+      {
+        coinDenom: "ATOM",
+        coinMinimalDenom:
+          "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9",
+        coinDecimals: 6,
+        gasPriceStep: {
+          low: 0.001 * 0.33,
+          average: 0.0025 * 0.33,
+          high: 0.004 * 0.33,
+        },
       },
     ],
-    gasPriceStep: {
-      low: 0.001,
-      average: 0.0025,
-      high: 0.004,
-    },
     features: ["cosmwasm", "ibc-transfer", "ibc-go", "wasmd_0.24+"],
   },
   {
@@ -1678,13 +1689,13 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinDenom: "AXL",
         coinMinimalDenom: "uaxl",
         coinDecimals: 6,
+        gasPriceStep: {
+          low: 0.007,
+          average: 0.007,
+          high: 0.01,
+        },
       },
     ],
-    gasPriceStep: {
-      low: 0.007,
-      average: 0.007,
-      high: 0.01,
-    },
     features: ["ibc-transfer", "ibc-go", "axelar-evm-bridge"],
   },
   {
@@ -1766,6 +1777,11 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinDenom: "UMEE",
         coinMinimalDenom: "uumee",
         coinDecimals: 6,
+        gasPriceStep: {
+          low: 0.05,
+          average: 0.06,
+          high: 0.1,
+        },
       },
     ],
     features: ["ibc-transfer", "ibc-go"],
@@ -1807,6 +1823,26 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "ugraviton",
         coinDecimals: 6,
       },
+      {
+        coinDenom: "USDC",
+        coinMinimalDenom: "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        coinDecimals: 6,
+        gasPriceStep: {
+          low: 0.01 * 0.02,
+          average: 0.025 * 0.02,
+          high: 0.04 * 0.02,
+        },
+      },
+      {
+        coinDenom: "USDT",
+        coinMinimalDenom: "gravity0xdAC17F958D2ee523a2206206994597C13D831ec7",
+        coinDecimals: 6,
+        gasPriceStep: {
+          low: 0.01 * 0.02,
+          average: 0.025 * 0.02,
+          high: 0.04 * 0.02,
+        },
+      },
     ],
     features: ["ibc-transfer", "ibc-go"],
   },
@@ -1838,13 +1874,13 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinDenom: "TGD",
         coinMinimalDenom: "utgd",
         coinDecimals: 6,
+        gasPriceStep: {
+          low: 0.05,
+          average: 0.05,
+          high: 0.075,
+        },
       },
     ],
-    gasPriceStep: {
-      low: 0.05,
-      average: 0.05,
-      high: 0.075,
-    },
     features: ["cosmwasm", "ibc-transfer", "ibc-go", "wasmd_0.24+"],
   },
   {
@@ -1877,19 +1913,29 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "ustrd",
         coinDecimals: 6,
       },
+      {
+        coinDenom: "stATOM",
+        coinMinimalDenom: "stuatom",
+        coinDecimals: 6,
+      },
+      {
+        coinDenom: "stOSMO",
+        coinMinimalDenom: "stuosmo",
+        coinDecimals: 6,
+      },
     ],
     feeCurrencies: [
       {
         coinDenom: "STRD",
         coinMinimalDenom: "ustrd",
         coinDecimals: 6,
+        gasPriceStep: {
+          low: 0,
+          average: 0,
+          high: 0.04,
+        },
       },
     ],
-    gasPriceStep: {
-      low: 0,
-      average: 0,
-      high: 0.04,
-    },
     features: ["ibc-transfer", "ibc-go"],
   },
   {
@@ -1931,13 +1977,13 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinMinimalDenom: "aevmos",
         coinDecimals: 18,
         coinGeckoId: "evmos",
+        gasPriceStep: {
+          low: 25000000000,
+          average: 25000000000,
+          high: 40000000000,
+        },
       },
     ],
-    gasPriceStep: {
-      low: 25000000000,
-      average: 25000000000,
-      high: 40000000000,
-    },
     features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
     beta: true,
   },

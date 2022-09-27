@@ -136,10 +136,7 @@ const {
     "Web.Intro": {
       upperScreenName: "Web",
     },
-    "Web.Astranaut": {
-      upperScreenName: "Web",
-    },
-    "Web.AstraDefi": {
+    "Web.Dapps": {
       upperScreenName: "Web",
     },
     "Settings.PasswordInput": {
@@ -275,6 +272,10 @@ const {
     };
     WebView: {
       url?: string;
+    };
+    "Web.Dapps": {
+      name: string;
+      uri: string;
     };
     SessionProosal: {
       proposal: SignClientTypes.EventArguments["session_proposal"];

@@ -89,7 +89,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
     sendConfigs.amountConfig.error ??
     sendConfigs.memoConfig.error ??
     sendConfigs.gasConfig.error;
-  console.log("__DEBUG__ error === ", sendConfigError);
+  console.log("__DEBUG__ sendConfigError === ", sendConfigError);
 
   const txStateIsValid = sendConfigError == null;
   const style = useStyle();
@@ -279,12 +279,13 @@ const simulateSendGasFee = (
   }
 
   const feeType = "average" as FeeType;
-  var gasPrice = 0;
-  if (chainStore.current.gasPriceStep) {
-    const { [feeType]: wei } = chainStore.current.gasPriceStep;
-
-    const gwei = (new Dec(wei).mulTruncate(DecUtils.getTenExponentN(-9)));
-    gasPrice = Number(gwei);
+  var gasPrice = 1000000000; // default 1 gwei = 1 nano aastra
+  const feeConfig = chainStore.current.feeCurrencies.filter((feeCurrency) => {
+    return feeCurrency.coinMinimalDenom === amountConfig.sendCurrency.coinMinimalDenom;
+  }).shift();
+  if (feeConfig?.gasPriceStep) {
+    const { [feeType]: wei } = feeConfig.gasPriceStep;
+    gasPrice = wei;
   }
 
   return {

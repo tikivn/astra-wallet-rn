@@ -24,7 +24,6 @@ export interface AppChainInfo extends ChainInfo {
     };
   };
   readonly chainIdNumber?: ChainId;
-  readonly unbondingTime?: number;
   readonly documentsUrl?: string;
 }
 
@@ -74,14 +73,14 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: "aastra",
         coinImageUrl:
           "https://salt.tikicdn.com/ts/upload/2a/74/6d/1000f0249fd530a9313a07fc3e13c1b2.png",
+        gasPriceStep: {
+          low: 500000000,
+          average: 1000000000,
+          high: 2000000000,
+        },
       },
     ],
     coinType: 60,
-    gasPriceStep: {
-      low: 500000000,
-      average: 1000000000,
-      high: 2000000000,
-    },
     features: ["ibc-transfer", "ibc-go", "eth-key-sign", "eth-address-gen"],
     chainSymbolImageUrl:
       "https://salt.tikicdn.com/ts/upload/2a/74/6d/1000f0249fd530a9313a07fc3e13c1b2.png",
@@ -101,9 +100,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
         ],
       },
     },
-    unbondingTime: 172800000,
     documentsUrl: "https://wallet.astranaut.dev",
   },
 ];
-
-// export const AmplitudeApiKey = "dbcaf47e30aae5b712bda7f892b2f0c4";

@@ -1,22 +1,29 @@
+import { RouteProp, useRoute } from "@react-navigation/native";
 import React, { FunctionComponent } from "react";
 import { WebpageScreen } from "../components/webpage-screen";
 
-export const AstranautWebpageScreen: FunctionComponent = () => {
-  return (
-    <WebpageScreen
-      name="Astra Web App"
-      source={{ uri: "https://app.astranaut.dev" }}
-      originWhitelist={["https://app.astranaut.dev"]}
-    />
-  );
-};
+export const DappsWebpageScreen: FunctionComponent = () => {
+  const route = useRoute<
+    RouteProp<
+      Record<
+        string,
+        {
+          name: string;
+          uri: string;
+        }
+      >,
+      string
+    >
+  >();
 
-export const AstraDefiWebpageScreen: FunctionComponent = () => {
+  const name = route.params.name;
+  const uri = route.params.uri;
+
   return (
     <WebpageScreen
-      name="Astra Defi"
-      source={{ uri: "https://defi.astranaut.dev" }}
-      originWhitelist={["https://defi.astranaut.dev"]}
+      name={name}
+      source={{ uri: uri }}
+      originWhitelist={[uri]}
     />
   );
 };
