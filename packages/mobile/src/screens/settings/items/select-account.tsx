@@ -14,6 +14,14 @@ export const SettingsAccountItem: FunctionComponent = observer(() => {
 
   const { keyRingStore } = useStore();
   const [isOpened, setIsOpened] = useState(false);
+  const walletName = keyRingStore.multiKeyStoreInfo
+    .filter((keyStore) => {
+      return keyStore.type === "mnemonic";
+    })
+    .map((keyStore) => {
+      return keyStore.meta?.name;
+    })
+    .shift() || intl.formatMessage({ id: "settings.text.myWallet" });
 
   return (
     <React.Fragment>
@@ -40,13 +48,7 @@ export const SettingsAccountItem: FunctionComponent = observer(() => {
             "padding-right-10",
           ])}
         >
-          {keyRingStore.multiKeyStoreInfo
-            .filter((keyStore) => {
-              return keyStore.type === "mnemonic";
-            })
-            .map((keyStore) => {
-              return keyStore.meta?.name;
-            }) || intl.formatMessage({ id: "settings.text.myWallet" })}
+          {walletName}
         </Text>
         <Svg width="18" height="18" viewBox="0 0 18 18" fill="none">
           <Path
@@ -62,6 +64,7 @@ export const SettingsAccountItem: FunctionComponent = observer(() => {
           setIsOpened(false);
         }}
         title=""
+        value={walletName}
       />
     </React.Fragment>
   );

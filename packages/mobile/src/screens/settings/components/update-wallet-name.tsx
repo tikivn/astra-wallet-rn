@@ -2,6 +2,7 @@ import React, { FunctionComponent, useState } from "react";
 import { useIntl } from "react-intl";
 import { Text, TouchableOpacity, View } from "react-native";
 import { Button } from "../../../components";
+import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 import { CloseLargeIcon } from "../../../components/icon/outlined/navigation";
 import { NormalInput } from "../../../components/input/normal-input";
 import { registerModal } from "../../../modals/base";
@@ -12,12 +13,13 @@ export const UpdateWalletNameModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
   title: string;
-}> = registerModal(({ close }) => {
+  value?: string;
+}> = registerModal(({ close, value = "" }) => {
   const styleBuilder = useStyle();
   const intl = useIntl();
   const { keyRingStore } = useStore();
 
-  const [name, setName] = useState("");
+  const [name, setName] = useState(value);
 
   async function updateName() {
     const index = keyRingStore.multiKeyStoreInfo.findIndex((keyStore) => {
@@ -33,8 +35,8 @@ export const UpdateWalletNameModal: FunctionComponent<{
         "margin-x-page",
         "content-stretch",
         "items-stretch",
-        "background-color-background",
-        "border-color-border",
+        "background-color-card-background",
+        "border-color-card-border",
         "border-width-1",
         "border-radius-8",
       ])}>
@@ -96,6 +98,7 @@ export const UpdateWalletNameModal: FunctionComponent<{
             }} />
         </View>
       </View>
+      <AvoidingKeyboardBottomView />
     </View>
   );
 });

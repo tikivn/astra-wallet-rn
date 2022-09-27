@@ -19,14 +19,13 @@ import {
   SecretAccount,
   Staking,
 } from "@keplr-wallet/stores";
-import { useSmartNavigation } from "../../../navigation-util";
 import { AlertInline } from "../../../components/alert-inline";
 import {
   buildLeftColumn,
   buildRightColumn,
 } from "../../../components/foundation-view/item-row";
 import { useIntl } from "react-intl";
-import { formatCoin, formatPercent, TX_GAS_DEFAULT } from "../../../common/utils";
+import { formatCoin, formatPercent, formatUnbondingTime, TX_GAS_DEFAULT } from "../../../common/utils";
 import { MsgUndelegate } from "@keplr-wallet/proto-types/cosmos/staking/v1beta1/tx";
 import { CoinPretty, Dec, DecUtils, IntPretty } from "@keplr-wallet/unit";
 import { IRow, ListRowView } from "../../../components";
@@ -58,7 +57,6 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
 
   const style = useStyle();
   const intl = useIntl();
-  const smartNavigation = useSmartNavigation();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
@@ -107,7 +105,10 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.recipientConfig.error ??
     sendConfigs.amountConfig.error ??
     sendConfigs.memoConfig.error ??
-    sendConfigs.gasConfig.error;
+    sendConfigs.gasConfig.error ??
+    sendConfigs.feeConfig.error;
+  console.log("__DEBUG__ sendConfigError === ", sendConfigError?.message);
+
   const txStateIsValid = sendConfigError == null;
 
   const { gasPrice, gasLimit, feeType } = simulateUndelegateGasFee(
@@ -120,29 +121,8 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
   sendConfigs.feeConfig.setFeeType(feeType);
   const feeText = formatCoin(sendConfigs.feeConfig.fee);
 
-  const chainInfo = chainStore.getChain(chainStore.current.chainId).raw;
-  const unbondingTime = chainInfo.unbondingTime ?? 86400000;
-  const unbondingTimeText = (() => {
-    const relativeEndTime = unbondingTime / 1000;
-    const relativeEndTimeDays = Math.floor(relativeEndTime / (3600 * 24));
-    const relativeEndTimeHours = Math.ceil(relativeEndTime / 3600);
-
-    if (relativeEndTimeDays) {
-      return intl
-        .formatRelativeTime(relativeEndTimeDays, "days", {
-          numeric: "always",
-        })
-        .replace("days", intl.formatMessage({ id: "staking.unbonding.days" }));
-    } else if (relativeEndTimeHours) {
-      return intl
-        .formatRelativeTime(relativeEndTimeHours, "hours", {
-          numeric: "always",
-        })
-        .replace("hours", "h");
-    }
-
-    return "";
-  })();
+  const unbondingTime = queries.cosmos.queryStakingParams.unbondingTimeSec ?? 172800;
+  const unbondingTimeText = formatUnbondingTime(unbondingTime, intl);
 
   const rows: IRow[] = [
     {
@@ -240,6 +220,28 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       }
     }
   };
+
+  // const granter = queries.cosmos.queryGrants
+  //   .getGranterBech32Address(validatorAddress)
+  //   .grants
+  // const grantee = queries.cosmos.queryGrants
+  //   .getGranteeBech32Address(validatorAddress)
+  //   .grants
+  // // const allowance = queries.cosmos.queryAllowance
+  // //   .getQueryBech32Address(account.bech32Address)
+  // //   .getRedelegations({ dstValidatorAddress: validatorAddress })
+  // //   .shift();
+  // const allowances = queries.cosmos.queryAllowances
+  //   .getGranteeBech32Address(account.bech32Address)
+  //   .allowances;
+
+
+  // console.log("account.bech32Address", account.bech32Address);
+  // console.log("account.ethereumHexAddress", account.ethereumHexAddress);
+  // console.log("validatorAddress", validatorAddress);
+  // console.log("granter", granter);
+  // console.log("grantee", grantee);
+  // console.log("allowances", allowances);
 
   return (
     <View style={style.flatten(["flex-1", "background-color-background"])}>
@@ -374,12 +376,13 @@ const simulateUndelegateGasFee = (
   };
 
   const feeType = "average" as FeeType;
-  let gasPrice = 0;
-  if (chainStore.current.gasPriceStep) {
-    const { [feeType]: wei } = chainStore.current.gasPriceStep;
-
-    const gwei = new Dec(wei).mulTruncate(DecUtils.getTenExponentN(-9));
-    gasPrice = Number(gwei);
+  var gasPrice = 1000000000; // default 1 gwei = 1 nano aastra
+  const feeConfig = chainStore.current.feeCurrencies.filter((feeCurrency) => {
+    return feeCurrency.coinMinimalDenom === chainStore.current.stakeCurrency.coinMinimalDenom;
+  }).shift();
+  if (feeConfig?.gasPriceStep) {
+    const { [feeType]: wei } = feeConfig.gasPriceStep;
+    gasPrice = wei;
   }
 
   return {

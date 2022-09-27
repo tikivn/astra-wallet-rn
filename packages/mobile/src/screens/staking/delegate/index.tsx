@@ -22,7 +22,7 @@ import {
 } from "../../../components/foundation-view/list-row-view";
 import { AlertInline } from "../../../components";
 import { useIntl } from "react-intl";
-import { formatCoin, formatPercent, TX_GAS_DEFAULT } from "../../../common/utils";
+import { formatCoin, formatPercent, formatUnbondingTime, TX_GAS_DEFAULT } from "../../../common/utils";
 import { MsgDelegate } from "@keplr-wallet/proto-types/cosmos/staking/v1beta1/tx";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -53,7 +53,6 @@ export const DelegateScreen: FunctionComponent = observer(() => {
 
   const style = useStyle();
   const intl = useIntl();
-  const smartNavigation = useSmartNavigation();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
@@ -77,6 +76,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.memoConfig.error ??
     sendConfigs.gasConfig.error;
   const txStateIsValid = sendConfigError == null;
+  console.log("__DEBUG__ sendConfigError === ", sendConfigError);
 
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
     Staking.BondStatus.Bonded
@@ -111,29 +111,8 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   sendConfigs.feeConfig.setFeeType(feeType);
   const feeText = formatCoin(sendConfigs.feeConfig.fee);
 
-  const chainInfo = chainStore.getChain(chainStore.current.chainId).raw;
-  const unbondingTime = chainInfo.unbondingTime ?? 86400000;
-  const unbondingTimeText = (() => {
-    const relativeEndTime = unbondingTime / 1000;
-    const relativeEndTimeDays = Math.floor(relativeEndTime / (3600 * 24));
-    const relativeEndTimeHours = Math.ceil(relativeEndTime / 3600);
-
-    if (relativeEndTimeDays) {
-      return intl
-        .formatRelativeTime(relativeEndTimeDays, "days", {
-          numeric: "always",
-        })
-        .replace("days", intl.formatMessage({ id: "staking.unbonding.days" }));
-    } else if (relativeEndTimeHours) {
-      return intl
-        .formatRelativeTime(relativeEndTimeHours, "hours", {
-          numeric: "always",
-        })
-        .replace("hours", "h");
-    }
-
-    return "";
-  })();
+  const unbondingTime = queries.cosmos.queryStakingParams.unbondingTimeSec ?? 172800;
+  const unbondingTimeText = formatUnbondingTime(unbondingTime, intl);
 
   const rows: IRow[] = [
     {
@@ -332,12 +311,13 @@ const simulateDelegateGasFee = (
   }
 
   const feeType = "average" as FeeType;
-  var gasPrice = 0;
-  if (chainStore.current.gasPriceStep) {
-    const { [feeType]: wei } = chainStore.current.gasPriceStep;
-
-    const gwei = (new Dec(wei).mulTruncate(DecUtils.getTenExponentN(-9)));
-    gasPrice = Number(gwei);
+  var gasPrice = 1000000000; // default 1 gwei = 1 nano aastra
+  const feeConfig = chainStore.current.feeCurrencies.filter((feeCurrency) => {
+    return feeCurrency.coinMinimalDenom === chainStore.current.stakeCurrency.coinMinimalDenom;
+  }).shift();
+  if (feeConfig?.gasPriceStep) {
+    const { [feeType]: wei } = feeConfig.gasPriceStep;
+    gasPrice = wei;
   }
 
   return {

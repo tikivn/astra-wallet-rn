@@ -12,6 +12,7 @@ export class RemoteConfigStore {
         feature_swap_enabled: true,
         feature_socialLogin_enabled: false,
         feature_networkDetectionOnAndroid_enabled: false,
+        feature_debug_enabled: false,
       })
       .then(() => {
         remoteConfig()

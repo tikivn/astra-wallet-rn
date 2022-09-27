@@ -18,7 +18,7 @@ import {
 import Animated, { Easing } from "react-native-reanimated";
 import { observer } from "mobx-react-lite";
 import { useStyle } from "../../styles";
-import { Button } from "../../components/button";
+import { Button, TextLink } from "../../components/button";
 import delay from "delay";
 import { useStore } from "../../stores";
 import { StackActions, useNavigation } from "@react-navigation/native";
@@ -29,7 +29,7 @@ import { autorun } from "mobx";
 import { NormalInput } from "../../components/input/normal-input";
 import { useIntl } from "react-intl";
 import { BiometricsIcon } from "../../components";
-import { RectButton, TouchableOpacity } from "react-native-gesture-handler";
+import { TouchableOpacity } from "react-native-gesture-handler";
 import { useRegisterConfig } from "@keplr-wallet/hooks";
 import { useBIP44Option } from "../register/bip44";
 import { BIOMETRY_TYPE } from "react-native-keychain";
@@ -37,7 +37,6 @@ import { AvoidingKeyboardBottomView } from "../../components/avoiding-keyboard/a
 import { hideSplashScreen } from "../splash";
 import { useLanguage } from "../../translations";
 import { MIN_PASSWORD_LENGTH } from "../../common/utils";
-import { TextLink } from "../../components/button/text";
 
 async function waitAccountLoad(
   accountStore: IAccountStore,

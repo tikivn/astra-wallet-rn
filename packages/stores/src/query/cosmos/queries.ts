@@ -41,6 +41,8 @@ import { ObservableQueryDistributionParams } from "./distribution";
 import { ObservableQueryRPCStatus } from "./status";
 import { ObservableQueryTxs } from "./tx";
 import { ObservableQueryJunoAnnualProvisions } from "./supply/juno";
+import { ObservableQueryGrants } from "./authz";
+import { ObservableQueryAllowance, ObservableQueryAllowances } from "./feegrant";
 
 export interface CosmosQueries {
   cosmos: CosmosQueriesImpl;
@@ -90,6 +92,9 @@ export class CosmosQueriesImpl {
   public readonly queryGovernance: DeepReadonly<ObservableQueryGovernance>;
   public readonly queryProposalVote: DeepReadonly<ObservableQueryProposalVote>;
   public readonly queryTxs: DeepReadonly<ObservableQueryTxs>;
+  public readonly queryGrants: DeepReadonly<ObservableQueryGrants>;
+  public readonly queryAllowance: DeepReadonly<ObservableQueryAllowance>;
+  public readonly queryAllowances: DeepReadonly<ObservableQueryAllowances>;
 
   public readonly queryIBCClientState: DeepReadonly<ObservableQueryIBCClientState>;
   public readonly queryIBCChannel: DeepReadonly<ObservableQueryIBCChannel>;
@@ -218,6 +223,24 @@ export class CosmosQueriesImpl {
     );
 
     this.queryTxs = new ObservableQueryTxs(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+
+    this.queryGrants = new ObservableQueryGrants(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+
+    this.queryAllowance = new ObservableQueryAllowance(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+
+    this.queryAllowances = new ObservableQueryAllowances(
       kvStore,
       chainId,
       chainGetter

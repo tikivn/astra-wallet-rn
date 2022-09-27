@@ -1,5 +1,5 @@
 import { useRoute, RouteProp } from "@react-navigation/native";
-import { SessionTypes, SignClientTypes } from "@walletconnect/types";
+import { SignClientTypes } from "@walletconnect/types";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { Image, View, Text } from "react-native";
@@ -211,17 +211,14 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
           ])}
         >
           <Button
-            size="medium"
             containerStyle={style.flatten([
               "margin-right-12",
               "flex-1",
-              "background-color-gray-70",
             ])}
             text={intl.formatMessage({ id: "common.text.reject" })}
             onPress={onRejectSession}
           />
           <Button
-            size="medium"
             text={intl.formatMessage({ id: "common.text.connect" })}
             onPress={onApproveSession}
             containerStyle={style.flatten(["flex-1"])}

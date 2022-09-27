@@ -83,8 +83,7 @@ import {
   ImportFromExtensionSetPasswordScreen,
 } from "./screens/register/import-from-extension";
 import {
-  AstranautWebpageScreen,
-  AstraDefiWebpageScreen,
+  DappsWebpageScreen,
 } from "./screens/web/webpages";
 import { WebpageScreenScreenOptionsPreset } from "./screens/web/components/webpage-screen";
 import Bugsnag from "@bugsnag/react-native";
@@ -679,8 +678,7 @@ export const WebNavigation: FunctionComponent = () => {
       headerMode="screen"
     >
       <Stack.Screen name="Web.Intro" component={WebScreen} />
-      <Stack.Screen name="Web.Astranaut" component={AstranautWebpageScreen} />
-      <Stack.Screen name="Web.AstraDefi" component={AstraDefiWebpageScreen} />
+      <Stack.Screen name="Web.Dapps" component={DappsWebpageScreen} />
     </Stack.Navigator>
   );
 };

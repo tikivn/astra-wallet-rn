@@ -4,7 +4,7 @@ import { View, Image, Text, ViewStyle } from "react-native";
 import { useStyle } from "../../../styles";
 import { useSmartNavigation } from "../../../navigation-util";
 import { FormattedMessage, useIntl } from "react-intl";
-import { TextLink } from "../../../components/button/text";
+import { TextLink } from "../../../components/button";
 import { useStore } from "../../../stores";
 
 export const DashboardHeader: FunctionComponent<{

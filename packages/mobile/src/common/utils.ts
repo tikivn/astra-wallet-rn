@@ -1,4 +1,5 @@
 import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
+import { IntlShape } from "react-intl";
 
 export const MIN_PASSWORD_LENGTH = 8;
 export const MIN_AMOUNT = 10;
@@ -43,10 +44,12 @@ export const formatCoin = (coin?: CoinPretty, hideDenom: boolean = false) => {
     formattedText = parts[0];
   }
 
-  formattedText = formattedText.replace(
-    LOCALE_FORMAT.fractionDelimitter + "0".repeat(maximumFractionDigits),
-    ""
-  );
+  while (formattedText.endsWith("0")) {
+    formattedText = formattedText.slice(0, -1);
+  }
+  if (formattedText.endsWith(".")) {
+    formattedText = formattedText.slice(0, -1);
+  }
 
   if (!hideDenom) {
     formattedText += " " + coin.denom.toUpperCase();
@@ -90,3 +93,24 @@ export const formatPercent = (value: any, hideSymbol: boolean = false) => {
       .toString() + (hideSymbol ? "" : "%")
   );
 };
+
+export const formatUnbondingTime = (sec: number, intl: IntlShape) => {
+  const relativeEndTimeDays = Math.floor(sec / (3600 * 24));
+  const relativeEndTimeHours = Math.ceil(sec / 3600);
+
+  if (relativeEndTimeDays) {
+    return intl
+      .formatRelativeTime(relativeEndTimeDays, "days", {
+        numeric: "always",
+      })
+      .replace("days", intl.formatMessage({ id: "staking.unbonding.days" }));
+  } else if (relativeEndTimeHours) {
+    return intl
+      .formatRelativeTime(relativeEndTimeHours, "hours", {
+        numeric: "always",
+      })
+      .replace("hours", "h");
+  }
+
+  return "";
+}
