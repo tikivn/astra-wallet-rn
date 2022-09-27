@@ -138,7 +138,7 @@ export const V1ToggleColors = {
   "toggle-on": "white",
   "toggle-background-on": V1Colors["purple-50"],
   "toggle-off": "white",
-  "toggle-background-off": V1Colors["gray-20"],
+  "toggle-background-off": V1Colors["gray-30"],
 };
 
 export const V1StepViewColors = {
