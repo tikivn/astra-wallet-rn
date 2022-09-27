@@ -13,7 +13,6 @@ import {
   CosmosAccount,
   CosmwasmAccount,
   SecretAccount,
-  LedgerInitStore,
   IBCCurrencyRegsitrar,
   PermissionStore,
   ChainSuggestStore,
@@ -45,7 +44,6 @@ export class RootStore {
 
   protected readonly interactionStore: InteractionStore;
   public readonly permissionStore: PermissionStore;
-  public readonly ledgerInitStore: LedgerInitStore;
   public readonly signInteractionStore: SignInteractionStore;
   public readonly chainSuggestStore: ChainSuggestStore;
 
@@ -86,10 +84,6 @@ export class RootStore {
       new RNMessageRequesterInternal()
     );
     this.permissionStore = new PermissionStore(
-      this.interactionStore,
-      new RNMessageRequesterInternal()
-    );
-    this.ledgerInitStore = new LedgerInitStore(
       this.interactionStore,
       new RNMessageRequesterInternal()
     );

@@ -56,7 +56,6 @@ import {
   AddAddressBookScreen,
   AddressBookScreen,
 } from "./screens/setting/screens/address-book";
-import { NewLedgerScreen } from "./screens/register/ledger";
 import { PageScrollPositionProvider } from "./providers/page-scroll-position";
 import {
   BlurredHeaderScreenOptionsPreset,
@@ -229,13 +228,6 @@ export const RegisterNavigation: FunctionComponent = () => {
         }}
         name="Register.RecoverMnemonic"
         component={RecoverMnemonicScreen}
-      />
-      <Stack.Screen
-        options={{
-          title: "Import Hardware Wallet",
-        }}
-        name="Register.NewLedger"
-        component={NewLedgerScreen}
       />
       <Stack.Screen name="Register.TorusSignIn" component={TorusSignInScreen} />
       <Stack.Screen
