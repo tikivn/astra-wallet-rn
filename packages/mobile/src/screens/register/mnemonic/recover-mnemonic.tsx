@@ -184,6 +184,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                           setFocus("name");
                         }
                       }}
+                      containerStyle={style.flatten(["padding-right-0"])}
                     />
                   </View>
                 }
@@ -196,6 +197,10 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                     minHeight: 24 * 2,
                     textAlignVertical: "top",
                   },
+                ])}
+                errorLabelStyle={style.flatten([
+                  "text-base-regular",
+                  "color-input-error",
                 ])}
                 onSubmitEditing={() => {
                   setFocus("name");

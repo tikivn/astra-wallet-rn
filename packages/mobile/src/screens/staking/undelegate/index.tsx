@@ -102,10 +102,10 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
   }, [sendConfigs.recipientConfig, validatorAddress]);
 
   const sendConfigError =
-    sendConfigs.recipientConfig.error ??
-    sendConfigs.amountConfig.error ??
-    sendConfigs.memoConfig.error ??
-    sendConfigs.gasConfig.error ??
+    // sendConfigs.recipientConfig.error ??
+    // sendConfigs.amountConfig.error ??
+    // sendConfigs.memoConfig.error ??
+    // sendConfigs.gasConfig.error ??
     sendConfigs.feeConfig.error;
   console.log("__DEBUG__ sendConfigError === ", sendConfigError?.message);
 
@@ -274,6 +274,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         />
         <AmountInput
           labelText={intl.formatMessage({ id: "stake.undelegate.amountLabel" })}
+          errorText={sendConfigError?.message}
           amountConfig={sendConfigs.amountConfig}
           availableAmount={staked}
           containerStyle={style.flatten(["margin-top-24"])}
@@ -284,13 +285,6 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
           hideBorder
           clearBackground
         />
-        {/* <MemoInput label="Memo (Optional)" memoConfig={sendConfigs.memoConfig} />
-      <FeeButtons
-        label="Fee"
-        gasLabel="gas"
-        feeConfig={sendConfigs.feeConfig}
-        gasConfig={sendConfigs.gasConfig}
-      /> */}
       </KeyboardAwareScrollView>
       <View
         style={style.flatten(["flex-1", "justify-end", "margin-bottom-12"])}

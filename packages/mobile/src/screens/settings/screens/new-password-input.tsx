@@ -109,6 +109,7 @@ export const NewPasswordInputScreen: FunctionComponent = observer(() => {
           onShowPasswordChanged={setShowPassword}
           onChangeText={setPassword}
           onBlur={validateInputData}
+          autoFocus
           validations={[{
             minLength: MIN_PASSWORD_LENGTH,
             error: intl.formatMessage({

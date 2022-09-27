@@ -142,6 +142,7 @@ export const MainScreen: FunctionComponent = observer(() => {
       toastModal.makeToast({
         type: "error",
         title: intl.formatMessage({ id: "common.alert.content.accessTestnet" }),
+        bottomOffset: 44,
       });
     }
   }

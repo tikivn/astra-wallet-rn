@@ -289,6 +289,7 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
           onShowPasswordChanged={setShowPassword}
           onChangeText={setPassword}
           onBlur={validateInputData}
+          autoFocus
         />
       </View>
       <View style={style.flatten(["flex-1", "justify-end", "margin-bottom-12"])}>

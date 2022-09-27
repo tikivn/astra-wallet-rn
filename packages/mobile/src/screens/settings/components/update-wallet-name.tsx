@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useState } from "react";
 import { useIntl } from "react-intl";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Keyboard, Text, TouchableOpacity, View } from "react-native";
 import { Button } from "../../../components";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 import { CloseLargeIcon } from "../../../components/icon/outlined/navigation";
@@ -26,6 +26,7 @@ export const UpdateWalletNameModal: FunctionComponent<{
       return keyStore.selected;
     });
     await keyRingStore.updateNameKeyRing(index, name);
+    Keyboard.dismiss();
     close();
   }
 
@@ -55,7 +56,10 @@ export const UpdateWalletNameModal: FunctionComponent<{
             marginVertical: 12,
           }}>{intl.formatMessage({ id: "common.text.updateWalletName" })}</Text>
           <TouchableOpacity
-            onPress={close}
+            onPress={() => {
+              Keyboard.dismiss();
+              close();
+            }}
             style={{ marginRight: 12 }}>
             <CloseLargeIcon size={24} color={styleBuilder.get("color-gray-10").color} />
           </TouchableOpacity>
@@ -70,7 +74,9 @@ export const UpdateWalletNameModal: FunctionComponent<{
           style={{
             marginHorizontal: 16,
             marginVertical: 12
-          }} />
+          }}
+          autoFocus
+        />
         <View style={styleBuilder.flatten([
           "height-1",
           "background-color-border",
@@ -84,9 +90,13 @@ export const UpdateWalletNameModal: FunctionComponent<{
           paddingVertical: 12,
         }}>
           <Button
+            color="neutral"
             mode="outline"
             text={intl.formatMessage({ id: "common.text.cancel" })}
-            onPress={close}
+            onPress={() => {
+              Keyboard.dismiss();
+              close();
+            }}
             containerStyle={{ flex: 1 }} />
           <Button
             text={intl.formatMessage({ id: "common.text.save" })}

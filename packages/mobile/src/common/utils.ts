@@ -44,11 +44,13 @@ export const formatCoin = (coin?: CoinPretty, hideDenom: boolean = false) => {
     formattedText = parts[0];
   }
 
-  while (formattedText.endsWith("0")) {
-    formattedText = formattedText.slice(0, -1);
-  }
-  if (formattedText.endsWith(".")) {
-    formattedText = formattedText.slice(0, -1);
+  if (formattedText.indexOf(".") !== -1) {
+    while (formattedText.endsWith("0")) {
+      formattedText = formattedText.slice(0, -1);
+    }
+    if (formattedText.endsWith(".")) {
+      formattedText = formattedText.slice(0, -1);
+    }
   }
 
   if (!hideDenom) {

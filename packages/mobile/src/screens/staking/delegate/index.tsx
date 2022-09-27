@@ -71,10 +71,11 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   }, [sendConfigs.recipientConfig, validatorAddress]);
 
   const sendConfigError =
-    sendConfigs.recipientConfig.error ??
-    sendConfigs.amountConfig.error ??
-    sendConfigs.memoConfig.error ??
-    sendConfigs.gasConfig.error;
+    // sendConfigs.recipientConfig.error ??
+    // sendConfigs.amountConfig.error ??
+    // sendConfigs.memoConfig.error ??
+    // sendConfigs.gasConfig.error ??
+    sendConfigs.feeConfig.error;
   const txStateIsValid = sendConfigError == null;
   console.log("__DEBUG__ sendConfigError === ", sendConfigError);
 
@@ -223,6 +224,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         />
         <AmountInput
           labelText={intl.formatMessage({ id: "stake.delegate.amount" })}
+          errorText={sendConfigError?.message}
           amountConfig={sendConfigs.amountConfig}
           availableAmount={userBalanceStore.getBalance()}
           fee={sendConfigs.feeConfig.fee}

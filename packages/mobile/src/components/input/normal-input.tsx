@@ -21,6 +21,7 @@ interface NormalInputProps {
   onChangeText?: (text: string) => void;
   onFocus?: () => void;
   onBlur?: () => void;
+  autoFocus?: boolean;
   validations?: Array<Record<string, any>>;
   style?: ViewStyle;
 }
@@ -41,6 +42,7 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(({
   onChangeText,
   onFocus,
   onBlur,
+  autoFocus,
   validations,
   style
 }) => {
@@ -174,6 +176,7 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(({
           onBlur();
         }
       }}
+      autoFocus={autoFocus}
     />
   </View>;
 });

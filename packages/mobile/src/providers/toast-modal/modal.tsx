@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect } from "react";
 import { registerModal } from "../../modals/base";
 import { useStyle } from "../../styles";
-import { Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import {
   AlertErrorIcon,
   AlertInfoIcon,
@@ -14,8 +14,9 @@ export const ToastModal: FunctionComponent<{
   title: string;
   type: "success" | "error" | "infor" | "neutral";
   displayTime?: number;
+  bottomOffset?: number;
 }> = registerModal(
-  ({ close, title, type = "infor", displayTime = 2000 }) => {
+  ({ close, title, type = "infor", displayTime = 2000, bottomOffset }) => {
     useEffect(() => {
       setTimeout(() => {
         close();
@@ -54,15 +55,20 @@ export const ToastModal: FunctionComponent<{
     return (
       <View style={style.flatten(["padding-page"])}>
         <View
-          style={style.flatten([
-            "overflow-hidden",
-            "toast-container",
-            `toast-${type}` as any,
-            "padding-y-12",
-            "padding-x-16",
-            "flex-row",
-            "items-center",
-            "justify-between",
+          style={StyleSheet.flatten([
+            style.flatten([
+              "overflow-hidden",
+              "toast-container",
+              `toast-${type}` as any,
+              "padding-y-12",
+              "padding-x-16",
+              "flex-row",
+              "items-center",
+              "justify-between",
+            ]),
+            {
+              marginBottom: bottomOffset,
+            }
           ])}
         >
           {getIcon()}

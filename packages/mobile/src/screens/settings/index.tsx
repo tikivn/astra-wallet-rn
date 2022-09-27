@@ -20,10 +20,10 @@ import { AccountNetworkItem, RightView } from "./items/select-network";
 import { AccountVersionItem } from "./items/version-item";
 import { AccountLanguageItem } from "./items/select-language";
 import { useIntl } from "react-intl";
-import { AlertInline } from "../../components";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { Toggle } from "../../components/toggle";
 import { BIOMETRY_TYPE } from "react-native-keychain";
+import { useToastModal } from "../../providers/toast-modal";
 
 export const SettingsScreen: FunctionComponent = observer(() => {
   const {
@@ -39,6 +39,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
   const intl = useIntl();
 
   const smartNavigation = useSmartNavigation();
+  const toastModal = useToastModal();
 
   const accountItemProps = {
     containerStyle: style.flatten([
@@ -84,6 +85,13 @@ export const SettingsScreen: FunctionComponent = observer(() => {
     return () => clearTimeout(timeoutId);
   }, [route.params]);
 
+  useEffect(() => {
+    if (displayFloatAlert) {
+      showToast();
+      setDisplayFloatAlert(null);
+    }
+  }, [displayFloatAlert]);
+
   async function tryUnlock() {
     try {
       if (isBiometricOn) {
@@ -103,6 +111,19 @@ export const SettingsScreen: FunctionComponent = observer(() => {
     smartNavigation.reset({
       index: 0,
       routes: [{ name: "Unlock" }],
+    });
+  }
+
+  const showToast = () => {
+    if (!displayFloatAlert) {
+      return;
+    }
+
+    toastModal.makeToast({
+      title: displayFloatAlert.content,
+      type: "success",
+      displayTime: 3000,
+      bottomOffset: 44,
     });
   }
 
@@ -151,7 +172,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
                 label={intl.formatMessage({
                   id:
                     keychainStore.isBiometryType === BIOMETRY_TYPE.FACE ||
-                    keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
+                      keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
                       ? "settings.unlockBiometrics.face"
                       : "settings.unlockBiometrics.touch",
                 })}
@@ -164,7 +185,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
                   <BiometricsIcon
                     type={
                       keychainStore.isBiometryType === BIOMETRY_TYPE.FACE ||
-                      keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
+                        keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
                         ? "face"
                         : "touch"
                     }
@@ -234,20 +255,6 @@ export const SettingsScreen: FunctionComponent = observer(() => {
           <View style={style.get("height-32")} />
           <AccountVersionItem />
         </PageWithScrollViewInBottomTabView>
-        {displayFloatAlert && (
-          <View style={{ paddingHorizontal: 16 }}>
-            <AlertInline
-              type={displayFloatAlert.type}
-              content={displayFloatAlert.content}
-              actionButton="close"
-              onActionButtonTap={() => {
-                setDisplayFloatAlert(null);
-              }}
-            />
-            <View style={{ height: 44, marginTop: 16 }} />
-            <SafeAreaView />
-          </View>
-        )}
       </ImageBackground>
     </View>
   );

@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useRef } from "react";
 import { Text, TouchableOpacity, View, ViewStyle } from "react-native";
 import { useStyle } from "../../styles";
 import { Button } from "../button";
@@ -8,7 +8,8 @@ import { CloseLargeIcon } from "../icon/outlined/navigation";
 
 export type AlertInlineType = "info" | "success" | "error" | "warning";
 
-interface IAlertInline {
+export interface IAlertInline {
+  viewRef?: React.RefObject<View>;
   style?: ViewStyle;
   type: AlertInlineType;
   title?: string;
@@ -19,6 +20,7 @@ interface IAlertInline {
 }
 
 export const AlertInline: FunctionComponent<IAlertInline> = observer(({
+  viewRef,
   style,
   type,
   title,
@@ -95,7 +97,7 @@ export const AlertInline: FunctionComponent<IAlertInline> = observer(({
   }
 
   return (
-    <View style={{
+    <View ref={viewRef} style={{
       ...styleBuilder.flatten([
         "flex-row",
         "items-start",

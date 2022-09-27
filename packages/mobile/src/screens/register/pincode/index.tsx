@@ -221,6 +221,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
       >
         {(!userLoginStore.socialLoginData && !userLoginStore.isSocialLoginActive) && (
           <NormalInput
+            autoFocus
             value={name}
             label={intl.formatMessage({ id: "common.text.accountHolder" })}
             onChangeText={setName}
@@ -260,10 +261,10 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
             },
             error: intl.formatMessage({ id: "common.text.passwordNotMatching" })
           }]}
-          style={{ marginBottom: 24, paddingBottom: 24, }}
+          style={{ marginBottom: confirmPasswordErrorText.length !== 0 ? 24 : 0, paddingBottom: 24, }}
         />
 
-        {keychainStore.isBiometrySupported && (
+        {/*keychainStore.isBiometrySupported && */(
           <View style={{ flexDirection: "row", alignContent: "stretch", alignItems: "center", marginBottom: 16, }}>
             <BiometricsIcon
               color={style.get("color-gray-10").color}

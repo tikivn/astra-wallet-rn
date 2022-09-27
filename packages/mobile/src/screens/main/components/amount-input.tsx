@@ -13,6 +13,7 @@ import { formatTextNumber, MIN_AMOUNT } from "../../../common/utils";
 
 export const AmountInput: FunctionComponent<{
   labelText?: string;
+  errorText?: string;
   hideDenom?: boolean;
   amountConfig: IAmountConfig;
   availableAmount?: CoinPretty;
@@ -20,6 +21,7 @@ export const AmountInput: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({
   labelText,
+  errorText: extErrorText,
   hideDenom,
   amountConfig,
   availableAmount,
@@ -31,7 +33,11 @@ export const AmountInput: FunctionComponent<{
   const feeUpdated = useRef(false);
 
   const [amountText, setAmountText] = useState(formatTextNumber(amountConfig.amount));
-  const [errorText, setErrorText] = useState("");
+  const [errorText, setErrorText] = useState(() => {
+    return extErrorText === "insufficient fee"
+      ? intl.formatMessage({ id: "component.amount.input.error.insufficientFee" })
+      : ""
+  });
   const infoText = intl.formatMessage(
     { id: "component.amount.input.error.minimum" },
     { amount: MIN_AMOUNT, denom: amountConfig.sendCurrency.coinDenom },
@@ -59,18 +65,29 @@ export const AmountInput: FunctionComponent<{
 
   function onChangeTextHandler(amountText: string) {
     const text = amountText.split(",").join("");
-    amountConfig.setAmount(text);
-
     const amount = Number(text) ?? 0;
+    if (amount >= 0) {
+      amountConfig.setAmount(text);
+    }
 
     if (text.length === 0) {
       setErrorText("");
       return;
     }
 
-    if (!amount || amount < 0) {
+    if (amount < 0) {
       setErrorText(intl.formatMessage({ id: "component.amount.input.error.invalid" }));
       return;
+    }
+
+    if (extErrorText) {
+      if (extErrorText === "insufficient fee") {
+        setErrorText(intl.formatMessage({ id: "component.amount.input.error.insufficientFee" }));
+        return;
+      }
+      else {
+        // TODO: check other error
+      }
     }
 
     if (amount < MIN_AMOUNT) {
@@ -80,7 +97,7 @@ export const AmountInput: FunctionComponent<{
       ));
     }
     else if (availableAmount && availableAmount.toDec().lt(new Dec(amount))) {
-      setErrorText(intl.formatMessage({ id: "component.amount.input.error.insufficient" }));
+      setErrorText(intl.formatMessage({ id: "component.amount.input.error.insufficientAmount" }));
     }
     else {
       setErrorText("");
@@ -92,14 +109,16 @@ export const AmountInput: FunctionComponent<{
       return;
     }
 
-    let maxAmount: CoinPretty;
+    let maxAmount = new Dec(0);
     if (fee) {
-      maxAmount = availableAmount.sub(fee);
+      if (availableAmount.toDec().gt(fee.toDec())) {
+        maxAmount = availableAmount.sub(fee).toDec();
+      }
     }
     else {
-      maxAmount = availableAmount;
+      maxAmount = availableAmount.toDec();
     }
-    setAmountText(Number(maxAmount.toDec()).toString());
+    setAmountText(Number(maxAmount).toString());
   };
 
   return (
