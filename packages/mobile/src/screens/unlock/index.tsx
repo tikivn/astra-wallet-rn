@@ -319,9 +319,8 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         style={style.flatten(["absolute-fill", "background-color-background"])}
       >
         <Image
-          style={style.flatten(["width-full", "height-full"])}
-          resizeMode="cover"
-          source={require("../../assets/logo/main_background.png")}
+          resizeMode="contain"
+          source={require("../../assets/image/background_top.png")}
         />
       </View>
       <View

@@ -32,7 +32,7 @@ const V1ButtonCustom = {
   },
   "button-primary-solid-disabled": {
     color: "white",
-    backgroundColor: V1Colors["purple-40"],
+    backgroundColor: V1Colors["purple-50"],
     opacity: 0.4,
   },
   "button-primary-outline-default": {

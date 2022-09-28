@@ -83,6 +83,8 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
 
   const [isCreating, setIsCreating] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const [isValid, setIsValid] = useState(false);
+  const [errorText, setErrorText] = useState("");
 
   const submit = handleSubmit(async () => {
     setIsCreating(true);
@@ -213,7 +215,10 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                 onFocus={() => {
                   setIsFocused(true);
                 }}
-                onChangeText={onChange}
+                onChangeText={(text) => {
+                  onChange(text);
+                  setErrorText(text.split(" ").length < 12 ? "" : "")
+                }}
                 value={value}
                 ref={ref}
               />
@@ -229,6 +234,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
           text={intl.formatMessage({ id: "common.text.verify" })}
           loading={isCreating}
           onPress={submit}
+          disabled={errors.mnemonic ? true : false}
           containerStyle={style.flatten(["margin-x-page", "margin-top-12"])}
         />
         <AvoidingKeyboardBottomView />

@@ -14,7 +14,13 @@ import Clipboard from "expo-clipboard";
 
 export const AddressInput: FunctionComponent<{
   recipientConfig: IRecipientConfig;
-}> = observer(({ recipientConfig }) => {
+  onAddressChanged?: (value: string, isValid: boolean) => void;
+}> = observer(({
+  recipientConfig,
+  onAddressChanged = (value: string, isValid: boolean) => {
+    console.log(value, isValid);
+  }
+}) => {
   const style = useStyle();
   const intl = useIntl();
   const smartNavigation = useSmartNavigation();
@@ -24,9 +30,11 @@ export const AddressInput: FunctionComponent<{
   useEffect(() => {
     if (recipientConfig.error?.message && recipientConfig.rawRecipient.length != 0) {
       setErrorText(intl.formatMessage({ id: "component.address.input.error.invalid" }));
+      onAddressChanged(recipientConfig.rawRecipient, false);
     }
     else {
-      setErrorText("")
+      setErrorText("");
+      onAddressChanged(recipientConfig.rawRecipient, recipientConfig.rawRecipient.length !== 0);
     }
   }, [recipientConfig.error]);
 

@@ -6,7 +6,6 @@ import { AddressInput, AmountInput } from "../components";
 
 import { ChainStore, useStore } from "../../../stores";
 import { Button } from "../../../components/button";
-import { useSmartNavigation } from "../../../navigation-util";
 import { FeeType, IAmountConfig, useSendTxConfig } from "@keplr-wallet/hooks";
 import { EthereumEndpoint } from "../../../config";
 import { RouteProp, useRoute } from "@react-navigation/native";
@@ -84,17 +83,11 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
   sendConfigs.feeConfig.setFeeType(feeType);
   const feeText = formatCoin(sendConfigs.feeConfig.fee);
 
-  const sendConfigError =
-    // sendConfigs.recipientConfig.error ??
-    // sendConfigs.amountConfig.error ??
-    // sendConfigs.memoConfig.error ??
-    // sendConfigs.gasConfig.error ??
-    sendConfigs.feeConfig.error;
-  console.log("__DEBUG__ sendConfigError ==== ", sendConfigError);
-
-  const txStateIsValid = sendConfigError == null;
   const style = useStyle();
   const intl = useIntl();
+
+  const [addressIsValid, setAddressIsValid] = useState(false);
+  const [amountIsValid, setAmountIsValid] = useState(false);
 
   const rows: IRow[] = [
     {
@@ -114,7 +107,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
   ];
 
   const onSendHandler = async () => {
-    if (account.isReadyToSendTx && txStateIsValid) {
+    if (account.isReadyToSendTx && amountIsValid && addressIsValid) {
       const params = {
         token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
         amount: Number(sendConfigs.amountConfig.amount),
@@ -184,15 +177,22 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
         enableOnAndroid
       >
         <View style={{ height: 24 }} />
-        <AddressInput recipientConfig={sendConfigs.recipientConfig} />
+        <AddressInput
+          recipientConfig={sendConfigs.recipientConfig}
+          onAddressChanged={(value, isValid) => {
+            setAddressIsValid(isValid);
+          }}
+        />
         <View style={{ height: 24 }} />
         <AmountInput
           hideDenom
           labelText={intl.formatMessage({ id: "component.amount.input.sendindAmount" })}
-          errorText={sendConfigError?.message}
           amountConfig={sendConfigs.amountConfig}
           availableAmount={userBalanceStore.getBalance()}
-          fee={sendConfigs.feeConfig.fee}
+          feeConfig={sendConfigs.feeConfig}
+          onAmountChanged={(_, isValid) => {
+            setAmountIsValid(isValid);
+          }}
         />
         <ListRowView
           rows={rows}
@@ -206,7 +206,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
         <View style={{ ...style.flatten(["background-color-background"]), height: 56 }}>
           <Button
             text={intl.formatMessage({ id: "wallet.send.continue" })}
-            disabled={!account.isReadyToSendTx || !txStateIsValid}
+            disabled={!amountIsValid || !addressIsValid}
             loading={account.txTypeInProgress === "send"}
             onPress={onSendHandler}
             containerStyle={style.flatten(["margin-x-page", "margin-top-12"])}

@@ -8,7 +8,7 @@
   "tx.result.models.msgDelegate.commission": "Hoa hồng khi mở quỹ",
   "tx.result.models.msgDelegate.fee": "Phí giao dịch",
   "tx.result.models.msgDelegate.time": "Thời gian thực hiện",
-  "tx.result.models.msgDelegate.validator": "Quỹ tiết kiệm",
+  "tx.result.models.msgDelegate.validator": "Gói tích lũy",
   "tx.result.models.msgSend.fee": "Phí giao dịch",
   "tx.result.models.msgSend.reveiver": "Địa chỉ người nhận",
   "tx.result.models.msgSend.time": "Thời gian thực hiện",

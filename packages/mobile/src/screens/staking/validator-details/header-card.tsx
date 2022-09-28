@@ -26,8 +26,8 @@ export const ValidatorHeaderCard: FunctionComponent<{
   const backgroundColor = style.get("color-background").color;
   const backgroundButtonAnim = {
     backgroundColor: animOpacity.interpolate({
-      inputRange: [0, 200],
-      outputRange: ["rgba(0, 0, 0, 0.2)", style.get("color-transparent").color],
+      inputRange: [0, 255],
+      outputRange: ["transparent", "transparent"],
     }),
   };
   const viewAnimOpacity = {
@@ -96,6 +96,6 @@ const styles = StyleSheet.create({
     height: 32,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 16,
+    // borderRadius: 16,
   },
 });

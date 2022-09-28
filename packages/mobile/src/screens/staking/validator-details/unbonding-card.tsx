@@ -7,7 +7,7 @@ import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { DelegationsEmptyItem } from "../dashboard/delegate";
 import { useSmartNavigation } from "../../../navigation-util";
-import { formatCoin } from "../../../common/utils";
+import { formatCoin, formatUnbondingTime } from "../../../common/utils";
 
 export const UnbondingCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -24,32 +24,12 @@ export const UnbondingCard: FunctionComponent<{
     .unbondingBalances.find(
       (unbonding) => unbonding.validatorAddress === validatorAddress
     );
+
   const style = useStyle();
-
   const intl = useIntl();
-  const chainInfo = chainStore.getChain(chainStore.current.chainId).raw;
-  const unbondingTime = chainInfo.unbondingTime ?? 86400000;
-  const unbondingTimeText = (() => {
-    const relativeEndTime = unbondingTime / 1000;
-    const relativeEndTimeDays = Math.floor(relativeEndTime / (3600 * 24));
-    const relativeEndTimeHours = Math.ceil(relativeEndTime / 3600);
 
-    if (relativeEndTimeDays) {
-      return intl
-        .formatRelativeTime(relativeEndTimeDays, "days", {
-          numeric: "always",
-        })
-        .replace("days", intl.formatMessage({ id: "staking.unbonding.days" }));
-    } else if (relativeEndTimeHours) {
-      return intl
-        .formatRelativeTime(relativeEndTimeHours, "hours", {
-          numeric: "always",
-        })
-        .replace("hours", "h");
-    }
-
-    return "";
-  })();
+  const unbondingTime = queries.cosmos.queryStakingParams.unbondingTimeSec ?? 172800;
+  const unbondingTimeText = formatUnbondingTime(unbondingTime, intl);
 
   return unbonding ? (
     <Card style={containerStyle}>

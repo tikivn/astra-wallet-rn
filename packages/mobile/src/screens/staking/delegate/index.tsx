@@ -53,6 +53,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
 
   const style = useStyle();
   const intl = useIntl();
+  const smartNavigation = useSmartNavigation();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
@@ -67,17 +68,12 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   );
 
   useEffect(() => {
+    updateNavigationTitle();
+  }, []);
+
+  useEffect(() => {
     sendConfigs.recipientConfig.setRawRecipient(validatorAddress);
   }, [sendConfigs.recipientConfig, validatorAddress]);
-
-  const sendConfigError =
-    // sendConfigs.recipientConfig.error ??
-    // sendConfigs.amountConfig.error ??
-    // sendConfigs.memoConfig.error ??
-    // sendConfigs.gasConfig.error ??
-    sendConfigs.feeConfig.error;
-  const txStateIsValid = sendConfigError == null;
-  console.log("__DEBUG__ sendConfigError === ", sendConfigError);
 
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
     Staking.BondStatus.Bonded
@@ -115,6 +111,8 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   const unbondingTime = queries.cosmos.queryStakingParams.unbondingTimeSec ?? 172800;
   const unbondingTimeText = formatUnbondingTime(unbondingTime, intl);
 
+  const [amountIsValid, setAmountIsValid] = useState(false);
+
   const rows: IRow[] = [
     {
       type: "items",
@@ -137,7 +135,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   ];
 
   const onContinueHandler = async () => {
-    if (account.isReadyToSendTx && txStateIsValid) {
+    if (account.isReadyToSendTx && amountIsValid) {
       const params = {
         token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
         amount: Number(sendConfigs.amountConfig.amount),
@@ -204,6 +202,15 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     }
   };
 
+  const updateNavigationTitle = () => {
+    smartNavigation.setOptions({
+      title: intl.formatMessage(
+        { id: "delegate.title" },
+        { coin: chainStore.current.stakeCurrency.coinDenom }
+      )
+    });
+  }
+
   return (
     <View style={style.flatten(["flex-1", "background-color-background"])}>
       <KeyboardAwareScrollView
@@ -224,10 +231,12 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         />
         <AmountInput
           labelText={intl.formatMessage({ id: "stake.delegate.amount" })}
-          errorText={sendConfigError?.message}
           amountConfig={sendConfigs.amountConfig}
           availableAmount={userBalanceStore.getBalance()}
-          fee={sendConfigs.feeConfig.fee}
+          feeConfig={sendConfigs.feeConfig}
+          onAmountChanged={(_, isValid) => {
+            setAmountIsValid(isValid);
+          }}
           containerStyle={style.flatten(["margin-top-24"])}
         />
         <ListRowView
@@ -242,7 +251,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         <View style={{ ...style.flatten(["background-color-background"]), height: 56 }}>
           <Button
             text={intl.formatMessage({ id: "stake.delegate.invest" })}
-            disabled={!account.isReadyToSendTx || !txStateIsValid}
+            disabled={!amountIsValid}
             loading={account.txTypeInProgress === "delegate"}
             onPress={onContinueHandler}
             containerStyle={style.flatten(["margin-x-page", "margin-top-12"])}

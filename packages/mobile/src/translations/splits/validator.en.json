@@ -22,7 +22,7 @@
   "validator.details.unbonding.noticeWithdrawalPeroid": "You will receive your {coin} after {days}. To see the number of {coin} successfully withdrawal please see ",
   "validator.details.unbonding.receiveAfter": "Receive in",
   "validator.details.updateTime": "Latest change",
-  "validator.details.uptime": "Active period",
+  "validator.details.uptime": "Active period {percent}",
   "validator.details.votingPower": "~{percent}% vote right",
   "validator.list.name": "Name",
   "validator.list.totalShares": "Total shares"

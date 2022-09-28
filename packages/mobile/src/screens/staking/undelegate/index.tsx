@@ -101,16 +101,6 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.recipientConfig.setRawRecipient(validatorAddress);
   }, [sendConfigs.recipientConfig, validatorAddress]);
 
-  const sendConfigError =
-    // sendConfigs.recipientConfig.error ??
-    // sendConfigs.amountConfig.error ??
-    // sendConfigs.memoConfig.error ??
-    // sendConfigs.gasConfig.error ??
-    sendConfigs.feeConfig.error;
-  console.log("__DEBUG__ sendConfigError === ", sendConfigError?.message);
-
-  const txStateIsValid = sendConfigError == null;
-
   const { gasPrice, gasLimit, feeType } = simulateUndelegateGasFee(
     chainStore,
     accountStore,
@@ -123,6 +113,8 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
 
   const unbondingTime = queries.cosmos.queryStakingParams.unbondingTimeSec ?? 172800;
   const unbondingTimeText = formatUnbondingTime(unbondingTime, intl);
+
+  const [amountIsValid, setAmountIsValid] = useState(false);
 
   const rows: IRow[] = [
     {
@@ -146,7 +138,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
   ];
 
   const onContinueHandler = async () => {
-    if (account.isReadyToSendTx && txStateIsValid) {
+    if (account.isReadyToSendTx && amountIsValid) {
       const params = {
         token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
         amount: Number(sendConfigs.amountConfig.amount),
@@ -221,28 +213,6 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
     }
   };
 
-  // const granter = queries.cosmos.queryGrants
-  //   .getGranterBech32Address(validatorAddress)
-  //   .grants
-  // const grantee = queries.cosmos.queryGrants
-  //   .getGranteeBech32Address(validatorAddress)
-  //   .grants
-  // // const allowance = queries.cosmos.queryAllowance
-  // //   .getQueryBech32Address(account.bech32Address)
-  // //   .getRedelegations({ dstValidatorAddress: validatorAddress })
-  // //   .shift();
-  // const allowances = queries.cosmos.queryAllowances
-  //   .getGranteeBech32Address(account.bech32Address)
-  //   .allowances;
-
-
-  // console.log("account.bech32Address", account.bech32Address);
-  // console.log("account.ethereumHexAddress", account.ethereumHexAddress);
-  // console.log("validatorAddress", validatorAddress);
-  // console.log("granter", granter);
-  // console.log("grantee", grantee);
-  // console.log("allowances", allowances);
-
   return (
     <View style={style.flatten(["flex-1", "background-color-background"])}>
       <KeyboardAwareScrollView
@@ -274,8 +244,11 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         />
         <AmountInput
           labelText={intl.formatMessage({ id: "stake.undelegate.amountLabel" })}
-          errorText={sendConfigError?.message}
           amountConfig={sendConfigs.amountConfig}
+          feeConfig={sendConfigs.feeConfig}
+          onAmountChanged={(_, isValid) => {
+            setAmountIsValid(isValid);
+          }}
           availableAmount={staked}
           containerStyle={style.flatten(["margin-top-24"])}
         />
@@ -298,7 +271,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         >
           <Button
             text={intl.formatMessage({ id: "stake.undelegate.undelegate" })}
-            disabled={!account.isReadyToSendTx || !txStateIsValid}
+            disabled={!amountIsValid}
             loading={account.txTypeInProgress === "redelegate"}
             onPress={onContinueHandler}
             containerStyle={style.flatten(["margin-x-page", "margin-top-12"])}

@@ -107,15 +107,6 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.recipientConfig.setRawRecipient(dstValidatorAddress);
   }, [dstValidatorAddress, sendConfigs.recipientConfig]);
 
-  const sendConfigError =
-    // sendConfigs.recipientConfig.error ??
-    // sendConfigs.amountConfig.error ??
-    // sendConfigs.memoConfig.error ??
-    // sendConfigs.gasConfig.error ??
-    sendConfigs.feeConfig.error;
-  console.log("__DEBUG__ sendConfigError === ", sendConfigError);
-  const txStateIsValid = sendConfigError == null;
-
   const { gasPrice, gasLimit, feeType } = simulateRedelegateGasFee(
     chainStore,
     accountStore,
@@ -126,6 +117,8 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
   sendConfigs.gasConfig.setGas(gasLimit);
   sendConfigs.feeConfig.setFeeType(feeType);
   const feeText = formatCoin(sendConfigs.feeConfig.fee);
+
+  const [amountIsValid, setAmountIsValid] = useState(false);
 
   const rows: IRow[] = [
     {
@@ -149,7 +142,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
   ];
 
   const onContinueHandler = async () => {
-    if (account.isReadyToSendTx && txStateIsValid) {
+    if (account.isReadyToSendTx && amountIsValid && dstValidatorAddress) {
       const params = {
         token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
         amount: Number(sendConfigs.amountConfig.amount),
@@ -244,8 +237,11 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
         />
         <AmountInput
           labelText={intl.formatMessage({ id: "stake.redelegate.amountLabel" })}
-          errorText={sendConfigError?.message}
           amountConfig={sendConfigs.amountConfig}
+          feeConfig={sendConfigs.feeConfig}
+          onAmountChanged={(_, isValid) => {
+            setAmountIsValid(isValid);
+          }}
           availableAmount={staked}
           containerStyle={style.flatten(["margin-top-24"])}
         />
@@ -261,7 +257,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
         <View style={{ ...style.flatten(["background-color-background"]), height: 56 }}>
           <Button
             text={intl.formatMessage({ id: "stake.redelegate.redelagate" })}
-            disabled={!account.isReadyToSendTx || !txStateIsValid}
+            disabled={!amountIsValid || !dstValidatorAddress}
             loading={account.txTypeInProgress === "redelegate"}
             onPress={onContinueHandler}
             containerStyle={style.flatten(["margin-x-page", "margin-top-12"])}

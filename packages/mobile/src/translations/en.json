@@ -4,7 +4,7 @@
   "camera.title": "Connect app",
   "changePassword.title": "Change password",
   "connectedApps.title": "Connected apps",
-  "delegate.title": "Input amount",
+  "delegate.title": "Delegate {coin}",
   "deleteAccount.button.delete": "Logout",
   "deleteAccount.title": "Logout",
   "deleteAccount.top.title": "",

@@ -469,9 +469,6 @@ export const WalletNavigation: FunctionComponent = () => {
         component={StakingRewardScreen}
       />
       <Stack.Screen
-        options={{
-          title: intl.formatMessage({ id: "delegate.title" }),
-        }}
         name="Delegate"
         component={DelegateScreen}
       />

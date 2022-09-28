@@ -30,7 +30,7 @@ export const DashboardHeader: FunctionComponent<{
       ])}
     >
       <View style={style.flatten(["flex-1", "margin-left-0", "items-start"])}>
-        <Text style={style.flatten(["color-white", "h3"])}>
+        <Text style={style.flatten(["color-white", "text-2x-large-semi-bold"])}>
           <FormattedMessage id="staking.dashboard.title" />
         </Text>
         <TextLink
