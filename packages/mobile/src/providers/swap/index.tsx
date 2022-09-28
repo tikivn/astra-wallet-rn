@@ -1,7 +1,11 @@
 import { Currency, CurrencyAmount } from "@solarswap/sdk";
 import React from "react";
 import { UseSwapAggregationValue } from "../../hooks";
-import { SLIPPAGE_TOLERANCE, SwapField } from "../../utils/for-swap";
+import {
+  INITIAL_ALLOWED_SLIPPAGE,
+  SLIPPAGE_TOLERANCE,
+  SwapField,
+} from "../../utils/for-swap";
 import { SwapAction, SwapInfoState } from "./reducer";
 export interface SwapRootState {
   swapInfos: SwapInfoState;
@@ -32,7 +36,7 @@ const swapInfos = {
   },
   dependentField: SwapField.Input,
   independentField: SwapField.Output,
-  slippageTolerance: SLIPPAGE_TOLERANCE[1],
+  slippageTolerance: INITIAL_ALLOWED_SLIPPAGE,
   swapValue: "",
   error: "",
 };

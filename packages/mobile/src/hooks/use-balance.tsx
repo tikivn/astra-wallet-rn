@@ -1,15 +1,20 @@
 import { isAddress } from "@ethersproject/address";
+import { BigNumber } from "@ethersproject/bignumber";
 import { Provider, Web3Provider } from "@ethersproject/providers";
+import { Erc20Currency } from "@keplr-wallet/types";
+import { CoinPretty, Int } from "@keplr-wallet/unit";
 import {
   ChainId,
   Currency,
   CurrencyAmount,
+  ETHER,
   JSBI,
   Token,
   TokenAmount,
 } from "@solarswap/sdk";
 import { useCallback, useMemo, useState } from "react";
 import erc20Abi from "../contracts/abis/erc20.json";
+import { useStore } from "../stores";
 import { INTERNAL_DELAY } from "../utils/for-swap";
 import { CallProps, multicall } from "../utils/for-swap/multicall";
 import { useInterval } from "./use-interval";
@@ -129,6 +134,71 @@ export const useASABalance = (
   );
 
   return useMemo(() => {
-    return new TokenAmount(WASA, asaBalance);
+    return asaBalance ? new TokenAmount(WASA, asaBalance) : undefined;
   }, [asaBalance, WASA]);
 };
+
+export function useCurrencyBalancesFromStore(
+  currencies?: (Currency | undefined)[]
+): (CurrencyAmount | undefined)[] {
+  const { queriesStore, chainStore } = useStore();
+  const { account, chainIdStr, accountHex } = useWeb3();
+  const currencySymbols = useMemo(
+    () => (currencies ? currencies.map((item) => item?.symbol) : []),
+    [currencies]
+  );
+
+  const appCurrencies = useMemo(
+    () =>
+      chainStore.current.currencies.filter(
+        (item) => item.coinDenom in currencySymbols
+      ),
+    [chainStore, currencySymbols]
+  );
+  const getBalanceErc20 = useCallback(
+    (currency: Erc20Currency) => {
+      const value0 = BigNumber.from(0).toString();
+      if (!accountHex || !currency.contractAddress) return value0;
+      const balance = queriesStore
+        .get(chainIdStr)
+        .keplrETC.queryERC20Balance.getBalance({
+          contractAddress: currency.contractAddress,
+          accountHex,
+        }).balance;
+      if (!balance) {
+        return value0;
+      }
+      const bn = BigNumber.from(balance);
+      return bn.toString();
+    },
+    [accountHex, chainIdStr, queriesStore]
+  );
+  const tokenBalances = useMemo(
+    () =>
+      appCurrencies.map((curr) => {
+        const currency = currencies?.find((f) => f?.symbol === curr.coinDenom);
+
+        if ("type" in curr && curr.type === "erc20") {
+          return new TokenAmount(currency as Token, getBalanceErc20(curr));
+        }
+        if (curr.coinDenom === ETHER.symbol) {
+          const asaBalance = queriesStore
+            .get(chainIdStr)
+            .queryBalances.getQueryBech32Address(account.bech32Address)
+            .getBalanceFromCurrency(curr);
+          return new TokenAmount(currency as Token, asaBalance.toString());
+        }
+      }),
+    [
+      account.bech32Address,
+      appCurrencies,
+      chainIdStr,
+      currencies,
+      getBalanceErc20,
+      queriesStore,
+    ]
+  );
+  console.log("🚀 -> tokenBalances", tokenBalances);
+
+  return tokenBalances;
+}

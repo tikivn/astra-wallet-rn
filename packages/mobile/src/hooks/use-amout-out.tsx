@@ -24,8 +24,9 @@ export const useAmountOut = ({
     [SwapField.Input]: inputCurrency,
     [SwapField.Output]: outputCurrency,
   },
+  swapValue,
 }: UseAmountOutProps) => {
-  const { etherProvider, WASA } = useWeb3();
+  const { etherProvider } = useWeb3();
   const [pair, setPair] = useState<Pair>();
 
   const fetchPairData = useCallback(async () => {
@@ -43,31 +44,32 @@ export const useAmountOut = ({
     async (valueSwap: string, dependentField: SwapField) => {
       if (!pair || !inputCurrency || !outputCurrency) return [];
       if (dependentField === SwapField.Input) {
-        const tokenInAmoutSwap = tryParseAmount(valueSwap, inputCurrency, WASA);
+        const tokenInAmoutSwap = tryParseAmount(valueSwap, inputCurrency);
         return Trade.bestTradeExactIn(
           [pair],
           tokenInAmoutSwap as CurrencyAmount,
           outputCurrency.symbol === ETHER.symbol ? ETHER : outputCurrency
         );
       }
-      const tokenOutAmoutSwap = tryParseAmount(valueSwap, outputCurrency, WASA);
+      const tokenOutAmoutSwap = tryParseAmount(valueSwap, outputCurrency);
       return Trade.bestTradeExactOut(
         [pair],
         inputCurrency.symbol === ETHER.symbol ? ETHER : inputCurrency,
         tokenOutAmoutSwap as CurrencyAmount
       );
     },
-    [WASA, pair, inputCurrency, outputCurrency]
+    [pair, inputCurrency, outputCurrency]
   );
   useInterval(
     () => {
       fetchPairData();
     },
     INTERNAL_DELAY,
-    true
+    true,
+    swapValue
   );
-
   return {
     fetchTrade: trade,
+    pairData: pair,
   };
 };

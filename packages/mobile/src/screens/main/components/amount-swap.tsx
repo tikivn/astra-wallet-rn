@@ -6,7 +6,7 @@ import { StyleSheet, Text, TextInput, View } from "react-native";
 import FastImage from "react-native-fast-image";
 import { VectorCharacter } from "../../../components";
 import { Button } from "../../../components/button";
-import { useStyle } from "../../../styles";
+import { useStyle, V1Colors } from "../../../styles";
 import { SIGNIFICANT_DECIMAL_PLACES, SwapField } from "../../../utils/for-swap";
 
 interface SwapAmountProps {
@@ -88,7 +88,12 @@ export const AmountSwap: FunctionComponent<SwapAmountProps> = observer(
                     values={{
                       // eslint-disable-next-line react/display-name
                       b: () => (
-                        <Text style={{ fontWeight: "bold" }}>
+                        <Text
+                          style={{
+                            fontWeight: "bold",
+                            color: V1Colors["gray-10"],
+                          }}
+                        >
                           {balance?.toSignificant(SIGNIFICANT_DECIMAL_PLACES)}
                         </Text>
                       ),

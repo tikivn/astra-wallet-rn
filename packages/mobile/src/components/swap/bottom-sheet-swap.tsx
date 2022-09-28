@@ -1,5 +1,12 @@
-import React, { FunctionComponent } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { FunctionComponent, useEffect } from "react";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Keyboard,
+} from "react-native";
 import { registerModal } from "../../modals/base";
 import { useStyle } from "../../styles";
 
@@ -11,6 +18,9 @@ export interface BottomSheetSwapProps {
 }
 export const BottomSheetSwap: FunctionComponent<BottomSheetSwapProps> = registerModal(
   ({ label, children, close }) => {
+    useEffect(() => {
+      Keyboard.dismiss();
+    }, []);
     const style = useStyle();
     return (
       <View style={style.flatten(["padding-0"])}>

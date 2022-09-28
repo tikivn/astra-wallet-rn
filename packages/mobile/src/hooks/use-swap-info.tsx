@@ -18,6 +18,10 @@ export const useSwapInfo = ({
     inputCurrency,
     outputCurrency,
   ]);
+  console.log(
+    "🚀 -> relevantTokenBalances",
+    relevantTokenBalances.map((item) => item && item.toSignificant(6))
+  );
 
   const tokenBalances = {
     [SwapField.Input]: relevantTokenBalances[0],

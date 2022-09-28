@@ -3,6 +3,7 @@ import { ChainId, Currency, Token } from "@solarswap/sdk";
 import React, {
   FunctionComponent,
   useCallback,
+  useEffect,
   useMemo,
   useReducer,
 } from "react";
@@ -63,7 +64,7 @@ export const SwapProvider: FunctionComponent<SwapProviderProps> = ({
 
   const { tokenBalances } = useSwapInfo({ currencies });
 
-  const { fetchTrade } = useAmountOut({
+  const { fetchTrade, pairData } = useAmountOut({
     currencies,
     swapValue: swapInfos.swapValue,
   });
@@ -73,6 +74,7 @@ export const SwapProvider: FunctionComponent<SwapProviderProps> = ({
     swapInfos,
     tokenBalances,
     dispatch,
+    pairData,
   });
 
   if (!dispatch) return null;

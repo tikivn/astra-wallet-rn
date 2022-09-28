@@ -18,7 +18,8 @@ export const GAS_PRICE_GWEI = {
 export const TX_DEADLINE = 20 * 60; // 20p
 
 export const SLIPPAGE_TOLERANCE = [100, 200, 500];
-export const INITIAL_ALLOWED_SLIPPAGE = SLIPPAGE_TOLERANCE[1]; // 50/1000
+
+export const INITIAL_ALLOWED_SLIPPAGE = SLIPPAGE_TOLERANCE[0]; // 50/1000
 
 export const BIPS_BASE = JSBI.BigInt(10000);
 
@@ -27,7 +28,7 @@ export const BASE_FEE = new Percent(JSBI.BigInt(25), BIPS_BASE);
 export const INTERNAL_DELAY = 15 * 1000; // 5s
 
 //interval stop time when value does not change
-export const INTERVAL_STOP = 20 * 1000; // 20s
+export const INTERVAL_STOP = 30 * 1000; // 30s
 
 export const FIXED_DECIMAL_PLACES = 4;
 export const SIGNIFICANT_DECIMAL_PLACES = 6;

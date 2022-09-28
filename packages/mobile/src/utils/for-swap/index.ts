@@ -85,9 +85,6 @@ export const getExchangeRateString = (
   currencies: { [K in SwapField]: Currency | undefined },
   price?: string
 ) => {
-  if (!price) {
-    return "";
-  }
   return `1 ${currencies[dependentField]?.symbol} ≈ ${price || ""} ${
     currencies[independentField]?.symbol
   }`;

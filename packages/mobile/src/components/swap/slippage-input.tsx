@@ -8,7 +8,10 @@ import {
   View,
 } from "react-native";
 import { useStyle } from "../../styles";
-import { SLIPPAGE_TOLERANCE } from "../../utils/for-swap";
+import {
+  INITIAL_ALLOWED_SLIPPAGE,
+  SLIPPAGE_TOLERANCE,
+} from "../../utils/for-swap";
 import { AvoidingKeyboardBottomView } from "../avoiding-keyboard/avoiding-keyboard-bottom";
 import { Button } from "../button";
 import { BottomSheetSwap, BottomSheetSwapProps } from "./bottom-sheet-swap";
@@ -24,7 +27,7 @@ export const SlippageInput = ({
   const style = useStyle();
   const intl = useIntl();
   const [selectedValue, setSelectedValue] = useState<number>(
-    SLIPPAGE_TOLERANCE[1]
+    INITIAL_ALLOWED_SLIPPAGE
   );
   const [inputValue, setInputValue] = useState<string>("");
 
@@ -45,7 +48,7 @@ export const SlippageInput = ({
   }, []);
 
   const handleClear = useCallback(() => {
-    setSelectedValue(SLIPPAGE_TOLERANCE[1]);
+    setSelectedValue(INITIAL_ALLOWED_SLIPPAGE);
     setInputValue("");
     setError("");
     props.close && props.close();
@@ -185,10 +188,7 @@ export const SlippageInput = ({
       >
         <Button
           text={intl.formatMessage({ id: "swap.slippage.input.button.clear" })}
-          containerStyle={style.flatten([
-            "flex-1",
-            "margin-right-8",
-          ])}
+          containerStyle={style.flatten(["flex-1", "margin-right-8"])}
           color="neutral"
           onPress={handleClear}
         />

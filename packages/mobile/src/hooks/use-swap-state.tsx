@@ -1,5 +1,5 @@
 import { parseUnits } from "@ethersproject/units";
-import { CurrencyAmount, JSBI, Trade } from "@solarswap/sdk";
+import { CurrencyAmount, JSBI, Pair, Trade } from "@solarswap/sdk";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { SwapAction, SwapInfoState, SwapType } from "../providers/swap/reducer";
 import {
@@ -24,6 +24,7 @@ interface UseSwapProps {
     [Key in SwapField]: CurrencyAmount | undefined;
   };
   dispatch: React.Dispatch<SwapAction> | null;
+  pairData: Pair | undefined;
 }
 export interface UseSwapAggregationValue {
   lpFee?: string | undefined;
@@ -31,7 +32,7 @@ export interface UseSwapAggregationValue {
   minimunReceived?: string | undefined;
   priceImpact?: string | undefined;
   trade?: Trade | undefined;
-  isReadyToSwap: boolean;
+  isReadyToSwap?: boolean;
 }
 
 export const useSwapState = ({
@@ -39,6 +40,7 @@ export const useSwapState = ({
   swapInfos,
   tokenBalances,
   dispatch,
+  pairData,
 }: UseSwapProps) => {
   const [outputSwapValue, setOutputSwapValue] = useState<string>("");
   const {
@@ -156,6 +158,34 @@ export const useSwapState = ({
       payload: error,
     });
   }, [dispatch, tokenBalances, values]);
+
+  useEffect(() => {
+    // init exchangeRate
+    if (
+      pairData &&
+      !outputSwapValue &&
+      !aggregationValue.pricePerInputCurrency
+    ) {
+      const { token0, token1Price, token0Price } = pairData;
+      const independentFieldSymbol =
+        tokenBalances[independentField]?.currency?.symbol;
+
+      const exchangeRate =
+        token0.symbol === independentFieldSymbol ? token0Price : token1Price;
+
+      setAggregationValue({
+        pricePerInputCurrency: exchangeRate.toSignificant(
+          SIGNIFICANT_DECIMAL_PLACES
+        ),
+      });
+    }
+  }, [
+    aggregationValue.pricePerInputCurrency,
+    independentField,
+    outputSwapValue,
+    pairData,
+    tokenBalances,
+  ]);
 
   return {
     values,
