@@ -66,10 +66,16 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(({
     ]),
   };
 
+  const inputPaddingRightDef = secureTextEntry
+    ? "padding-right-10"
+    : (rightView ? "padding-right-4" : "padding-right-16");
   const inputContainerStyle = {
     ...styleBuilder.flatten([
       "background-color-input-background",
       "input-container",
+      "padding-x-0",
+      "padding-left-16",
+      inputPaddingRightDef as any,
     ]),
     ...borderColor(),
   };

@@ -87,7 +87,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
             data,
           },
         ]}
-        stickySectionHeadersEnabled={false}
+        stickySectionHeadersEnabled={true}
         keyExtractor={(item: Staking.Validator) => item.operator_address}
         renderItem={({
           item,
@@ -111,7 +111,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
         renderSectionHeader={() => {
           return (
             <View
-              style={style.flatten(["flex", "height-40", "padding-top-12"])}
+              style={style.flatten(["flex", "height-40", "padding-top-12", "background-color-background"])}
             >
               <View
                 style={style.flatten([

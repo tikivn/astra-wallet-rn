@@ -139,8 +139,8 @@ export const AmountInput: FunctionComponent<{
               <Text
                 style={style.flatten([
                   "text-base-regular",
-                  "color-gray-50",
-                  "margin-right-16",
+                  "color-label-text-2",
+                  "margin-right-8",
                 ])}
               >
                 {amountConfig.sendCurrency.coinDenom}

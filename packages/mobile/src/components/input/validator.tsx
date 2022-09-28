@@ -33,7 +33,7 @@ export const ValidatorItem: FunctionComponent<{
       >
         <View style={style.flatten(["flex-row", "justify-start", "items-center"])}>
           <ValidatorThumbnail
-            style={style.flatten(["margin-right-16"])}
+            style={style.flatten(["margin-right-8"])}
             size={24}
             url={thumbnail}
           />

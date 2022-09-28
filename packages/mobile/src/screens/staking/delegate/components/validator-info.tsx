@@ -6,7 +6,7 @@ import FastImage from "react-native-fast-image";
 import { buildLeftColumn, buildRightColumn } from "../../../../components/foundation-view/item-row";
 import { IRow, ListRowView } from "../../../../components/foundation-view/list-row-view";
 import { PersonIcon } from "../../../../components/icon";
-import { Colors, useStyle } from "../../../../styles";
+import { useStyle } from "../../../../styles";
 import { Typos } from "../../../../styles/typos";
 
 interface IValidatorInfo {
@@ -41,7 +41,7 @@ export const ValidatorInfo: FunctionComponent<{
   const rows: IRow[] = [
     {
       type: "items",
-      itemSpacing: 12,
+      itemSpacing: 8,
       cols: [
         thumbnailIcon(thumbnailUrl),
         buildLeftColumn({
