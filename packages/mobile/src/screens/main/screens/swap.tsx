@@ -24,8 +24,9 @@ import { useStyle, V1Colors } from "../../../styles";
 import {
   getExchangeRateString,
   getSlippageTolaranceString,
-  getTransactionFee,
+  getLiquidityFee,
   SwapField,
+  getTransactionFee,
 } from "../../../utils/for-swap";
 import { AmountSwap, Tooltip } from "../components";
 
@@ -36,6 +37,7 @@ export const SwapScreen: FunctionComponent = observer(() => {
     tokenBalances,
     values,
     lpFee,
+    txFee,
     pricePerInputCurrency,
     isReadyToSwap,
     currencies,
@@ -198,10 +200,29 @@ export const SwapScreen: FunctionComponent = observer(() => {
               style.flatten(["color-gray-30", "text-caption"]),
             ])}
           >
+            {intl.formatMessage({ id: "swap.transactionFee" })}
+          </Text>
+          <Text style={style.flatten(["color-gray-10", "body3"])}>
+            {getTransactionFee(txFee)}
+          </Text>
+        </View>
+        <View
+          style={style.flatten([
+            "flex-row",
+            "items-center",
+            "justify-between",
+            "margin-bottom-16",
+          ])}
+        >
+          <Text
+            style={StyleSheet.flatten([
+              style.flatten(["color-gray-30", "text-caption"]),
+            ])}
+          >
             {intl.formatMessage({ id: "swap.liquidityFee" })}
           </Text>
           <Text style={style.flatten(["color-gray-10", "body3"])}>
-            {getTransactionFee(currencies, lpFee)}
+            {getLiquidityFee(currencies, lpFee)}
           </Text>
         </View>
         <View
@@ -220,11 +241,7 @@ export const SwapScreen: FunctionComponent = observer(() => {
                 id="swap.slipageTolarance"
                 values={{
                   // eslint-disable-next-line react/display-name
-                  b: () => (
-                    <Text style={{ fontWeight: "bold" }}>
-                      {getSlippageTolaranceString(swapInfos)}
-                    </Text>
-                  ),
+                  b: () => <Text>{getSlippageTolaranceString(swapInfos)}</Text>,
                 }}
               />
             </Text>

@@ -1,22 +1,23 @@
 /* eslint-disable react/display-name */
 
-import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
-import { CoinUtils, Coin, IntPretty, CoinPretty } from "@keplr-wallet/unit";
-import { AppCurrency, Currency } from "@keplr-wallet/types";
-import yaml from "js-yaml";
-import { CoinPrimitive } from "@keplr-wallet/stores";
-import { Text } from "react-native";
 import { Bech32Address } from "@keplr-wallet/cosmos";
+import { CoinPrimitive } from "@keplr-wallet/stores";
+import { AppCurrency, Currency } from "@keplr-wallet/types";
+import { Coin, CoinPretty, CoinUtils, IntPretty } from "@keplr-wallet/unit";
+import yaml from "js-yaml";
+import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
+import { Text } from "react-native";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Hypher from "hypher";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import english from "hyphenation.en-us";
+import converter from "bech32-converting";
 import { Buffer } from "buffer/";
+import english from "hyphenation.en-us";
 import { observer } from "mobx-react-lite";
-import { useStore } from "../../../stores";
-import { Colors, useStyle } from "../../../styles";
+import { useIntl } from "react-intl";
+import { formatCoin, formatDate } from "../../../common/utils";
 import {
   AlignItems,
   buildLeftColumn,
@@ -24,11 +25,9 @@ import {
   IRow,
   RowType,
 } from "../../../components";
-import { useIntl } from "react-intl";
-import converter from "bech32-converting";
-import { formatCoin, formatDate } from "../../../common/utils";
-import { formatUnits, parseUnits } from "@ethersproject/units";
-import { BigNumber } from "@ethersproject/bignumber";
+import { useStore } from "../../../stores";
+import { useStyle } from "../../../styles";
+import { getTransactionFee } from "../../../utils/for-swap";
 
 const h = new Hypher(english);
 
@@ -186,7 +185,9 @@ export interface MsgSwap {
   liquidityFee: string;
   slippageTolerance: string;
   timestamp?: number;
-  transactionHash: string;
+  transactionHash?: string;
+  txFee?: string;
+  gasUsed?: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -265,7 +266,7 @@ export function renderMsgSend(value: MsgSend["value"]): IRow[] {
   return rows;
 }
 
-export function renderMsgSwap(data: MsgSwap, dataSign: any): IRow[] {
+export function renderMsgSwap(data: MsgSwap): IRow[] {
   const intl = useIntl();
 
   const separatorRow: IRow = { type: "separator" };
@@ -308,7 +309,7 @@ export function renderMsgSwap(data: MsgSwap, dataSign: any): IRow[] {
             flex: 3,
           }),
           buildRightColumn({
-            text: formatUnits(BigNumber.from(dataSign.gas), "gwei").toString(),
+            text: getTransactionFee(data.txFee),
             flex: 7,
           }),
         ],

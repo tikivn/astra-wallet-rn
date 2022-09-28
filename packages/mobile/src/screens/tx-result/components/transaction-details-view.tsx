@@ -65,7 +65,7 @@ export const TransactionDetailsView: FunctionComponent<{
       const transactionHash = (rawDataValue as MsgSwap).transactionHash;
       const url = "https://explorer.astranaut.dev/tx/" + transactionHash;
       smartNavigation.pushSmart("WebView", {
-        url: url,
+        url,
       });
     }
   };

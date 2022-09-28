@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useStyle } from "../../styles";
+import { useStyle, V1Colors } from "../../styles";
 import {
   INITIAL_ALLOWED_SLIPPAGE,
   SLIPPAGE_TOLERANCE,
@@ -93,7 +93,7 @@ export const SlippageInput = ({
           {
             borderTopWidth: 1,
             borderBottomWidth: 1,
-            borderColor: "#2C364F",
+            borderColor: V1Colors["gray-70"],
           },
           style.flatten(["padding-y-24", "padding-x-16", "min-height-80"]),
         ])}

@@ -1,4 +1,4 @@
-import { parseUnits } from "@ethersproject/units";
+import { formatUnits, parseUnits } from "@ethersproject/units";
 import { ChainId, Fraction, JSBI, Percent } from "@solarswap/sdk";
 
 export enum GAS_PRICE {
@@ -30,6 +30,8 @@ export const INTERNAL_DELAY = 15 * 1000; // 5s
 //interval stop time when value does not change
 export const INTERVAL_STOP = 30 * 1000; // 30s
 
+export const DELAY_TRANSACTIONFEE = 500;
+
 export const FIXED_DECIMAL_PLACES = 4;
 export const SIGNIFICANT_DECIMAL_PLACES = 6;
 export const MAXIMUM_PRICE_IMPACT = new Fraction(15, 100);
@@ -47,4 +49,4 @@ export enum ERROR_KEY {
 export const MIN_ASA: JSBI = JSBI.exponentiate(
   JSBI.BigInt(10),
   JSBI.BigInt(16)
-); // .01 BNB
+); // .01 ASA

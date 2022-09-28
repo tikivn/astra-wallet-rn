@@ -13,12 +13,16 @@ import ISolardexRouter02ABI from "../contracts/abis/ISolardexRouter02.json";
 import {
   calculateGasMargin,
   calculateSlippagePercent,
-  INITIAL_ALLOWED_SLIPPAGE,
   isZero,
   TX_DEADLINE,
 } from "../utils/for-swap";
 import addresses from "../utils/for-swap/addresses";
 import { getContract } from "../utils/for-swap/contract-helper";
+import {
+  DELAY_TRANSACTIONFEE,
+  INITIAL_ALLOWED_SLIPPAGE,
+} from "./../utils/for-swap/constant";
+import { useDebounce } from "./use-debounce";
 import { useSignTransaction } from "./use-sign-transaction";
 import { useWeb3 } from "./use-web3";
 
@@ -32,10 +36,11 @@ interface SwapCall {
   intf: Interface;
   contract: Contract;
   parameters: SwapParameters;
+  accountHex: string;
 }
 
 interface SuccessfulCall extends SwapCallEstimate {
-  gasEstimate: any;
+  gasEstimate: BigNumber;
 }
 
 interface FailedCall extends SwapCallEstimate {
@@ -66,18 +71,21 @@ function useTransactionDeadline() {
 // and the user has approved the slippage adjusted input amount for the trade
 
 export function useSwapCallArguments(
-  trade: Trade | undefined, // trade to execute, required
-  allowedSlippage: number = INITIAL_ALLOWED_SLIPPAGE // in bips
+  tradeMustDebounce: Trade | undefined, // trade to execute, required
+  allowedSlippage: number = INITIAL_ALLOWED_SLIPPAGE, // in bips
+  isUseDebounce = false
 ): SwapCall[] {
-  const { accountHex: account, chainId, etherProvider: library } = useWeb3();
+  const { accountHex, chainId, etherProvider: library } = useWeb3();
+  const trade = useDebounce(
+    tradeMustDebounce,
+    isUseDebounce ? DELAY_TRANSACTIONFEE : 0
+  );
 
   const chain = chainId || ChainId.TESTNET;
 
-  const recipient = account;
   const deadline = useTransactionDeadline();
   return useMemo(() => {
-    if (!trade || !recipient || !library || !account || !chainId || !deadline)
-      return [];
+    if (!trade || !library || !accountHex || !chainId || !deadline) return [];
 
     const intfContract = new Interface(ISolardexRouter02ABI);
     const contract = getContract(
@@ -94,7 +102,7 @@ export function useSwapCallArguments(
       Router.swapCallParameters(trade, {
         feeOnTransfer: false,
         allowedSlippage: allowedSlippagePercent,
-        recipient,
+        recipient: accountHex,
         deadline,
       })
     );
@@ -104,7 +112,7 @@ export function useSwapCallArguments(
         Router.swapCallParameters(trade, {
           feeOnTransfer: true,
           allowedSlippage: allowedSlippagePercent,
-          recipient,
+          recipient: accountHex,
           deadline,
         })
       );
@@ -114,17 +122,82 @@ export function useSwapCallArguments(
       parameters,
       contract,
       intf: intfContract,
+      accountHex,
     }));
-  }, [
-    account,
-    allowedSlippage,
-    chain,
-    chainId,
-    deadline,
-    library,
-    recipient,
-    trade,
-  ]);
+  }, [accountHex, allowedSlippage, chain, chainId, deadline, library, trade]);
+}
+
+export async function swapEstimateGas(swapCalls: SwapCall[]) {
+  const estimatedCalls: SwapCallEstimate[] = await Promise.all(
+    swapCalls.map((call) => {
+      const {
+        parameters: { methodName, args, value },
+        contract,
+        intf,
+        accountHex,
+      } = call;
+
+      const options = !value || isZero(value) ? {} : { value };
+      const encodeFunctionData = intf.encodeFunctionData(methodName, args);
+      const opts = { ...options, from: accountHex };
+      return contract.estimateGas[methodName](...args, opts)
+        .then((gasEstimate) => {
+          return {
+            encodeFunctionData,
+            gasEstimate,
+            value,
+          };
+        })
+        .catch((gasError) => {
+          console.error(
+            "Gas estimate failed, trying eth_call to extract error",
+            call,
+            gasError
+          );
+
+          return contract.callStatic[methodName](...args, options)
+            .then((result) => {
+              console.error(
+                "Unexpected successful call after failed estimate gas",
+                call,
+                gasError,
+                result
+              );
+              return {
+                call,
+                error:
+                  "Unexpected issue with estimating the gas. Please try again.",
+              };
+            })
+            .catch((callError) => {
+              console.error("Call threw error", call, callError);
+
+              return {
+                call,
+                error: swapErrorToUserReadableMessage(callError),
+              };
+            });
+        });
+    })
+  );
+
+  // a successful estimation is a bignumber gas estimate and the next call is also a bignumber gas estimate
+  const successfulEstimation = estimatedCalls.find(
+    (el, ix, list): el is SuccessfulCall =>
+      "gasEstimate" in el &&
+      (ix === list.length - 1 || "gasEstimate" in list[ix + 1])
+  );
+
+  if (!successfulEstimation) {
+    const errorCalls = estimatedCalls.filter(
+      (call): call is FailedCall => "error" in call
+    );
+    if (errorCalls.length > 0)
+      throw new Error(errorCalls[errorCalls.length - 1].error);
+    throw new Error("Unexpected error. Could not estimate gas for the swap.");
+  }
+
+  return successfulEstimation;
 }
 
 export function useSwapCallback(
@@ -138,8 +211,8 @@ export function useSwapCallback(
 } {
   const { etherProvider: library, chainId, accountHex, getStore } = useWeb3();
   const { transactionStore } = getStore();
-  const swapCalls = useSwapCallArguments(trade, allowedSlippage);
   const { signTransaction, signEthereum } = useSignTransaction();
+  const swapCalls = useSwapCallArguments(trade, allowedSlippage);
 
   const recipient = accountHex;
 
@@ -159,93 +232,12 @@ export function useSwapCallback(
       callback: async function onSwap(): Promise<string> {
         transactionStore.updateTxState("pending");
 
-        const estimatedCalls: SwapCallEstimate[] = await Promise.all(
-          swapCalls.map((call) => {
-            const {
-              parameters: { methodName, args, value },
-              contract,
-              intf,
-            } = call;
+        const {
+          encodeFunctionData,
+          gasEstimate,
+          value,
+        } = await swapEstimateGas(swapCalls);
 
-            const options = !value || isZero(value) ? {} : { value };
-            const encodeFunctionData = intf.encodeFunctionData(
-              methodName,
-              args
-            );
-            const opts = { ...options, from: accountHex };
-            return contract.estimateGas[methodName](...args, opts)
-              .then((gasEstimate) => {
-                return {
-                  encodeFunctionData,
-                  gasEstimate,
-                  value,
-                };
-              })
-              .catch((gasError) => {
-                console.error(
-                  "Gas estimate failed, trying eth_call to extract error",
-                  call,
-                  gasError
-                );
-
-                return contract.callStatic[methodName](...args, options)
-                  .then((result) => {
-                    console.error(
-                      "Unexpected successful call after failed estimate gas",
-                      call,
-                      gasError,
-                      result
-                    );
-                    return {
-                      call,
-                      error:
-                        "Unexpected issue with estimating the gas. Please try again.",
-                    };
-                  })
-                  .catch((callError) => {
-                    console.error("Call threw error", call, callError);
-
-                    return {
-                      call,
-                      error: swapErrorToUserReadableMessage(callError),
-                    };
-                  });
-              });
-          })
-        );
-
-        // a successful estimation is a bignumber gas estimate and the next call is also a bignumber gas estimate
-        const successfulEstimation = estimatedCalls.find(
-          (el, ix, list): el is SuccessfulCall =>
-            "gasEstimate" in el &&
-            (ix === list.length - 1 || "gasEstimate" in list[ix + 1])
-        );
-
-        if (!successfulEstimation) {
-          const errorCalls = estimatedCalls.filter(
-            (call): call is FailedCall => "error" in call
-          );
-          if (errorCalls.length > 0)
-            throw new Error(errorCalls[errorCalls.length - 1].error);
-          throw new Error(
-            "Unexpected error. Could not estimate gas for the swap."
-          );
-        }
-
-        const { encodeFunctionData, gasEstimate, value } = successfulEstimation;
-        // return signTransaction(encodeFunctionData || "", {
-        //   gasLimit: calculateGasMargin(gasEstimate).toHexString(),
-        //   value,
-        // })
-        //   .then((hash) => {
-        //     return hash;
-        //   })
-        //   .catch((error) => {
-        //     console.error(
-        //       `Swap failed: ${swapErrorToUserReadableMessage(error)}`
-        //     );
-        //     return "failed";
-        //   });
         return signEthereum(encodeFunctionData || "", {
           gas: calculateGasMargin(gasEstimate).toHexString(),
           value: value || "",

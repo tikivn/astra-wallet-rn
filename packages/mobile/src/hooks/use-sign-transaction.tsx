@@ -1,10 +1,11 @@
 import { hexlify } from "@ethersproject/bytes";
 import { TransactionRequest } from "@ethersproject/providers";
+import { formatUnits } from "@ethersproject/units";
 import { Wallet } from "@ethersproject/wallet";
 import { EthSignType } from "@keplr-wallet/types";
 import { useCallback, useMemo } from "react";
 import { useStore } from "../stores";
-import { GAS_PRICE_GWEI } from "../utils/for-swap";
+import { GAS_PRICE, GAS_PRICE_GWEI } from "../utils/for-swap";
 import addresses from "../utils/for-swap/addresses";
 import { useWeb3 } from "./use-web3";
 
@@ -104,13 +105,21 @@ export const useSignTransaction = () => {
           .then(({ hash }) => {
             return etherProvider.waitForTransaction(hash);
           })
-          .then(({ transactionHash }) => {
+          .then(({ transactionHash, gasUsed }) => {
             transactionStore.updateTxState("success");
             const rawData = transactionStore.rawData;
             if (rawData) {
+              const gasUsedStr = formatUnits(
+                gasUsed.mul(GAS_PRICE.testnet),
+                "gwei"
+              );
               transactionStore.updateRawData({
-                type: rawData.type,
-                value: { ...rawData.value, transactionHash },
+                ...rawData,
+                value: {
+                  ...rawData.value,
+                  transactionHash,
+                  gasUsed: gasUsedStr,
+                },
               });
             }
             resolve(transactionHash);

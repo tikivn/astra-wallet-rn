@@ -1,4 +1,4 @@
-import { parseUnits } from "@ethersproject/units";
+import { formatUnits, parseUnits } from "@ethersproject/units";
 import { CurrencyAmount, JSBI, Pair, Trade } from "@solarswap/sdk";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { SwapAction, SwapInfoState, SwapType } from "../providers/swap/reducer";
@@ -6,6 +6,7 @@ import {
   calculateSlippagePercent,
   ERROR_KEY,
   FIXED_DECIMAL_PLACES,
+  GAS_PRICE,
   MAXIMUM_PRICE_IMPACT,
   SIGNIFICANT_DECIMAL_PLACES,
   SwapField,
@@ -13,6 +14,7 @@ import {
 } from "../utils/for-swap";
 import { computeTradePriceBreakdown } from "../utils/for-swap/compute-price";
 import { useDebounce } from "./use-debounce";
+import { swapEstimateGas, useSwapCallArguments } from "./use-swap-callback";
 
 interface UseSwapProps {
   fetchTrade: (
@@ -33,6 +35,7 @@ export interface UseSwapAggregationValue {
   priceImpact?: string | undefined;
   trade?: Trade | undefined;
   isReadyToSwap?: boolean;
+  txFee?: string | undefined;
 }
 
 export const useSwapState = ({
@@ -62,7 +65,14 @@ export const useSwapState = ({
     priceImpact: "",
     trade: undefined,
     isReadyToSwap: false,
+    txFee: "",
   });
+
+  const swapCalls = useSwapCallArguments(
+    aggregationValue.trade,
+    swapInfos.slippageTolerance,
+    true
+  );
 
   const calculateValue = useCallback(
     (trade: Trade) => {
@@ -89,7 +99,8 @@ export const useSwapState = ({
       );
 
       setOutputSwapValue(outputSwapValue);
-      setAggregationValue({
+      setAggregationValue((state) => ({
+        ...state,
         lpFee: realizedLPFee?.toSignificant(SIGNIFICANT_DECIMAL_PLACES) || "",
         priceImpact:
           priceImpactWithoutFee?.toSignificant(SIGNIFICANT_DECIMAL_PLACES) ||
@@ -98,7 +109,7 @@ export const useSwapState = ({
         minimunReceived,
         pricePerInputCurrency,
         isReadyToSwap: !isPriceImpactTooHigh,
-      });
+      }));
     },
     [independentField, slippageTolerance]
   );
@@ -118,6 +129,14 @@ export const useSwapState = ({
     }
   }, [debouncedSwapValue, dependentField, fetchTrade, calculateValue]);
 
+  const getTransactionFee = useCallback(async () => {
+    if (!swapCalls || swapCalls.length === 0) return;
+    const { gasEstimate } = await swapEstimateGas(swapCalls);
+
+    const txFee = formatUnits(gasEstimate.mul(GAS_PRICE.testnet), "gwei");
+    setAggregationValue((state) => ({ ...state, txFee }));
+  }, [swapCalls]);
+
   const values = useMemo(
     () => ({
       [dependentField]: swapValue,
@@ -132,6 +151,14 @@ export const useSwapState = ({
     };
     get();
   }, [debouncedSwapValue, dependentField, getOutputValue]);
+
+  useEffect(() => {
+    if (!swapCalls || swapCalls.length === 0) return;
+    const get = async () => {
+      await getTransactionFee();
+    };
+    get();
+  }, [swapCalls, getTransactionFee]);
 
   useEffect(() => {
     // check insufficient balance
@@ -172,11 +199,10 @@ export const useSwapState = ({
 
       const exchangeRate =
         token0.symbol === independentFieldSymbol ? token0Price : token1Price;
+      const price = exchangeRate.toSignificant(FIXED_DECIMAL_PLACES);
 
       setAggregationValue({
-        pricePerInputCurrency: exchangeRate.toSignificant(
-          SIGNIFICANT_DECIMAL_PLACES
-        ),
+        pricePerInputCurrency: price,
       });
     }
   }, [
