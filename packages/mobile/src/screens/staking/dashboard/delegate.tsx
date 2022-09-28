@@ -22,12 +22,13 @@ import { PropertyView } from "../component/property";
 import { ValidatorItem } from "../../../components/input";
 import { FormattedMessage, useIntl } from "react-intl";
 import { formatCoin, formatPercent } from "../../../common/utils";
+import { KeplrETCQueries } from "@keplr-wallet/stores-etc";
 
 export const DelegationsItem: FunctionComponent<{
   containerStyle?: ViewStyle;
   chainStore: ChainStore;
   accountStore: AccountStore<[CosmosAccount, CosmwasmAccount, SecretAccount]>;
-  queriesStore: QueriesStore<[CosmosQueries, CosmwasmQueries, SecretQueries]>;
+  queriesStore: QueriesStore<[CosmosQueries, CosmwasmQueries, SecretQueries, KeplrETCQueries]>;
 }> = observer(
   ({ containerStyle, chainStore, accountStore, queriesStore }) => {
     const account = accountStore.getAccount(chainStore.current.chainId);
@@ -82,14 +83,18 @@ export const DelegationsItem: FunctionComponent<{
 
     return (
       <Card style={containerStyle}>
-        <CardBody style={style.flatten(["padding-bottom-0"])}>
-          <Text style={style.flatten(["h5", "color-white", "margin-bottom-0"])}>
+        <CardBody style={style.flatten(["padding-y-0"])}>
+          <Text style={style.flatten(["text-large-semi-bold", "color-white"])}>
             <FormattedMessage id="staking.delegate.label" />
           </Text>
         </CardBody>
 
         {delegations && delegations.length > 0 ? (
-          <CardBody style={style.flatten(["padding-x-0", "padding-y-14"])}>
+          <CardBody style={style.flatten([
+            "padding-x-0",
+            "padding-y-0",
+            "padding-bottom-16",
+          ])}>
             {delegations.map((del) => {
               const val = validatorsMap.get(del.delegation.validator_address);
               if (!val) {
@@ -117,7 +122,7 @@ export const DelegationsItem: FunctionComponent<{
                   style={style.flatten([
                     "flex",
                     "margin-x-16",
-                    "margin-y-8",
+                    "margin-top-16",
                     "border-radius-16",
                     "border-width-1",
                     "border-color-gray-60",

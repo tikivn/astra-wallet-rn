@@ -108,10 +108,11 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
   }, [dstValidatorAddress, sendConfigs.recipientConfig]);
 
   const sendConfigError =
-    sendConfigs.recipientConfig.error ??
-    sendConfigs.amountConfig.error ??
-    sendConfigs.memoConfig.error ??
-    sendConfigs.gasConfig.error;
+    // sendConfigs.recipientConfig.error ??
+    // sendConfigs.amountConfig.error ??
+    // sendConfigs.memoConfig.error ??
+    // sendConfigs.gasConfig.error ??
+    sendConfigs.feeConfig.error;
   console.log("__DEBUG__ sendConfigError === ", sendConfigError);
   const txStateIsValid = sendConfigError == null;
 
@@ -243,6 +244,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
         />
         <AmountInput
           labelText={intl.formatMessage({ id: "stake.redelegate.amountLabel" })}
+          errorText={sendConfigError?.message}
           amountConfig={sendConfigs.amountConfig}
           availableAmount={staked}
           containerStyle={style.flatten(["margin-top-24"])}

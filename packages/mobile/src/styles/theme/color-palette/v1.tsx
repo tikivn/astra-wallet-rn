@@ -10,7 +10,7 @@ const GrayColors = {
   "gray-90": "#2B2E54",
   "gray-100": "#1A1E40",
   "gray-overlay": "#1A1E40CC",
-}
+};
 
 const PurpleColors = {
   "purple-10": "#EAE5FF",
@@ -28,7 +28,7 @@ const PurpleColors = {
   "purple-40-10": "#866BFF1A",
   "purple-40-15": "#866BFF26",
   "purple-50-50": "#6D4DFF66",
-}
+};
 
 const RedColors = {
   "red-10": "#FFEAEF",
@@ -45,7 +45,7 @@ const RedColors = {
 
   "red-50-10": "#FD72941A",
   "red-50-15": "#FD729426",
-}
+};
 
 const YellowColors = {
   "yellow-10": "#FFF3E3",
@@ -59,7 +59,7 @@ const YellowColors = {
   "yellow-90": "#CC6900",
   "yellow-100": "#B55400",
   "yellow-overlay": "#FFB24D26",
-}
+};
 
 const GreenColors = {
   "green-10": "#E5FFFC",
@@ -73,7 +73,7 @@ const GreenColors = {
   "green-90": "#00614E",
   "green-100": "#003B2D",
   "green-overlay": "#30CFB426",
-}
+};
 
 const BlueColors = {
   "blue-10": "#D8EFFD",
@@ -87,7 +87,7 @@ const BlueColors = {
   "blue-90": "#0A568A",
   "blue-100": "#003459",
   "blue-overlay": "#3BAFF726",
-}
+};
 
 export const V1Colors = {
   ...GrayColors,
@@ -99,10 +99,10 @@ export const V1Colors = {
 };
 
 export const V1MainColors = {
-  "primary": V1Colors["purple-50"],
-  "background": V1Colors["gray-100"],
+  primary: V1Colors["purple-50"],
+  background: V1Colors["gray-100"],
   "button-primary": V1Colors["purple-50"],
-  "border": V1Colors["gray-70"],
+  border: V1Colors["gray-70"],
 };
 
 export const V1AlertInlineColors = {
@@ -138,7 +138,7 @@ export const V1ToggleColors = {
   "toggle-on": "white",
   "toggle-background-on": V1Colors["purple-50"],
   "toggle-off": "white",
-  "toggle-background-off": V1Colors["gray-20"],
+  "toggle-background-off": V1Colors["gray-30"],
 };
 
 export const V1StepViewColors = {

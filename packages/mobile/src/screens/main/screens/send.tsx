@@ -85,16 +85,16 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
   const feeText = formatCoin(sendConfigs.feeConfig.fee);
 
   const sendConfigError =
-    sendConfigs.recipientConfig.error ??
-    sendConfigs.amountConfig.error ??
-    sendConfigs.memoConfig.error ??
-    sendConfigs.gasConfig.error;
-  console.log("__DEBUG__ sendConfigError === ", sendConfigError);
+    // sendConfigs.recipientConfig.error ??
+    // sendConfigs.amountConfig.error ??
+    // sendConfigs.memoConfig.error ??
+    // sendConfigs.gasConfig.error ??
+    sendConfigs.feeConfig.error;
+  console.log("__DEBUG__ sendConfigError ==== ", sendConfigError);
 
   const txStateIsValid = sendConfigError == null;
   const style = useStyle();
   const intl = useIntl();
-  const smartNavigation = useSmartNavigation();
 
   const rows: IRow[] = [
     {
@@ -189,6 +189,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
         <AmountInput
           hideDenom
           labelText={intl.formatMessage({ id: "component.amount.input.sendindAmount" })}
+          errorText={sendConfigError?.message}
           amountConfig={sendConfigs.amountConfig}
           availableAmount={userBalanceStore.getBalance()}
           fee={sendConfigs.feeConfig.fee}

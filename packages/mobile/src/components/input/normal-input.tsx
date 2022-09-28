@@ -21,6 +21,7 @@ interface NormalInputProps {
   onChangeText?: (text: string) => void;
   onFocus?: () => void;
   onBlur?: () => void;
+  autoFocus?: boolean;
   validations?: Array<Record<string, any>>;
   style?: ViewStyle;
 }
@@ -41,6 +42,7 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(({
   onChangeText,
   onFocus,
   onBlur,
+  autoFocus,
   validations,
   style
 }) => {
@@ -64,10 +66,16 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(({
     ]),
   };
 
+  const inputPaddingRightDef = secureTextEntry
+    ? "padding-right-10"
+    : (rightView ? "padding-right-4" : "padding-right-16");
   const inputContainerStyle = {
     ...styleBuilder.flatten([
       "background-color-input-background",
       "input-container",
+      "padding-x-0",
+      "padding-left-16",
+      inputPaddingRightDef as any,
     ]),
     ...borderColor(),
   };
@@ -174,6 +182,7 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(({
           onBlur();
         }
       }}
+      autoFocus={autoFocus}
     />
   </View>;
 });

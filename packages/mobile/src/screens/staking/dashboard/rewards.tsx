@@ -8,11 +8,12 @@ import {
   SecretAccount,
   SecretQueries,
 } from "@keplr-wallet/stores";
+import { KeplrETCQueries } from "@keplr-wallet/stores-etc";
 import { Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { useIntl } from "react-intl";
-import { View } from "react-native";
+import { StyleSheet, View, ViewStyle } from "react-native";
 import { formatCoin, MIN_REWARDS_AMOUNT } from "../../../common/utils";
 import { Button } from "../../../components/button";
 import { CardDivider } from "../../../components/card";
@@ -25,8 +26,9 @@ import { PropertyView } from "../component/property";
 export const RewardsItem: FunctionComponent<{
   chainStore: ChainStore;
   accountStore: AccountStore<[CosmosAccount, CosmwasmAccount, SecretAccount]>;
-  queriesStore: QueriesStore<[CosmosQueries, CosmwasmQueries, SecretQueries]>;
-}> = observer(({ chainStore, accountStore, queriesStore }) => {
+  queriesStore: QueriesStore<[CosmosQueries, CosmwasmQueries, SecretQueries, KeplrETCQueries]>;
+  containerStyle?: ViewStyle;
+}> = observer(({ chainStore, accountStore, queriesStore, containerStyle }) => {
   const smartNavigation = useSmartNavigation();
   const style = useStyle();
   const intl = useIntl();
@@ -64,15 +66,17 @@ export const RewardsItem: FunctionComponent<{
 
   return (
     <View
-      style={style.flatten([
-        "padding-0",
-        "margin-x-16",
-        "margin-y-16",
-        "justify-between",
-        "background-color-card-background",
-        "border-radius-16",
-        "border-color-card-border",
-        "border-width-1",
+      style={StyleSheet.flatten([
+        style.flatten([
+          "padding-0",
+          "margin-x-16",
+          "justify-between",
+          "background-color-card-background",
+          "border-radius-16",
+          "border-color-card-border",
+          "border-width-1",
+        ]),
+        containerStyle,
       ])}
     >
       <View

@@ -74,6 +74,7 @@ export const ToastModalProvider: FunctionComponent = ({ children }) => {
             title={toast.title}
             type={toast.type}
             displayTime={toast.displayTime}
+            bottomOffset={toast.bottomOffset}
           />
         );
       })}

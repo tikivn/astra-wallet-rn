@@ -1,11 +1,12 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
-import { View, Image, Text, ViewStyle } from "react-native";
+import { View, Text, ViewStyle, StyleSheet } from "react-native";
 import { useStyle } from "../../../styles";
 import { useSmartNavigation } from "../../../navigation-util";
 import { FormattedMessage, useIntl } from "react-intl";
 import { TextLink } from "../../../components/button";
 import { useStore } from "../../../stores";
+import { SavingIcon } from "../../../components";
 
 export const DashboardHeader: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -18,12 +19,14 @@ export const DashboardHeader: FunctionComponent<{
     .documentsUrl;
   return (
     <View
-      style={style.flatten([
-        "flex-row",
-        "padding-16",
-        "margin-x-0",
-        "margin-y-16",
-        "justify-between",
+      style={StyleSheet.flatten([
+        style.flatten([
+          "flex-row",
+          "padding-x-16",
+          "margin-x-0",
+          "justify-between",
+        ]),
+        containerStyle,
       ])}
     >
       <View style={style.flatten(["flex-1", "margin-left-0", "items-start"])}>
@@ -44,11 +47,9 @@ export const DashboardHeader: FunctionComponent<{
           {intl.formatMessage({ id: "staking.dashboard.learnMore" })}
         </TextLink>
       </View>
-      <Image
-        source={require("../../../assets/image/saving.png")}
-        resizeMode="contain"
-        style={style.flatten(["height-80", "width-80", "margin-right-0"])}
-      />
+      <View style={style.flatten(["margin-right-0"])}>
+        <SavingIcon />
+      </View>
     </View>
   );
 });

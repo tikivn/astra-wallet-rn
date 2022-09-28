@@ -6,6 +6,7 @@ import { RewardsItem } from "./rewards";
 import { DelegationsItem } from "./delegate";
 import { RefreshControl, ScrollView, View } from "react-native";
 import { useStore } from "../../../stores";
+
 export const StakingDashboardScreen: FunctionComponent = () => {
   const style = useStyle();
   const scrollViewRef = useRef<ScrollView | null>(null);
@@ -20,7 +21,6 @@ export const StakingDashboardScreen: FunctionComponent = () => {
     // fetching new query responses here would make query responses on all other components also refresh.
 
     await Promise.all([
-      // priceStore.waitFreshResponse(),
       ...queries.queryBalances
         .getQueryBech32Address(account.bech32Address)
         .balances.map((bal) => {
@@ -38,7 +38,7 @@ export const StakingDashboardScreen: FunctionComponent = () => {
     ]);
 
     setRefreshing(false);
-  }, [accountStore, chainStore/*, priceStore*/, queriesStore]);
+  }, [accountStore, chainStore, queriesStore]);
 
   return (
     <PageWithScrollView
@@ -48,14 +48,20 @@ export const StakingDashboardScreen: FunctionComponent = () => {
       }
       ref={scrollViewRef}
     >
-      <DashboardHeader />
+      <DashboardHeader
+        containerStyle={style.flatten(["margin-top-24"])}
+      />
       <RewardsItem
         chainStore={chainStore}
         accountStore={accountStore}
         queriesStore={queriesStore}
+        containerStyle={style.flatten(["margin-top-24"])}
       />
       <DelegationsItem
-        containerStyle={style.flatten(["background-color-background"])}
+        containerStyle={style.flatten([
+          "background-color-background",
+          "margin-top-24",
+        ])}
         chainStore={chainStore}
         accountStore={accountStore}
         queriesStore={queriesStore}

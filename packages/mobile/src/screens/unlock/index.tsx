@@ -134,7 +134,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
 
   const autoBiometryStatus = useAutoBiomtric(
     keychainStore,
-    keyRingStore.status === KeyRingStatus.LOCKED && isSplashEnd
+    false,//keyRingStore.status === KeyRingStatus.LOCKED && isSplashEnd
   );
 
   useEffect(() => {

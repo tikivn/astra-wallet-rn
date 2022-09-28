@@ -8,6 +8,7 @@ import {
   HomeTabbarIcon,
   PageWithScrollView,
   VerifiedIcon,
+  LinkIcon,
 } from "../../components";
 import { useSmartNavigation } from "../../navigation-util";
 import { useStyle } from "../../styles";
@@ -72,7 +73,7 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
               "width-80",
               "height-80",
               "border-radius-64",
-              "background-color-secondary",
+              "background-color-card-background",
               "items-center",
               "justify-center",
             ])}
@@ -80,8 +81,8 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
             {icons.length > 0 ? (
               <FastImage
                 style={{
-                  width: 64,
-                  height: 64,
+                  width: 56,
+                  height: 56,
                 }}
                 source={{
                   uri: icons[0],
@@ -92,7 +93,7 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
               <Image
                 source={require("../../assets/image/icon_dapps.png")}
                 resizeMode="contain"
-                style={style.flatten(["width-64", "height-64"])}
+                style={style.flatten(["width-56", "height-56"])}
               />
             )}
           </View>
@@ -104,18 +105,14 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
               "justify-center",
             ])}
           >
-            <Image
-              source={require("../../assets/image/icon_connect.png")}
-              resizeMode="contain"
-              style={style.flatten(["width-18", "height-18"])}
-            />
+            <LinkIcon />
           </View>
           <View
             style={style.flatten([
               "width-80",
               "height-80",
               "border-radius-64",
-              "background-color-secondary",
+              "background-color-card-background",
               "items-center",
               "justify-center",
             ])}
@@ -123,7 +120,7 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
             <Image
               source={require("../../assets/image/icon_astra_hub.png")}
               resizeMode="contain"
-              style={style.flatten(["width-64", "height-64"])}
+              style={style.flatten(["width-56", "height-56"])}
             />
           </View>
         </View>
@@ -148,7 +145,7 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
             "height-116",
             "border-radius-16",
             "border-color-gray-60",
-            "background-color-gray-90",
+            "background-color-card-background",
             "border-width-1",
             "margin-top-24",
             "padding-16",
@@ -211,10 +208,8 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
           ])}
         >
           <Button
-            containerStyle={style.flatten([
-              "margin-right-12",
-              "flex-1",
-            ])}
+            color="neutral"
+            containerStyle={style.flatten(["margin-right-12", "flex-1"])}
             text={intl.formatMessage({ id: "common.text.reject" })}
             onPress={onRejectSession}
           />

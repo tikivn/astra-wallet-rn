@@ -1,5 +1,5 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
-import { View, Text } from "react-native";
+import React, { FunctionComponent, useEffect, useRef, useState } from "react";
+import { View, Text, useWindowDimensions } from "react-native";
 import { observer } from "mobx-react-lite";
 import { RouteProp, useIsFocused, useRoute } from "@react-navigation/native";
 import { RegisterConfig } from "@keplr-wallet/hooks";
@@ -17,6 +17,7 @@ import { useBIP44Option } from "../bip44";
 import { AlertInline } from "../../../components";
 import { useIntl } from "react-intl";
 import { useToastModal } from "../../../providers/toast-modal";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface FormData {
   name: string;
@@ -41,6 +42,8 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
   const intl = useIntl();
 
   const smartNavigation = useSmartNavigation();
+  const { height } = useWindowDimensions();
+  const safeAreaInsets = useSafeAreaInsets();
 
   const registerConfig: RegisterConfig = route.params.registerConfig;
   const bip44Option = useBIP44Option();
@@ -65,6 +68,16 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
     });
   });
 
+  const [toastBottomOffet, setToastBottomOffet] = useState(0);
+  const alertRef = useRef<View>(null);
+  useEffect(() => {
+    console.log("height", height);
+    alertRef.current?.measureInWindow(async (x, y) => {
+      console.log("alertRef.current", x, y);
+      setToastBottomOffet(height - (y + safeAreaInsets.bottom));
+    })
+  }, [alertRef.current])
+
   return (
     <PageWithScrollView
       backgroundColor={style.get("color-background").color}
@@ -82,9 +95,10 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
       >
         {intl.formatMessage({ id: "register.text.backupMnemonic" })}
       </Text>
-      <WordsCard words={words} />
+      <WordsCard words={words} toastBottomOffet={toastBottomOffet} />
       <View style={style.flatten(["flex-1"])} />
       <AlertInline
+        viewRef={alertRef}
         type="warning"
         title={intl.formatMessage({
           id: "common.alert.title.notShareMnemonic",
@@ -106,7 +120,8 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
 
 const WordsCard: FunctionComponent<{
   words: string[];
-}> = ({ words }) => {
+  toastBottomOffet?: number;
+}> = ({ words, toastBottomOffet }) => {
   const style = useStyle();
   const toast = useToastModal();
   /*
@@ -152,17 +167,20 @@ const WordsCard: FunctionComponent<{
           );
         })}
       </View>
-      <Button
-        mode="outline"
-        text={intl.formatMessage({ id: "component.text.copy" })}
-        onPress={() => {
-          Clipboard.setString(words.join(" "));
-          toast.makeToast({
-            title: intl.formatMessage({ id: "seedphrase.copied" }),
-            type: "success",
-          });
-        }}
-      />
+      <View style={style.flatten(["items-center"])}>
+        <Button
+          mode="outline"
+          text={intl.formatMessage({ id: "component.text.copy" })}
+          onPress={() => {
+            Clipboard.setString(words.join(" "));
+            toast.makeToast({
+              title: intl.formatMessage({ id: "seedphrase.copied" }),
+              type: "neutral",
+              bottomOffset: toastBottomOffet,
+            });
+          }}
+        />
+      </View>
     </View>
   );
 };

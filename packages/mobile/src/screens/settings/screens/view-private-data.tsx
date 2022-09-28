@@ -10,15 +10,15 @@ import { useSimpleTimer } from "../../../hooks";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { AlertInline } from "../../../components";
 import { useIntl } from "react-intl";
+import { useToastModal } from "../../../providers/toast-modal";
 
 export const getPrivateDataTitle = (
   keyRingType: string,
   capitalize?: boolean
 ) => {
   if (capitalize) {
-    return `View ${
-      keyRingType === "mnemonic" ? "Mnemonic Seed" : "Private Key"
-    }`;
+    return `View ${keyRingType === "mnemonic" ? "Mnemonic Seed" : "Private Key"
+      }`;
   }
 
   return `View ${keyRingType === "mnemonic" ? "mnemonic seed" : "private key"}`;
@@ -31,6 +31,7 @@ export const canShowPrivateData = (keyRingType: string): boolean => {
 export const ViewPrivateDataScreen: FunctionComponent = () => {
   const style = useStyle();
   const intl = useIntl();
+  const toast = useToastModal();
 
   const route = useRoute<
     RouteProp<
@@ -44,8 +45,6 @@ export const ViewPrivateDataScreen: FunctionComponent = () => {
       string
     >
   >();
-
-  const { isTimedOut, setTimer } = useSimpleTimer();
 
   const privateData = route.params.privateData;
   const privateDataType = route.params.privateDataType;
@@ -62,7 +61,7 @@ export const ViewPrivateDataScreen: FunctionComponent = () => {
         style={style.flatten([
           "h4",
           "color-text-gray",
-          "margin-bottom-4",
+          "margin-bottom-16",
           "text-center",
         ])}
       >
@@ -70,6 +69,9 @@ export const ViewPrivateDataScreen: FunctionComponent = () => {
       </Text>
       <AlertInline
         type="warning"
+        title={intl.formatMessage({
+          id: "common.alert.title.notShareMnemonic",
+        })}
         content={intl.formatMessage({
           id: "common.alert.content.notShareMnemonic",
         })}
@@ -94,14 +96,16 @@ export const ViewPrivateDataScreen: FunctionComponent = () => {
           <Text style={style.flatten(["h6", "margin-bottom-30"])}>{words}</Text>
         )}
       </View>
-      <View style={style.flatten(["width-full"])}>
+      <View style={style.flatten(["items-center", "margin-top-16"])}>
         <Button
-          textStyle={style.flatten(["subtitle3", "color-primary"])}
-          mode="ghost"
-          text={isTimedOut ? "Đã sao chép" : "Sao chép"}
+          mode="outline"
+          text={intl.formatMessage({ id: "component.text.copy" })}
           onPress={() => {
             Clipboard.setString(words.join(" "));
-            setTimer(3000);
+            toast.makeToast({
+              title: intl.formatMessage({ id: "seedphrase.copied" }),
+              type: "neutral",
+            });
           }}
         />
       </View>

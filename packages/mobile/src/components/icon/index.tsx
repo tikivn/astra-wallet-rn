@@ -1,3 +1,4 @@
+export * from "./astra-logo";
 export * from "./arrow";
 export * from "./copy";
 export * from "./plus";
@@ -36,3 +37,4 @@ export * from "./astra-logo/astra-logo";
 export * from "./cannot-redelegate";
 export * from "./stake";
 export * from "./arrow-down";
+export * from "./link";

@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { Image, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { useStyle } from "../../../styles";
 import { Button } from "../../../components/button";
 import { RouteProp, useRoute } from "@react-navigation/native";
@@ -50,7 +50,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [inputDataValid, setInputDataValid] = useState(false);
-  const [isBiometricOn, setIsBiometricOn] = useState(true);
+  const [isBiometricOn, setIsBiometricOn] = useState(false);
 
   const [isCreating, setIsCreating] = useState(false);
   const [passwordErrorText, setPasswordErrorText] = useState("");
@@ -221,6 +221,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
       >
         {(!userLoginStore.socialLoginData && !userLoginStore.isSocialLoginActive) && (
           <NormalInput
+            autoFocus
             value={name}
             label={intl.formatMessage({ id: "common.text.accountHolder" })}
             onChangeText={setName}
@@ -260,7 +261,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
             },
             error: intl.formatMessage({ id: "common.text.passwordNotMatching" })
           }]}
-          style={{ marginBottom: 24, paddingBottom: 24, }}
+          style={{ marginBottom: confirmPasswordErrorText.length !== 0 ? 24 : 0, paddingBottom: 24, }}
         />
 
         {keychainStore.isBiometrySupported && (

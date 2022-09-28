@@ -47,12 +47,6 @@ export const getKeyStoreParagraph = (keyStore: MultiKeyStoreInfoElem) => {
       };
 
   switch (keyStore.type) {
-    case "ledger":
-      return `Ledger - m/44'/118'/${bip44HDPath.account}'${
-        bip44HDPath.change !== 0 || bip44HDPath.addressIndex !== 0
-          ? `/${bip44HDPath.change}/${bip44HDPath.addressIndex}`
-          : ""
-      }`;
     case "mnemonic":
       if (
         bip44HDPath.account !== 0 ||
@@ -109,12 +103,6 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
   const mnemonicKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
       (keyStore) => !keyStore.type || keyStore.type === "mnemonic"
-    );
-  }, [keyRingStore.multiKeyStoreInfo]);
-
-  const ledgerKeyStores = useMemo(() => {
-    return keyRingStore.multiKeyStoreInfo.filter(
-      (keyStore) => keyStore.type === "ledger"
     );
   }, [keyRingStore.multiKeyStoreInfo]);
 
@@ -182,7 +170,6 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
       {renderKeyStores("apple id", appleTorusKeyStores)}
       {renderKeyStores("google account", googleTorusKeyStores)}
       {renderKeyStores("mnemonic seed", mnemonicKeyStores)}
-      {renderKeyStores("hardware wallet", ledgerKeyStores)}
       {renderKeyStores("private key", privateKeyStores)}
       {/* Margin bottom for last */}
       <View style={style.get("height-16")} />
