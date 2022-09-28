@@ -99,17 +99,17 @@ export const AvoidingKeyboardBottomView: FunctionComponent = () => {
     softwareKeyboardBottomPadding,
   ]);
 
-  return <Animated.View
-    style={StyleSheet.flatten([
-      style.flatten([
-        "overflow-hidden",
-      ]),
-      {
-        paddingBottom: Animated.add(
-          safeAreaInsets.bottom,
-          animatedKeyboardPaddingBottom
-        ),
-      },
-    ])}
-  />;
+  return (
+    <Animated.View
+      style={StyleSheet.flatten([
+        style.flatten(["overflow-hidden"]),
+        {
+          paddingBottom: Animated.add(
+            safeAreaInsets.bottom,
+            animatedKeyboardPaddingBottom
+          ),
+        },
+      ])}
+    />
+  );
 };

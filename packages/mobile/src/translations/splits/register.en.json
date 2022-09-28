@@ -1,6 +1,6 @@
 {
-  "recover.wallet.mnemonicInput.label": "",
-  "recover.wallet.mnemonicInput.info": "",
+  "recover.wallet.mnemonicInput.label": "Mnemonic Phrase",
+  "recover.wallet.mnemonicInput.info": "Typically 12 (or 24) words separated by single spaces",
   "register.alert.socialLogin.existedAccount": "",
   "register.alert.socialLogin.newAccount": "",
   "register.createEntry.item.desc.mnemonic": "",

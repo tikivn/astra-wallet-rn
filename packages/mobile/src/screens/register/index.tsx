@@ -2,7 +2,14 @@ import React, { FunctionComponent } from "react";
 import { useHeaderHeight } from "@react-navigation/stack";
 import { PageWithScrollView } from "../../components/page";
 import { useStyle } from "../../styles";
-import { View, Dimensions, ImageBackground, Image, Text, SafeAreaView } from "react-native";
+import {
+  View,
+  Dimensions,
+  ImageBackground,
+  Image,
+  Text,
+  SafeAreaView,
+} from "react-native";
 import { Button } from "../../components/button";
 import { useSmartNavigation } from "../../navigation-util";
 import { useRegisterConfig } from "@keplr-wallet/hooks";
@@ -13,7 +20,12 @@ import { useIntl } from "react-intl";
 import { useLanguage } from "../../translations";
 
 export const RegisterIntroScreen: FunctionComponent = observer(() => {
-  const { keyRingStore, remoteConfigStore, chainStore, analyticsStore } = useStore();
+  const {
+    keyRingStore,
+    remoteConfigStore,
+    chainStore,
+    analyticsStore,
+  } = useStore();
 
   const style = useStyle();
 
@@ -80,7 +92,9 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
           <Button
             text={intl.formatMessage({ id: "register.intro.button.create" })}
             onPress={() => {
-              const socialLoginEnabled = remoteConfigStore.getBool("feature_socialLogin_enabled");
+              const socialLoginEnabled = remoteConfigStore.getBool(
+                "feature_socialLogin_enabled"
+              );
               if (socialLoginEnabled) {
                 smartNavigation.navigateSmart("Register.CreateEntry", {});
                 return;
@@ -89,9 +103,7 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
             }}
           />
           <Button
-            containerStyle={style.flatten([
-              "margin-y-16",
-            ])}
+            containerStyle={style.flatten(["margin-y-16"])}
             text={intl.formatMessage({ id: "register.intro.button.recover" })}
             color="neutral"
             onPress={() => {
