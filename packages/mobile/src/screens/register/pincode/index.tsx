@@ -61,6 +61,8 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
   const [passwordErrorText, setPasswordErrorText] = useState("");
   const [confirmPasswordErrorText, setConfirmPasswordErrorText] = useState("");
 
+  const [canVerify, setCanVerify] = useState(false);
+
   // Social Login
   const [checkingSocialLogin, setCheckingSocialLogin] = useState(false);
   const [isNewSocialLoginUser, setIsNewSocialLoginUser] = useState(
@@ -69,7 +71,10 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
 
   const passwordInputRef = useRef<any>();
   const confirmPasswordInputRef = useRef<any>();
-
+  const passwordInfor = intl.formatMessage(
+    { id: "common.text.minimumCharacters" },
+    { number: `${MIN_PASSWORD_LENGTH}` }
+  );
   const onCreate = async () => {
     setIsCreating(true);
 
@@ -148,7 +153,11 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
   });
 
   useEffect(() => {
-    setPasswordErrorText("");
+    if (password.length > 0 && confirmPassword.length > 0) {
+      setCanVerify(true);
+    } else {
+      setCanVerify(false);
+    }
     validateInputData();
   }, [name, password, confirmPassword]);
 
@@ -213,24 +222,45 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
     });
   }
 
-  function validateInputData() {
-    if (
-      password.length >= MIN_PASSWORD_LENGTH &&
-      password === confirmPassword &&
-      name.length != 0
-    ) {
+  const onSubmitEditing = async () => {
+    await validateInputData();
+    setCanVerify(inputDataValid);
+    showErrors();
+    if (inputDataValid) {
+      console.log("__start on create__");
+      await onCreate();
+    }
+  };
+
+  const validateInputData = async () => {
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      setInputDataValid(false);
+      return;
+    }
+    if (confirmPassword.length === 0 || confirmPassword !== password) {
+      setInputDataValid(false);
+      return;
+    }
+    setInputDataValid(true);
+  };
+
+  const showErrors = async () => {
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      setPasswordErrorText(passwordInfor);
       setConfirmPasswordErrorText("");
-      setInputDataValid(true);
-      return true;
-    } else if (0 < confirmPassword.length) {
+      passwordInputRef.current.focus();
+      return;
+    }
+    setPasswordErrorText("");
+    if (confirmPassword.length === 0 || confirmPassword !== password) {
       setConfirmPasswordErrorText(
         intl.formatMessage({ id: "common.text.passwordNotMatching" })
       );
+      confirmPasswordInputRef.current.focus();
+      return;
     }
-
-    setInputDataValid(false);
-    return false;
-  }
+    setConfirmPasswordErrorText("");
+  };
 
   function checkSocialLogin() {
     // Social Login
@@ -282,11 +312,8 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
           returnKeyType="next"
           value={password}
           label={intl.formatMessage({ id: "common.text.password" })}
-          error={passwordErrorText}
-          info={intl.formatMessage(
-            { id: "common.text.minimumCharacters" },
-            { number: `${MIN_PASSWORD_LENGTH}` }
-          )}
+          error={canVerify ? "" : passwordErrorText}
+          info={passwordInfor}
           secureTextEntry={true}
           showPassword={showPassword}
           onShowPasswordChanged={setShowPassword}
@@ -303,7 +330,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
           returnKeyType="done"
           value={confirmPassword}
           label={intl.formatMessage({ id: "common.text.inputVerifyPassword" })}
-          error={confirmPasswordErrorText}
+          error={canVerify ? "" : confirmPasswordErrorText}
           secureTextEntry={true}
           showPassword={showPassword}
           onShowPasswordChanged={setShowPassword}
@@ -324,11 +351,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
             paddingBottom: 24,
           }}
           inputRef={confirmPasswordInputRef}
-          onSubmitEditting={() => {
-            if (validateInputData()) {
-              onCreate();
-            }
-          }}
+          onSubmitEditting={onSubmitEditing}
         />
 
         {keychainStore.isBiometrySupported && (
@@ -384,8 +407,8 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
           <Button
             text={actionButtonTitle}
             loading={isCreating}
-            onPress={onCreate}
-            disabled={!inputDataValid}
+            onPress={onSubmitEditing}
+            disabled={!canVerify || isCreating}
             containerStyle={style.flatten(["margin-x-page", "margin-top-12"])}
           />
         </View>

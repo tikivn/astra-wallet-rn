@@ -88,12 +88,10 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
   const onSubmitEditing = () => {
     setCanVerify(isValid);
     submit();
-  }
+  };
 
   const submit = handleSubmit(async () => {
-    console.log("__onSubmit__");
     setIsCreating(true);
-
     const mnemonic = trimWordsStr(getValues("mnemonic"));
     newMnemonicConfig.setMnemonic(mnemonic);
     smartNavigation.navigateSmart("Register.SetPincode", {
