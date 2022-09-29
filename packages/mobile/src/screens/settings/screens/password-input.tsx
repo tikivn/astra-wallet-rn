@@ -33,7 +33,12 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
 
   const style = useStyle();
   const intl = useIntl();
-  const { keyRingStore, keychainStore, userLoginStore, analyticsStore } = useStore();
+  const {
+    keyRingStore,
+    keychainStore,
+    userLoginStore,
+    analyticsStore,
+  } = useStore();
   const smartNavigation = useSmartNavigation();
 
   const [password, setPassword] = useState("");
@@ -90,15 +95,15 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
     }
 
     return (
-      <View style={style.flatten([
-        "margin-bottom-24",
-      ])}>
-        <Text style={style.flatten([
-          "color-gray-10",
-          "text-x-large-semi-bold",
-          "text-center",
-          "margin-bottom-12",
-        ])}>
+      <View style={style.flatten(["margin-bottom-24"])}>
+        <Text
+          style={style.flatten([
+            "color-gray-10",
+            "text-x-large-semi-bold",
+            "text-center",
+            "margin-bottom-12",
+          ])}
+        >
           {intl.formatMessage({ id: "deleteAccount.title" })}
         </Text>
         <AlertInline
@@ -177,8 +182,7 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
               },
             ],
           });
-        }
-        else {
+        } else {
           setIsLoading(false);
         }
         break;
@@ -207,7 +211,7 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
     }
 
     navigation.setOptions({
-      title
+      title,
     });
   }
 
@@ -275,8 +279,16 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
 
   return (
     <React.Fragment>
-      <View style={style.flatten(["absolute-fill", "background-color-background"])} />
-      <View style={style.flatten(["flex-1", "padding-x-page", "background-color-transparent"])}>
+      <View
+        style={style.flatten(["absolute-fill", "background-color-background"])}
+      />
+      <View
+        style={style.flatten([
+          "flex-1",
+          "padding-x-page",
+          "background-color-transparent",
+        ])}
+      >
         <View style={{ height: 24 }} />
         {getTopView()}
         <NormalInput
@@ -292,8 +304,16 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
           autoFocus
         />
       </View>
-      <View style={style.flatten(["flex-1", "justify-end", "margin-bottom-12"])}>
-        <View style={style.flatten(["height-1", "background-color-gray-70", "margin-bottom-12"])} />
+      <View
+        style={style.flatten(["flex-1", "justify-end", "margin-bottom-12"])}
+      >
+        <View
+          style={style.flatten([
+            "height-1",
+            "background-color-gray-70",
+            "margin-bottom-12",
+          ])}
+        />
         <Button
           containerStyle={style.flatten(["margin-x-page"])}
           text={getButtonText()}

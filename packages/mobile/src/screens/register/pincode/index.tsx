@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FunctionComponent, useEffect, useRef, useState } from "react";
 import { Text, View } from "react-native";
 import { useStyle } from "../../../styles";
 import { Button } from "../../../components/button";
@@ -66,6 +66,9 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
   const [isNewSocialLoginUser, setIsNewSocialLoginUser] = useState(
     SocialLoginUserState.unknown
   );
+
+  const passwordInputRef = useRef<any>();
+  const confirmPasswordInputRef = useRef<any>();
 
   const onCreate = async () => {
     setIsCreating(true);
@@ -218,7 +221,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
     ) {
       setConfirmPasswordErrorText("");
       setInputDataValid(true);
-      return;
+      return true;
     } else if (0 < confirmPassword.length) {
       setConfirmPasswordErrorText(
         intl.formatMessage({ id: "common.text.passwordNotMatching" })
@@ -226,6 +229,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
     }
 
     setInputDataValid(false);
+    return false;
   }
 
   function checkSocialLogin() {
@@ -262,15 +266,20 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
         {!userLoginStore.socialLoginData &&
           !userLoginStore.isSocialLoginActive && (
             <NormalInput
+              returnKeyType="next"
               autoFocus
               value={name}
               label={intl.formatMessage({ id: "common.text.accountHolder" })}
               onChangeText={setName}
               style={{ marginBottom: 24 }}
+              onSubmitEditting={() => {
+                passwordInputRef.current.focus();
+              }}
             />
           )}
 
         <NormalInput
+          returnKeyType="next"
           value={password}
           label={intl.formatMessage({ id: "common.text.password" })}
           error={passwordErrorText}
@@ -284,9 +293,14 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
           onChangeText={setPassword}
           onBlur={validateInputData}
           style={{ marginBottom: 24, paddingBottom: 24 }}
+          inputRef={passwordInputRef}
+          onSubmitEditting={() => {
+            confirmPasswordInputRef.current.focus();
+          }}
         />
 
         <NormalInput
+          returnKeyType="done"
           value={confirmPassword}
           label={intl.formatMessage({ id: "common.text.inputVerifyPassword" })}
           error={confirmPasswordErrorText}
@@ -308,6 +322,12 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
           style={{
             marginBottom: confirmPasswordErrorText.length !== 0 ? 12 : 0,
             paddingBottom: 24,
+          }}
+          inputRef={confirmPasswordInputRef}
+          onSubmitEditting={() => {
+            if (validateInputData()) {
+              onCreate();
+            }
           }}
         />
 
