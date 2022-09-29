@@ -81,9 +81,7 @@ import {
   ImportFromExtensionScreen,
   ImportFromExtensionSetPasswordScreen,
 } from "./screens/register/import-from-extension";
-import {
-  DappsWebpageScreen,
-} from "./screens/web/webpages";
+import { DappsWebpageScreen } from "./screens/web/webpages";
 import { WebpageScreenScreenOptionsPreset } from "./screens/web/components/webpage-screen";
 import Bugsnag from "@bugsnag/react-native";
 import { MainScreen } from "./screens/main";
@@ -338,10 +336,7 @@ export const OtherNavigation: FunctionComponent = () => {
   };
 
   return (
-    <Stack.Navigator
-      screenOptions={screenOptions}
-      headerMode="screen"
-    >
+    <Stack.Navigator screenOptions={screenOptions} headerMode="screen">
       <Stack.Screen
         options={{
           title: "Send",
@@ -392,10 +387,7 @@ export const WalletNavigation: FunctionComponent = () => {
   };
 
   return (
-    <Stack.Navigator
-      screenOptions={screenOptions}
-      headerMode="screen"
-    >
+    <Stack.Navigator screenOptions={screenOptions} headerMode="screen">
       <Stack.Screen
         options={{
           title: intl.formatMessage({ id: "wallet.receive.title" }),
@@ -557,10 +549,7 @@ export const SettingsStackScreen: FunctionComponent = () => {
   };
 
   return (
-    <Stack.Navigator
-      screenOptions={screenOptions}
-      headerMode="screen"
-    >
+    <Stack.Navigator screenOptions={screenOptions} headerMode="screen">
       <Stack.Screen
         options={{
           headerShown: false,
@@ -583,10 +572,7 @@ export const SwapStackScreen: FunctionComponent = () => {
 
   return (
     <SwapProvider>
-      <Stack.Navigator
-        screenOptions={screenOptions}
-        headerMode="screen"
-      >
+      <Stack.Navigator screenOptions={screenOptions} headerMode="screen">
         <Stack.Screen
           options={{
             title: intl.formatMessage({ id: "wallet.swap.title" }),
@@ -682,7 +668,9 @@ export const MainTabNavigation: FunctionComponent = () => {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused }) => {
-          const color = style.get(`color-tab-icon-${focused ? "active" : "inactive"}`).color;
+          const color = style.get(
+            `color-tab-icon-${focused ? "active" : "inactive"}`
+          ).color;
           const size = 24;
 
           switch (route.name) {
@@ -699,7 +687,7 @@ export const MainTabNavigation: FunctionComponent = () => {
           }
         },
         tabBarLabel: ({ focused }) => {
-          var name = "";
+          let name = "";
           switch (route.name) {
             case "NewMain":
               name = intl.formatMessage({ id: "tabs.main" });
@@ -718,11 +706,13 @@ export const MainTabNavigation: FunctionComponent = () => {
               break;
           }
           return (
-            <Text style={style.flatten([
-              "text-x-small-medium",
-              "text-center",
-              `color-tab-text-${focused ? "active" : "inactive"}` as any,
-            ])}>
+            <Text
+              style={style.flatten([
+                "text-x-small-medium",
+                "text-center",
+                `color-tab-text-${focused ? "active" : "inactive"}` as any,
+              ])}
+            >
               {name}
             </Text>
           );
@@ -735,9 +725,10 @@ export const MainTabNavigation: FunctionComponent = () => {
               justifyContent: "center",
               alignItems: "center",
               borderTopWidth: 2,
-              borderColor: props.accessibilityState?.selected === true
-                ? style.get("color-tab-icon-active").color
-                : "transparent",
+              borderColor:
+                props.accessibilityState?.selected === true
+                  ? style.get("color-tab-icon-active").color
+                  : "transparent",
             }}
           >
             {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
@@ -767,20 +758,9 @@ export const MainTabNavigation: FunctionComponent = () => {
         <BlurredBottomTabBar {...props} enabledScreens={["Home"]} />
       )}
     >
-      <Tab.Screen
-        name="NewMain"
-        component={NewMainNavigation}
-      />
-      <Tab.Screen
-        name="Stake"
-        component={StakingNavigation}
-      />
-      {dappsEnabled && (
-        <Tab.Screen
-          name="D-apps"
-          component={WebNavigation}
-        />
-      )}
+      <Tab.Screen name="NewMain" component={NewMainNavigation} />
+      <Tab.Screen name="Stake" component={StakingNavigation} />
+      {dappsEnabled && <Tab.Screen name="D-apps" component={WebNavigation} />}
       <Tab.Screen
         name="History"
         component={HistoryNavigation}
@@ -788,10 +768,7 @@ export const MainTabNavigation: FunctionComponent = () => {
           unmountOnBlur: true,
         }}
       />
-      <Tab.Screen
-        name="Setting"
-        component={SettingsStackScreen}
-      />
+      <Tab.Screen name="Setting" component={SettingsStackScreen} />
     </Tab.Navigator>
   );
 };

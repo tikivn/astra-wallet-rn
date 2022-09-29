@@ -70,8 +70,8 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
   const onCreate = async () => {
     setIsCreating(true);
 
-    var registerMnemonic = mnemonic;
-    var registerPassword = confirmPassword;
+    let registerMnemonic = mnemonic;
+    let registerPassword = confirmPassword;
 
     // Social Login
     if (userLoginStore.socialLoginData && !userLoginStore.isSocialLoginActive) {
@@ -302,7 +302,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
             },
           ]}
           style={{
-            marginBottom: confirmPasswordErrorText.length !== 0 ? 24 : 0,
+            marginBottom: confirmPasswordErrorText.length !== 0 ? 12 : 0,
             paddingBottom: 24,
           }}
         />

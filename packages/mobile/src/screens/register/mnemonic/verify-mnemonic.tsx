@@ -93,7 +93,10 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
     });
   });
 
-  const onWordButtonHandler = (candidateWord: { word: string, usedIndex: number }, i: number) => {
+  const onWordButtonHandler = (
+    candidateWord: { word: string; usedIndex: number },
+    i: number
+  ) => {
     const { word, usedIndex } = candidateWord;
     const newWordSet = wordSet.slice();
     const newCandiateWords = candidateWords.slice();
@@ -114,7 +117,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
       newCandiateWords[i].usedIndex = -1;
       setCandidateWords(newCandiateWords);
     }
-  }
+  };
 
   return (
     <PageWithScrollView
@@ -154,15 +157,18 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
             empty: word === undefined,
             isInteractive,
             onPress: () => {
-              const wordParams = candidateWords.map((w, i) => {
-                return {
-                  word: w.word,
-                  usedIndex: w.usedIndex,
-                  index: i
-                };
-              }).filter((candidateWord) => {
-                return candidateWord.word === word;
-              }).shift();
+              const wordParams = candidateWords
+                .map((w, i) => {
+                  return {
+                    word: w.word,
+                    usedIndex: w.usedIndex,
+                    index: i,
+                  };
+                })
+                .filter((candidateWord) => {
+                  return candidateWord.word === word;
+                })
+                .shift();
 
               if (!wordParams) {
                 return;

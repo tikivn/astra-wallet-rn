@@ -53,6 +53,7 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
         resizeMode="cover"
       >
         <PageWithScrollView
+          scrollEnabled={false}
           backgroundColor={style.get("color-transparent").color}
           contentContainerStyle={style.get("flex-grow-1")}
           style={{
