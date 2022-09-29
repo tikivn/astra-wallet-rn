@@ -190,11 +190,11 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
 
   function updateNavigationTitle() {
     let textId;
-
-    if (isNewSocialLoginUser === SocialLoginUserState.recover) {
-      textId = "register.recoverMnemonic.title";
-    } else {
+    if (route.params.registerType !== "recover" || isNewSocialLoginUser === SocialLoginUserState.new) {
       textId = "register.setPincode.title";
+    }
+    else {
+      textId = "register.recoverMnemonic.title";
     }
 
     smartNavigation.setOptions({
@@ -267,12 +267,8 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
           label={intl.formatMessage({ id: "common.text.password" })}
           error={passwordErrorText}
           info={intl.formatMessage(
-            {
-              id: "common.text.minimumCharacters",
-            },
-            {
-              number: `${MIN_PASSWORD_LENGTH}`,
-            }
+            { id: "common.text.minimumCharacters" },
+            { number: `${MIN_PASSWORD_LENGTH}` }
           )}
           secureTextEntry={true}
           showPassword={showPassword}
@@ -307,7 +303,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
           }}
         />
 
-        {!keychainStore.isBiometrySupported && (
+        {keychainStore.isBiometrySupported && (
           <View
             style={{
               flexDirection: "row",
@@ -321,7 +317,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
               size={32}
               type={
                 keychainStore.isBiometryType === BIOMETRY_TYPE.FACE ||
-                keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
+                  keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
                   ? "face"
                   : "touch"
               }
@@ -337,7 +333,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
               {intl.formatMessage({
                 id:
                   keychainStore.isBiometryType === BIOMETRY_TYPE.FACE ||
-                  keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
+                    keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
                     ? "settings.unlockBiometrics.face"
                     : "settings.unlockBiometrics.touch",
               })}
