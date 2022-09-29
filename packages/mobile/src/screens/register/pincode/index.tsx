@@ -188,12 +188,20 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
     }
   }, [isNewSocialLoginUser]);
 
+  const actionButtonTitle =
+    route.params.registerType !== "recover" ||
+    isNewSocialLoginUser === SocialLoginUserState.new
+      ? intl.formatMessage({ id: "register.button.createAccount" })
+      : intl.formatMessage({ id: "register.button.restoreAccount" });
+
   function updateNavigationTitle() {
     let textId;
-    if (route.params.registerType !== "recover" || isNewSocialLoginUser === SocialLoginUserState.new) {
+    if (
+      route.params.registerType !== "recover" ||
+      isNewSocialLoginUser === SocialLoginUserState.new
+    ) {
       textId = "register.setPincode.title";
-    }
-    else {
+    } else {
       textId = "register.recoverMnemonic.title";
     }
 
@@ -317,7 +325,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
               size={32}
               type={
                 keychainStore.isBiometryType === BIOMETRY_TYPE.FACE ||
-                  keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
+                keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
                   ? "face"
                   : "touch"
               }
@@ -333,7 +341,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
               {intl.formatMessage({
                 id:
                   keychainStore.isBiometryType === BIOMETRY_TYPE.FACE ||
-                    keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
+                  keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
                     ? "settings.unlockBiometrics.face"
                     : "settings.unlockBiometrics.touch",
               })}
@@ -354,7 +362,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
           }}
         >
           <Button
-            text={intl.formatMessage({ id: "register.button.createAccount" })}
+            text={actionButtonTitle}
             loading={isCreating}
             onPress={onCreate}
             disabled={!inputDataValid}

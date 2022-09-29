@@ -78,16 +78,20 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
     setFocus,
     setValue,
     getValues,
-    formState: { errors, isDirty },
-  } = useForm<FormData>({ mode: "onSubmit" });
+    formState: { errors, isValid },
+  } = useForm<FormData>({ mode: "onChange" });
 
   const [isCreating, setIsCreating] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-  const [isValid, setIsValid] = useState(false);
-  const [errorText, setErrorText] = useState("");
+  const [canVerify, setCanVerify] = useState(false);
+
+  const onSubmitEditing = () => {
+    setCanVerify(isValid);
+    submit();
+  }
 
   const submit = handleSubmit(async () => {
-    console.log("onSubmit");
+    console.log("__onSubmit__");
     setIsCreating(true);
 
     const mnemonic = trimWordsStr(getValues("mnemonic"));
@@ -196,7 +200,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                           setValue("mnemonic", text, {
                             shouldValidate: true,
                           });
-
+                          setCanVerify(true);
                           setFocus("name");
                         }
                       }}
@@ -215,11 +219,10 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                   "text-base-regular",
                   "color-input-error",
                 ])}
-                onSubmitEditing={() => {
-                  setFocus("name");
-                }}
-                error={errors.mnemonic?.message}
+                onSubmitEditing={onSubmitEditing}
+                error={canVerify ? "" : errors.mnemonic?.message}
                 onBlur={() => {
+                  console.log("__onBlur__");
                   onBlur();
                   setIsFocused(false);
                 }}
@@ -227,8 +230,12 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                   setIsFocused(true);
                 }}
                 onChangeText={(text) => {
+                  if (text.length > 0) {
+                    setCanVerify(true);
+                  } else {
+                    setCanVerify(false);
+                  }
                   onChange(text);
-                  setErrorText(text.split(" ").length < 12 ? "" : "")
                 }}
                 value={value}
                 ref={ref}
@@ -246,10 +253,9 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
         <Button
           text={intl.formatMessage({ id: "common.text.verify" })}
           loading={isCreating}
-          onPress={submit}
-          disabled={errors.mnemonic ? true : false}
+          onPress={onSubmitEditing}
+          disabled={!canVerify}
           containerStyle={style.flatten(["margin-x-page", "margin-top-12"])}
-          disabled={!isDirty}
         />
         <AvoidingKeyboardBottomView />
       </View>
