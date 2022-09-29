@@ -1,6 +1,4 @@
-import {
-  IRecipientConfig,
-} from "@keplr-wallet/hooks";
+import { IRecipientConfig } from "@keplr-wallet/hooks";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { useIntl } from "react-intl";
@@ -14,67 +12,96 @@ import Clipboard from "expo-clipboard";
 
 export const AddressInput: FunctionComponent<{
   recipientConfig: IRecipientConfig;
-  onAddressChanged?: (value: string, isValid: boolean) => void;
-}> = observer(({
-  recipientConfig,
-  onAddressChanged = (value: string, isValid: boolean) => {
-    console.log(value, isValid);
-  }
-}) => {
-  const style = useStyle();
-  const intl = useIntl();
-  const smartNavigation = useSmartNavigation();
+  onAddressChanged?: (
+    address: string,
+    errorText: string,
+    isFocus: boolean
+  ) => void;
+}> = observer(
+  ({
+    recipientConfig,
+    onAddressChanged = (
+      address: string,
+      errorText: string,
+      isFocus: boolean
+    ) => {
+      console.log(address, errorText, isFocus);
+    },
+  }) => {
+    const style = useStyle();
+    const intl = useIntl();
+    const smartNavigation = useSmartNavigation();
 
-  const [errorText, setErrorText] = useState("");
+    const [isFocus, setIsFocus] = useState(false);
+    const [errorText, setErrorText] = useState("");
+    const [showError, setShowError] = useState(false);
 
-  useEffect(() => {
-    if (recipientConfig.error?.message && recipientConfig.rawRecipient.length != 0) {
-      setErrorText(intl.formatMessage({ id: "component.address.input.error.invalid" }));
-      onAddressChanged(recipientConfig.rawRecipient, false);
-    }
-    else {
-      setErrorText("");
-      onAddressChanged(recipientConfig.rawRecipient, recipientConfig.rawRecipient.length !== 0);
-    }
-  }, [recipientConfig.error]);
+    useEffect(() => {
+      let errorText = "";
+      if (
+        recipientConfig.error?.message &&
+        recipientConfig.rawRecipient.length != 0
+      ) {
+        errorText = intl.formatMessage({
+          id: "component.address.input.error.invalid",
+        });
+      }
 
-  return (
-    <NormalInput
-      value={recipientConfig.rawRecipient}
-      label={intl.formatMessage({ id: "component.address.input.receiver.label" })}
-      error={errorText}
-      multiline={true}
-      onChangeText={(text) => {
-        recipientConfig.setRawRecipient(text);
-      }}
-      rightView={
-        <View style={{ flexDirection: "row", marginLeft: 16, alignItems: "center" }}>
-          <TouchableOpacity
-            style={style.flatten([
-              "width-24",
-              "height-24",
-            ])}
-            onPress={() => {
-              smartNavigation.navigateSmart("Camera", {});
+      setShowError(!isFocus);
+      setErrorText(errorText);
+
+      onAddressChanged(recipientConfig.rawRecipient, errorText, isFocus);
+    }, [isFocus, recipientConfig.rawRecipient, recipientConfig.error]);
+
+    return (
+      <NormalInput
+        value={recipientConfig.rawRecipient}
+        label={intl.formatMessage({
+          id: "component.address.input.receiver.label",
+        })}
+        error={showError ? errorText : ""}
+        multiline={true}
+        onChangeText={(text) => {
+          recipientConfig.setRawRecipient(text);
+        }}
+        onBlur={() => {
+          setIsFocus(false);
+        }}
+        onFocus={() => {
+          setIsFocus(true);
+        }}
+        rightView={
+          <View
+            style={{
+              flexDirection: "row",
+              marginLeft: 16,
+              alignItems: "center",
             }}
           >
-            <ScanIcon size={24} color={"#818DA6"} />
-          </TouchableOpacity>
-          <Button
-            containerStyle={style.flatten(["margin-left-8"])}
-            size="medium"
-            mode="ghost"
-            text={intl.formatMessage({ id: "common.text.paste" })}
-            onPress={async () => {
-              const text = await Clipboard.getStringAsync();
-              if (text) {
-                recipientConfig.setRawRecipient(text);
-              }
-            }}
-          />
-        </View>
-      }
-      style={{ marginBottom: errorText ? 24 : 0 }}
-    />
-  );
-});
+            <TouchableOpacity
+              style={style.flatten(["width-24", "height-24"])}
+              onPress={() => {
+                smartNavigation.navigateSmart("Camera", {});
+              }}
+            >
+              <ScanIcon size={24} />
+            </TouchableOpacity>
+            <Button
+              containerStyle={style.flatten(["margin-left-8"])}
+              size="medium"
+              mode="ghost"
+              text={intl.formatMessage({ id: "common.text.paste" })}
+              onPress={async () => {
+                const text = await Clipboard.getStringAsync();
+                if (text) {
+                  recipientConfig.setRawRecipient(text);
+                }
+              }}
+            />
+          </View>
+        }
+        style={{ marginBottom: showError && errorText ? 24 : 0 }}
+      />
+    );
+  }
+);

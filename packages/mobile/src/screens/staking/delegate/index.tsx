@@ -2,14 +2,24 @@ import React, { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useStyle } from "../../../styles";
 import { RouteProp, useRoute } from "@react-navigation/native";
-import { View } from "react-native";
+import { Keyboard, View } from "react-native";
 import { ChainStore, useStore } from "../../../stores";
-import { FeeType, IAmountConfig, useDelegateTxConfig } from "@keplr-wallet/hooks";
+import {
+  FeeType,
+  IAmountConfig,
+  useDelegateTxConfig,
+} from "@keplr-wallet/hooks";
 import { EthereumEndpoint } from "../../../config";
 import { AmountInput } from "../../main/components";
 import { Button } from "../../../components/button";
 import { useSmartNavigation } from "../../../navigation-util";
-import { AccountStore, CosmosAccount, CosmwasmAccount, SecretAccount, Staking } from "@keplr-wallet/stores";
+import {
+  AccountStore,
+  CosmosAccount,
+  CosmwasmAccount,
+  SecretAccount,
+  Staking,
+} from "@keplr-wallet/stores";
 import { ValidatorInfo } from "./components/validator-info";
 import {
   buildLeftColumn,
@@ -22,7 +32,12 @@ import {
 } from "../../../components/foundation-view/list-row-view";
 import { AlertInline } from "../../../components";
 import { useIntl } from "react-intl";
-import { formatCoin, formatPercent, formatUnbondingTime, TX_GAS_DEFAULT } from "../../../common/utils";
+import {
+  formatCoin,
+  formatPercent,
+  formatUnbondingTime,
+  TX_GAS_DEFAULT,
+} from "../../../common/utils";
 import { MsgDelegate } from "@keplr-wallet/proto-types/cosmos/staking/v1beta1/tx";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -88,7 +103,9 @@ export const DelegateScreen: FunctionComponent = observer(() => {
 
   const commissionText = intl.formatMessage(
     { id: "validator.details.commission.percent" },
-    { percent: formatPercent(validator?.commission.commission_rates.rate, true) },
+    {
+      percent: formatPercent(validator?.commission.commission_rates.rate, true),
+    }
   );
 
   const votingPower = new CoinPretty(
@@ -102,16 +119,18 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     chainStore,
     accountStore,
     sendConfigs.amountConfig,
-    validatorAddress,
+    validatorAddress
   );
   sendConfigs.gasConfig.setGas(gasLimit);
   sendConfigs.feeConfig.setFeeType(feeType);
   const feeText = formatCoin(sendConfigs.feeConfig.fee);
 
-  const unbondingTime = queries.cosmos.queryStakingParams.unbondingTimeSec ?? 172800;
+  const unbondingTime =
+    queries.cosmos.queryStakingParams.unbondingTimeSec ?? 172800;
   const unbondingTimeText = formatUnbondingTime(unbondingTime, intl);
 
   const [amountIsValid, setAmountIsValid] = useState(false);
+  const [amountErrorText, setAmountErrorText] = useState("");
 
   const rows: IRow[] = [
     {
@@ -135,6 +154,8 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   ];
 
   const onContinueHandler = async () => {
+    Keyboard.dismiss();
+
     if (account.isReadyToSendTx && amountIsValid) {
       const params = {
         token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
@@ -144,15 +165,21 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         gas_price: gasPrice,
         validator_address: validatorAddress,
         validator_name: validator?.description.moniker,
-        commission: Number(formatPercent(validator?.commission.commission_rates.rate, true)),
+        commission: Number(
+          formatPercent(validator?.commission.commission_rates.rate, true)
+        ),
       };
 
       try {
         let dec = new Dec(sendConfigs.amountConfig.amount);
-        dec = dec.mulTruncate(DecUtils.getTenExponentN(sendConfigs.amountConfig.sendCurrency.coinDecimals));
+        dec = dec.mulTruncate(
+          DecUtils.getTenExponentN(
+            sendConfigs.amountConfig.sendCurrency.coinDecimals
+          )
+        );
         const amount = new CoinPretty(
           sendConfigs.amountConfig.sendCurrency,
-          dec,
+          dec
         );
 
         transactionStore.updateRawData({
@@ -162,7 +189,9 @@ export const DelegateScreen: FunctionComponent = observer(() => {
             fee: sendConfigs.feeConfig.fee,
             validatorAddress,
             validatorName: validator?.description.moniker,
-            commission: new IntPretty(new Dec(validator?.commission.commission_rates.rate ?? 0)),
+            commission: new IntPretty(
+              new Dec(validator?.commission.commission_rates.rate ?? 0)
+            ),
           },
         });
         const tx = account.cosmos.makeDelegateTx(
@@ -207,9 +236,9 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       title: intl.formatMessage(
         { id: "delegate.title" },
         { coin: chainStore.current.stakeCurrency.coinDenom }
-      )
+      ),
     });
-  }
+  };
 
   return (
     <View style={style.flatten(["flex-1", "background-color-background"])}>
@@ -234,8 +263,9 @@ export const DelegateScreen: FunctionComponent = observer(() => {
           amountConfig={sendConfigs.amountConfig}
           availableAmount={userBalanceStore.getBalance()}
           feeConfig={sendConfigs.feeConfig}
-          onAmountChanged={(_, isValid) => {
-            setAmountIsValid(isValid);
+          onAmountChanged={(amount, errorText, isFocus) => {
+            setAmountIsValid(Number(amount) > 0 && errorText.length === 0);
+            setAmountErrorText(isFocus ? "" : errorText);
           }}
           containerStyle={style.flatten(["margin-top-24"])}
         />
@@ -246,12 +276,19 @@ export const DelegateScreen: FunctionComponent = observer(() => {
           clearBackground
         />
       </KeyboardAwareScrollView>
-      <View style={style.flatten(["flex-1", "justify-end", "margin-bottom-12"])}>
+      <View
+        style={style.flatten(["flex-1", "justify-end", "margin-bottom-12"])}
+      >
         <View style={style.flatten(["height-1", "background-color-gray-70"])} />
-        <View style={{ ...style.flatten(["background-color-background"]), height: 56 }}>
+        <View
+          style={{
+            ...style.flatten(["background-color-background"]),
+            height: 56,
+          }}
+        >
           <Button
             text={intl.formatMessage({ id: "stake.delegate.invest" })}
-            disabled={!amountIsValid}
+            disabled={amountErrorText.length !== 0}
             loading={account.txTypeInProgress === "delegate"}
             onPress={onContinueHandler}
             containerStyle={style.flatten(["margin-x-page", "margin-top-12"])}
@@ -265,11 +302,9 @@ export const DelegateScreen: FunctionComponent = observer(() => {
 
 const simulateDelegateGasFee = (
   chainStore: ChainStore,
-  accountStore: AccountStore<
-    [CosmosAccount, CosmwasmAccount, SecretAccount]
-  >,
+  accountStore: AccountStore<[CosmosAccount, CosmwasmAccount, SecretAccount]>,
   amountConfig: IAmountConfig,
-  validatorAddress: string,
+  validatorAddress: string
 ) => {
   useEffect(() => {
     simulate();
@@ -281,9 +316,11 @@ const simulateDelegateGasFee = (
   const simulate = async () => {
     const account = accountStore.getAccount(chainId);
 
-    const amount = amountConfig.amount || "0"
+    const amount = amountConfig.amount || "0";
     let dec = new Dec(amount);
-    dec = dec.mulTruncate(DecUtils.getTenExponentN(amountConfig.sendCurrency.coinDecimals));
+    dec = dec.mulTruncate(
+      DecUtils.getTenExponentN(amountConfig.sendCurrency.coinDecimals)
+    );
 
     const msg = {
       type: account.cosmos.msgOpts.delegate.type,
@@ -299,33 +336,39 @@ const simulateDelegateGasFee = (
 
     try {
       const { gasUsed } = await account.cosmos.simulateTx(
-        [{
-          typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
-          value: MsgDelegate.encode({
-            delegatorAddress: msg.value.delegator_address,
-            validatorAddress: msg.value.validator_address,
-            amount: msg.value.amount,
-          }).finish(),
-        }],
-        { amount: [] },
+        [
+          {
+            typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
+            value: MsgDelegate.encode({
+              delegatorAddress: msg.value.delegator_address,
+              validatorAddress: msg.value.validator_address,
+              amount: msg.value.amount,
+            }).finish(),
+          },
+        ],
+        { amount: [] }
       );
 
       const gasLimit = Math.ceil(gasUsed * 1.3);
       console.log("__DEBUG__ simulate gasUsed", gasUsed);
       console.log("__DEBUG__ simulate gasLimit", gasLimit);
       setGasLimit(gasLimit);
-    }
-    catch (e) {
+    } catch (e) {
       console.log("simulateDelegateGasFee error", e);
       setGasLimit(TX_GAS_DEFAULT.delegate); // default gas
     }
-  }
+  };
 
   const feeType = "average" as FeeType;
   var gasPrice = 1000000000; // default 1 gwei = 1 nano aastra
-  const feeConfig = chainStore.current.feeCurrencies.filter((feeCurrency) => {
-    return feeCurrency.coinMinimalDenom === chainStore.current.stakeCurrency.coinMinimalDenom;
-  }).shift();
+  const feeConfig = chainStore.current.feeCurrencies
+    .filter((feeCurrency) => {
+      return (
+        feeCurrency.coinMinimalDenom ===
+        chainStore.current.stakeCurrency.coinMinimalDenom
+      );
+    })
+    .shift();
   if (feeConfig?.gasPriceStep) {
     const { [feeType]: wei } = feeConfig.gasPriceStep;
     gasPrice = wei;
@@ -335,5 +378,5 @@ const simulateDelegateGasFee = (
     gasPrice,
     gasLimit,
     feeType,
-  }
+  };
 };
