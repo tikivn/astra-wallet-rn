@@ -252,5 +252,6 @@ export const AllColors = {
     "tab-text-active": MainColors["primary"],
     "tab-icon-inactive": Colors["gray-30"],
     "tab-text-inactive": Colors["gray-30"],
+    "tab-bar-background": "#202433",
   },
 };

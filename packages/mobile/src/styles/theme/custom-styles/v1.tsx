@@ -1,3 +1,8 @@
+import {
+  EnumFlexDirection,
+  EnumFlexWrap,
+  EnumJustifyContent,
+} from "../../builder/types";
 import { V1Colors } from "../color-palette";
 
 const V1ButtonCustom = {
@@ -238,5 +243,10 @@ export const V1Custom = {
     borderRadius: 12,
     borderColor: V1Colors["gray-70"],
     backgroundColor: V1Colors["gray-90"],
+    paddingTop: 16,
+    paddingLeft: 16,
+    flexDirection: "row" as EnumFlexDirection,
+    flexWrap: "wrap" as EnumFlexWrap,
+    justifyContent: "center" as EnumJustifyContent,
   },
 };

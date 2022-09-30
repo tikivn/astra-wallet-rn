@@ -259,12 +259,7 @@ const WordsCard: FunctionComponent<{
       style={style.flatten([
         "margin-top-14",
         "margin-bottom-20",
-        "padding-top-16",
-        "padding-left-16",
         "words-container",
-        "flex-row",
-        "flex-wrap",
-        "justify-center",
       ])}
     >
       {wordSet.map((word, i) => {

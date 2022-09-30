@@ -191,5 +191,6 @@ export const V1AllColors = {
     "tab-text-active": V1Colors["gray-10"],
     "tab-icon-inactive": V1Colors["gray-30"],
     "tab-text-inactive": V1Colors["gray-30"],
+    "tab-bar-background": V1Colors["gray-90"],
   },
 };

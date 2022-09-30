@@ -1,3 +1,8 @@
+import {
+  EnumFlexDirection,
+  EnumFlexWrap,
+  EnumJustifyContent,
+} from "../../builder/types";
 import { Colors } from "../color-palette";
 
 const ButtonCustom = {
@@ -243,5 +248,10 @@ export const Custom = {
     borderRadius: 8,
     borderColor: Colors["gray-70"],
     backgroundColor: Colors["gray-90"],
+    paddingTop: 16,
+    paddingLeft: 16,
+    flexDirection: "row" as EnumFlexDirection,
+    flexWrap: "wrap" as EnumFlexWrap,
+    justifyContent: "center" as EnumJustifyContent,
   },
 };

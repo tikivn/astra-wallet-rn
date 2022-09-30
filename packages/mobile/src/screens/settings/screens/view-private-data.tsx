@@ -17,8 +17,9 @@ export const getPrivateDataTitle = (
   capitalize?: boolean
 ) => {
   if (capitalize) {
-    return `View ${keyRingType === "mnemonic" ? "Mnemonic Seed" : "Private Key"
-      }`;
+    return `View ${
+      keyRingType === "mnemonic" ? "Mnemonic Seed" : "Private Key"
+    }`;
   }
 
   return `View ${keyRingType === "mnemonic" ? "mnemonic seed" : "private key"}`;
@@ -80,12 +81,7 @@ export const ViewPrivateDataScreen: FunctionComponent = () => {
         style={style.flatten([
           "margin-top-14",
           "margin-bottom-4",
-          "padding-top-16",
-          "padding-left-16",
-          "background-color-background-secondary",
-          "border-radius-8",
-          "flex-row",
-          "flex-wrap",
+          "words-container",
         ])}
       >
         {privateDataType === "mnemonic" ? (
