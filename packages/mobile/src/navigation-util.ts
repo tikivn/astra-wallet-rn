@@ -10,6 +10,7 @@ import { SignClientTypes } from "@walletconnect/types";
 import { createSmartNavigatorProvider, SmartNavigator } from "./hooks";
 import { NewMnemonicConfig } from "./screens/register/mnemonic";
 import { PasswordInputScreenType } from "./screens/settings/screens";
+import { RegisterType } from "./stores/user-login";
 
 const {
   SmartNavigatorProvider,
@@ -188,7 +189,7 @@ const {
       bip44HDPath: BIP44HDPath;
     };
     "Register.SetPincode": {
-      registerType?: "new" | "recover" | undefined;
+      registerType?: RegisterType | undefined;
       registerConfig: RegisterConfig;
       bip44HDPath: BIP44HDPath;
       mnemonic?: string;
@@ -215,7 +216,7 @@ const {
       addressBooks: { [chainId: string]: AddressBookData[] | undefined };
     };
     "Register.End": {
-      registerType?: "new" | "recover" | undefined;
+      registerType?: RegisterType | undefined;
     };
     "Register.CreateEntry": {};
     Send: {

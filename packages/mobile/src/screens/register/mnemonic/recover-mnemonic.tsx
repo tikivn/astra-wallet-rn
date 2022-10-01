@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FunctionComponent, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { RegisterConfig } from "@keplr-wallet/hooks";
@@ -14,6 +14,7 @@ import { useBIP44Option } from "../bip44";
 import { useNewMnemonicConfig } from "./hook";
 import { useIntl } from "react-intl";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
+import { RegisterType } from "../../../stores/user-login";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
@@ -95,7 +96,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
     const mnemonic = trimWordsStr(getValues("mnemonic"));
     newMnemonicConfig.setMnemonic(mnemonic);
     smartNavigation.navigateSmart("Register.SetPincode", {
-      registerType: "recover",
+      registerType: RegisterType.recover,
       registerConfig,
       bip44HDPath: bip44Option.bip44HDPath,
       mnemonic: newMnemonicConfig.mnemonic,

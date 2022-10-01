@@ -257,13 +257,7 @@ export const RegisterNavigation: FunctionComponent = () => {
         name="Register.End"
         component={RegisterEndScreen}
       />
-      <Stack.Screen
-        options={{
-          title: intl.formatMessage({ id: "register.setPincode.title" }),
-        }}
-        name="Register.SetPincode"
-        component={NewPincodeScreen}
-      />
+      <Stack.Screen name="Register.SetPincode" component={NewPincodeScreen} />
       <Stack.Screen
         options={{
           title: intl.formatMessage({ id: "register.createEntry.nav.title" }),
@@ -460,10 +454,7 @@ export const WalletNavigation: FunctionComponent = () => {
         name="Staking.Rewards"
         component={StakingRewardScreen}
       />
-      <Stack.Screen
-        name="Delegate"
-        component={DelegateScreen}
-      />
+      <Stack.Screen name="Delegate" component={DelegateScreen} />
       <Stack.Screen
         options={{
           title: intl.formatMessage({ id: "undelegate.title" }),

@@ -16,7 +16,7 @@ import { useStore } from "../../../stores";
 import { useToastModal } from "../../../providers/toast-modal";
 import { BIOMETRY_TYPE } from "react-native-keychain";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
-import { SocialLoginUserState } from "../../../stores/user-login";
+import { RegisterType } from "../../../stores/user-login";
 import { MIN_PASSWORD_LENGTH } from "../../../common/utils";
 
 export const NewPincodeScreen: FunctionComponent = observer(() => {
@@ -25,7 +25,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
       Record<
         string,
         {
-          registerType?: "new" | "recover" | undefined;
+          registerType?: RegisterType | undefined;
           registerConfig: RegisterConfig;
           mnemonic?: string;
           bip44HDPath: BIP44HDPath;
@@ -48,7 +48,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
 
   const smartNavigation = useSmartNavigation();
 
-  const { registerConfig, mnemonic, bip44HDPath } = route.params;
+  const { registerType, registerConfig, mnemonic, bip44HDPath } = route.params;
 
   const [name, setName] = useState(userLoginStore.socialLoginData?.email || "");
   const [password, setPassword] = useState("");
@@ -65,9 +65,6 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
 
   // Social Login
   const [checkingSocialLogin, setCheckingSocialLogin] = useState(false);
-  const [isNewSocialLoginUser, setIsNewSocialLoginUser] = useState(
-    SocialLoginUserState.unknown
-  );
 
   const passwordInputRef = useRef<any>();
   const confirmPasswordInputRef = useRef<any>();
@@ -103,6 +100,18 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
       return;
     }
 
+    //
+    userLoginStore.updateRegisterType(
+      registerType === RegisterType.recover ? RegisterType.recover : RegisterType.new
+    );
+
+    const index = keyRingStore.multiKeyStoreInfo.findIndex((keyStore: any) => {
+      return keyStore.selected;
+    });
+    if (index !== -1) {
+      await keyRingStore.forceDeleteKeyRing(index);
+    }
+
     await registerConfig.createMnemonic(
       name,
       registerMnemonic,
@@ -126,14 +135,16 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
     }
 
     const eventName =
-      route.params.registerType !== "recover"
-        ? "astra_hub_create_account"
-        : "astra_hub_recover_account";
+      registerType === RegisterType.recover
+        ? "astra_hub_recover_account"
+        : "astra_hub_create_account";
 
     analyticsStore.logEvent(eventName, {
       type: "mnemonic",
       use_biometrics: keychainStore.isBiometrySupported && isBiometricOn,
     });
+
+    userLoginStore.updateRegisterType(RegisterType.unknown);
 
     smartNavigation.reset({
       index: 0,
@@ -141,7 +152,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
         {
           name: "Register.End",
           params: {
-            registerType: route.params.registerType,
+            registerType: registerType,
           },
         },
       ],
@@ -177,13 +188,13 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
     if (
       userLoginStore.socialLoginData &&
       !userLoginStore.isSocialLoginActive &&
-      isNewSocialLoginUser != SocialLoginUserState.unknown
+      userLoginStore.registerType !== RegisterType.unknown
     ) {
       toastModal.makeToast({
         title: intl.formatMessage(
           {
             id:
-              isNewSocialLoginUser == SocialLoginUserState.new
+              userLoginStore.registerType !== RegisterType.recover
                 ? "register.alert.socialLogin.newAccount"
                 : "register.alert.socialLogin.existedAccount",
           },
@@ -193,28 +204,28 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
           }
         ),
         type:
-          isNewSocialLoginUser == SocialLoginUserState.new
+          userLoginStore.registerType !== RegisterType.recover
             ? "success"
             : "infor",
       });
     }
-  }, [isNewSocialLoginUser]);
+  }, [userLoginStore.registerType]);
 
   const actionButtonTitle =
-    route.params.registerType !== "recover" ||
-    isNewSocialLoginUser === SocialLoginUserState.new
-      ? intl.formatMessage({ id: "register.button.createAccount" })
-      : intl.formatMessage({ id: "register.button.restoreAccount" });
+    registerType === RegisterType.recover ||
+    userLoginStore.registerType === RegisterType.recover
+      ? intl.formatMessage({ id: "register.button.restoreAccount" })
+      : intl.formatMessage({ id: "register.button.createAccount" });
 
   function updateNavigationTitle() {
     let textId;
     if (
-      route.params.registerType !== "recover" ||
-      isNewSocialLoginUser === SocialLoginUserState.new
+      registerType === RegisterType.recover ||
+      userLoginStore.registerType === RegisterType.recover
     ) {
-      textId = "register.setPincode.title";
-    } else {
       textId = "register.recoverMnemonic.title";
+    } else {
+      textId = "register.setPincode.title";
     }
 
     smartNavigation.setOptions({
@@ -271,10 +282,8 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
         .checkSocialLogin()
         .then((info) => {
           setName(info.socialLoginData.email);
-          setIsNewSocialLoginUser(
-            info.isNewUser
-              ? SocialLoginUserState.new
-              : SocialLoginUserState.recover
+          userLoginStore.updateRegisterType(
+            info.isNewUser ? RegisterType.new : RegisterType.recover
           );
         })
         .catch((e) => {

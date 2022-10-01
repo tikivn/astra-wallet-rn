@@ -8,6 +8,7 @@ import LottieView from "lottie-react-native";
 // @ts-ignore
 import { useIntl } from "react-intl";
 import { RouteProp, useRoute } from "@react-navigation/native";
+import { RegisterType } from "../../stores/user-login";
 
 export const RegisterEndScreen: FunctionComponent = observer(() => {
   const style = useStyle();
@@ -19,30 +20,33 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
       Record<
         string,
         {
-          registerType?: "new" | "recover" | undefined;
+          registerType?: RegisterType | undefined;
         }
       >,
       string
     >
   >();
 
-  const successText = route.params.registerType !== "recover"
-    ? intl.formatMessage({ id: "wallet.create.success" })
-    : intl.formatMessage({ id: "wallet.recover.success" })
+  const successText =
+    route.params.registerType === RegisterType.recover
+      ? intl.formatMessage({ id: "wallet.recover.success" })
+      : intl.formatMessage({ id: "wallet.create.success" });
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       smartNavigation.reset({
         index: 0,
-        routes: [{
-          name: "MainTabDrawer",
-        }],
+        routes: [
+          {
+            name: "MainTabDrawer",
+          },
+        ],
       });
     }, 2000);
     return () => {
-      clearTimeout(timeoutId)
+      clearTimeout(timeoutId);
     };
-  }, [])
+  }, []);
 
   return (
     <View
