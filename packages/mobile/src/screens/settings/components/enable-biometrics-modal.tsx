@@ -9,31 +9,41 @@ import { registerModal } from "../../../modals/base";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 
-export const UpdateWalletNameModal: FunctionComponent<{
+export const EnableBiometricsModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
   title: string;
   value?: string;
 }> = registerModal(({ close, value = "" }) => {
-  const styleBuilder = useStyle();
+  const style = useStyle();
   const intl = useIntl();
-  const { keyRingStore } = useStore();
 
-  const [name, setName] = useState(value);
+  const { keychainStore } = useStore();
 
-  async function updateName() {
-    const index = keyRingStore.multiKeyStoreInfo.findIndex((keyStore) => {
-      return keyStore.selected;
-    });
-    await keyRingStore.updateNameKeyRing(index, name);
+  const [password, setPassword] = useState(value);
+  const [errorText, setErrorText] = useState(value);
+
+  const enableBiometrics = async () => {
+    try {
+      if (keychainStore.isBiometryOn) {
+        await keychainStore.turnOffBiometryWithoutReset();
+      } else {
+        await keychainStore.turnOnBiometry(password);
+      }
+    } catch (e) {
+      console.log("failed to verify Biometrics", e);
+      setErrorText(intl.formatMessage({ id: "common.text.wrongPassword" }));
+      return;
+    }
+
     Keyboard.dismiss();
     close();
-  }
+  };
 
   return (
-    <View style={styleBuilder.flatten(["height-full", "justify-center"])}>
+    <View style={style.flatten(["height-full", "justify-center"])}>
       <View
-        style={styleBuilder.flatten([
+        style={style.flatten([
           "margin-x-page",
           "content-stretch",
           "items-stretch",
@@ -52,7 +62,7 @@ export const UpdateWalletNameModal: FunctionComponent<{
         >
           <Text
             style={{
-              ...styleBuilder.flatten([
+              ...style.flatten([
                 "flex-1",
                 "text-medium-medium",
                 "color-label-text-1",
@@ -61,7 +71,7 @@ export const UpdateWalletNameModal: FunctionComponent<{
               marginVertical: 12,
             }}
           >
-            {intl.formatMessage({ id: "common.text.updateWalletName" })}
+            {intl.formatMessage({ id: "common.text.securePassword" })}
           </Text>
           <TouchableOpacity
             onPress={() => {
@@ -73,21 +83,19 @@ export const UpdateWalletNameModal: FunctionComponent<{
             <CloseLargeIcon />
           </TouchableOpacity>
         </View>
-        <View
-          style={styleBuilder.flatten(["height-1", "background-color-border"])}
-        />
+        <View style={style.flatten(["height-1", "background-color-border"])} />
         <NormalInput
-          value={name}
-          onChangeText={setName}
+          value={password}
+          error={errorText}
+          onChangeText={setPassword}
           style={{
             marginHorizontal: 16,
             marginVertical: 12,
+            paddingBottom: errorText.length !== 0 ? 24 : 0,
           }}
           autoFocus
         />
-        <View
-          style={styleBuilder.flatten(["height-1", "background-color-border"])}
-        />
+        <View style={style.flatten(["height-1", "background-color-border"])} />
         <View
           style={{
             flexDirection: "row",
@@ -109,9 +117,9 @@ export const UpdateWalletNameModal: FunctionComponent<{
             containerStyle={{ flex: 1 }}
           />
           <Button
-            text={intl.formatMessage({ id: "common.text.save" })}
-            onPress={updateName}
-            disabled={name.length == 0}
+            text={intl.formatMessage({ id: "common.text.verify" })}
+            onPress={enableBiometrics}
+            disabled={password.length == 0}
             containerStyle={{
               flex: 1,
               marginLeft: 8,

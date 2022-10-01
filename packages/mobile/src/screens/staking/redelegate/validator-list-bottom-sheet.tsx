@@ -105,8 +105,7 @@ export const ValidatorsBottomSheet: FunctionComponent<{
 
           if (maxItemsToShow) {
             const selectedIndex = data.findIndex(
-              (val) =>
-                val.operator_address === toValidator?.operator_address
+              (val) => val.operator_address === toValidator?.operator_address
             );
 
             if (selectedIndex) {
@@ -153,11 +152,9 @@ export const ValidatorsBottomSheet: FunctionComponent<{
           <View style={style.flatten(["flex-row", "items-center"])}>
             <TouchableOpacity
               onPress={close}
-              style={style.flatten(["margin-16"])}>
-              <CloseLargeIcon
-                size={24}
-                color={style.get("color-gray-10").color}
-              />
+              style={style.flatten(["margin-16"])}
+            >
+              <CloseLargeIcon />
             </TouchableOpacity>
             <Text
               style={style.flatten([
@@ -263,14 +260,16 @@ export const ValidatorsBottomSheet: FunctionComponent<{
                               "color-gray-10",
                             ])}
                           >
-                            {formatCoin(new CoinPretty(
-                              chainStore.current.stakeCurrency,
-                              new Dec(val.tokens)
-                            ))}
+                            {formatCoin(
+                              new CoinPretty(
+                                chainStore.current.stakeCurrency,
+                                new Dec(val.tokens)
+                              )
+                            )}
                           </Text>
                           {renderBall(
                             val.operator_address ===
-                            toValidator?.operator_address
+                              toValidator?.operator_address
                           )}
                         </View>
                       </View>
@@ -282,7 +281,12 @@ export const ValidatorsBottomSheet: FunctionComponent<{
                       >
                         {intl.formatMessage(
                           { id: "validator.details.commission.percent" },
-                          { percent: formatPercent(val.commission.commission_rates.rate, true) },
+                          {
+                            percent: formatPercent(
+                              val.commission.commission_rates.rate,
+                              true
+                            ),
+                          }
                         )}
                       </Text>
                     </View>
@@ -298,7 +302,9 @@ export const ValidatorsBottomSheet: FunctionComponent<{
               );
             })}
           </ScrollView>
-          <View style={style.flatten(["height-1", "background-color-gray-70"])} />
+          <View
+            style={style.flatten(["height-1", "background-color-gray-70"])}
+          />
           <Button
             text={intl.formatMessage({ id: "common.text.verify" })}
             disabled={!toValidator}

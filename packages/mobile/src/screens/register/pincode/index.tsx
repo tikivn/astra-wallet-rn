@@ -55,7 +55,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [inputDataValid, setInputDataValid] = useState(false);
-  const [isBiometricOn, setIsBiometricOn] = useState(false);
+  const [isBiometricOn, setIsBiometricOn] = useState(keychainStore.isBiometryOn);
 
   const [isCreating, setIsCreating] = useState(false);
   const [passwordErrorText, setPasswordErrorText] = useState("");
