@@ -121,6 +121,9 @@ export const MainScreen: FunctionComponent = observer(() => {
         .balances.map((bal) => {
           return bal.waitFreshResponse();
         }),
+      queriesStore
+        .get(chainStore.current.chainId)
+        .keplrETC.queryERC20Balance.fetchAll(),
       queries.cosmos.queryRewards
         .getQueryBech32Address(account.bech32Address)
         .waitFreshResponse(),

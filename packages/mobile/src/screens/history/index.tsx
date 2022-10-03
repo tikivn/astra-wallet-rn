@@ -22,6 +22,7 @@ import { TxResponse } from "@keplr-wallet/stores/build/query/cosmos/tx/types";
 import { useSmartNavigation } from "../../navigation-util";
 import { FormattedMessage, useIntl } from "react-intl";
 import { RectButton } from "react-native-gesture-handler";
+import { ObservableQueryTxsInner } from "@keplr-wallet/stores";
 
 export type PageRequestInfo = {
   currentPage: number;
@@ -98,7 +99,11 @@ export const HistoryScreen: FunctionComponent = observer(() => {
     ])
   );
 
-  const queriesForPage = (queries, bech32Address, page): any[] => {
+  const queriesForPage = (
+    queries,
+    bech32Address: string,
+    page: number
+  ): any[] => {
     const limit = pageInfo.limit;
     const sent = queries.cosmos.queryTxs.getQueryBech32Address(
       bech32Address,
@@ -115,10 +120,8 @@ export const HistoryScreen: FunctionComponent = observer(() => {
 
   const fetchPageData = (pageQueries): Promise => {
     return Promise.all(pageQueries.map((query) => query.waitFreshResponse()))
-      .catch(() => {
-      })
-      .then(() => {
-      });
+      .catch(() => {})
+      .then(() => {});
   };
 
   const onRefresh = React.useCallback(async () => {
@@ -127,7 +130,7 @@ export const HistoryScreen: FunctionComponent = observer(() => {
     const bech32Address = account.bech32Address;
     // Because the components share the states related to the queries,
     // fetching new query responses here would make query responses on all other components also refresh.
-    let pageQueries = queriesForPage(
+    const pageQueries = queriesForPage(
       queriesStore.get(chainId),
       bech32Address,
       0
@@ -181,9 +184,13 @@ export const HistoryScreen: FunctionComponent = observer(() => {
     pageQueries.forEach((query) => {
       return txResponses.push(
         ...query.txResponses.filter((txResponse) => {
-          return txResponses.map((txResponse) => txResponse.txhash).indexOf(txResponse.txhash) === -1
+          return (
+            txResponses
+              .map((txResponse) => txResponse.txhash)
+              .indexOf(txResponse.txhash) === -1
+          );
         })
-      )
+      );
     });
 
     const histories = txResponses
@@ -220,7 +227,9 @@ export const HistoryScreen: FunctionComponent = observer(() => {
           </Text>
         }
         ItemSeparatorComponent={() => (
-          <View style={style.flatten(["height-1", "background-color-gray-70"])} />
+          <View
+            style={style.flatten(["height-1", "background-color-gray-70"])}
+          />
         )}
         ListFooterComponent={
           <View style={{ flex: 1 }}>
@@ -246,15 +255,15 @@ export const HistoryScreen: FunctionComponent = observer(() => {
             style={style.flatten(["margin-y-16"])}
             activeOpacity={0}
             onPress={() => {
-              let txExplorer = chainStore.getChain(chainId).raw.txExplorer;
-              let txHash = item.raw?.txhash;
+              const txExplorer = chainStore.getChain(chainId).raw.txExplorer;
+              const txHash = item.raw?.txhash;
               if (txExplorer && txHash) {
-                let url = txExplorer.txUrl.replace(
+                const url = txExplorer.txUrl.replace(
                   "{txHash}",
                   txHash.toUpperCase()
                 );
                 smartNavigation.navigateSmart("WebView", {
-                  url: url
+                  url: url,
                 });
               }
             }}

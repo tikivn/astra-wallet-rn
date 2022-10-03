@@ -5,14 +5,14 @@ import {
   JSBI,
   Token,
   TokenAmount,
+  ETHER,
 } from "@solarswap/sdk";
 // eslint-disable-next-line import/no-extraneous-dependencies
 
 // try to parse a user entered amount for a given token
 export const tryParseAmount = (
   value?: string,
-  currency?: Currency,
-  WASA?: Token
+  currency?: Currency
 ): CurrencyAmount | TokenAmount | undefined => {
   if (!value || !currency) {
     return undefined;
@@ -21,7 +21,7 @@ export const tryParseAmount = (
     const typedValueParsed = parseUnits(value, currency.decimals).toString();
 
     if (typedValueParsed !== "0") {
-      return currency.symbol !== WASA?.symbol
+      return currency.symbol !== ETHER?.symbol
         ? new TokenAmount(currency as Token, JSBI.BigInt(typedValueParsed))
         : CurrencyAmount.ether(JSBI.BigInt(typedValueParsed));
     }

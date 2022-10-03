@@ -184,7 +184,7 @@ export const {
       },
       "text-amount-input-center": {
         fontSize: 24,
-        lineHeight: 32,
+        lineHeight: 0,
         letterSpacing: 0.3,
         ...getPlatformFontWeight("400"),
       },
@@ -443,9 +443,7 @@ export const {
       colors: V1AllColors,
     },
     v2: {
-      colors: {
-
-      },
+      colors: {},
     },
-  },
+  }
 );

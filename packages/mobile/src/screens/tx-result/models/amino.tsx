@@ -74,15 +74,7 @@ export const renderAminoMessages = (
       const value = msg.value as MsgSwap;
       const msgEther = transactionStore.txMsgs;
       if (msgEther && msgEther.length > 0) {
-        const data = msgEther[0] as any;
-        if (data.type === "sign/MsgSignData") {
-          const dataAsciiStr = Buffer.from(data.value.data, "base64").toString(
-            "ascii"
-          );
-          const dataParse = JSON.parse(dataAsciiStr);
-          return renderMsgSwap(value, dataParse);
-        }
-        return [];
+        return renderMsgSwap(value);
       }
       return [];
     }

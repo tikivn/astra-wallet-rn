@@ -1,6 +1,9 @@
 import { Currency } from "@solarswap/sdk";
 import { SwapField } from "../utils/for-swap";
-import { useCurrencyBalances } from "./use-balance";
+import {
+  useCurrencyBalances,
+  useCurrencyBalancesFromStore,
+} from "./use-balance";
 
 interface UseSwapInfoProps {
   currencies: {
@@ -19,9 +22,14 @@ export const useSwapInfo = ({
     outputCurrency,
   ]);
 
+  const balances = useCurrencyBalancesFromStore(relevantTokenBalances, [
+    inputCurrency,
+    outputCurrency,
+  ]);
+
   const tokenBalances = {
-    [SwapField.Input]: relevantTokenBalances[0],
-    [SwapField.Output]: relevantTokenBalances[1],
+    [SwapField.Input]: balances[0],
+    [SwapField.Output]: balances[1],
   };
   return {
     tokenBalances,

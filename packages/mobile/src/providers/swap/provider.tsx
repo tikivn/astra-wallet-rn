@@ -1,5 +1,5 @@
 import { CW20Currency } from "@keplr-wallet/types";
-import { ChainId, Currency, Token } from "@solarswap/sdk";
+import { ChainId, Currency, ETHER, Token } from "@solarswap/sdk";
 import React, {
   FunctionComponent,
   useCallback,
@@ -18,7 +18,7 @@ export const SwapProvider: FunctionComponent<SwapProviderProps> = ({
     reducer,
     initialSwapReducerValue
   );
-  const { chainId, getStore, WASA } = useWeb3();
+  const { chainId, getStore } = useWeb3();
 
   const { chainStore } = getStore();
 
@@ -31,8 +31,8 @@ export const SwapProvider: FunctionComponent<SwapProviderProps> = ({
       }
       const currency = currencies[index] as CW20Currency;
       const chain = chainId || ChainId.TESTNET;
-      if (currency.coinDenom === "ASA") {
-        return WASA;
+      if (currency.coinDenom === ETHER.symbol) {
+        return ETHER;
       }
       return new Token(
         chain,
@@ -43,7 +43,7 @@ export const SwapProvider: FunctionComponent<SwapProviderProps> = ({
         currency.coinImageUrl
       );
     },
-    [WASA, chainId, chainStore, swapInfos.indexCurrency]
+    [chainId, chainStore, swapInfos.indexCurrency]
   );
 
   const inputCurrency = useMemo(() => getCurrency(SwapField.Input), [
@@ -63,7 +63,7 @@ export const SwapProvider: FunctionComponent<SwapProviderProps> = ({
 
   const { tokenBalances } = useSwapInfo({ currencies });
 
-  const { fetchTrade } = useAmountOut({
+  const { fetchTrade, pairData } = useAmountOut({
     currencies,
     swapValue: swapInfos.swapValue,
   });
@@ -73,6 +73,7 @@ export const SwapProvider: FunctionComponent<SwapProviderProps> = ({
     swapInfos,
     tokenBalances,
     dispatch,
+    pairData,
   });
 
   if (!dispatch) return null;

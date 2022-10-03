@@ -20,12 +20,13 @@ import {
 import { useSmartNavigation } from "../../../navigation-util";
 import { useLoadingScreen } from "../../../providers/loading-screen";
 import { useDataSwapContext } from "../../../providers/swap/use-data-swap-context";
-import { Colors, useStyle } from "../../../styles";
+import { useStyle, V1Colors } from "../../../styles";
 import {
   getExchangeRateString,
   getSlippageTolaranceString,
-  getTransactionFee,
+  getLiquidityFee,
   SwapField,
+  getTransactionFee,
 } from "../../../utils/for-swap";
 import { AmountSwap, Tooltip } from "../components";
 
@@ -36,6 +37,7 @@ export const SwapScreen: FunctionComponent = observer(() => {
     tokenBalances,
     values,
     lpFee,
+    txFee,
     pricePerInputCurrency,
     isReadyToSwap,
     currencies,
@@ -96,12 +98,12 @@ export const SwapScreen: FunctionComponent = observer(() => {
   return (
     <View
       style={StyleSheet.flatten([
-        { borderTopWidth: 1, borderColor: Colors["gray-70"] },
+        { borderTopWidth: 1, borderColor: V1Colors["gray-70"] },
         style.flatten(["background-color-background", "flex-1"]),
       ])}
     >
       <View style={style.flatten(["padding-x-16"])}>
-        <View style={style.get("height-12")} />
+        <View style={style.get("height-16")} />
 
         <AmountSwap
           currency={currencies[SwapField.Input]}
@@ -117,7 +119,7 @@ export const SwapScreen: FunctionComponent = observer(() => {
             {
               zIndex: 999,
             },
-            style.flatten(["items-center", "justify-center", "height-16"]),
+            style.flatten(["items-center", "justify-center", "height-8"]),
           ])}
         >
           <View
@@ -134,7 +136,7 @@ export const SwapScreen: FunctionComponent = observer(() => {
                   borderRadius: 20,
                   height: "100%",
                   width: "100%",
-                  backgroundColor: Colors["gray-100"],
+                  backgroundColor: V1Colors["gray-100"],
                   paddingLeft: 4,
                 },
                 style.flatten(["items-center", "justify-center"]),
@@ -198,10 +200,29 @@ export const SwapScreen: FunctionComponent = observer(() => {
               style.flatten(["color-gray-30", "text-caption"]),
             ])}
           >
+            {intl.formatMessage({ id: "swap.transactionFee" })}
+          </Text>
+          <Text style={style.flatten(["color-gray-10", "body3"])}>
+            {getTransactionFee(txFee)}
+          </Text>
+        </View>
+        <View
+          style={style.flatten([
+            "flex-row",
+            "items-center",
+            "justify-between",
+            "margin-bottom-16",
+          ])}
+        >
+          <Text
+            style={StyleSheet.flatten([
+              style.flatten(["color-gray-30", "text-caption"]),
+            ])}
+          >
             {intl.formatMessage({ id: "swap.liquidityFee" })}
           </Text>
           <Text style={style.flatten(["color-gray-10", "body3"])}>
-            {getTransactionFee(currencies, lpFee)}
+            {getLiquidityFee(currencies, lpFee)}
           </Text>
         </View>
         <View
@@ -220,11 +241,7 @@ export const SwapScreen: FunctionComponent = observer(() => {
                 id="swap.slipageTolarance"
                 values={{
                   // eslint-disable-next-line react/display-name
-                  b: () => (
-                    <Text style={{ fontWeight: "bold" }}>
-                      {getSlippageTolaranceString(swapInfos)}
-                    </Text>
-                  ),
+                  b: () => <Text>{getSlippageTolaranceString(swapInfos)}</Text>,
                 }}
               />
             </Text>
@@ -276,14 +293,15 @@ export const SwapScreen: FunctionComponent = observer(() => {
       >
         <View
           style={StyleSheet.flatten([
-            { borderTopWidth: 1, borderColor: Colors["gray-70"] },
+            { borderTopWidth: 1, borderColor: V1Colors["gray-70"] },
             style.flatten(["height-12"]),
           ])}
         />
         <View style={style.flatten(["padding-x-16"])}>
           <Button
             text={intl.formatMessage({
-              id: "swap.buttonText" + swapInfos.error,
+              id:
+                "swap.buttonText" + (swapInfos.error && `.${swapInfos.error}`),
             })}
             disabled={!isReadyToSwap || !!swapInfos.error}
             onPress={handleClickContinue}

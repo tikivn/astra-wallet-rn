@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { FormattedMessage } from "react-intl";
-import { Text, View, ViewStyle } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { MsgSwap } from "../models/messages";
@@ -16,14 +16,13 @@ export const TransactionTitleView: FunctionComponent = observer(() => {
   }
   const viewData = rawData?.value as MsgSwap;
   return (
-    <View style={styleBuilder.flatten(["items-center"])}>
-      <Text
-        style={styleBuilder.flatten([
-          "text-success",
-          "color-gray-10",
-          "margin-top-4",
-        ])}
-      >
+    <View
+      style={StyleSheet.flatten([
+        styleBuilder.flatten(["items-center"]),
+        { marginTop: -16 },
+      ])}
+    >
+      <Text style={styleBuilder.flatten(["text-success", "color-gray-10"])}>
         <FormattedMessage
           id="swap.success.text.from"
           values={{

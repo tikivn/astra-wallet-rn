@@ -39,26 +39,16 @@ export class ObservableQueryERC20MetadataBalance extends ObservableJsonRPCQuery<
       },
     });
 
-    super(
-      kvStore,
-      instance,
-      "",
-      "eth_call",
-      [
-        {
-          to: contractAddress,
-          data: erc20BalanceInterface.encodeFunctionData("balanceOf", [
-            accountHex,
-          ]),
-          from: accountHex,
-        },
-        "latest",
-      ],
+    super(kvStore, instance, "", "eth_call", [
       {
-        cacheMaxAge: 10 * 1000,
-        fetchingInterval: 10 * 1000,
-      }
-    );
+        to: contractAddress,
+        data: erc20BalanceInterface.encodeFunctionData("balanceOf", [
+          accountHex,
+        ]),
+        from: accountHex,
+      },
+      "latest",
+    ]);
     makeObservable(this);
   }
 
@@ -99,6 +89,9 @@ export class ObservableQueryERC20BalanceInner {
   get balance(): Result | undefined {
     return this._queryBalance.balance;
   }
+  fetch(): void {
+    this._queryBalance.waitFreshResponse();
+  }
 }
 export type GetBalanceErc20Props = {
   contractAddress: string;
@@ -110,7 +103,7 @@ export class ObservableQueryERC20Balance extends HasMapStore<ObservableQueryERC2
     protected readonly ethereumURL: string
   ) {
     super((key: string) => {
-      const data = JSON.parse(key) as GetBalanceErc20Props;
+      const data = JSON.parse(key);
       return new ObservableQueryERC20BalanceInner(
         this.kvStore,
         this.ethereumURL,
@@ -122,5 +115,9 @@ export class ObservableQueryERC20Balance extends HasMapStore<ObservableQueryERC2
 
   getBalance(data: GetBalanceErc20Props): ObservableQueryERC20BalanceInner {
     return this.get(JSON.stringify(data));
+  }
+
+  fetchAll(): void {
+    return this.map.forEach((item) => item.fetch());
   }
 }

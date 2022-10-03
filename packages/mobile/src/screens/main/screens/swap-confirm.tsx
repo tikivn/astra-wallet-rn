@@ -1,6 +1,11 @@
-import { Token } from "@solarswap/sdk";
+import { Currency, Token } from "@solarswap/sdk";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useCallback, useState } from "react";
+import React, {
+  FunctionComponent,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import {
   Animated,
@@ -18,13 +23,14 @@ import { useSmartNavigation } from "../../../navigation-util";
 import { useDataSwapContext } from "../../../providers/swap/use-data-swap-context";
 import { useToastModal } from "../../../providers/toast-modal";
 import { useStore } from "../../../stores";
-import { Colors, useStyle } from "../../../styles";
+import { V1Colors, useStyle } from "../../../styles";
 import {
   getExchangeRateString,
   getSlippageTolaranceString,
-  getTransactionFee,
+  getLiquidityFee,
   INTERNAL_DELAY,
   SwapField,
+  getTransactionFee,
 } from "../../../utils/for-swap";
 
 export const SwapConfirmScreen: FunctionComponent = observer(() => {
@@ -39,9 +45,10 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
     trade,
     currencies,
     minimunReceived,
+    txFee,
   } = useDataSwapContext();
 
-  const { transactionStore } = useStore();
+  const { transactionStore, chainStore } = useStore();
 
   const { callback: swapCallback } = useSwapCallback(
     trade,
@@ -65,8 +72,9 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
     minimumReceived: `${minimunReceived} ${
       currencies[SwapField.Output]?.symbol
     }`,
-    liquidityFee: getTransactionFee(currencies, lpFee),
+    liquidityFee: getLiquidityFee(currencies, lpFee),
     slippageTolerance: getSlippageTolaranceString(swapInfos),
+    txFee: getTransactionFee(txFee),
   };
 
   const handleSwap = useCallback(() => {
@@ -118,11 +126,20 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
       },
     ],
   };
+  const cointImg = useCallback(
+    (currency?: Currency) => {
+      if (!currency) return "";
+      const currencies = chainStore.current.currencies;
+      return currencies.find((f) => f.coinDenom === currency?.symbol)
+        ?.coinImageUrl;
+    },
+    [chainStore]
+  );
 
   return (
     <View
       style={StyleSheet.flatten([
-        { borderTopWidth: 1, borderColor: Colors["gray-70"] },
+        { borderTopWidth: 1, borderColor: V1Colors["gray-70"] },
         style.flatten(["background-color-background", "flex-1"]),
       ])}
     >
@@ -140,7 +157,7 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
               }}
               resizeMode={FastImage.resizeMode.contain}
               source={{
-                uri: (currencies[SwapField.Input] as Token)?.projectLink,
+                uri: cointImg(currencies[SwapField.Input]),
               }}
             />
             <Text
@@ -178,7 +195,7 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
               }}
               resizeMode={FastImage.resizeMode.contain}
               source={{
-                uri: (currencies[SwapField.Output] as Token)?.projectLink,
+                uri: cointImg(currencies[SwapField.Output]),
               }}
             />
             <Text
@@ -252,7 +269,7 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
             style={StyleSheet.flatten([
               {
                 borderBottomWidth: 1,
-                borderBottomColor: Colors["gray-70"],
+                borderBottomColor: V1Colors["gray-70"],
               },
               style.flatten([
                 "flex-row",
@@ -274,7 +291,7 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
             style={StyleSheet.flatten([
               {
                 borderBottomWidth: 1,
-                borderBottomColor: Colors["gray-70"],
+                borderBottomColor: V1Colors["gray-70"],
               },
               style.flatten([
                 "flex-row",
@@ -296,7 +313,28 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
             style={StyleSheet.flatten([
               {
                 borderBottomWidth: 1,
-                borderBottomColor: Colors["gray-70"],
+                borderBottomColor: V1Colors["gray-70"],
+              },
+              style.flatten([
+                "flex-row",
+                "flex-nowrap",
+                "justify-between",
+                "padding-y-16",
+              ]),
+            ])}
+          >
+            <Text style={style.flatten(["text-caption", "color-gray-30"])}>
+              {intl.formatMessage({ id: "swap.transactionFee" })}
+            </Text>
+            <Text style={style.flatten(["text-caption", "color-gray-10"])}>
+              {viewData.txFee}
+            </Text>
+          </View>
+          <View
+            style={StyleSheet.flatten([
+              {
+                borderBottomWidth: 1,
+                borderBottomColor: V1Colors["gray-70"],
               },
               style.flatten([
                 "flex-row",
@@ -335,7 +373,7 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
       <View style={style.get("flex-1")} />
       <View
         style={StyleSheet.flatten([
-          { borderTopWidth: 1, borderColor: Colors["gray-70"] },
+          { borderTopWidth: 1, borderColor: V1Colors["gray-70"] },
           style.flatten([
             "padding-x-16",
             "padding-y-12",
@@ -346,10 +384,7 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
       >
         <Button
           text={intl.formatMessage({ id: "swap.confirm.button.back" })}
-          containerStyle={style.flatten([
-            "flex-1",
-            "margin-right-8",
-          ])}
+          containerStyle={style.flatten(["flex-1", "margin-right-8"])}
           color="neutral"
           onPress={() => smartNavigation.goBack()}
         />

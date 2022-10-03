@@ -6,6 +6,7 @@ import {
   Pair,
   Token,
   Trade,
+  WETH,
 } from "@solarswap/sdk";
 import { useCallback, useState } from "react";
 import { INTERNAL_DELAY, SwapField } from "../utils/for-swap";
@@ -24,50 +25,56 @@ export const useAmountOut = ({
     [SwapField.Input]: inputCurrency,
     [SwapField.Output]: outputCurrency,
   },
+  swapValue,
 }: UseAmountOutProps) => {
-  const { etherProvider, WASA } = useWeb3();
+  const { etherProvider, chainId } = useWeb3();
   const [pair, setPair] = useState<Pair>();
 
   const fetchPairData = useCallback(async () => {
     if (!etherProvider || !inputCurrency || !outputCurrency) return;
     console.log("Fetch Pair Data");
-    const pairFetch = await Fetcher.fetchPairData(
-      inputCurrency as Token,
-      outputCurrency as Token,
-      etherProvider
-    );
+    const input =
+      inputCurrency.symbol === ETHER.symbol
+        ? WETH[chainId]
+        : (inputCurrency as Token);
+    const output =
+      outputCurrency.symbol === ETHER.symbol
+        ? WETH[chainId]
+        : (outputCurrency as Token);
+    const pairFetch = await Fetcher.fetchPairData(input, output, etherProvider);
     setPair(pairFetch);
-  }, [etherProvider, inputCurrency, outputCurrency]);
+  }, [chainId, etherProvider, inputCurrency, outputCurrency]);
 
   const trade = useCallback(
     async (valueSwap: string, dependentField: SwapField) => {
       if (!pair || !inputCurrency || !outputCurrency) return [];
       if (dependentField === SwapField.Input) {
-        const tokenInAmoutSwap = tryParseAmount(valueSwap, inputCurrency, WASA);
+        const tokenInAmoutSwap = tryParseAmount(valueSwap, inputCurrency);
         return Trade.bestTradeExactIn(
           [pair],
           tokenInAmoutSwap as CurrencyAmount,
-          outputCurrency.symbol === ETHER.symbol ? ETHER : outputCurrency
+          outputCurrency
         );
       }
-      const tokenOutAmoutSwap = tryParseAmount(valueSwap, outputCurrency, WASA);
+      const tokenOutAmoutSwap = tryParseAmount(valueSwap, outputCurrency);
       return Trade.bestTradeExactOut(
         [pair],
-        inputCurrency.symbol === ETHER.symbol ? ETHER : inputCurrency,
+        inputCurrency,
         tokenOutAmoutSwap as CurrencyAmount
       );
     },
-    [WASA, pair, inputCurrency, outputCurrency]
+    [pair, inputCurrency, outputCurrency]
   );
   useInterval(
     () => {
       fetchPairData();
     },
     INTERNAL_DELAY,
-    true
+    true,
+    swapValue
   );
-
   return {
     fetchTrade: trade,
+    pairData: pair,
   };
 };

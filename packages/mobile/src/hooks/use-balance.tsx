@@ -1,15 +1,20 @@
 import { isAddress } from "@ethersproject/address";
+import { BigNumber } from "@ethersproject/bignumber";
 import { Provider, Web3Provider } from "@ethersproject/providers";
+import { Erc20Currency } from "@keplr-wallet/types";
+import { CoinPretty, Int } from "@keplr-wallet/unit";
 import {
   ChainId,
   Currency,
   CurrencyAmount,
+  ETHER,
   JSBI,
   Token,
   TokenAmount,
 } from "@solarswap/sdk";
 import { useCallback, useMemo, useState } from "react";
 import erc20Abi from "../contracts/abis/erc20.json";
+import { useStore } from "../stores";
 import { INTERNAL_DELAY } from "../utils/for-swap";
 import { CallProps, multicall } from "../utils/for-swap/multicall";
 import { useInterval } from "./use-interval";
@@ -73,14 +78,14 @@ export const useTokenBalances = (
 export function useCurrencyBalances(
   currencies?: (Currency | undefined)[]
 ): (CurrencyAmount | undefined)[] {
-  const { etherProvider, accountHex, WASA, chainId } = useWeb3();
+  const { etherProvider, accountHex, chainId } = useWeb3();
 
   const tokens = useMemo(
     () =>
       currencies?.filter(
-        (currency): currency is Token => currency?.symbol !== WASA.symbol
+        (currency): currency is Token => currency?.symbol !== ETHER.symbol
       ) ?? [],
-    [WASA, currencies]
+    [currencies]
   );
 
   const tokenBalances = useTokenBalances(
@@ -89,23 +94,22 @@ export function useCurrencyBalances(
     chainId ?? ChainId.TESTNET,
     etherProvider
   );
-  const asaBalance = useASABalance(accountHex, etherProvider, WASA);
+  const asaBalance = useASABalance(accountHex, etherProvider);
   return useMemo(
     () =>
       currencies?.map((currency) => {
         if (!accountHex || !currency) return undefined;
-        if (currency.symbol === WASA.symbol) return asaBalance;
+        if (currency.symbol === ETHER.symbol) return asaBalance;
         if (currency instanceof Token) return tokenBalances[currency.address];
         return undefined;
       }) ?? [],
-    [WASA.symbol, accountHex, asaBalance, currencies, tokenBalances]
+    [accountHex, asaBalance, currencies, tokenBalances]
   );
 }
 
 export const useASABalance = (
   accountHex: string,
-  etherProvider: Web3Provider,
-  WASA: Token
+  etherProvider: Web3Provider
 ) => {
   const [asaBalance, setAsaBalance] = useState("");
 
@@ -129,6 +133,54 @@ export const useASABalance = (
   );
 
   return useMemo(() => {
-    return new TokenAmount(WASA, asaBalance);
-  }, [asaBalance, WASA]);
+    return asaBalance ? CurrencyAmount.ether(asaBalance) : undefined;
+  }, [asaBalance]);
 };
+
+export function useCurrencyBalancesFromStore(
+  balances: (CurrencyAmount | undefined)[],
+  currencies: (Currency | undefined)[]
+) {
+  const { queriesStore, chainStore, accountStore } = useStore();
+  const chainIdStr = chainStore.current.chainId;
+  const account = accountStore.getAccount(chainStore.current.chainId);
+  const asaBalance = useCallback(() => {
+    const queryBalances = queriesStore
+      .get(chainIdStr)
+      .queryBalances.getQueryBech32Address(account.bech32Address);
+    const balance = queryBalances.getBalanceFromCurrency(
+      chainStore.current.currencies[0]
+    );
+    return CurrencyAmount.ether(balance.toCoin().amount);
+  }, [account.bech32Address, chainIdStr, chainStore, queriesStore]);
+
+  const getBalanceErc20 = useCallback(
+    (token: Token) => {
+      if (!account.ethereumHexAddress || !token.address) return undefined;
+      const balance = queriesStore
+        .get(chainIdStr)
+        .keplrETC.queryERC20Balance.getBalance({
+          contractAddress: token.address,
+          accountHex: account.ethereumHexAddress,
+        }).balance;
+      if (!balance) {
+        return new TokenAmount(token, 0);
+      }
+      const bn = BigNumber.from(balance);
+      return new TokenAmount(token, bn.toString());
+    },
+    [account.ethereumHexAddress, chainIdStr, queriesStore]
+  );
+
+  return useMemo(() => {
+    if (balances && balances.every((f) => f)) {
+      return balances;
+    }
+    return currencies?.map((currency) => {
+      if (!currency) return undefined;
+      if (currency?.symbol === ETHER.symbol) return asaBalance();
+      if (currency instanceof Token) return getBalanceErc20(currency);
+      return undefined;
+    });
+  }, [asaBalance, balances, currencies, getBalanceErc20]);
+}

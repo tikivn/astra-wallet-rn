@@ -1,30 +1,31 @@
 import { TxResponse } from "@keplr-wallet/stores/build/query/cosmos/tx/types";
+import addresses from "../../utils/for-swap/addresses";
 
 export interface Coin {
-  denom: string,
-  amount: string,
+  denom: string;
+  amount: string;
 }
 
 export interface TransactionItem<T> {
-  raw?: T,
-  action: string,
-  amount: Coin,
-  timestamp: string,
+  raw?: T;
+  action: string;
+  amount: Coin;
+  timestamp: string;
   status: "success" | "failure" | undefined;
 }
 
 export function fromCoin(coin: any & Coin): Coin {
   return {
     amount: coin?.amount || "",
-    denom: coin?.denom || ""
-  }
+    denom: coin?.denom || "",
+  };
 }
 
 interface MsgSend {
   cosmos: {
     from_address: string;
     amount: Coin[];
-  }
+  };
 }
 
 interface MsgDelegate {
@@ -33,7 +34,7 @@ interface MsgDelegate {
     amount: Coin;
     delegator_address: string;
     validator_address: string;
-  }
+  };
 }
 
 interface MsgUndelegate {
@@ -41,7 +42,7 @@ interface MsgUndelegate {
     amount: Coin;
     delegator_address: string;
     validator_address: string;
-  }
+  };
 }
 
 interface MsgBeginRedelegate {
@@ -50,74 +51,94 @@ interface MsgBeginRedelegate {
     delegator_address: string;
     validator_dst_address: string;
     validator_src_address: string;
-  }
+  };
 }
 
 interface MsgWithdrawDelegatorReward {
   cosmos: {
     delegator_address: string;
     validator_address: string;
-  }
+  };
 }
 
-export function toUiItem(intl, bech32Address: string, txResponse: TxResponse): TransactionItem<TxResponse> {
-  let msgs = txResponse?.tx?.body?.messages || [];
-  let msgRaw = firstOrNull(msgs)
+export function toUiItem(
+  intl,
+  bech32Address: string,
+  txResponse: TxResponse
+): TransactionItem<TxResponse> {
+  const msgs = txResponse?.tx?.body?.messages || [];
+  const msgRaw = firstOrNull(msgs);
+  const routerAddresses = Object.values(addresses.ROUTER);
 
-  let type: string = msgRaw ? msgRaw["@type"] || msgRaw["typeUrl"] || null : null;
+  const type: string = msgRaw
+    ? msgRaw["@type"] || msgRaw["typeUrl"] || null
+    : null;
 
   let action = type || "";
   let amount = fromCoin(null);
-  var status: TransactionItem<TxResponse>["status"] = txResponse?.code === 0 ? "success" : "failure";
+  let status: TransactionItem<TxResponse>["status"] =
+    txResponse?.code === 0 ? "success" : "failure";
 
-  const getAmountFromRawLog = (rawLog: string, eventType: "withdraw_rewards" | "coinbase") => {
-    const logs = JSON.parse(rawLog) as {
-      events: {
-        type: string,
-        attributes: {
-          key: string,
-          value: string
-        }[]
-      }[]
-    }[];
+  const getAmountFromRawLog = (
+    rawLog: string,
+    eventType: "withdraw_rewards" | "coinbase"
+  ) => {
+    let logs = [];
+    try {
+      logs = JSON.parse(rawLog) as {
+        events: {
+          type: string;
+          attributes: {
+            key: string;
+            value: string;
+          }[];
+        }[];
+      }[];
+    } catch (err) {
+      // console.log("🚀 -> err", { err, rawLog, eventType });
+    }
 
     const amounts = logs.flatMap((log) => {
-      return log.events.filter((event) => {
-        return event.type === eventType
-      }).flatMap((event) => {
-        return event.attributes.filter((att) => {
-          return att.key === "amount"
-        }).flatMap((att) => {
-          const value = att.value as string;
-          const index = value.search(/[^0-9]/g);
+      return log.events
+        .filter((event) => {
+          return event.type === eventType;
+        })
+        .flatMap((event) => {
+          return event.attributes
+            .filter((att) => {
+              return att.key === "amount";
+            })
+            .flatMap((att) => {
+              const value = att.value as string;
+              const index = value.search(/[^0-9]/g);
 
-          return {
-            amount: value.substring(0, index),
-            denom: value.substring(index, value.length),
-          };
+              return {
+                amount: value.substring(0, index),
+                denom: value.substring(index, value.length),
+              };
+            });
         });
-      });
     }) as Coin[];
 
     if (amounts) {
       return amounts.reduce((prev, cur) => {
         return {
           amount: (Number(prev.amount) + Number(cur.amount)).toString(),
-          denom: cur.denom
-        }
+          denom: cur.denom,
+        };
       }, fromCoin({}));
     }
 
     return fromCoin({});
-  }
+  };
 
   switch (type) {
     case "/cosmos.bank.v1beta1.MsgSend": {
       const msg = (msgRaw as unknown) as MsgSend["cosmos"];
-      action = msg.from_address === bech32Address ? "sender" : "receiver"
-      action = intl.formatMessage({ id: `history.action.MsgSend.${action}` })
-      let coin = firstOrNull(msg.amount);
-      amount = fromCoin(coin)
+      action = msg.from_address === bech32Address ? "sender" : "receiver";
+      action = intl.formatMessage({ id: `history.action.MsgSend.${action}` });
+      const coin = firstOrNull(msg.amount);
+      amount = fromCoin(coin);
       break;
     }
     // case "/cosmos.bank.v1beta1.MsgMultiSend": {
@@ -129,44 +150,57 @@ export function toUiItem(intl, bech32Address: string, txResponse: TxResponse): T
     //     let coin = firstOrNull(input ? input.coins : output.coins);
     //     amount = fromCoin(coin)
     //     break;
-    // } 
+    // }
     case "/cosmos.staking.v1beta1.MsgDelegate": {
       const msg = (msgRaw as unknown) as MsgDelegate["cosmos"];
-      action = msg.delegator_address === bech32Address ? "sender" : "receiver"
-      action = intl.formatMessage({ id: `history.action.MsgDelegate.${action}` })
-      amount = fromCoin(msg.amount)
+      action = msg.delegator_address === bech32Address ? "sender" : "receiver";
+      action = intl.formatMessage({
+        id: `history.action.MsgDelegate.${action}`,
+      });
+      amount = fromCoin(msg.amount);
       break;
     }
     case "/cosmos.staking.v1beta1.MsgBeginRedelegate": {
       const msg = (msgRaw as unknown) as MsgBeginRedelegate["cosmos"];
-      action = msg.delegator_address === bech32Address ? "sender" : "receiver"
-      action = intl.formatMessage({ id: `history.action.MsgBeginRedelegate.${action}` })
-      amount = fromCoin(msg.amount)
+      action = msg.delegator_address === bech32Address ? "sender" : "receiver";
+      action = intl.formatMessage({
+        id: `history.action.MsgBeginRedelegate.${action}`,
+      });
+      amount = fromCoin(msg.amount);
       break;
     }
     case "/cosmos.staking.v1beta1.MsgUndelegate": {
       const msg = (msgRaw as unknown) as MsgUndelegate["cosmos"];
-      action = msg.delegator_address === bech32Address ? "sender" : "receiver"
-      action = intl.formatMessage({ id: `history.action.MsgUndelegate.${action}` })
-      amount = fromCoin(msg.amount)
+      action = msg.delegator_address === bech32Address ? "sender" : "receiver";
+      action = intl.formatMessage({
+        id: `history.action.MsgUndelegate.${action}`,
+      });
+      amount = fromCoin(msg.amount);
       break;
     }
     case "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward": {
       const msg = (msgRaw as unknown) as MsgWithdrawDelegatorReward["cosmos"];
-      action = msg.delegator_address === bech32Address ? "sender" : "receiver"
-      action = intl.formatMessage({ id: `history.action.MsgWithdrawDelegatorReward.${action}` })
+      action = msg.delegator_address === bech32Address ? "sender" : "receiver";
+      action = intl.formatMessage({
+        id: `history.action.MsgWithdrawDelegatorReward.${action}`,
+      });
       amount = getAmountFromRawLog(txResponse?.raw_log, "withdraw_rewards");
       break;
     }
     case "/ethermint.evm.v1.MsgEthereumTx":
-      action = intl.formatMessage({ id: "history.action.swap" });
+      const toAddress = msgRaw?.data?.to;
+      if (routerAddresses.includes(toAddress)) {
+        action = intl.formatMessage({ id: "history.action.swap" });
+      } else {
+        action = intl.formatMessage({ id: "history.action.approve" });
+      }
       amount = getAmountFromRawLog(txResponse?.raw_log, "coinbase");
       break;
     case undefined:
     case null:
     default: {
-      console.log(type)
-      action = intl.formatMessage({ id: "history.action.notsupport" })
+      console.log(type);
+      action = intl.formatMessage({ id: "history.action.notsupport" });
       status = undefined;
       break;
     }
@@ -178,7 +212,9 @@ export function toUiItem(intl, bech32Address: string, txResponse: TxResponse): T
     action,
     status,
     amount,
-  }
+  };
 }
 
-export function firstOrNull<T extends any>(arr: T[]): T | null { return (arr?.length || 0) !== 0 ? arr[0] : null; }
+export function firstOrNull<T extends any>(arr: T[]): T | null {
+  return (arr?.length || 0) !== 0 ? arr[0] : null;
+}

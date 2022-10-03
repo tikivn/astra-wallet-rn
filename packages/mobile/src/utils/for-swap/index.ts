@@ -85,19 +85,20 @@ export const getExchangeRateString = (
   currencies: { [K in SwapField]: Currency | undefined },
   price?: string
 ) => {
-  if (!price) {
-    return "";
-  }
   return `1 ${currencies[dependentField]?.symbol} ≈ ${price || ""} ${
     currencies[independentField]?.symbol
   }`;
 };
 
-export const getTransactionFee = (
+export const getLiquidityFee = (
   currencies: { [K in SwapField]: Currency | undefined },
   lpFee?: string
 ) => {
   return `${lpFee || 0} ${currencies[SwapField.Input]?.symbol}`;
+};
+
+export const getTransactionFee = (txFee: string | undefined) => {
+  return `${txFee || 0} ${ETHER.symbol}`;
 };
 
 export const getSlippageTolaranceString = ({

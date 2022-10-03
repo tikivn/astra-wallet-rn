@@ -43,14 +43,15 @@ export const useTokenAllowance = (token?: Token) => {
         if (!call) {
           return;
         }
-        const allowance = await multicall(
+        const result = await multicall(
           erc20Abi,
           [call],
           chainId,
           etherProvider
         );
-        if (allowance) {
-          setAllowance(allowance[0][0]);
+        if (result) {
+          console.log("allowance", result[0][0]);
+          setAllowance(result[0][0]);
         }
       } catch (e: any) {
         console.error("Error when fetch allowance: ", { error: e });
@@ -74,10 +75,14 @@ export function useApproveCallback(
 ): [ApprovalState, () => Promise<void>, () => Promise<void>] {
   const { chainId, etherProvider, accountHex } = useWeb3();
   const spender = addresses.ROUTER[chainId];
-  const token =
-    amountToApprove instanceof TokenAmount ? amountToApprove.token : undefined;
+  const token = useMemo(
+    () =>
+      amountToApprove instanceof TokenAmount
+        ? amountToApprove.token
+        : undefined,
+    [amountToApprove]
+  );
   const currentAllowance = useTokenAllowance(token);
-  console.log("🚀 -> currentAllowance", currentAllowance?.toSignificant());
 
   const { signTransaction } = useSignTransaction();
 

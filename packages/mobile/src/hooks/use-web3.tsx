@@ -29,23 +29,6 @@ export const useWeb3 = () => {
     account.ethereumHexAddress,
   ]);
 
-  const wasaImg = useMemo(() => chainStore.current.stakeCurrency.coinImageUrl, [
-    chainStore,
-  ]);
-
-  const WASA = useMemo(
-    () =>
-      new Token(
-        chainId || ChainId.TESTNET,
-        addresses.WASA[chainId || ChainId.TESTNET],
-        18,
-        "ASA",
-        "Wrap ASA",
-        wasaImg
-      ),
-    [chainId, wasaImg]
-  );
-
   const getStore = useCallback(() => {
     return { chainStore, accountStore, transactionStore };
   }, [accountStore, chainStore, transactionStore]);
@@ -56,7 +39,6 @@ export const useWeb3 = () => {
     account,
     accountHex,
     chainIdStr,
-    WASA,
     getStore,
   };
 };
