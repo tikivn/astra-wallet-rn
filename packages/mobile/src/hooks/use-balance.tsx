@@ -78,14 +78,14 @@ export const useTokenBalances = (
 export function useCurrencyBalances(
   currencies?: (Currency | undefined)[]
 ): (CurrencyAmount | undefined)[] {
-  const { etherProvider, accountHex, WASA, chainId } = useWeb3();
+  const { etherProvider, accountHex, chainId } = useWeb3();
 
   const tokens = useMemo(
     () =>
       currencies?.filter(
-        (currency): currency is Token => currency?.symbol !== WASA.symbol
+        (currency): currency is Token => currency?.symbol !== ETHER.symbol
       ) ?? [],
-    [WASA, currencies]
+    [currencies]
   );
 
   const tokenBalances = useTokenBalances(
@@ -94,23 +94,22 @@ export function useCurrencyBalances(
     chainId ?? ChainId.TESTNET,
     etherProvider
   );
-  const asaBalance = useASABalance(accountHex, etherProvider, WASA);
+  const asaBalance = useASABalance(accountHex, etherProvider);
   return useMemo(
     () =>
       currencies?.map((currency) => {
         if (!accountHex || !currency) return undefined;
-        if (currency.symbol === WASA.symbol) return asaBalance;
+        if (currency.symbol === ETHER.symbol) return asaBalance;
         if (currency instanceof Token) return tokenBalances[currency.address];
         return undefined;
       }) ?? [],
-    [WASA.symbol, accountHex, asaBalance, currencies, tokenBalances]
+    [accountHex, asaBalance, currencies, tokenBalances]
   );
 }
 
 export const useASABalance = (
   accountHex: string,
-  etherProvider: Web3Provider,
-  WASA: Token
+  etherProvider: Web3Provider
 ) => {
   const [asaBalance, setAsaBalance] = useState("");
 
@@ -134,71 +133,54 @@ export const useASABalance = (
   );
 
   return useMemo(() => {
-    return asaBalance ? new TokenAmount(WASA, asaBalance) : undefined;
-  }, [asaBalance, WASA]);
+    return asaBalance ? CurrencyAmount.ether(asaBalance) : undefined;
+  }, [asaBalance]);
 };
 
 export function useCurrencyBalancesFromStore(
-  currencies?: (Currency | undefined)[]
-): (CurrencyAmount | undefined)[] {
-  const { queriesStore, chainStore } = useStore();
-  const { account, chainIdStr, accountHex } = useWeb3();
-  const currencySymbols = useMemo(
-    () => (currencies ? currencies.map((item) => item?.symbol) : []),
-    [currencies]
-  );
+  balances: (CurrencyAmount | undefined)[],
+  currencies: (Currency | undefined)[]
+) {
+  const { queriesStore, chainStore, accountStore } = useStore();
+  const chainIdStr = chainStore.current.chainId;
+  const account = accountStore.getAccount(chainStore.current.chainId);
+  const asaBalance = useCallback(() => {
+    const queryBalances = queriesStore
+      .get(chainIdStr)
+      .queryBalances.getQueryBech32Address(account.bech32Address);
+    const balance = queryBalances.getBalanceFromCurrency(
+      chainStore.current.currencies[0]
+    );
+    return CurrencyAmount.ether(balance.toCoin().amount);
+  }, [account.bech32Address, chainIdStr, chainStore, queriesStore]);
 
-  const appCurrencies = useMemo(
-    () =>
-      chainStore.current.currencies.filter(
-        (item) => item.coinDenom in currencySymbols
-      ),
-    [chainStore, currencySymbols]
-  );
   const getBalanceErc20 = useCallback(
-    (currency: Erc20Currency) => {
-      const value0 = BigNumber.from(0).toString();
-      if (!accountHex || !currency.contractAddress) return value0;
+    (token: Token) => {
+      if (!account.ethereumHexAddress || !token.address) return undefined;
       const balance = queriesStore
         .get(chainIdStr)
         .keplrETC.queryERC20Balance.getBalance({
-          contractAddress: currency.contractAddress,
-          accountHex,
+          contractAddress: token.address,
+          accountHex: account.ethereumHexAddress,
         }).balance;
       if (!balance) {
-        return value0;
+        return new TokenAmount(token, 0);
       }
       const bn = BigNumber.from(balance);
-      return bn.toString();
+      return new TokenAmount(token, bn.toString());
     },
-    [accountHex, chainIdStr, queriesStore]
+    [account.ethereumHexAddress, chainIdStr, queriesStore]
   );
-  const tokenBalances = useMemo(
-    () =>
-      appCurrencies.map((curr) => {
-        const currency = currencies?.find((f) => f?.symbol === curr.coinDenom);
 
-        if ("type" in curr && curr.type === "erc20") {
-          return new TokenAmount(currency as Token, getBalanceErc20(curr));
-        }
-        if (curr.coinDenom === ETHER.symbol) {
-          const asaBalance = queriesStore
-            .get(chainIdStr)
-            .queryBalances.getQueryBech32Address(account.bech32Address)
-            .getBalanceFromCurrency(curr);
-          return new TokenAmount(currency as Token, asaBalance.toString());
-        }
-      }),
-    [
-      account.bech32Address,
-      appCurrencies,
-      chainIdStr,
-      currencies,
-      getBalanceErc20,
-      queriesStore,
-    ]
-  );
-  console.log("🚀 -> tokenBalances", tokenBalances);
-
-  return tokenBalances;
+  return useMemo(() => {
+    if (balances && balances.every((f) => f)) {
+      return balances;
+    }
+    return currencies?.map((currency) => {
+      if (!currency) return undefined;
+      if (currency?.symbol === ETHER.symbol) return asaBalance();
+      if (currency instanceof Token) return getBalanceErc20(currency);
+      return undefined;
+    });
+  }, [asaBalance, balances, currencies, getBalanceErc20]);
 }

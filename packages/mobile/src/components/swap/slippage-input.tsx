@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { useIntl } from "react-intl";
 import {
   StyleSheet,
@@ -32,9 +32,12 @@ export const SlippageInput = ({
   const [inputValue, setInputValue] = useState<string>("");
 
   const [error, setError] = useState("");
+  const [isFocus, setIsFocus] = useState<boolean>(false);
+  const inputRef = useRef<TextInput | null>(null);
 
   const handleTextInputFocus = useCallback(() => {
     setSelectedValue(0);
+    setIsFocus(true);
   }, []);
   const handleChangeTextInput = useCallback((value) => {
     setSelectedValue(0);
@@ -45,14 +48,17 @@ export const SlippageInput = ({
     setSelectedValue(value);
     setError("");
     setInputValue("");
+    setIsFocus(false);
+    inputRef.current && inputRef.current.blur();
   }, []);
 
   const handleClear = useCallback(() => {
     setSelectedValue(INITIAL_ALLOWED_SLIPPAGE);
     setInputValue("");
     setError("");
+    onSelectValue(INITIAL_ALLOWED_SLIPPAGE);
     props.close && props.close();
-  }, [props]);
+  }, [onSelectValue, props]);
 
   const handleConfirmValue = useCallback(
     (value) => {
@@ -95,7 +101,7 @@ export const SlippageInput = ({
             borderBottomWidth: 1,
             borderColor: V1Colors["gray-70"],
           },
-          style.flatten(["padding-y-24", "padding-x-16", "min-height-80"]),
+          style.flatten(["padding-y-24", "padding-x-16"]),
         ])}
       >
         <Text style={style.flatten(["color-gray-30", "text-caption"])}>
@@ -109,8 +115,8 @@ export const SlippageInput = ({
               style={style.flatten([
                 selectedValue !== value
                   ? "background-color-gray-80"
-                  : "background-color-blue-70",
-                "border-radius-4",
+                  : "background-color-primary",
+                "border-radius-8",
                 "padding-x-12",
                 "padding-y-8",
                 "items-center",
@@ -121,7 +127,7 @@ export const SlippageInput = ({
               onPress={() => handleSelectValue(value)}
             >
               <Text style={style.flatten(["color-gray-10", "text-caption"])}>
-                {value / 100} %
+                {value / 100}%
               </Text>
             </TouchableOpacity>
           ))}
@@ -132,28 +138,34 @@ export const SlippageInput = ({
               "width-full",
               "background-color-gray-90",
               "border-width-1",
-              "border-radius-4",
+              "border-radius-8",
               "padding-x-12",
               "padding-y-8",
               "text-caption-center",
               "self-center",
               "flex-row",
               "items-center",
-              error ? "border-color-red-50" : "border-color-blue-70",
+              isFocus
+                ? "border-color-primary"
+                : error
+                ? "border-color-red-50"
+                : "border-color-gray-70",
             ])}
           >
             <TextInput
+              ref={inputRef}
               style={style.flatten([
                 "color-gray-10",
                 "flex-1",
                 "background-color-transparent",
               ])}
-              placeholderTextColor={"#4C5975"}
+              placeholderTextColor={V1Colors["gray-30"]}
               placeholder="1 - 10"
               value={inputValue}
               onChangeText={handleChangeTextInput}
               keyboardType="numeric"
               onFocus={handleTextInputFocus}
+              selectionColor={V1Colors["gray-10"]}
             />
 
             <Text

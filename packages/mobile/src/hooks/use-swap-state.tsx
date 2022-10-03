@@ -1,5 +1,5 @@
 import { formatUnits, parseUnits } from "@ethersproject/units";
-import { CurrencyAmount, JSBI, Pair, Trade } from "@solarswap/sdk";
+import { CurrencyAmount, ETHER, JSBI, Pair, Trade } from "@solarswap/sdk";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { SwapAction, SwapInfoState, SwapType } from "../providers/swap/reducer";
 import {
@@ -8,6 +8,7 @@ import {
   FIXED_DECIMAL_PLACES,
   GAS_PRICE,
   MAXIMUM_PRICE_IMPACT,
+  ONE_ASA,
   SIGNIFICANT_DECIMAL_PLACES,
   SwapField,
   TIME_DEBOUNCE,
@@ -167,6 +168,7 @@ export const useSwapState = ({
     if (!balance || !inputValue || !dispatch) return;
     let error = "";
     try {
+      // check balance
       const parseInput = parseUnits(
         inputValue,
         balance?.currency?.decimals
@@ -174,6 +176,15 @@ export const useSwapState = ({
       const isTrue = JSBI.lessThanOrEqual(JSBI.BigInt(parseInput), balance.raw);
       if (!isTrue) {
         error = ERROR_KEY.INSUFFICIENT_BALANCE;
+      }
+
+      // check limit ASA
+      const isGreaterThan1ASA = JSBI.greaterThanOrEqual(
+        JSBI.BigInt(parseInput),
+        ONE_ASA
+      );
+      if (balance.currency.symbol === ETHER.symbol && !isGreaterThan1ASA) {
+        error = ERROR_KEY.LIMIT_ONE_ASA;
       }
     } catch (err) {
       console.error("Error when input value", { err });
@@ -194,11 +205,10 @@ export const useSwapState = ({
       !aggregationValue.pricePerInputCurrency
     ) {
       const { token0, token1Price, token0Price } = pairData;
-      const independentFieldSymbol =
-        tokenBalances[independentField]?.currency?.symbol;
-
+      const dependentFieldSymbol =
+        tokenBalances[dependentField]?.currency?.symbol;
       const exchangeRate =
-        token0.symbol === independentFieldSymbol ? token0Price : token1Price;
+        token0.symbol === dependentFieldSymbol ? token0Price : token1Price;
       const price = exchangeRate.toSignificant(FIXED_DECIMAL_PLACES);
 
       setAggregationValue({
@@ -207,6 +217,7 @@ export const useSwapState = ({
     }
   }, [
     aggregationValue.pricePerInputCurrency,
+    dependentField,
     independentField,
     outputSwapValue,
     pairData,

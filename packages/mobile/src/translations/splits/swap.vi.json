@@ -4,15 +4,14 @@
   "swap.amount.swapAll": "Tối đa",
   "swap.amount.available": "(Khả dụng <b>amount</b>)",
   "swap.exchangeRate": "Tỷ giá",
-  "swap.exchangeRate.describe": "Tỷ giá ...",
   "swap.transactionFee": "Phí giao dịch",
   "swap.liquidityFee": "Phí thanh khoản",
-  "swap.transactionFee.describe": "Phí giao dịch ...",
   "swap.priceSlippage": "Trượt giá",
   "swap.priceSlippage.describe": "Giá thực tế sau khi đặt lệnh có thể khác với giá đưa ra ở trên, hãy chọn mức trượt giá tối đa mà bạn mong muốn. Nếu trượt giá cao hơn mức bạn chọn, lệnh sẽ bị huỷ.",
   "swap.buttonText": "Tiếp tục",
-  "swap.buttonTextInsufficientBalances": "Không đủ số dư",
-  "swap.buttonTextInvalidInput": "Giá trị không hợp lệ",
+  "swap.buttonText.InsufficientBalances": "Không đủ số dư",
+  "swap.buttonText.InvalidInput": "Giá trị không hợp lệ",
+  "swap.buttonText.LimitOneASA": "Tối thiểu 1 ASA",
   "swap.slipageTolarance": "Tối đa <b>amount</b>",
   "swap.titleSlippageInput": "Trượt giá tối đa",
   "swap.titleSlippageDescribe": "Trượt giá",
@@ -37,7 +36,5 @@
   "swap.confirm.minimumReceived": "Tối thiểu nhận được",
   "swap.success.text.success": "Chuyển đổi thành công",
   "swap.success.text.from": "Từ <b>text</b>",
-  "swap.success.text.to": "Sang <b>text</b>",
-  "swap.success.text.scan": "Xem chi tiết trên Astra Scan",
-  "swap.success.button": "Trang chủ"
+  "swap.success.text.to": "Sang <b>text</b>"
 }

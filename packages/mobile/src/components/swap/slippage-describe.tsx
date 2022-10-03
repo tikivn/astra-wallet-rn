@@ -67,7 +67,7 @@ export const SlippageDescribe = (props: SlippageDescribeProps) => {
                     },
                   ])}
                   resizeMode="contain"
-                  source={require("../../assets/image/like.png")}
+                  source={require("../../assets/image/like.svg")}
                 />
                 <Text
                   style={style.flatten([
@@ -116,7 +116,7 @@ export const SlippageDescribe = (props: SlippageDescribeProps) => {
                     },
                   ])}
                   resizeMode="contain"
-                  source={require("../../assets/image/unlike.png")}
+                  source={require("../../assets/image/unlike.svg")}
                 />
                 <Text
                   style={style.flatten([

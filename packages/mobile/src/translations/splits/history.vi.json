@@ -13,6 +13,7 @@
   "history.action.MsgWithdrawDelegatorReward.sender": "Nhận phần thưởng",
   "history.action.notsupport": "Chưa hỗ trợ",
   "history.action.swap": "Chuyển đổi",
+  "history.action.approve": "Xác nhận",
   "history.emptyHistory": "Không tìm thấy giao dịch nào trong quá khứ. Bạn hãy kéo refresh để tải lại dữ liệu hoặc thử lại sau một lúc.",
   "history.status.failure": "• Thất bại",
   "history.status.success": "• Thành công",

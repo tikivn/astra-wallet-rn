@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount, Token } from "@solarswap/sdk";
+import { Currency, CurrencyAmount } from "@solarswap/sdk";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useCallback, useMemo } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -6,6 +6,7 @@ import { StyleSheet, Text, TextInput, View } from "react-native";
 import FastImage from "react-native-fast-image";
 import { VectorCharacter } from "../../../components";
 import { Button } from "../../../components/button";
+import { useStore } from "../../../stores";
 import { useStyle, V1Colors } from "../../../styles";
 import { SIGNIFICANT_DECIMAL_PLACES, SwapField } from "../../../utils/for-swap";
 
@@ -36,11 +37,13 @@ export const AmountSwap: FunctionComponent<SwapAmountProps> = observer(
 
     const style = useStyle();
     const intl = useIntl();
+    const { chainStore } = useStore();
 
-    const cointImg = useMemo(
-      () => currency && (currency as Token).projectLink,
-      [currency]
-    );
+    const cointImg = useMemo(() => {
+      const currencies = chainStore.current.currencies;
+      return currencies.find((f) => f.coinDenom === currency?.symbol)
+        ?.coinImageUrl;
+    }, [chainStore, currency]);
 
     return (
       <React.Fragment>
@@ -145,6 +148,7 @@ export const AmountSwap: FunctionComponent<SwapAmountProps> = observer(
               value={value}
               onChangeText={(value) => onUserInput(value, field)}
               keyboardType="numeric"
+              selectionColor={V1Colors["gray-10"]}
             />
             {showSwapAll && (
               <Button

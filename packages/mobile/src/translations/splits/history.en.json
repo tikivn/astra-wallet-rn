@@ -13,6 +13,7 @@
   "history.action.MsgWithdrawDelegatorReward.sender": "Claim Rewards",
   "history.action.notsupport": "",
   "history.action.swap": "Swap",
+  "history.action.approve": "Approve",
   "history.emptyHistory": "",
   "history.status.failure": "• Failure",
   "history.status.success": "• Success",

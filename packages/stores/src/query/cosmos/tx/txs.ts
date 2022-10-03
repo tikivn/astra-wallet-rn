@@ -7,7 +7,6 @@ import { KVStore } from "@keplr-wallet/common";
 import { ChainGetter } from "../../../common";
 import { computed, makeObservable } from "mobx";
 
-
 export class ObservableQueryTxsInner extends ObservableChainQuery<Txs> {
   protected queryParams: string;
 
@@ -15,16 +14,20 @@ export class ObservableQueryTxsInner extends ObservableChainQuery<Txs> {
     bech32Address: string,
     isSender: boolean = true,
     pagination: Pagination | null = null
-    
   ): string => {
     if (bech32Address.length > 0) {
-      return `pagination.limit=${pagination?.limit || "100"}` +
-      `&pagination.offset=${pagination?.offset || "0"}` +
-      `&pagination.count_total=${pagination?.count_total || true}` +
-      `&events=transfer.${isSender ? "sender" : "recipient"}%3D'${bech32Address}'`;
+      return (
+        `pagination.limit=${pagination?.limit || "100"}` +
+        `&pagination.offset=${pagination?.offset || "0"}` +
+        `&pagination.count_total=${pagination?.count_total || true}` +
+        `&order_by=ORDER_BY_DESC` +
+        `&events=transfer.${
+          isSender ? "sender" : "recipient"
+        }%3D'${bech32Address}'`
+      );
     }
-    return ""
-  }
+    return "";
+  };
 
   constructor(
     kvStore: KVStore,
@@ -50,12 +53,12 @@ export class ObservableQueryTxsInner extends ObservableChainQuery<Txs> {
 
   @computed
   get txResponses(): TxResponse[] {
-    return !this.response ? [] : this.response.data.tx_responses
+    return !this.response ? [] : this.response.data.tx_responses;
   }
-  
+
   @computed
   get total(): number {
-    return !this.response ? 0 : this.response.data.pagination.total || 0
+    return !this.response ? 0 : this.response.data.pagination.total || 0;
   }
 }
 
@@ -77,11 +80,15 @@ export class ObservableQueryTxs extends ObservableChainQueryMap<Txs> {
 
   getQueryBech32Address(
     bech32Address: string,
-    isSender:boolean = true,
-    pagination: Pagination | null = null,
+    isSender: boolean = true,
+    pagination: Pagination | null = null
   ): ObservableQueryTxsInner {
     // TODO split case for cached sender or recipient
-    let queryParams = ObservableQueryTxsInner.createQuery(bech32Address, isSender, pagination)
+    const queryParams = ObservableQueryTxsInner.createQuery(
+      bech32Address,
+      isSender,
+      pagination
+    );
     return this.get(queryParams) as ObservableQueryTxsInner;
   }
 }

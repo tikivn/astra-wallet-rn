@@ -63,6 +63,10 @@ export const TransactionDetailsView: FunctionComponent<{
     if (chainInfo.raw.txExplorer && transactionStore.rawData) {
       const rawDataValue = transactionStore.rawData.value;
       const transactionHash = (rawDataValue as MsgSwap).transactionHash;
+      console.log(
+        "🚀 -> viewOnAstraExplorer -> transactionHash",
+        transactionHash
+      );
       const url = "https://explorer.astranaut.dev/tx/" + transactionHash;
       smartNavigation.pushSmart("WebView", {
         url,

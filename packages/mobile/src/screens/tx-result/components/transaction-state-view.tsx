@@ -175,13 +175,13 @@ export const TransactionStateView: FunctionComponent<{
         }}
       />
 
-      {isShowStep && (
-        <View
-          style={{ alignItems: "center", paddingHorizontal: 16, width: "100%" }}
-        >
-          <Text style={mainTextStyle}>{mainText}</Text>
-          <Text style={subTextStyle}>{subText}</Text>
+      <View
+        style={{ alignItems: "center", paddingHorizontal: 16, width: "100%" }}
+      >
+        <Text style={mainTextStyle}>{mainText}</Text>
+        <Text style={subTextStyle}>{subText}</Text>
 
+        {isShowStep && (
           <View
             style={{
               flexDirection: "row",
@@ -206,8 +206,8 @@ export const TransactionStateView: FunctionComponent<{
               lineState={lineState}
             />
           </View>
-        </View>
-      )}
+        )}
+      </View>
     </View>
   );
 });

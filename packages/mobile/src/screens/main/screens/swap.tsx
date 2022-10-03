@@ -300,7 +300,8 @@ export const SwapScreen: FunctionComponent = observer(() => {
         <View style={style.flatten(["padding-x-16"])}>
           <Button
             text={intl.formatMessage({
-              id: "swap.buttonText" + swapInfos.error,
+              id:
+                "swap.buttonText" + (swapInfos.error && `.${swapInfos.error}`),
             })}
             disabled={!isReadyToSwap || !!swapInfos.error}
             onPress={handleClickContinue}
