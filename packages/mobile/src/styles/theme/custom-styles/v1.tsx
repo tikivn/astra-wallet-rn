@@ -1,3 +1,8 @@
+import {
+  EnumFlexDirection,
+  EnumFlexWrap,
+  EnumJustifyContent,
+} from "../../builder/types";
 import { V1Colors } from "../color-palette";
 
 const V1ButtonCustom = {
@@ -32,7 +37,7 @@ const V1ButtonCustom = {
   },
   "button-primary-solid-disabled": {
     color: "white",
-    backgroundColor: V1Colors["purple-40"],
+    backgroundColor: V1Colors["purple-50"],
     opacity: 0.4,
   },
   "button-primary-outline-default": {
@@ -238,5 +243,10 @@ export const V1Custom = {
     borderRadius: 12,
     borderColor: V1Colors["gray-70"],
     backgroundColor: V1Colors["gray-90"],
+    paddingTop: 16,
+    paddingLeft: 16,
+    flexDirection: "row" as EnumFlexDirection,
+    flexWrap: "wrap" as EnumFlexWrap,
+    justifyContent: "center" as EnumJustifyContent,
   },
 };

@@ -139,7 +139,7 @@ export const DelegatedCard: FunctionComponent<{
           />
           <View style={style.flatten(["margin-y-16", "flex-row"])}>
             <View
-              style={style.flatten(["items-center", "flex-1", "padding-x-16"])}
+              style={style.flatten(["items-center", "flex-1", "padding-x-4"])}
             >
               <Button
                 color="neutral"
@@ -158,9 +158,9 @@ export const DelegatedCard: FunctionComponent<{
               />
               <Text
                 style={style.flatten([
-                  "color-gray-10",
+                  "color-label-text-1",
+                  "text-small-regular",
                   "margin-top-8",
-                  "text-caption2",
                   "text-center",
                 ])}
               >
@@ -168,7 +168,7 @@ export const DelegatedCard: FunctionComponent<{
               </Text>
             </View>
             <View
-              style={style.flatten(["items-center", "flex-1", "padding-x-16"])}
+              style={style.flatten(["items-center", "flex-1", "padding-x-4"])}
             >
               <Button
                 color="neutral"
@@ -192,9 +192,9 @@ export const DelegatedCard: FunctionComponent<{
               />
               <Text
                 style={style.flatten([
-                  "color-gray-10",
+                  "color-label-text-1",
+                  "text-small-regular",
                   "margin-top-8",
-                  "text-caption2",
                   "text-center",
                 ])}
               >
@@ -218,7 +218,7 @@ export const DelegatedCard: FunctionComponent<{
               />
             </View>
             <View
-              style={style.flatten(["items-center", "flex-1", "padding-x-16"])}
+              style={style.flatten(["items-center", "flex-1", "padding-x-4"])}
             >
               <Button
                 text=""
@@ -236,9 +236,9 @@ export const DelegatedCard: FunctionComponent<{
               />
               <Text
                 style={style.flatten([
-                  "color-gray-10",
+                  "color-label-text-1",
+                  "text-small-regular",
                   "margin-top-8",
-                  "text-caption2",
                   "text-center",
                 ])}
               >

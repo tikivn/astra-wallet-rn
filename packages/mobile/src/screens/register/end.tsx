@@ -1,7 +1,6 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useEffect } from "react";
 import { useStyle } from "../../styles";
-import { View, Text, SafeAreaView } from "react-native";
-import { Button } from "../../components/button";
+import { View, Text } from "react-native";
 import { useSmartNavigation } from "../../navigation-util";
 import { observer } from "mobx-react-lite";
 import LottieView from "lottie-react-native";
@@ -9,6 +8,7 @@ import LottieView from "lottie-react-native";
 // @ts-ignore
 import { useIntl } from "react-intl";
 import { RouteProp, useRoute } from "@react-navigation/native";
+import { RegisterType } from "../../stores/user-login";
 
 export const RegisterEndScreen: FunctionComponent = observer(() => {
   const style = useStyle();
@@ -20,16 +20,33 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
       Record<
         string,
         {
-          registerType?: "new" | "recover" | undefined;
+          registerType?: RegisterType | undefined;
         }
       >,
       string
     >
   >();
 
-  const successText = route.params.registerType !== "recover"
-    ? intl.formatMessage({ id: "wallet.create.success" })
-    : intl.formatMessage({ id: "wallet.recover.success" })
+  const successText =
+    route.params.registerType === RegisterType.recover
+      ? intl.formatMessage({ id: "wallet.recover.success" })
+      : intl.formatMessage({ id: "wallet.create.success" });
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      smartNavigation.reset({
+        index: 0,
+        routes: [
+          {
+            name: "MainTabDrawer",
+          },
+        ],
+      });
+    }, 2000);
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, []);
 
   return (
     <View
@@ -37,9 +54,9 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
         "padding-x-42",
         "height-full",
         "background-color-background",
+        "justify-center",
       ])}
     >
-      <View style={style.get("flex-1")} />
       <View style={style.flatten(["items-center"])}>
         <LottieView
           source={require("../../assets/lottie/tx-loading-complete.json")}
@@ -61,22 +78,6 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
           {successText}
         </Text>
       </View>
-      <View style={style.get("flex-1")} />
-      <Button
-        containerStyle={style.flatten(["margin-bottom-12"])}
-        text={intl.formatMessage({ id: "common.text.continue" })}
-        onPress={() => {
-          smartNavigation.reset({
-            index: 0,
-            routes: [
-              {
-                name: "MainTabDrawer",
-              },
-            ],
-          });
-        }}
-      />
-      <SafeAreaView />
     </View>
   );
 });

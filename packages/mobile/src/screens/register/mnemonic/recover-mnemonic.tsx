@@ -14,6 +14,7 @@ import { useBIP44Option } from "../bip44";
 import { useNewMnemonicConfig } from "./hook";
 import { useIntl } from "react-intl";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
+import { RegisterType } from "../../../stores/user-login";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
@@ -78,19 +79,24 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
     setFocus,
     setValue,
     getValues,
-    formState: { errors },
-  } = useForm<FormData>();
+    formState: { errors, isValid },
+  } = useForm<FormData>({ mode: "onChange" });
 
   const [isCreating, setIsCreating] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const [canVerify, setCanVerify] = useState(false);
+
+  const onSubmitEditing = () => {
+    setCanVerify(isValid);
+    submit();
+  };
 
   const submit = handleSubmit(async () => {
     setIsCreating(true);
-
     const mnemonic = trimWordsStr(getValues("mnemonic"));
     newMnemonicConfig.setMnemonic(mnemonic);
     smartNavigation.navigateSmart("Register.SetPincode", {
-      registerType: "recover",
+      registerType: RegisterType.recover,
       registerConfig,
       bip44HDPath: bip44Option.bip44HDPath,
       mnemonic: newMnemonicConfig.mnemonic,
@@ -102,37 +108,44 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
     <View style={style.flatten(["flex-1", "background-color-background"])}>
       <View style={{ height: 24 }} />
       <View style={style.flatten(["padding-x-page"])}>
-        <Text style={style.flatten([
-          "text-medium-medium",
-          "color-gray-10",
-        ])}>
+        <Text style={style.flatten(["text-medium-medium", "color-gray-10"])}>
           {intl.formatMessage({ id: "recover.wallet.mnemonicInput.label" })}
         </Text>
-        <Text style={style.flatten([
-          "text-small-regular",
-          "color-gray-30",
-          "margin-top-4"
-        ])}>
+        <Text
+          style={style.flatten([
+            "text-small-regular",
+            "color-gray-30",
+            "margin-top-4",
+          ])}
+        >
           {intl.formatMessage({ id: "recover.wallet.mnemonicInput.info" })}
         </Text>
         <Controller
           control={control}
           rules={{
-            required: intl.formatMessage({ id: "common.text.mnemonic.isRequired" }),
+            required: intl.formatMessage({
+              id: "common.text.mnemonic.isRequired",
+            }),
             validate: (value: string) => {
               value = trimWordsStr(value);
               if (!isPrivateKey(value)) {
                 if (value.split(" ").length < 8) {
-                  return intl.formatMessage({ id: "common.text.mnemonic.tooShort" });
+                  return intl.formatMessage({
+                    id: "common.text.mnemonic.tooShort",
+                  });
                 }
 
                 if (!bip39.validateMnemonic(value)) {
-                  return intl.formatMessage({ id: "common.text.mnemonic.invalid" });
+                  return intl.formatMessage({
+                    id: "common.text.mnemonic.invalid",
+                  });
                 }
               } else {
                 value = value.replace("0x", "");
                 if (value.length !== 64) {
-                  return intl.formatMessage({ id: "common.text.privateKey.invalidLength" });
+                  return intl.formatMessage({
+                    id: "common.text.privateKey.invalidLength",
+                  });
                 }
 
                 try {
@@ -140,10 +153,14 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                     Buffer.from(value, "hex").toString("hex").toLowerCase() !==
                     value.toLowerCase()
                   ) {
-                    return intl.formatMessage({ id: "common.text.privateKey.invalid" });
+                    return intl.formatMessage({
+                      id: "common.text.privateKey.invalid",
+                    });
                   }
                 } catch {
-                  return intl.formatMessage({ id: "common.text.privateKey.invalid" });
+                  return intl.formatMessage({
+                    id: "common.text.privateKey.invalid",
+                  });
                 }
               }
             },
@@ -163,7 +180,9 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                   "padding-x-16",
                   "padding-top-16",
                   "background-color-input-background",
-                  isFocused ? "border-color-input-active" : "border-color-input-inactive",
+                  isFocused
+                    ? "border-color-input-active"
+                    : "border-color-input-inactive",
                   "input-container",
                   "margin-top-12",
                 ])}
@@ -180,7 +199,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                           setValue("mnemonic", text, {
                             shouldValidate: true,
                           });
-
+                          setCanVerify(true);
                           setFocus("name");
                         }
                       }}
@@ -189,10 +208,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                   </View>
                 }
                 style={StyleSheet.flatten([
-                  style.flatten([
-                    "text-base-regular",
-                    "color-text-gray",
-                  ]),
+                  style.flatten(["text-base-regular", "color-text-gray"]),
                   {
                     minHeight: 24 * 2,
                     textAlignVertical: "top",
@@ -202,18 +218,24 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                   "text-base-regular",
                   "color-input-error",
                 ])}
-                onSubmitEditing={() => {
-                  setFocus("name");
-                }}
-                error={errors.mnemonic?.message}
+                onSubmitEditing={onSubmitEditing}
+                error={canVerify ? "" : errors.mnemonic?.message}
                 onBlur={() => {
+                  console.log("__onBlur__");
                   onBlur();
                   setIsFocused(false);
                 }}
                 onFocus={() => {
                   setIsFocused(true);
                 }}
-                onChangeText={onChange}
+                onChangeText={(text) => {
+                  if (text.length > 0) {
+                    setCanVerify(true);
+                  } else {
+                    setCanVerify(false);
+                  }
+                  onChange(text);
+                }}
                 value={value}
                 ref={ref}
               />
@@ -223,12 +245,15 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
           defaultValue=""
         />
       </View>
-      <View style={style.flatten(["flex-1", "justify-end", "margin-bottom-12"])}>
+      <View
+        style={style.flatten(["flex-1", "justify-end", "margin-bottom-12"])}
+      >
         <View style={style.flatten(["height-1", "background-color-gray-70"])} />
         <Button
           text={intl.formatMessage({ id: "common.text.verify" })}
           loading={isCreating}
-          onPress={submit}
+          onPress={onSubmitEditing}
+          disabled={!canVerify}
           containerStyle={style.flatten(["margin-x-page", "margin-top-12"])}
         />
         <AvoidingKeyboardBottomView />

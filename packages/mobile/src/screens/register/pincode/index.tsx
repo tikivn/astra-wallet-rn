@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FunctionComponent, useEffect, useRef, useState } from "react";
 import { Text, View } from "react-native";
 import { useStyle } from "../../../styles";
 import { Button } from "../../../components/button";
@@ -16,7 +16,7 @@ import { useStore } from "../../../stores";
 import { useToastModal } from "../../../providers/toast-modal";
 import { BIOMETRY_TYPE } from "react-native-keychain";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
-import { SocialLoginUserState } from "../../../stores/user-login";
+import { RegisterType } from "../../../stores/user-login";
 import { MIN_PASSWORD_LENGTH } from "../../../common/utils";
 
 export const NewPincodeScreen: FunctionComponent = observer(() => {
@@ -25,7 +25,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
       Record<
         string,
         {
-          registerType?: "new" | "recover" | undefined;
+          registerType?: RegisterType | undefined;
           registerConfig: RegisterConfig;
           mnemonic?: string;
           bip44HDPath: BIP44HDPath;
@@ -48,30 +48,35 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
 
   const smartNavigation = useSmartNavigation();
 
-  const { registerConfig, mnemonic, bip44HDPath } = route.params;
+  const { registerType, registerConfig, mnemonic, bip44HDPath } = route.params;
 
   const [name, setName] = useState(userLoginStore.socialLoginData?.email || "");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [inputDataValid, setInputDataValid] = useState(false);
-  const [isBiometricOn, setIsBiometricOn] = useState(false);
+  const [isBiometricOn, setIsBiometricOn] = useState(keychainStore.isBiometryOn);
 
   const [isCreating, setIsCreating] = useState(false);
   const [passwordErrorText, setPasswordErrorText] = useState("");
   const [confirmPasswordErrorText, setConfirmPasswordErrorText] = useState("");
 
+  const [canVerify, setCanVerify] = useState(false);
+
   // Social Login
   const [checkingSocialLogin, setCheckingSocialLogin] = useState(false);
-  const [isNewSocialLoginUser, setIsNewSocialLoginUser] = useState(
-    SocialLoginUserState.unknown
-  );
 
+  const passwordInputRef = useRef<any>();
+  const confirmPasswordInputRef = useRef<any>();
+  const passwordInfor = intl.formatMessage(
+    { id: "common.text.minimumCharacters" },
+    { number: `${MIN_PASSWORD_LENGTH}` }
+  );
   const onCreate = async () => {
     setIsCreating(true);
 
-    var registerMnemonic = mnemonic;
-    var registerPassword = confirmPassword;
+    let registerMnemonic = mnemonic;
+    let registerPassword = confirmPassword;
 
     // Social Login
     if (userLoginStore.socialLoginData && !userLoginStore.isSocialLoginActive) {
@@ -93,6 +98,18 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
     } else if (!registerMnemonic) {
       setIsCreating(false);
       return;
+    }
+
+    //
+    userLoginStore.updateRegisterType(
+      registerType === RegisterType.recover ? RegisterType.recover : RegisterType.new
+    );
+
+    const index = keyRingStore.multiKeyStoreInfo.findIndex((keyStore: any) => {
+      return keyStore.selected;
+    });
+    if (index !== -1) {
+      await keyRingStore.forceDeleteKeyRing(index);
     }
 
     await registerConfig.createMnemonic(
@@ -118,14 +135,16 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
     }
 
     const eventName =
-      route.params.registerType !== "recover"
-        ? "astra_hub_create_account"
-        : "astra_hub_recover_account";
+      registerType === RegisterType.recover
+        ? "astra_hub_recover_account"
+        : "astra_hub_create_account";
 
     analyticsStore.logEvent(eventName, {
       type: "mnemonic",
       use_biometrics: keychainStore.isBiometrySupported && isBiometricOn,
     });
+
+    userLoginStore.updateRegisterType(RegisterType.unknown);
 
     smartNavigation.reset({
       index: 0,
@@ -133,7 +152,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
         {
           name: "Register.End",
           params: {
-            registerType: route.params.registerType,
+            registerType: registerType,
           },
         },
       ],
@@ -145,7 +164,11 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
   });
 
   useEffect(() => {
-    setPasswordErrorText("");
+    if (password.length > 0 && confirmPassword.length > 0) {
+      setCanVerify(true);
+    } else {
+      setCanVerify(false);
+    }
     validateInputData();
   }, [name, password, confirmPassword]);
 
@@ -165,13 +188,13 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
     if (
       userLoginStore.socialLoginData &&
       !userLoginStore.isSocialLoginActive &&
-      isNewSocialLoginUser != SocialLoginUserState.unknown
+      userLoginStore.registerType !== RegisterType.unknown
     ) {
       toastModal.makeToast({
         title: intl.formatMessage(
           {
             id:
-              isNewSocialLoginUser == SocialLoginUserState.new
+              userLoginStore.registerType !== RegisterType.recover
                 ? "register.alert.socialLogin.newAccount"
                 : "register.alert.socialLogin.existedAccount",
           },
@@ -181,17 +204,25 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
           }
         ),
         type:
-          isNewSocialLoginUser == SocialLoginUserState.new
+          userLoginStore.registerType !== RegisterType.recover
             ? "success"
             : "infor",
       });
     }
-  }, [isNewSocialLoginUser]);
+  }, [userLoginStore.registerType]);
+
+  const actionButtonTitle =
+    registerType === RegisterType.recover ||
+    userLoginStore.registerType === RegisterType.recover
+      ? intl.formatMessage({ id: "register.button.restoreAccount" })
+      : intl.formatMessage({ id: "register.button.createAccount" });
 
   function updateNavigationTitle() {
     let textId;
-
-    if (isNewSocialLoginUser === SocialLoginUserState.recover) {
+    if (
+      registerType === RegisterType.recover ||
+      userLoginStore.registerType === RegisterType.recover
+    ) {
       textId = "register.recoverMnemonic.title";
     } else {
       textId = "register.setPincode.title";
@@ -202,23 +233,45 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
     });
   }
 
-  function validateInputData() {
-    if (
-      password.length >= MIN_PASSWORD_LENGTH &&
-      password === confirmPassword &&
-      name.length != 0
-    ) {
-      setConfirmPasswordErrorText("");
-      setInputDataValid(true);
+  const onSubmitEditing = async () => {
+    await validateInputData();
+    setCanVerify(inputDataValid);
+    showErrors();
+    if (inputDataValid) {
+      console.log("__start on create__");
+      await onCreate();
+    }
+  };
+
+  const validateInputData = async () => {
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      setInputDataValid(false);
       return;
-    } else if (0 < confirmPassword.length) {
+    }
+    if (confirmPassword.length === 0 || confirmPassword !== password) {
+      setInputDataValid(false);
+      return;
+    }
+    setInputDataValid(true);
+  };
+
+  const showErrors = async () => {
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      setPasswordErrorText(passwordInfor);
+      setConfirmPasswordErrorText("");
+      passwordInputRef.current.focus();
+      return;
+    }
+    setPasswordErrorText("");
+    if (confirmPassword.length === 0 || confirmPassword !== password) {
       setConfirmPasswordErrorText(
         intl.formatMessage({ id: "common.text.passwordNotMatching" })
       );
+      confirmPasswordInputRef.current.focus();
+      return;
     }
-
-    setInputDataValid(false);
-  }
+    setConfirmPasswordErrorText("");
+  };
 
   function checkSocialLogin() {
     // Social Login
@@ -229,10 +282,8 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
         .checkSocialLogin()
         .then((info) => {
           setName(info.socialLoginData.email);
-          setIsNewSocialLoginUser(
-            info.isNewUser
-              ? SocialLoginUserState.new
-              : SocialLoginUserState.recover
+          userLoginStore.updateRegisterType(
+            info.isNewUser ? RegisterType.new : RegisterType.recover
           );
         })
         .catch((e) => {
@@ -254,38 +305,41 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
         {!userLoginStore.socialLoginData &&
           !userLoginStore.isSocialLoginActive && (
             <NormalInput
+              returnKeyType="next"
               autoFocus
               value={name}
               label={intl.formatMessage({ id: "common.text.accountHolder" })}
               onChangeText={setName}
               style={{ marginBottom: 24 }}
+              onSubmitEditting={() => {
+                passwordInputRef.current.focus();
+              }}
             />
           )}
 
         <NormalInput
+          returnKeyType="next"
           value={password}
           label={intl.formatMessage({ id: "common.text.password" })}
-          error={passwordErrorText}
-          info={intl.formatMessage(
-            {
-              id: "common.text.minimumCharacters",
-            },
-            {
-              number: `${MIN_PASSWORD_LENGTH}`,
-            }
-          )}
+          error={canVerify ? "" : passwordErrorText}
+          info={passwordInfor}
           secureTextEntry={true}
           showPassword={showPassword}
           onShowPasswordChanged={setShowPassword}
           onChangeText={setPassword}
           onBlur={validateInputData}
           style={{ marginBottom: 24, paddingBottom: 24 }}
+          inputRef={passwordInputRef}
+          onSubmitEditting={() => {
+            confirmPasswordInputRef.current.focus();
+          }}
         />
 
         <NormalInput
+          returnKeyType="done"
           value={confirmPassword}
           label={intl.formatMessage({ id: "common.text.inputVerifyPassword" })}
-          error={confirmPasswordErrorText}
+          error={canVerify ? "" : confirmPasswordErrorText}
           secureTextEntry={true}
           showPassword={showPassword}
           onShowPasswordChanged={setShowPassword}
@@ -302,12 +356,14 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
             },
           ]}
           style={{
-            marginBottom: confirmPasswordErrorText.length !== 0 ? 24 : 0,
+            marginBottom: confirmPasswordErrorText.length !== 0 ? 12 : 0,
             paddingBottom: 24,
           }}
+          inputRef={confirmPasswordInputRef}
+          onSubmitEditting={onSubmitEditing}
         />
 
-        {!keychainStore.isBiometrySupported && (
+        {keychainStore.isBiometrySupported && (
           <View
             style={{
               flexDirection: "row",
@@ -358,10 +414,10 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
           }}
         >
           <Button
-            text={intl.formatMessage({ id: "register.button.createAccount" })}
+            text={actionButtonTitle}
             loading={isCreating}
-            onPress={onCreate}
-            disabled={!inputDataValid}
+            onPress={onSubmitEditing}
+            disabled={!canVerify || isCreating}
             containerStyle={style.flatten(["margin-x-page", "margin-top-12"])}
           />
         </View>

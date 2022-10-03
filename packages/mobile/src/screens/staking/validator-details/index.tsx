@@ -8,7 +8,7 @@ import { useStyle } from "../../../styles";
 import { CommissionsCard } from "./commission-card";
 import { ValidatorNameCard } from "./name-card";
 import { DelegatedCard } from "./delegated-card";
-import { Animated, Text, View } from "react-native";
+import { Animated, Image, StyleSheet, Text, View, ViewStyle } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import { UnbondingCard } from "./unbonding-card";
 import { DelegationsEmptyItem } from "../dashboard/delegate";
@@ -44,6 +44,13 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
     .getQueryBech32Address(account.bech32Address)
     .getDelegationTo(validatorAddress);
 
+  const unbonding = queries.cosmos
+    .queryUnbondingDelegations
+    .getQueryBech32Address(account.bech32Address)
+    .unbondingBalances.find(
+      (unbonding) => unbonding.validatorAddress === validatorAddress
+    );
+
   const style = useStyle();
   const intl = useIntl();
 
@@ -67,7 +74,7 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
     <CommissionsCard
       showStake={!hasStake}
       containerStyle={style.flatten([
-        "margin-y-card-gap",
+        // "margin-y-card-gap",
         "background-color-transparent",
         "flex-1",
       ])}
@@ -78,7 +85,7 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
   const SecondRoute = () => (
     <UnbondingCard
       containerStyle={style.flatten([
-        "margin-y-card-gap",
+        // "margin-y-card-gap",
         "background-color-transparent",
         "flex-1",
       ])}
@@ -91,71 +98,98 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
   });
 
   const onScrollContent = useCallback((e) => {
-    opacityAnim.setValue(e.nativeEvent.contentOffset.y);
+    opacityAnim.setValue(e.nativeEvent.contentOffset.y > 0 ? 255 : 0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <View style={style.flatten(["background-color-background", "flex-grow-1"])}>
+      <View style={{
+        position: "absolute",
+        width: "100%",
+        height: "100%",
+        backgroundColor: "transparent",
+        justifyContent: "flex-start",
+        alignItems: "flex-start",
+      }}>
+        <Image
+          resizeMode="contain"
+          source={require("../../../assets/image/background_top.png")}
+        />
+      </View>
       <ScrollView
         scrollEventThrottle={16}
         contentContainerStyle={style.flatten(["flex-grow-1"])}
         onScroll={onScrollContent}
       >
-        <ValidatorNameCard
-          containerStyle={style.flatten([
-            "background-color-transparent",
-            "height-276",
-          ])}
-          validatorAddress={validatorAddress}
-        />
+        <ValidatorNameCard validatorAddress={validatorAddress} />
         {hasStake ? (
           <DelegatedCard
             containerStyle={style.flatten([
               "background-color-transparent",
               "padding-y-0",
+              "margin-top-24",
             ])}
             validatorAddress={validatorAddress}
           />
-        ) : null}
-        <TabView
-          lazy
-          renderLazyPlaceholder={() => (
-            <DelegationsEmptyItem
-              label={intl.formatMessage({
-                id: "validator.details.emptyWithdrawHistory",
-              })}
-              containerStyle={style.flatten([
-                "background-color-background",
-                "margin-y-32",
-                "flex-1",
-              ])}
-            />
-          )}
-          style={style.flatten(["margin-top-16", "height-600"])}
-          navigationState={{ index, routes }}
-          renderScene={renderScene}
-          onIndexChange={setIndex}
-          renderTabBar={(props) => (
-            <TabBar
-              {...props}
-              indicatorStyle={style.get("background-color-primary")}
-              tabStyle={style.flatten(["flex-0"])}
-              //   scrollEnabled={true}
-              style={style.flatten(["background-color-background", "border-width-bottom-1", "border-color-border"])}
-              renderLabel={({ route, focused }) => (
-                <Text
-                  style={style.flatten(
-                    ["text-base-medium", "color-label-text-2"],
-                    [focused && "color-primary"]
-                  )}
-                >
-                  {route.title}
-                </Text>
-              )}
-            />
-          )}
-        />
+        ) : [
+          <View style={style.flatten(["height-1", "background-color-border", "margin-x-page", "margin-top-24"])} />
+        ]}
+        {(unbonding?.entries.length ?? 0) !== 0
+          ? <TabView
+            lazy
+            renderLazyPlaceholder={() => (
+              <DelegationsEmptyItem
+                label={intl.formatMessage({
+                  id: "validator.details.emptyWithdrawHistory",
+                })}
+                containerStyle={style.flatten([
+                  "background-color-background",
+                  "margin-y-32",
+                  "flex-1",
+                ])}
+              />
+            )}
+            style={style.flatten([
+              "margin-top-16",
+              "height-600",
+            ])}
+            navigationState={{ index, routes }}
+            renderScene={renderScene}
+            onIndexChange={setIndex}
+            renderTabBar={(props) => (
+              <TabBar
+                {...props}
+                indicatorStyle={style.get("background-color-tab-icon-active")}
+                //   scrollEnabled={true}
+                style={style.flatten([
+                  "background-color-transparent",
+                  "border-width-bottom-1",
+                  "border-color-border"
+                ])}
+                renderLabel={({ route, focused }) => (
+                  <Text
+                    style={style.flatten(
+                      [
+                        "text-base-regular",
+                        "color-tab-icon-inactive",
+                      ],
+                      [
+                        focused && "text-base-semi-bold",
+                        focused && "color-tab-icon-active"
+                      ]
+                    )}
+                  >
+                    {` ${route.title} `/* add space to avoid text is truncated */}
+                  </Text>
+                )}
+              />
+            )}
+          />
+          : [
+            FirstRoute()
+          ]
+        }
       </ScrollView>
       <ValidatorHeaderCard
         animOpacity={opacityAnim}

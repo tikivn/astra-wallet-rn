@@ -3,7 +3,7 @@
   "validator.details.amountBeingWithdrawn": "Số {denom} đang rút",
   "validator.details.commission": "Hoa hồng",
   "validator.details.commission.percent": "{percent}% hoa hồng",
-  "validator.details.commission.details": "Chi tiết về hoa hồng",
+  "validator.details.commission.details": "Chi tiết về phần thưởng",
   "validator.details.delegated.investMore": "Tích luỹ thêm",
   "validator.details.delegated.invested": "Đã tích lũy",
   "validator.details.delegated.profit": "Phần thưởng",
@@ -22,7 +22,7 @@
   "validator.details.unbonding.noticeWithdrawalPeroid": "Bạn sẽ nhận được số {coin} đã rút {days}. Để xem số {coin} đã rút thành công vui lòng xem ",
   "validator.details.unbonding.receiveAfter": "Sẽ nhận được sau",
   "validator.details.updateTime": "Lần thay đổi cuối cùng",
-  "validator.details.uptime": "Thời gian hoạt động",
+  "validator.details.uptime": "Thời gian hoạt động {percent}",
   "validator.details.votingPower": "~{percent}% quyền biểu quyết",
   "validator.list.name": "Tên",
   "validator.list.totalShares": "Tổng số cổ phần"

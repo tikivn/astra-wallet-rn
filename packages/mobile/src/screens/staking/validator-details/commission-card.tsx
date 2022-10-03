@@ -67,22 +67,32 @@ export const CommissionsCard: FunctionComponent<{
   return (
     <Card style={containerStyle}>
       {validator ? (
-        <CardBody style={style.flatten(["padding-y-0"])}>
+        <CardBody style={style.flatten([
+          "padding-y-0",
+        ])}>
           {validator.description.details ? (
             <Text
-              style={style.flatten(["text-left", "color-gray-10", "body3"])}
+              style={style.flatten([
+                "text-left",
+                "color-gray-10",
+                "body3",
+                // "margin-top-16"
+              ])}
             >
               {validator.description.details}
               {validator.description.website ? (
                 <Text
-                  style={style.flatten(["text-underline", "color-primary"])}
+                  style={style.flatten(["text-underline", "color-link-text"])}
                 >
                   {validator.description.website}
                 </Text>
               ) : null}
             </Text>
           ) : null}
-          <View style={style.flatten(["flex-row", "padding-y-24"])}>
+          <View style={style.flatten([
+            "flex-row",
+            "margin-top-24",
+          ])}>
             <View style={style.flatten(["items-center", "flex-1"])}>
               <TooltipLabel
                 text={intl.formatMessage({
@@ -127,7 +137,7 @@ export const CommissionsCard: FunctionComponent<{
           {showStake ? (
             <Button
               containerStyle={style.flatten([
-                "margin-bottom-12",
+                "margin-top-24",
               ])}
               text={intl.formatMessage({ id: "validator.details.invest" })}
               onPress={() => {
@@ -138,8 +148,8 @@ export const CommissionsCard: FunctionComponent<{
             />
           ) : null}
 
-          <CardDivider
-            style={style.flatten(["background-color-gray-70", "margin-x-0"])}
+          <View
+            style={style.flatten(["height-1", "background-color-border", "margin-top-24"])}
           />
           <View
             style={style.flatten([

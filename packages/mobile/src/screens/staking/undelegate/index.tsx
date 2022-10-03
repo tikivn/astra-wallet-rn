@@ -10,7 +10,7 @@ import {
 } from "@keplr-wallet/hooks";
 import { ValidatorItem } from "../../../components/input";
 import { AmountInput } from "../../main/components";
-import { Text, View } from "react-native";
+import { Keyboard, Text, View } from "react-native";
 import { Button } from "../../../components/button";
 import {
   AccountStore,
@@ -25,7 +25,12 @@ import {
   buildRightColumn,
 } from "../../../components/foundation-view/item-row";
 import { useIntl } from "react-intl";
-import { formatCoin, formatPercent, formatUnbondingTime, TX_GAS_DEFAULT } from "../../../common/utils";
+import {
+  formatCoin,
+  formatPercent,
+  formatUnbondingTime,
+  TX_GAS_DEFAULT,
+} from "../../../common/utils";
 import { MsgUndelegate } from "@keplr-wallet/proto-types/cosmos/staking/v1beta1/tx";
 import { CoinPretty, Dec, DecUtils, IntPretty } from "@keplr-wallet/unit";
 import { IRow, ListRowView } from "../../../components";
@@ -74,14 +79,14 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
 
   const validatorThumbnail = validator
     ? queries.cosmos.queryValidators
-      .getQueryStatus(Staking.BondStatus.Bonded)
-      .getValidatorThumbnail(validatorAddress) ||
-    queries.cosmos.queryValidators
-      .getQueryStatus(Staking.BondStatus.Unbonding)
-      .getValidatorThumbnail(validatorAddress) ||
-    queries.cosmos.queryValidators
-      .getQueryStatus(Staking.BondStatus.Unbonded)
-      .getValidatorThumbnail(validatorAddress)
+        .getQueryStatus(Staking.BondStatus.Bonded)
+        .getValidatorThumbnail(validatorAddress) ||
+      queries.cosmos.queryValidators
+        .getQueryStatus(Staking.BondStatus.Unbonding)
+        .getValidatorThumbnail(validatorAddress) ||
+      queries.cosmos.queryValidators
+        .getQueryStatus(Staking.BondStatus.Unbonded)
+        .getValidatorThumbnail(validatorAddress)
     : undefined;
 
   const staked = queries.cosmos.queryDelegations
@@ -101,16 +106,6 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.recipientConfig.setRawRecipient(validatorAddress);
   }, [sendConfigs.recipientConfig, validatorAddress]);
 
-  const sendConfigError =
-    // sendConfigs.recipientConfig.error ??
-    // sendConfigs.amountConfig.error ??
-    // sendConfigs.memoConfig.error ??
-    // sendConfigs.gasConfig.error ??
-    sendConfigs.feeConfig.error;
-  console.log("__DEBUG__ sendConfigError === ", sendConfigError?.message);
-
-  const txStateIsValid = sendConfigError == null;
-
   const { gasPrice, gasLimit, feeType } = simulateUndelegateGasFee(
     chainStore,
     accountStore,
@@ -121,8 +116,12 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
   sendConfigs.feeConfig.setFeeType(feeType);
   const feeText = formatCoin(sendConfigs.feeConfig.fee);
 
-  const unbondingTime = queries.cosmos.queryStakingParams.unbondingTimeSec ?? 172800;
+  const unbondingTime =
+    queries.cosmos.queryStakingParams.unbondingTimeSec ?? 172800;
   const unbondingTimeText = formatUnbondingTime(unbondingTime, intl);
+
+  const [amountIsValid, setAmountIsValid] = useState(false);
+  const [amountErrorText, setAmountErrorText] = useState("");
 
   const rows: IRow[] = [
     {
@@ -146,7 +145,9 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
   ];
 
   const onContinueHandler = async () => {
-    if (account.isReadyToSendTx && txStateIsValid) {
+    Keyboard.dismiss();
+
+    if (account.isReadyToSendTx && amountIsValid) {
       const params = {
         token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
         amount: Number(sendConfigs.amountConfig.amount),
@@ -221,28 +222,6 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
     }
   };
 
-  // const granter = queries.cosmos.queryGrants
-  //   .getGranterBech32Address(validatorAddress)
-  //   .grants
-  // const grantee = queries.cosmos.queryGrants
-  //   .getGranteeBech32Address(validatorAddress)
-  //   .grants
-  // // const allowance = queries.cosmos.queryAllowance
-  // //   .getQueryBech32Address(account.bech32Address)
-  // //   .getRedelegations({ dstValidatorAddress: validatorAddress })
-  // //   .shift();
-  // const allowances = queries.cosmos.queryAllowances
-  //   .getGranteeBech32Address(account.bech32Address)
-  //   .allowances;
-
-
-  // console.log("account.bech32Address", account.bech32Address);
-  // console.log("account.ethereumHexAddress", account.ethereumHexAddress);
-  // console.log("validatorAddress", validatorAddress);
-  // console.log("granter", granter);
-  // console.log("grantee", grantee);
-  // console.log("allowances", allowances);
-
   return (
     <View style={style.flatten(["flex-1", "background-color-background"])}>
       <KeyboardAwareScrollView
@@ -274,8 +253,12 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         />
         <AmountInput
           labelText={intl.formatMessage({ id: "stake.undelegate.amountLabel" })}
-          errorText={sendConfigError?.message}
           amountConfig={sendConfigs.amountConfig}
+          feeConfig={sendConfigs.feeConfig}
+          onAmountChanged={(amount, errorText, isFocus) => {
+            setAmountIsValid(Number(amount) > 0 && errorText.length === 0);
+            setAmountErrorText(isFocus ? "" : errorText);
+          }}
           availableAmount={staked}
           containerStyle={style.flatten(["margin-top-24"])}
         />
@@ -298,7 +281,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         >
           <Button
             text={intl.formatMessage({ id: "stake.undelegate.undelegate" })}
-            disabled={!account.isReadyToSendTx || !txStateIsValid}
+            disabled={amountErrorText.length !== 0}
             loading={account.txTypeInProgress === "redelegate"}
             onPress={onContinueHandler}
             containerStyle={style.flatten(["margin-x-page", "margin-top-12"])}
@@ -362,8 +345,7 @@ const simulateUndelegateGasFee = (
       console.log("__DEBUG__ simulate gasUsed", gasUsed);
       console.log("__DEBUG__ simulate gasLimit", gasLimit);
       setGasLimit(gasLimit);
-    }
-    catch (e) {
+    } catch (e) {
       console.log("simulateUndelegateGasFee error", e);
       setGasLimit(TX_GAS_DEFAULT.undelegate); // default gas
     }
@@ -371,9 +353,14 @@ const simulateUndelegateGasFee = (
 
   const feeType = "average" as FeeType;
   var gasPrice = 1000000000; // default 1 gwei = 1 nano aastra
-  const feeConfig = chainStore.current.feeCurrencies.filter((feeCurrency) => {
-    return feeCurrency.coinMinimalDenom === chainStore.current.stakeCurrency.coinMinimalDenom;
-  }).shift();
+  const feeConfig = chainStore.current.feeCurrencies
+    .filter((feeCurrency) => {
+      return (
+        feeCurrency.coinMinimalDenom ===
+        chainStore.current.stakeCurrency.coinMinimalDenom
+      );
+    })
+    .shift();
   if (feeConfig?.gasPriceStep) {
     const { [feeType]: wei } = feeConfig.gasPriceStep;
     gasPrice = wei;

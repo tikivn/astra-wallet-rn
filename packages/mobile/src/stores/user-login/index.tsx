@@ -13,7 +13,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SocialLoginConfigPROD, SocialLoginConfigUAT } from "./config";
 import { loginWithApple } from "./apple-service";
 
-export enum SocialLoginUserState {
+export enum RegisterType {
   new, recover, unknown
 }
 
@@ -106,6 +106,21 @@ export class UserLoginStore {
 
   get selectedServiceProviderType(): ServiceProviderType | undefined {
     return this._serviceProviderType;
+  }
+
+  //
+  // Register Type
+  //
+  @observable
+  protected _registerType: RegisterType = RegisterType.unknown;
+
+  get registerType(): RegisterType {
+    return this._registerType;
+  }
+
+  @action
+  updateRegisterType(state: RegisterType) {
+    this._registerType = state;
   }
 
   //

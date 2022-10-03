@@ -12,7 +12,6 @@ import {
   SocialIcon,
   ConnectIcon,
   LockIcon,
-  BiometricsIcon,
 } from "../../components/icon";
 import { SettingsAccountItem } from "./items/select-account";
 import { AccountItem } from "./components";
@@ -21,9 +20,8 @@ import { AccountVersionItem } from "./items/version-item";
 import { AccountLanguageItem } from "./items/select-language";
 import { useIntl } from "react-intl";
 import { RouteProp, useRoute } from "@react-navigation/native";
-import { Toggle } from "../../components/toggle";
-import { BIOMETRY_TYPE } from "react-native-keychain";
 import { useToastModal } from "../../providers/toast-modal";
+import { AccountBiometricsItem } from "./items/select-biometrics";
 
 export const SettingsScreen: FunctionComponent = observer(() => {
   const {
@@ -67,9 +65,6 @@ export const SettingsScreen: FunctionComponent = observer(() => {
     >
   >();
 
-  const [isBiometricOn, setIsBiometricOn] = useState(
-    keychainStore.isBiometryOn && keychainStore.isBiometrySupported
-  );
   const floatAlert =
     route.params && route.params.floatAlert ? route.params.floatAlert : null;
   const [displayFloatAlert, setDisplayFloatAlert] = useState(floatAlert);
@@ -92,19 +87,6 @@ export const SettingsScreen: FunctionComponent = observer(() => {
     }
   }, [displayFloatAlert]);
 
-  async function tryUnlock() {
-    try {
-      if (isBiometricOn) {
-        await keychainStore.turnOffBiometryWithoutReset();
-      } else {
-        await keychainStore.turnOnBiometryWithoutPassword();
-      }
-      setIsBiometricOn(!isBiometricOn);
-    } catch (error) {
-      console.log("__DEBUG__", error);
-    }
-  }
-
   async function lock() {
     await keyRingStore.lock();
 
@@ -125,7 +107,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
       displayTime: 3000,
       bottomOffset: 44,
     });
-  }
+  };
 
   return (
     <View style={style.flatten(["background-color-background", "flex-grow-1"])}>
@@ -167,31 +149,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
           />
           {keychainStore.isBiometrySupported && (
             <View style={style.get("margin-top-8")}>
-              <AccountItem
-                {...accountItemProps}
-                label={intl.formatMessage({
-                  id:
-                    keychainStore.isBiometryType === BIOMETRY_TYPE.FACE ||
-                      keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
-                      ? "settings.unlockBiometrics.face"
-                      : "settings.unlockBiometrics.touch",
-                })}
-                right={
-                  <View style={{ marginRight: 12 }}>
-                    <Toggle on={isBiometricOn} onChange={tryUnlock} />
-                  </View>
-                }
-                left={
-                  <BiometricsIcon
-                    type={
-                      keychainStore.isBiometryType === BIOMETRY_TYPE.FACE ||
-                        keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
-                        ? "face"
-                        : "touch"
-                    }
-                  />
-                }
-              />
+              <AccountBiometricsItem accountItemProps={accountItemProps} />
             </View>
           )}
 

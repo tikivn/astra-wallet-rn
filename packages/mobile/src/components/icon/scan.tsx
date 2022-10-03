@@ -1,10 +1,14 @@
 import React, { FunctionComponent } from "react";
 import Svg, { Path } from "react-native-svg";
+import { useStyle } from "../../styles";
 
 export const ScanIcon: FunctionComponent<{
-  color: string;
+  color?: string;
   size: number;
 }> = ({ color, size }) => {
+  const style = useStyle();
+  color = color ?? style.get("color-icon-default").color;
+
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path

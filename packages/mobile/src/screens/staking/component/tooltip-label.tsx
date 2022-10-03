@@ -27,7 +27,7 @@ export const TooltipLabel: FunctionComponent<{
     >
       <Text
         style={StyleSheet.flatten([
-          style.flatten(["color-gray-30", "text-caption2"]),
+          style.flatten(["color-label-text-2", "text-small-regular"]),
           textStyle,
         ])}
       >

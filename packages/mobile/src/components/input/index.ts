@@ -6,4 +6,4 @@ export * from "./selector";
 export * from "./currency-selector";
 export * from "./fee-buttons";
 export * from "./bottom-sheet";
-export * from './validator';
+export * from "./validator";

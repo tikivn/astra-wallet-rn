@@ -3,12 +3,12 @@ import { IntlShape } from "react-intl";
 
 export const MIN_PASSWORD_LENGTH = 8;
 export const MIN_AMOUNT = 10;
-export const MIN_REWARDS_AMOUNT = 0.001;
+export const MIN_REWARDS_AMOUNT = 0.01;
 export const LOCALE_FORMAT = {
   locale: "en-US",
   fractionDelimitter: ".",
   maximumFractionDigits: (value: number): number => {
-    return value >= 1000 ? 0 : value > 1 ? 3 : 6;
+    return value >= 1000 ? 0 : value >= 0.01 ? 2 : 4;
   },
 };
 export const TX_GAS_DEFAULT = {
@@ -44,14 +44,7 @@ export const formatCoin = (coin?: CoinPretty, hideDenom: boolean = false) => {
     formattedText = parts[0];
   }
 
-  if (formattedText.indexOf(".") !== -1) {
-    while (formattedText.endsWith("0")) {
-      formattedText = formattedText.slice(0, -1);
-    }
-    if (formattedText.endsWith(".")) {
-      formattedText = formattedText.slice(0, -1);
-    }
-  }
+  formattedText = removeZeroFractionDigits(formattedText);
 
   if (!hideDenom) {
     formattedText += " " + coin.denom.toUpperCase();
@@ -115,4 +108,17 @@ export const formatUnbondingTime = (sec: number, intl: IntlShape) => {
   }
 
   return "";
+}
+
+export const removeZeroFractionDigits = (text: string) => {
+  var formattedText = text;
+  if (formattedText.indexOf(LOCALE_FORMAT.fractionDelimitter) !== -1) {
+    while (formattedText.endsWith("0")) {
+      formattedText = formattedText.slice(0, -1);
+    }
+    if (formattedText.endsWith(LOCALE_FORMAT.fractionDelimitter)) {
+      formattedText = formattedText.slice(0, -1);
+    }
+  }
+  return formattedText;
 }

@@ -75,8 +75,8 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
     alertRef.current?.measureInWindow(async (x, y) => {
       console.log("alertRef.current", x, y);
       setToastBottomOffet(height - (y + safeAreaInsets.bottom));
-    })
-  }, [alertRef.current])
+    });
+  }, [alertRef.current]);
 
   return (
     <PageWithScrollView
@@ -145,17 +145,7 @@ const WordsCard: FunctionComponent<{
 
   return (
     <View style={style.flatten(["justify-center"])}>
-      <View
-        style={style.flatten([
-          "margin-y-16",
-          "padding-top-16",
-          "padding-left-16",
-          "words-container",
-          "flex-row",
-          "flex-wrap",
-          "justify-center",
-        ])}
-      >
+      <View style={style.flatten(["margin-y-16", "words-container"])}>
         {words.map((word, i) => {
           return (
             <WordChip
