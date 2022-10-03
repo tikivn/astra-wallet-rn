@@ -17,7 +17,7 @@
   "tx.result.models.msgTransfer.to": "To",
   "tx.result.models.msgTransfer.type": "IBC Transfer",
   "tx.result.models.msgUndelegate.fee": "Phí rút",
-  "tx.result.models.msgUndelegate.from": "Rút từ quỹ",
+  "tx.result.models.msgUndelegate.from": "Rút từ",
   "tx.result.models.msgUndelegate.time": "Thời gian thực hiện",
   "tx.result.models.msgVote.option.abstain": "Abstain",
   "tx.result.models.msgVote.option.empty": "Empty",

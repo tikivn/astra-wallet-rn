@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FunctionComponent, useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 import { useStyle } from "../../../styles";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -36,7 +36,14 @@ export const NewPasswordInputScreen: FunctionComponent = observer(() => {
   const [inputDataValid, setInputDataValid] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
 
+  const confirmPasswordInputRef = useRef<any>();
+
   const onCreate = async () => {
+    if (password.length < MIN_PASSWORD_LENGTH || password !== confirmPassword) {
+      validateInputData();
+      return;
+    }
+
     setIsCreating(true);
 
     const currentPassword = route.params.currentPassword;
@@ -107,6 +114,7 @@ export const NewPasswordInputScreen: FunctionComponent = observer(() => {
         enableOnAndroid
       >
         <NormalInput
+          returnKeyType="next"
           value={password}
           label={intl.formatMessage({ id: "common.text.newPassword" })}
           info={intl.formatMessage(
@@ -122,6 +130,9 @@ export const NewPasswordInputScreen: FunctionComponent = observer(() => {
           onShowPasswordChanged={setShowPassword}
           onChangeText={setPassword}
           onBlur={validateInputData}
+          onSubmitEditting={() => {
+            confirmPasswordInputRef.current.focus();
+          }}
           autoFocus
           validations={[
             {
@@ -140,6 +151,7 @@ export const NewPasswordInputScreen: FunctionComponent = observer(() => {
         />
 
         <NormalInput
+          inputRef={confirmPasswordInputRef}
           value={confirmPassword}
           label={intl.formatMessage({
             id: "common.text.inputVerifyNewPassword",
@@ -150,6 +162,7 @@ export const NewPasswordInputScreen: FunctionComponent = observer(() => {
           onShowPasswordChanged={setShowPassword}
           onChangeText={setConfirmPassword}
           onBlur={validateInputData}
+          onSubmitEditting={onCreate}
           validations={[
             {
               validateFunc: (value: string) => {

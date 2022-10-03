@@ -1,9 +1,7 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { View, Text } from "react-native";
-import {
-  TransactionItem as ITransactionItem,
-} from "./transaction_adapter"
+import { TransactionItem as ITransactionItem } from "./transaction_adapter";
 import { RightArrowIcon } from "../../components/icon";
 import { useStyle } from "../../styles";
 import { CoinPretty } from "@keplr-wallet/unit";
@@ -13,13 +11,15 @@ import { formatCoin } from "../../common/utils";
 import { useIntl } from "react-intl";
 
 export const TransactionItem: FunctionComponent<{
-  item?: ITransactionItem<any>,
-  chainStore: ChainStore,
+  item?: ITransactionItem<any>;
+  chainStore: ChainStore;
 }> = observer(({ item, chainStore }) => {
-  const style = useStyle()
+  const style = useStyle();
   const intl = useIntl();
 
-  let currency = chainStore.current.currencies.find((cur) => cur.coinMinimalDenom == item?.amount.denom)
+  let currency = chainStore.current.currencies.find(
+    (cur) => cur.coinMinimalDenom == item?.amount.denom
+  );
   var amountText = item?.amount.amount;
   if (currency && item) {
     amountText = formatCoin(new CoinPretty(currency, item?.amount.amount));
@@ -41,34 +41,57 @@ export const TransactionItem: FunctionComponent<{
   return (
     <View style={style.flatten(["padding-0"])}>
       <View style={style.flatten(["flex-row", "content-stretch"])}>
-        <Text style={style.flatten(["flex-1", "text-base-medium", "color-gray-10"])}>
+        <Text
+          style={style.flatten(["flex-1", "text-base-medium", "color-gray-10"])}
+        >
           {item?.action}
         </Text>
-        <Text style={style.flatten(["text-base-medium", "color-gray-10", "text-right"])}>
+        <Text
+          style={style.flatten([
+            "text-base-medium",
+            "color-gray-10",
+            "text-right",
+          ])}
+        >
           {amountText}
         </Text>
-        <View style={style.flatten(["height-20", "width-20", "margin-left-8", "items-center", "justify-center"])}>
-          <RightArrowIcon
-            height={6.25}
-            color={style.get("color-gray-10").color}
-          />
+        <View
+          style={style.flatten([
+            "height-20",
+            "width-20",
+            "margin-left-8",
+            "items-center",
+            "justify-center",
+          ])}
+        >
+          <RightArrowIcon height={6.25} />
         </View>
       </View>
-      <View style={style.flatten(["flex-row", "content-stretch", "margin-top-4"])}>
-        <Text style={style.flatten(["flex-1", "text-small-regular", "color-gray-30"])}>
-          {moment(item?.timestamp).format("hh:mm - DD/MM/YYYY")}
-        </Text>
-        <Text style={{
-          ...style.flatten([
+      <View
+        style={style.flatten(["flex-row", "content-stretch", "margin-top-4"])}
+      >
+        <Text
+          style={style.flatten([
+            "flex-1",
             "text-small-regular",
-            "text-right",
-            "margin-right-28",
-          ]),
-          ...statusTextColor,
-        }}>
+            "color-gray-30",
+          ])}
+        >
+          {moment(item?.timestamp).format("HH:mm - DD/MM/YYYY")}
+        </Text>
+        <Text
+          style={{
+            ...style.flatten([
+              "text-small-regular",
+              "text-right",
+              "margin-right-28",
+            ]),
+            ...statusTextColor,
+          }}
+        >
           {statusText}
         </Text>
       </View>
     </View>
   );
-})
+});
