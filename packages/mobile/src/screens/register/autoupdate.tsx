@@ -42,12 +42,13 @@ export const AutoUpdateProgressScreen: FunctionComponent = observer(() => {
         <View
           style={{
             ...style.flatten(["flex-grow-1", "items-center", "padding-x-18"]),
-            paddingTop: Dimensions.get("window").height * 0.22,
+            paddingTop: Dimensions.get("window").height * 0.2,
           }}
         >
           <Image
             resizeMode="contain"
             source={require("../../assets/logo/Astra.png")}
+            style={{ width: 132, height: 132 }}
           />
           <Text style={style.flatten(["color-white", "title3", "text-center"])}>
             {intl.formatMessage({ id: "register.intro.appName" })}
