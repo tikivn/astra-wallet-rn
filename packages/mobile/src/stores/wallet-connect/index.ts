@@ -81,7 +81,7 @@
 //   async restoreClient(session: WalletConnect["session"]) {
 //     const client = new WalletConnect({
 //       clientMeta: {
-//         name: "Astra Hub",
+//         name: "Astra Wallet",
 //         description: "Wallet for interchain",
 //         url: "#",
 //         icons: ["https://dhj8dql1kzq2v.cloudfront.net/keplr-256x256.png"],
@@ -163,7 +163,7 @@
 //     const client = new WalletConnect({
 //       uri,
 //       clientMeta: {
-//         name: "Astra Hub",
+//         name: "Astra Wallet",
 //         description: "Wallet for interchain",
 //         url: "#",
 //         icons: ["https://dhj8dql1kzq2v.cloudfront.net/keplr-256x256.png"],

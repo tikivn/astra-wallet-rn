@@ -92,7 +92,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       relayUrl: "wss://wc-relay.astranaut.dev",
       projectId: "dd47fbeda006ccb670152d74136f846a",
       metadata: {
-        name: "Astra Hub",
+        name: "Astra Wallet",
         description: "Everything for Astra",
         url: "https://astranaut.io",
         icons: [

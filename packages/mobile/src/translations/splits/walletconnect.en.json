@@ -9,7 +9,7 @@
   "walletconnect.disconnected": "{name} is disconnected",
   "walletconnect.empty.description": "You don't have any connected apps yet",
   "walletconnect.rejected": "Transaction from {name} has been rejected",
-  "walletconnect.text.connect": "Connect {name} with Astra Hub?",
+  "walletconnect.text.connect": "Connect {name} with Astra Wallet?",
   "walletconnect.text.verify": "Verify transaction from {name}",
   "walletconnect.verified": "Transaction from {name} has been verified",
   "walletconnect.permission": "{name} will have permission",
