@@ -1,7 +1,7 @@
 import React from "react";
 import { useIntl } from "react-intl";
 import { Image, StyleSheet, Text, View } from "react-native";
-import { useStyle, V1Colors } from "../../styles";
+import { useStyle } from "../../styles";
 import { BottomSheetSwap, BottomSheetSwapProps } from "./bottom-sheet-swap";
 
 export type SlippageDescribeProps = BottomSheetSwapProps;
@@ -14,13 +14,13 @@ export const SlippageDescribe = (props: SlippageDescribeProps) => {
     <BottomSheetSwap {...props}>
       <View style={style.flatten(["flex-grow-1"])}>
         <View
-          style={StyleSheet.flatten([
-            {
-              borderTopWidth: 1,
-              borderBottomWidth: 1,
-              borderColor: V1Colors["gray-70"],
-            },
-            style.flatten(["padding-y-24", "padding-x-16", "min-height-80"]),
+          style={style.flatten([
+            "padding-y-24",
+            "padding-x-16",
+            "min-height-80",
+            "border-width-top-1",
+            "border-width-bottom-1",
+            "border-color-border",
           ])}
         >
           <View

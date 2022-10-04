@@ -14,10 +14,10 @@
   "stake.redelegate.redelagate": "Đổi quỹ",
   "stake.redelegate.selectValidator": "Chọn quỹ tích lũy",
   "stake.redelegate.to": "Sang",
-  "stake.undelegate.amountLabel": "Số lượng (không bao gồm phần thưởng)",
+  "stake.undelegate.amountLabel": "Số lượng",
   "stake.undelegate.available": "Khả dụng",
   "stake.undelegate.fee": "Phí giao dịch",
-  "stake.undelegate.noticeWithdrawalPeriod": "Bạn sẽ nhận được số {coin} bạn rút {days}",
+  "stake.undelegate.noticeWithdrawalPeriod": "{coin} sẽ được rút về sau {days}.",
   "stake.undelegate.undelegate": "Rút",
   "stake.undelegate.validatorLabel": "Rút từ gói tích luỹ"
 }

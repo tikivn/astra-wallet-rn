@@ -28,7 +28,8 @@ export const UnbondingCard: FunctionComponent<{
   const style = useStyle();
   const intl = useIntl();
 
-  const unbondingTime = queries.cosmos.queryStakingParams.unbondingTimeSec ?? 172800;
+  const unbondingTime =
+    queries.cosmos.queryStakingParams.unbondingTimeSec ?? 172800;
   const unbondingTimeText = formatUnbondingTime(unbondingTime, intl);
 
   return unbonding ? (

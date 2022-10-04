@@ -2,7 +2,7 @@
   "swap.amount.inputText": "From {token}",
   "swap.amount.outputText": "To {token}",
   "swap.amount.swapAll": "Max",
-  "swap.amount.available": "(Balance <b>amount</b>)",
+  "swap.amount.available": "Balance <b>amount</b>",
   "swap.exchangeRate": "Price",
   "swap.transactionFee": "Transaction Fee",
   "swap.liquidityFee": "Liquidity Fee",

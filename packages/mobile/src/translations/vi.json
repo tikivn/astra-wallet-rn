@@ -58,7 +58,7 @@
   "tabs.setting": "Cài đặt",
   "tabs.stake": "Tích lũy",
   "unbonding.title": "Tổng tiền đang rút",
-  "undelegate.title": "Rút tiền đầu tư",
+  "undelegate.title": "Rút {coin}",
   "validator.details.new.title": "Gói tích lũy",
   "validator.list.new.title": "Các gói tích lũy",
   "viewPassphase.title": "Xem cụm từ bí mật",

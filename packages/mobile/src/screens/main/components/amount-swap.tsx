@@ -7,7 +7,7 @@ import FastImage from "react-native-fast-image";
 import { VectorCharacter } from "../../../components";
 import { Button } from "../../../components/button";
 import { useStore } from "../../../stores";
-import { useStyle, V1Colors } from "../../../styles";
+import { useStyle } from "../../../styles";
 import { SIGNIFICANT_DECIMAL_PLACES, SwapField } from "../../../utils/for-swap";
 
 interface SwapAmountProps {
@@ -72,7 +72,7 @@ export const AmountSwap: FunctionComponent<SwapAmountProps> = observer(
               ])}
             >
               <Text
-                style={style.flatten(["color-text-black-low", "text-caption2"])}
+                style={style.flatten(["color-label-text-2", "text-caption2"])}
               >
                 <FormattedMessage
                   id="swap.amount.inputText"
@@ -82,8 +82,8 @@ export const AmountSwap: FunctionComponent<SwapAmountProps> = observer(
               {showBalance && (
                 <Text
                   style={style.flatten([
-                    "color-text-black-low",
-                    "text-caption2",
+                    "color-label-text-2",
+                    "text-small-regular",
                   ])}
                 >
                   <FormattedMessage
@@ -92,10 +92,10 @@ export const AmountSwap: FunctionComponent<SwapAmountProps> = observer(
                       // eslint-disable-next-line react/display-name
                       b: () => (
                         <Text
-                          style={{
-                            fontWeight: "bold",
-                            color: V1Colors["gray-10"],
-                          }}
+                          style={style.flatten([
+                            "color-label-text-1",
+                            "text-small-regular",
+                          ])}
                         >
                           {balance?.toSignificant(SIGNIFICANT_DECIMAL_PLACES)}
                         </Text>
@@ -112,6 +112,7 @@ export const AmountSwap: FunctionComponent<SwapAmountProps> = observer(
                 lineHeight: 32,
                 height: 32,
                 marginTop: 4,
+                marginRight: -12,
               },
               style.flatten(["flex-row", "flex-nowrap"]),
             ])}
@@ -148,7 +149,7 @@ export const AmountSwap: FunctionComponent<SwapAmountProps> = observer(
               value={value}
               onChangeText={(value) => onUserInput(value, field)}
               keyboardType="numeric"
-              selectionColor={V1Colors["gray-10"]}
+              selectionColor={style.get("color-label-text-1").color}
             />
             {showSwapAll && (
               <Button
@@ -157,7 +158,6 @@ export const AmountSwap: FunctionComponent<SwapAmountProps> = observer(
                 })}
                 mode="ghost"
                 size="medium"
-                containerStyle={style.flatten(["padding-right-0"])}
                 onPress={handleClickSwapAll}
               />
             )}

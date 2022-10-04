@@ -1,9 +1,9 @@
 import { Staking } from "@keplr-wallet/stores";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
-import { FormattedMessage, useIntl } from "react-intl";
+import { useIntl } from "react-intl";
 import { Text, View } from "react-native";
-import { formatCoin } from "../../../common/utils";
+import { formatCoin, formatUnbondingTime } from "../../../common/utils";
 import { AlertInline, PageWithScrollView } from "../../../components";
 import { CardDivider } from "../../../components/card";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
@@ -12,36 +12,17 @@ import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 
 export const UnbondingScreen: FunctionComponent = observer(() => {
+  const intl = useIntl();
   const smartNavigation = useSmartNavigation();
+
   const { chainStore, accountStore, queriesStore } = useStore();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
-  const chainInfo = chainStore.getChain(chainStore.current.chainId).raw;
-  const unbondingTime = chainInfo.unbondingTime ?? 86400000;
-  const intl = useIntl();
 
-  const unbondingTimeText = (() => {
-    const relativeEndTime = unbondingTime / 1000;
-    const relativeEndTimeDays = Math.floor(relativeEndTime / (3600 * 24));
-    const relativeEndTimeHours = Math.ceil(relativeEndTime / 3600);
-
-    if (relativeEndTimeDays) {
-      return intl
-        .formatRelativeTime(relativeEndTimeDays, "days", {
-          numeric: "always",
-        })
-        .replace("days", intl.formatMessage({ id: "staking.unbonding.days" }));
-    } else if (relativeEndTimeHours) {
-      return intl
-        .formatRelativeTime(relativeEndTimeHours, "hours", {
-          numeric: "always",
-        })
-        .replace("hours", "h");
-    }
-
-    return "";
-  })();
+  const unbondingTime =
+    queries.cosmos.queryStakingParams.unbondingTimeSec ?? 172800;
+  const unbondingTimeText = formatUnbondingTime(unbondingTime, intl);
 
   const unbondingsQuery = queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
     account.bech32Address
@@ -69,7 +50,7 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
     >
       <View style={style.flatten(["padding-16", "items-center"])}>
         <Text style={style.flatten(["color-gray-30", "body3", "margin-top-0"])}>
-          <FormattedMessage id="staking.unbonding.totalAmount" />
+          {intl.formatMessage({ id: "staking.unbonding.totalAmount" })}
         </Text>
         <Text style={style.flatten(["color-gray-10", "title1", "margin-y-2"])}>
           {formatCoin(balance)}
@@ -91,14 +72,17 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
             "text-caption2",
           ])}
         >
-          <FormattedMessage id="staking.unbonding.viewHistoryGuide" />
+          {intl.formatMessage(
+            { id: "staking.unbonding.viewHistoryGuide" },
+            { coin: chainStore.current.stakeCurrency.coinDenom }
+          )}
           <Text
             style={style.flatten(["text-underline", "color-primary"])}
             onPress={() => {
               smartNavigation.navigateSmart("Wallet.History", {});
             }}
           >
-            <FormattedMessage id="staking.unbonding.history" />
+            {intl.formatMessage({ id: "staking.unbonding.history" })}
           </Text>
         </Text>
       </View>
@@ -115,10 +99,10 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
           ])}
         >
           <Text style={style.flatten(["color-gray-30", "body3"])}>
-            <FormattedMessage id="staking.unbonding.nameAndAmount" />
+            {intl.formatMessage({ id: "staking.unbonding.nameAndAmount" })}
           </Text>
           <Text style={style.flatten(["color-gray-30", "body3"])}>
-            <FormattedMessage id="staking.unbonding.receiveAfter" />
+            {intl.formatMessage({ id: "staking.unbonding.receiveAfter" })}
           </Text>
         </View>
         <CardDivider

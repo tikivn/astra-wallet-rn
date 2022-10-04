@@ -456,9 +456,6 @@ export const WalletNavigation: FunctionComponent = () => {
       />
       <Stack.Screen name="Delegate" component={DelegateScreen} />
       <Stack.Screen
-        options={{
-          title: intl.formatMessage({ id: "undelegate.title" }),
-        }}
         name="Undelegate"
         component={UndelegateScreen}
       />

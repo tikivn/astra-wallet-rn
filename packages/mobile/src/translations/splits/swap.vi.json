@@ -2,7 +2,7 @@
   "swap.amount.inputText": "Từ {token}",
   "swap.amount.outputText": "Sang {token}",
   "swap.amount.swapAll": "Tối đa",
-  "swap.amount.available": "(Khả dụng <b>amount</b>)",
+  "swap.amount.available": "Khả dụng <b>amount</b>",
   "swap.exchangeRate": "Tỷ giá",
   "swap.transactionFee": "Phí giao dịch",
   "swap.liquidityFee": "Phí thanh khoản",

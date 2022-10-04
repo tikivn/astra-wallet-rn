@@ -187,7 +187,9 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                   "margin-top-12",
                 ])}
                 bottomInInputContainer={
-                  <View style={style.flatten(["flex-row"])}>
+                  <View
+                    style={{ ...style.flatten(["flex-row"]), marginRight: -12 }}
+                  >
                     <View style={style.flatten(["flex-1"])} />
                     <Button
                       size="medium"
@@ -203,7 +205,6 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                           setFocus("name");
                         }
                       }}
-                      containerStyle={style.flatten(["padding-right-0"])}
                     />
                   </View>
                 }

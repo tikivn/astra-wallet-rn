@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useStyle, V1Colors } from "../../styles";
+import { useStyle } from "../../styles";
 import {
   INITIAL_ALLOWED_SLIPPAGE,
   SLIPPAGE_TOLERANCE,
@@ -99,7 +99,7 @@ export const SlippageInput = ({
           {
             borderTopWidth: 1,
             borderBottomWidth: 1,
-            borderColor: V1Colors["gray-70"],
+            borderColor: style.get("color-border").color,
           },
           style.flatten(["padding-y-24", "padding-x-16"]),
         ])}
@@ -159,13 +159,13 @@ export const SlippageInput = ({
                 "flex-1",
                 "background-color-transparent",
               ])}
-              placeholderTextColor={V1Colors["gray-30"]}
+              placeholderTextColor={style.get("color-label-text-2").color}
               placeholder="1 - 10"
               value={inputValue}
               onChangeText={handleChangeTextInput}
               keyboardType="numeric"
               onFocus={handleTextInputFocus}
-              selectionColor={V1Colors["gray-10"]}
+              selectionColor={style.get("color-label-text-1").color}
             />
 
             <Text

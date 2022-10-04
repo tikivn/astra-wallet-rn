@@ -20,7 +20,7 @@ import {
 import { useSmartNavigation } from "../../../navigation-util";
 import { useLoadingScreen } from "../../../providers/loading-screen";
 import { useDataSwapContext } from "../../../providers/swap/use-data-swap-context";
-import { useStyle, V1Colors } from "../../../styles";
+import { useStyle } from "../../../styles";
 import {
   getExchangeRateString,
   getSlippageTolaranceString,
@@ -97,9 +97,11 @@ export const SwapScreen: FunctionComponent = observer(() => {
 
   return (
     <View
-      style={StyleSheet.flatten([
-        { borderTopWidth: 1, borderColor: V1Colors["gray-70"] },
-        style.flatten(["background-color-background", "flex-1"]),
+      style={style.flatten([
+        "background-color-background",
+        "flex-1",
+        "border-width-top-1",
+        "border-color-border",
       ])}
     >
       <View style={style.flatten(["padding-x-16"])}>
@@ -136,7 +138,7 @@ export const SwapScreen: FunctionComponent = observer(() => {
                   borderRadius: 20,
                   height: "100%",
                   width: "100%",
-                  backgroundColor: V1Colors["gray-100"],
+                  backgroundColor: style.get("color-background").color,
                   paddingLeft: 4,
                 },
                 style.flatten(["items-center", "justify-center"]),
@@ -292,9 +294,10 @@ export const SwapScreen: FunctionComponent = observer(() => {
         style={style.flatten(["flex-1", "justify-end", "margin-bottom-12"])}
       >
         <View
-          style={StyleSheet.flatten([
-            { borderTopWidth: 1, borderColor: V1Colors["gray-70"] },
-            style.flatten(["height-12"]),
+          style={style.flatten([
+            "height-12",
+            "border-width-top-1",
+            "border-color-border",
           ])}
         />
         <View style={style.flatten(["padding-x-16"])}>

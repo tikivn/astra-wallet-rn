@@ -36,6 +36,7 @@ import { CoinPretty, Dec, DecUtils, IntPretty } from "@keplr-wallet/unit";
 import { IRow, ListRowView } from "../../../components";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
+import { useSmartNavigation } from "../../../navigation-util";
 
 export const UndelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -62,6 +63,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
 
   const style = useStyle();
   const intl = useIntl();
+  const smartNavigation = useSmartNavigation();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
@@ -101,6 +103,10 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
     account.bech32Address,
     validatorAddress
   );
+
+  useEffect(() => {
+    updateNavigationTitle();
+  });
 
   useEffect(() => {
     sendConfigs.recipientConfig.setRawRecipient(validatorAddress);
@@ -222,6 +228,15 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
     }
   };
 
+  const updateNavigationTitle = () => {
+    smartNavigation.setOptions({
+      title: intl.formatMessage(
+        { id: "undelegate.title" },
+        { coin: chainStore.current.stakeCurrency.coinDenom }
+      ),
+    });
+  };
+
   return (
     <View style={style.flatten(["flex-1", "background-color-background"])}>
       <KeyboardAwareScrollView
@@ -230,7 +245,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       >
         <View style={style.flatten(["height-page-pad"])} />
         <AlertInline
-          type="warning"
+          type="info"
           content={intl.formatMessage(
             { id: "stake.undelegate.noticeWithdrawalPeriod" },
             { coin: staked.denom, days: unbondingTimeText }

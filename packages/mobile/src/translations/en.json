@@ -58,7 +58,7 @@
   "tabs.setting": "Setting",
   "tabs.stake": "Staking",
   "unbonding.title": "Total staked",
-  "undelegate.title": "Unstake",
+  "undelegate.title": "Unstake {coin}",
   "validator.details.new.title": "Staking pool",
   "validator.list.new.title": "Select staking pool",
   "viewPassphase.title": "Reveal secret phrase",

@@ -23,7 +23,7 @@ import { useSmartNavigation } from "../../../navigation-util";
 import { useDataSwapContext } from "../../../providers/swap/use-data-swap-context";
 import { useToastModal } from "../../../providers/toast-modal";
 import { useStore } from "../../../stores";
-import { V1Colors, useStyle } from "../../../styles";
+import { useStyle } from "../../../styles";
 import {
   getExchangeRateString,
   getSlippageTolaranceString,
@@ -138,9 +138,11 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
 
   return (
     <View
-      style={StyleSheet.flatten([
-        { borderTopWidth: 1, borderColor: V1Colors["gray-70"] },
-        style.flatten(["background-color-background", "flex-1"]),
+      style={style.flatten([
+        "background-color-background",
+        "flex-1",
+        "border-color-border",
+        "border-width-top-1",
       ])}
     >
       <View style={style.get("padding-x-16")}>
@@ -266,18 +268,14 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
           ])}
         >
           <View
-            style={StyleSheet.flatten([
-              {
-                borderBottomWidth: 1,
-                borderBottomColor: V1Colors["gray-70"],
-              },
-              style.flatten([
-                "flex-row",
-                "flex-nowrap",
-                "justify-between",
-                "padding-bottom-16",
-                "items-center",
-              ]),
+            style={style.flatten([
+              "flex-row",
+              "flex-nowrap",
+              "justify-between",
+              "padding-bottom-16",
+              "items-center",
+              "border-width-bottom-1",
+              "border-color-border",
             ])}
           >
             <Text style={style.flatten(["text-caption", "color-gray-30"])}>
@@ -288,18 +286,14 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
             </Text>
           </View>
           <View
-            style={StyleSheet.flatten([
-              {
-                borderBottomWidth: 1,
-                borderBottomColor: V1Colors["gray-70"],
-              },
-              style.flatten([
-                "flex-row",
-                "flex-nowrap",
-                "justify-between",
-                "items-center",
-                "padding-y-16",
-              ]),
+            style={style.flatten([
+              "flex-row",
+              "flex-nowrap",
+              "justify-between",
+              "items-center",
+              "padding-y-16",
+              "border-width-bottom-1",
+              "border-color-border",
             ])}
           >
             <Text style={style.flatten(["text-caption", "color-gray-30"])}>
@@ -310,17 +304,13 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
             </Text>
           </View>
           <View
-            style={StyleSheet.flatten([
-              {
-                borderBottomWidth: 1,
-                borderBottomColor: V1Colors["gray-70"],
-              },
-              style.flatten([
-                "flex-row",
-                "flex-nowrap",
-                "justify-between",
-                "padding-y-16",
-              ]),
+            style={style.flatten([
+              "flex-row",
+              "flex-nowrap",
+              "justify-between",
+              "padding-y-16",
+              "border-width-bottom-1",
+              "border-color-border",
             ])}
           >
             <Text style={style.flatten(["text-caption", "color-gray-30"])}>
@@ -331,17 +321,13 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
             </Text>
           </View>
           <View
-            style={StyleSheet.flatten([
-              {
-                borderBottomWidth: 1,
-                borderBottomColor: V1Colors["gray-70"],
-              },
-              style.flatten([
-                "flex-row",
-                "flex-nowrap",
-                "justify-between",
-                "padding-y-16",
-              ]),
+            style={style.flatten([
+              "flex-row",
+              "flex-nowrap",
+              "justify-between",
+              "padding-y-16",
+              "border-width-bottom-1",
+              "border-color-border",
             ])}
           >
             <Text style={style.flatten(["text-caption", "color-gray-30"])}>
@@ -372,14 +358,13 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
       </View>
       <View style={style.get("flex-1")} />
       <View
-        style={StyleSheet.flatten([
-          { borderTopWidth: 1, borderColor: V1Colors["gray-70"] },
-          style.flatten([
-            "padding-x-16",
-            "padding-y-12",
-            "flex-row",
-            "flex-nowrap",
-          ]),
+        style={style.flatten([
+          "padding-x-16",
+          "padding-y-12",
+          "flex-row",
+          "flex-nowrap",
+          "border-width-top-1",
+          "border-color-border",
         ])}
       >
         <Button
