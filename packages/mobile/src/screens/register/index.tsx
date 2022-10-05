@@ -59,7 +59,7 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
           style={{
             ...style.flatten(["padding-x-16"]),
             paddingTop:
-              Dimensions.get("window").height * 0.22 - actualHeightHeight,
+              Dimensions.get("window").height * 0.1 - actualHeightHeight,
             // paddingBottom: Dimensions.get("window").height * 0.11,
           }}
         >
@@ -73,9 +73,15 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
             <Image
               resizeMode="contain"
               source={require("../../assets/logo/Astra.png")}
+              style={{ width: 132, height: 132 }}
             />
             <Text
-              style={style.flatten(["color-white", "title3", "text-center"])}
+              style={style.flatten([
+                "color-white",
+                "title3",
+                "text-center",
+                "padding-top-24",
+              ])}
             >
               {intl.formatMessage({ id: "register.intro.appName" })}
             </Text>

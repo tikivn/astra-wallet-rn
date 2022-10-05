@@ -1,4 +1,4 @@
-# Astra Hub
+# Astra Wallet
 
 ## Prepare Environment 
 set enviroment avaiable for these keys below:
