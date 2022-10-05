@@ -1,5 +1,6 @@
-import { formatUnits, parseUnits } from "@ethersproject/units";
+import { parseUnits } from "@ethersproject/units";
 import { ChainId, ETHER, Fraction, JSBI, Percent } from "@solarswap/sdk";
+import { FEE_RESERVATION } from "../../common/utils";
 
 export enum GAS_PRICE {
   default = "5",
@@ -42,14 +43,15 @@ export const RPC_ENPOINT = {
 
 export const TIME_DEBOUNCE = 0;
 
-export enum ERROR_KEY {
+export enum SWAP_ERROR_KEY {
   INSUFFICIENT_BALANCE = "InsufficientBalances",
   INVALID_INPUT = "InvalidInput",
   LIMIT_ONE_ASA = "LimitOneASA",
+  ENABLE_ERROR = "EnableError",
 }
-export const MIN_ASA: JSBI = JSBI.exponentiate(
-  JSBI.BigInt(10),
-  JSBI.BigInt(16)
-); // .01 ASA
 
 export const ONE_ASA = JSBI.BigInt(parseUnits("1", ETHER.decimals));
+
+export const MIN_ASA: JSBI = JSBI.BigInt(
+  parseUnits(FEE_RESERVATION.toString(), ETHER.decimals)
+);

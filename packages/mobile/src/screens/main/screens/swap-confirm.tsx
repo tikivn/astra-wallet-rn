@@ -1,11 +1,6 @@
-import { Currency, Token } from "@solarswap/sdk";
+import { Currency } from "@solarswap/sdk";
 import { observer } from "mobx-react-lite";
-import React, {
-  FunctionComponent,
-  useCallback,
-  useMemo,
-  useState,
-} from "react";
+import React, { FunctionComponent, useCallback, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import {
   Animated,
@@ -26,11 +21,11 @@ import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import {
   getExchangeRateString,
-  getSlippageTolaranceString,
   getLiquidityFee,
+  getSlippageTolaranceString,
+  getTransactionFee,
   INTERNAL_DELAY,
   SwapField,
-  getTransactionFee,
 } from "../../../utils/for-swap";
 
 export const SwapConfirmScreen: FunctionComponent = observer(() => {
@@ -171,7 +166,14 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
             >
               {intl.formatMessage({ id: "swap.confirm.fromText" })}
             </Text>
-            <Text style={style.flatten(["subtitle2", "color-gray-10"])}>
+            <Text
+              style={style.flatten([
+                "subtitle2",
+                "color-gray-10",
+                "text-center",
+              ])}
+              numberOfLines={2}
+            >
               {viewData.inputAmount}
             </Text>
           </View>
@@ -209,7 +211,14 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
             >
               {intl.formatMessage({ id: "swap.confirm.toText" })}
             </Text>
-            <Text style={style.flatten(["subtitle2", "color-gray-10"])}>
+            <Text
+              style={style.flatten([
+                "subtitle2",
+                "color-gray-10",
+                "text-center",
+              ])}
+              numberOfLines={2}
+            >
               {viewData.outputAmount}
             </Text>
           </View>
@@ -276,12 +285,27 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
               "items-center",
               "border-width-bottom-1",
               "border-color-border",
+              "overflow-hidden",
             ])}
           >
-            <Text style={style.flatten(["text-caption", "color-gray-30"])}>
+            <Text
+              style={style.flatten([
+                "text-caption",
+                "color-gray-30",
+                "margin-right-8",
+              ])}
+            >
               {intl.formatMessage({ id: "swap.exchangeRate" })}
             </Text>
-            <Text style={style.flatten(["text-caption", "color-gray-10"])}>
+            <Text
+              style={style.flatten([
+                "text-caption",
+                "color-gray-10",
+                "flex-1",
+                "text-right",
+              ])}
+              numberOfLines={1}
+            >
               {viewData.exchageRate}
             </Text>
           </View>
@@ -294,12 +318,27 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
               "padding-y-16",
               "border-width-bottom-1",
               "border-color-border",
+              "overflow-hidden",
             ])}
           >
-            <Text style={style.flatten(["text-caption", "color-gray-30"])}>
+            <Text
+              style={style.flatten([
+                "text-caption",
+                "color-gray-30",
+                "margin-right-8",
+              ])}
+            >
               {intl.formatMessage({ id: "swap.confirm.minimumReceived" })}
             </Text>
-            <Text style={style.flatten(["text-caption", "color-gray-10"])}>
+            <Text
+              style={style.flatten([
+                "text-caption",
+                "color-gray-10",
+                "flex-1",
+                "text-right",
+              ])}
+              numberOfLines={1}
+            >
               {viewData.minimumReceived}
             </Text>
           </View>
@@ -311,12 +350,27 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
               "padding-y-16",
               "border-width-bottom-1",
               "border-color-border",
+              "overflow-hidden",
             ])}
           >
-            <Text style={style.flatten(["text-caption", "color-gray-30"])}>
+            <Text
+              style={style.flatten([
+                "text-caption",
+                "color-gray-30",
+                "margin-right-8",
+              ])}
+            >
               {intl.formatMessage({ id: "swap.transactionFee" })}
             </Text>
-            <Text style={style.flatten(["text-caption", "color-gray-10"])}>
+            <Text
+              style={style.flatten([
+                "text-caption",
+                "color-gray-10",
+                "flex-1",
+                "text-right",
+              ])}
+              numberOfLines={1}
+            >
               {viewData.txFee}
             </Text>
           </View>
@@ -328,12 +382,26 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
               "padding-y-16",
               "border-width-bottom-1",
               "border-color-border",
+              "overflow-hidden",
             ])}
           >
-            <Text style={style.flatten(["text-caption", "color-gray-30"])}>
+            <Text
+              style={style.flatten([
+                "text-caption",
+                "color-gray-30",
+                "margin-right-8",
+              ])}
+            >
               {intl.formatMessage({ id: "swap.liquidityFee" })}
             </Text>
-            <Text style={style.flatten(["text-caption", "color-gray-10"])}>
+            <Text
+              style={style.flatten([
+                "text-caption",
+                "color-gray-10",
+                "flex-1",
+                "text-right",
+              ])}
+            >
               {viewData.liquidityFee}
             </Text>
           </View>

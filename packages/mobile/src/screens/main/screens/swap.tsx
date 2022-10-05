@@ -11,22 +11,17 @@ import { Button, SlippageDescribe, SlippageInput } from "../../../components";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 import { ChangeTokenIcon } from "../../../components/icon/change-token";
 import { RectButton } from "../../../components/rect-button";
-import { Approval } from "../../../components/swap/approval";
 import { useSwapActions } from "../../../hooks";
-import {
-  ApprovalState,
-  useApproveCallbackFromTrade,
-} from "../../../hooks/use-approve";
 import { useSmartNavigation } from "../../../navigation-util";
 import { useLoadingScreen } from "../../../providers/loading-screen";
 import { useDataSwapContext } from "../../../providers/swap/use-data-swap-context";
 import { useStyle } from "../../../styles";
 import {
   getExchangeRateString,
-  getSlippageTolaranceString,
   getLiquidityFee,
-  SwapField,
+  getSlippageTolaranceString,
   getTransactionFee,
+  SwapField,
 } from "../../../utils/for-swap";
 import { AmountSwap, Tooltip } from "../components";
 
@@ -41,7 +36,6 @@ export const SwapScreen: FunctionComponent = observer(() => {
     pricePerInputCurrency,
     isReadyToSwap,
     currencies,
-    trade,
   } = useDataSwapContext();
 
   const {
@@ -59,41 +53,26 @@ export const SwapScreen: FunctionComponent = observer(() => {
   const [isOpenSlippageDescribe, setIsOpenSlippageDescribe] = useState<boolean>(
     false
   );
-  const [isOpenApproval, setIsOpenApproval] = useState<boolean>(false);
   const style = useStyle();
   const intl = useIntl();
   const smartNavigation = useSmartNavigation();
-  const [approvalState, onApproval, approve0] = useApproveCallbackFromTrade(
-    trade,
-    swapInfos.slippageTolerance
-  );
 
   const handleClickContinue = useCallback(() => {
-    if (approvalState === ApprovalState.APPROVED) {
-      smartNavigation.navigateSmart("Swap.Confirm", {});
-    }
-
-    if (approvalState === ApprovalState.NOT_APPROVED) {
-      setIsOpenApproval(true);
-    }
-  }, [approvalState, smartNavigation]);
-
-  const handleApproval = useCallback(async () => {
-    await onApproval();
-    if (approvalState === ApprovalState.APPROVED) {
-      smartNavigation.navigateSmart("Swap.Confirm", {});
-    }
-  }, [approvalState, onApproval, smartNavigation]);
+    smartNavigation.navigateSmart("Swap.Confirm", {});
+  }, [smartNavigation]);
 
   const loadingScreen = useLoadingScreen();
 
   useEffect(() => {
-    if (tokenBalances[SwapField.Input] && tokenBalances[SwapField.Output]) {
-      loadingScreen.setIsLoading(false);
-    } else {
+    if (
+      !(tokenBalances[SwapField.Input] && tokenBalances[SwapField.Output]) ||
+      swapInfos.loading
+    ) {
       loadingScreen.setIsLoading(true);
+    } else {
+      loadingScreen.setIsLoading(false);
     }
-  }, [tokenBalances, loadingScreen]);
+  }, [tokenBalances, loadingScreen, swapInfos.loading]);
 
   return (
     <View
@@ -276,17 +255,6 @@ export const SwapScreen: FunctionComponent = observer(() => {
           label={intl.formatMessage({ id: "swap.titleSlippageInput" })}
           close={() => setIsOpenSlippageInput(false)}
           onSelectValue={onSetSlippageTolerance}
-        />
-        <Approval
-          isOpen={isOpenApproval}
-          label={intl.formatMessage(
-            {
-              id: "swap.approvalSymbol",
-            },
-            { symbol: currencies[SwapField.Input]?.symbol }
-          )}
-          close={() => setIsOpenApproval(false)}
-          onConfirm={handleApproval}
         />
       </View>
 

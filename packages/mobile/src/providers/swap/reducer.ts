@@ -10,6 +10,7 @@ export interface SwapInfoState {
   slippageTolerance: number;
   swapValue: string;
   error: string;
+  loading: boolean;
 }
 export enum SwapType {
   REVERSE_TOKEN,
@@ -19,6 +20,7 @@ export enum SwapType {
   SET_TOKEN_BALANCES,
   SET_ERROR,
   SWAP_ALL,
+  SET_LOADING,
 }
 export interface SwapAction {
   type: SwapType;
@@ -88,6 +90,13 @@ export const handleSetError = (rootState: SwapRootState, error: string) => {
   rootState.swapInfos.error = error;
   return rootState;
 };
+export const handleSetLoading = (
+  rootState: SwapRootState,
+  loading: boolean
+) => {
+  rootState.swapInfos.loading = loading;
+  return rootState;
+};
 
 export const reducer = (
   state: SwapRootState,
@@ -102,6 +111,8 @@ export const reducer = (
       return handleSetSwapValue(state, action.payload);
     case SwapType.SET_ERROR:
       return handleSetError(state, action.payload);
+    case SwapType.SET_LOADING:
+      return handleSetLoading(state, action.payload);
     default:
       return state;
   }

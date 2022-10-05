@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { SwapAction, SwapInfoState, SwapType } from "../providers/swap/reducer";
 import {
   calculateSlippagePercent,
-  ERROR_KEY,
+  SWAP_ERROR_KEY,
   FIXED_DECIMAL_PLACES,
   GAS_PRICE,
   MAXIMUM_PRICE_IMPACT,
@@ -146,6 +146,7 @@ export const useSwapState = ({
     [dependentField, independentField, outputSwapValue, swapValue]
   );
 
+  // get output value
   useEffect(() => {
     const get = async () => {
       await getOutputValue();
@@ -153,14 +154,22 @@ export const useSwapState = ({
     get();
   }, [debouncedSwapValue, dependentField, getOutputValue]);
 
+  // get transaction fee
   useEffect(() => {
-    if (!swapCalls || swapCalls.length === 0) return;
+    if (
+      !swapCalls ||
+      swapCalls.length === 0 ||
+      swapInfos.error ||
+      swapInfos.loading
+    )
+      return;
     const get = async () => {
       await getTransactionFee();
     };
     get();
-  }, [swapCalls, getTransactionFee]);
+  }, [swapCalls, getTransactionFee, swapInfos.error, swapInfos.loading]);
 
+  // validate input value
   useEffect(() => {
     // check insufficient balance
     const inputValue = values[SwapField.Input];
@@ -175,7 +184,7 @@ export const useSwapState = ({
       ).toString();
       const isTrue = JSBI.lessThanOrEqual(JSBI.BigInt(parseInput), balance.raw);
       if (!isTrue) {
-        error = ERROR_KEY.INSUFFICIENT_BALANCE;
+        error = SWAP_ERROR_KEY.INSUFFICIENT_BALANCE;
       }
 
       // check limit ASA
@@ -184,11 +193,11 @@ export const useSwapState = ({
         ONE_ASA
       );
       if (balance.currency.symbol === ETHER.symbol && !isGreaterThan1ASA) {
-        error = ERROR_KEY.LIMIT_ONE_ASA;
+        error = SWAP_ERROR_KEY.LIMIT_ONE_ASA;
       }
     } catch (err) {
       console.error("Error when input value", { err });
-      error = ERROR_KEY.INVALID_INPUT;
+      error = SWAP_ERROR_KEY.INVALID_INPUT;
     }
 
     dispatch({

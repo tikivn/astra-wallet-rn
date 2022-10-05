@@ -27,7 +27,6 @@ import {
 } from "../../../components";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
-import { getTransactionFee } from "../../../utils/for-swap";
 
 const h = new Hypher(english);
 
@@ -305,11 +304,11 @@ export function renderMsgSwap(data: MsgSwap): IRow[] {
         ...common,
         cols: [
           buildLeftColumn({
-            text: intl.formatMessage({ id: "tx.result.models.msgSend.fee" }),
+            text: intl.formatMessage({ id: "swap.transactionFee" }),
             flex: 3,
           }),
           buildRightColumn({
-            text: getTransactionFee(data.txFee),
+            text: data.txFee || "",
             flex: 7,
           }),
         ],

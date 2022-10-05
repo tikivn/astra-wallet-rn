@@ -20,7 +20,7 @@ import { useStyle } from "../../styles";
 import { observer } from "mobx-react-lite";
 
 import { usePrevious } from "../../hooks";
-import { useFocusEffect } from "@react-navigation/native";
+import { RouteProp, useFocusEffect, useRoute } from "@react-navigation/native";
 import { ChainUpdaterService } from "@keplr-wallet/background";
 import { AccountCardNew, ActionsCard, BalanceCard } from "./card";
 import { ScanIcon } from "../../components";
@@ -155,6 +155,24 @@ export const MainScreen: FunctionComponent = observer(() => {
     astra_hub_from_address: account.ethereumHexAddress,
   });
 
+  const route = useRoute<
+    RouteProp<
+      Record<
+        string,
+        {
+          isRefresh?: boolean;
+        }
+      >,
+      string
+    >
+  >();
+
+  useEffect(() => {
+    if (route.params && route.params.isRefresh) {
+      console.log("refresh data main screen");
+      onRefresh().then();
+    }
+  }, [onRefresh, route.params]);
   return (
     <View style={style.get("background-color-background")}>
       <ImageBackground
