@@ -33,9 +33,10 @@ import {
 import { AlertInline } from "../../../components";
 import { useIntl } from "react-intl";
 import {
-  formatCoin,
+  FEE_RESERVATION,
   formatPercent,
   formatUnbondingTime,
+  MIN_AMOUNT,
   TX_GAS_DEFAULT,
 } from "../../../common/utils";
 import { MsgDelegate } from "@keplr-wallet/proto-types/cosmos/staking/v1beta1/tx";
@@ -98,23 +99,6 @@ export const DelegateScreen: FunctionComponent = observer(() => {
 
   const balanceText = userBalanceStore.getBalanceString();
 
-  const name = validator?.description.moniker ?? "";
-  const thumbnailUrl = bondedValidators.getValidatorThumbnail(validatorAddress);
-
-  const commissionText = intl.formatMessage(
-    { id: "validator.details.commission.percent" },
-    {
-      percent: formatPercent(validator?.commission.commission_rates.rate, true),
-    }
-  );
-
-  const votingPower = new CoinPretty(
-    chainStore.current.stakeCurrency,
-    new Dec(validator?.tokens || 0)
-  )
-    .maxDecimals(0)
-    .toString();
-
   const { gasPrice, gasLimit, feeType } = simulateDelegateGasFee(
     chainStore,
     accountStore,
@@ -123,7 +107,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   );
   sendConfigs.gasConfig.setGas(gasLimit);
   sendConfigs.feeConfig.setFeeType(feeType);
-  const feeText = formatCoin(sendConfigs.feeConfig.fee);
+  const feeText = `${FEE_RESERVATION} ${sendConfigs.amountConfig.sendCurrency.coinDenom}`;
 
   const unbondingTime =
     queries.cosmos.queryStakingParams.unbondingTimeSec ?? 172800;
@@ -146,7 +130,10 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       type: "items",
       cols: [
         buildLeftColumn({
-          text: intl.formatMessage({ id: "stake.delegate.fee" }),
+          text: intl.formatMessage(
+            { id: "component.amount.input.feeReservation" },
+            { denom: sendConfigs.amountConfig.sendCurrency.coinDenom }
+          ),
         }),
         buildRightColumn({ text: feeText }),
       ],
@@ -248,15 +235,18 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       >
         <View style={style.flatten(["height-page-pad"])} />
         <AlertInline
-          type="warning"
+          type="info"
           content={intl.formatMessage(
             { id: "stake.delegate.warning" },
-            { days: unbondingTimeText }
+            {
+              days: unbondingTimeText,
+              denom: sendConfigs.amountConfig.sendCurrency.coinDenom,
+            }
           )}
         />
         <ValidatorInfo
           style={{ marginTop: 24 }}
-          {...{ name, thumbnailUrl, commission: commissionText, votingPower }}
+          validatorAddress={validatorAddress}
         />
         <AmountInput
           labelText={intl.formatMessage({ id: "stake.delegate.amount" })}
@@ -267,6 +257,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
             setAmountIsValid(Number(amount) > 0 && errorText.length === 0);
             setAmountErrorText(isFocus ? "" : errorText);
           }}
+          config={{ minAmount: MIN_AMOUNT, feeReservation: FEE_RESERVATION }}
           containerStyle={style.flatten(["margin-top-24"])}
         />
         <ListRowView

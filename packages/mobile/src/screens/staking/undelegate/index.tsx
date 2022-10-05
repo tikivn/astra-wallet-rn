@@ -8,7 +8,6 @@ import {
   IAmountConfig,
   useUndelegateTxConfig,
 } from "@keplr-wallet/hooks";
-import { ValidatorItem } from "../../../components/input";
 import { AmountInput } from "../../main/components";
 import { Keyboard, Text, View } from "react-native";
 import { Button } from "../../../components/button";
@@ -37,6 +36,7 @@ import { IRow, ListRowView } from "../../../components";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 import { useSmartNavigation } from "../../../navigation-util";
+import { ValidatorInfo } from "../delegate/components/validator-info";
 
 export const UndelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -78,18 +78,6 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
     queries.cosmos.queryValidators
       .getQueryStatus(Staking.BondStatus.Unbonded)
       .getValidator(validatorAddress);
-
-  const validatorThumbnail = validator
-    ? queries.cosmos.queryValidators
-        .getQueryStatus(Staking.BondStatus.Bonded)
-        .getValidatorThumbnail(validatorAddress) ||
-      queries.cosmos.queryValidators
-        .getQueryStatus(Staking.BondStatus.Unbonding)
-        .getValidatorThumbnail(validatorAddress) ||
-      queries.cosmos.queryValidators
-        .getQueryStatus(Staking.BondStatus.Unbonded)
-        .getValidatorThumbnail(validatorAddress)
-    : undefined;
 
   const staked = queries.cosmos.queryDelegations
     .getQueryBech32Address(account.bech32Address)
@@ -260,11 +248,9 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         >
           {intl.formatMessage({ id: "stake.undelegate.validatorLabel" })}
         </Text>
-        <ValidatorItem
-          containerStyle={style.flatten(["margin-top-8"])}
-          name={validator ? validator.description.moniker : "..."}
-          thumbnail={validatorThumbnail}
-          value={formatCoin(staked)}
+        <ValidatorInfo
+          style={style.flatten(["margin-top-4"])}
+          validatorAddress={validatorAddress}
         />
         <AmountInput
           labelText={intl.formatMessage({ id: "stake.undelegate.amountLabel" })}

@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FunctionComponent, useEffect, useRef, useState } from "react";
 import { Keyboard, View } from "react-native";
 import { useStyle } from "../../../styles";
 import { AddressInput, AmountInput } from "../components";
@@ -18,7 +18,11 @@ import {
   ListRowView,
 } from "../../../components";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { formatCoin, TX_GAS_DEFAULT } from "../../../common/utils";
+import {
+  FEE_RESERVATION,
+  MIN_AMOUNT,
+  TX_GAS_DEFAULT,
+} from "../../../common/utils";
 import { MsgSend } from "@keplr-wallet/proto-types/cosmos/bank/v1beta1/tx";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import {
@@ -67,6 +71,8 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
     EthereumEndpoint
   );
 
+  const amountInputRef = useRef<any>();
+
   useEffect(() => {
     if (route.params.currency) {
       const currency = sendConfigs.amountConfig.sendableCurrencies.find(
@@ -91,7 +97,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
   );
   sendConfigs.gasConfig.setGas(gasLimit);
   sendConfigs.feeConfig.setFeeType(feeType);
-  const feeText = formatCoin(sendConfigs.feeConfig.fee);
+  const feeText = `${FEE_RESERVATION} ${sendConfigs.amountConfig.sendCurrency.coinDenom}`;
 
   const style = useStyle();
   const intl = useIntl();
@@ -100,9 +106,6 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
   const [amountIsValid, setAmountIsValid] = useState(false);
   const [addressErrorText, setAddressErrorText] = useState("");
   const [amountErrorText, setAmountErrorText] = useState("");
-
-  console.log("addressIsValid", addressIsValid);
-  console.log("amountIsValid", amountIsValid);
 
   const rows: IRow[] = [
     {
@@ -118,7 +121,10 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
       type: "items",
       cols: [
         buildLeftColumn({
-          text: intl.formatMessage({ id: "component.amount.input.fee" }),
+          text: intl.formatMessage(
+            { id: "component.amount.input.feeReservation" },
+            { denom: sendConfigs.amountConfig.sendCurrency.coinDenom }
+          ),
         }),
         buildRightColumn({ text: feeText }),
       ],
@@ -208,6 +214,10 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
             setAddressIsValid(address.length !== 0 && errorText.length === 0);
             setAddressErrorText(isFocus ? "" : errorText);
           }}
+          returnKeyType={"next"}
+          onSubmitEditting={() => {
+            amountInputRef.current.focus();
+          }}
         />
         <View style={{ height: 24 }} />
         <AmountInput
@@ -222,6 +232,8 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
             setAmountIsValid(Number(amount) > 0 && errorText.length === 0);
             setAmountErrorText(isFocus ? "" : errorText);
           }}
+          config={{ minAmount: MIN_AMOUNT, feeReservation: FEE_RESERVATION }}
+          inputRef={amountInputRef}
         />
         <ListRowView
           rows={rows}

@@ -2,7 +2,12 @@ import { IRecipientConfig } from "@keplr-wallet/hooks";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { useIntl } from "react-intl";
-import { View } from "react-native";
+import {
+  NativeSyntheticEvent,
+  ReturnKeyTypeOptions,
+  TextInputSubmitEditingEventData,
+  View,
+} from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Button, ScanIcon } from "../../../components";
 import { NormalInput } from "../../../components/input/normal-input";
@@ -17,6 +22,11 @@ export const AddressInput: FunctionComponent<{
     errorText: string,
     isFocus: boolean
   ) => void;
+  inputRef?: any;
+  onSubmitEditting?: (
+    e: NativeSyntheticEvent<TextInputSubmitEditingEventData>
+  ) => void;
+  returnKeyType?: ReturnKeyTypeOptions;
 }> = observer(
   ({
     recipientConfig,
@@ -27,6 +37,9 @@ export const AddressInput: FunctionComponent<{
     ) => {
       console.log(address, errorText, isFocus);
     },
+    inputRef,
+    onSubmitEditting,
+    returnKeyType,
   }) => {
     const style = useStyle();
     const intl = useIntl();
@@ -101,6 +114,9 @@ export const AddressInput: FunctionComponent<{
           </View>
         }
         style={{ marginBottom: showError && errorText ? 24 : 0 }}
+        inputRef={inputRef}
+        onSubmitEditting={onSubmitEditting}
+        returnKeyType={returnKeyType}
       />
     );
   }

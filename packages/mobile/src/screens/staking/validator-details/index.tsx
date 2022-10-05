@@ -8,7 +8,7 @@ import { useStyle } from "../../../styles";
 import { CommissionsCard } from "./commission-card";
 import { ValidatorNameCard } from "./name-card";
 import { DelegatedCard } from "./delegated-card";
-import { Animated, Image, StyleSheet, Text, View, ViewStyle } from "react-native";
+import { Animated, Image, Text, View } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import { UnbondingCard } from "./unbonding-card";
 import { DelegationsEmptyItem } from "../dashboard/delegate";
@@ -44,8 +44,7 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
     .getQueryBech32Address(account.bech32Address)
     .getDelegationTo(validatorAddress);
 
-  const unbonding = queries.cosmos
-    .queryUnbondingDelegations
+  const unbonding = queries.cosmos.queryUnbondingDelegations
     .getQueryBech32Address(account.bech32Address)
     .unbondingBalances.find(
       (unbonding) => unbonding.validatorAddress === validatorAddress
@@ -65,7 +64,7 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
       key: "second",
       title: intl.formatMessage(
         { id: "validator.details.amountBeingWithdrawn" },
-        { denom: staked.denom },
+        { denom: staked.denom }
       ),
     },
   ]);
@@ -104,14 +103,16 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
 
   return (
     <View style={style.flatten(["background-color-background", "flex-grow-1"])}>
-      <View style={{
-        position: "absolute",
-        width: "100%",
-        height: "100%",
-        backgroundColor: "transparent",
-        justifyContent: "flex-start",
-        alignItems: "flex-start",
-      }}>
+      <View
+        style={{
+          position: "absolute",
+          width: "100%",
+          height: "100%",
+          backgroundColor: "transparent",
+          justifyContent: "flex-start",
+          alignItems: "flex-start",
+        }}
+      >
         <Image
           resizeMode="contain"
           source={require("../../../assets/image/background_top.png")}
@@ -132,11 +133,20 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
             ])}
             validatorAddress={validatorAddress}
           />
-        ) : [
-          <View style={style.flatten(["height-1", "background-color-border", "margin-x-page", "margin-top-24"])} />
-        ]}
-        {(unbonding?.entries.length ?? 0) !== 0
-          ? <TabView
+        ) : (
+          [
+            <View
+              style={style.flatten([
+                "height-1",
+                "background-color-border",
+                "margin-x-page",
+                "margin-top-24",
+              ])}
+            />,
+          ]
+        )}
+        {(unbonding?.entries.length ?? 0) !== 0 ? (
+          <TabView
             lazy
             renderLazyPlaceholder={() => (
               <DelegationsEmptyItem
@@ -150,10 +160,7 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
                 ])}
               />
             )}
-            style={style.flatten([
-              "margin-top-16",
-              "height-600",
-            ])}
+            style={style.flatten(["margin-top-16", "height-600"])}
             navigationState={{ index, routes }}
             renderScene={renderScene}
             onIndexChange={setIndex}
@@ -165,31 +172,29 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
                 style={style.flatten([
                   "background-color-transparent",
                   "border-width-bottom-1",
-                  "border-color-border"
+                  "border-color-border",
                 ])}
                 renderLabel={({ route, focused }) => (
                   <Text
                     style={style.flatten(
-                      [
-                        "text-base-regular",
-                        "color-tab-icon-inactive",
-                      ],
+                      ["text-base-regular", "color-tab-icon-inactive"],
                       [
                         focused && "text-base-semi-bold",
-                        focused && "color-tab-icon-active"
+                        focused && "color-tab-icon-active",
                       ]
                     )}
                   >
-                    {` ${route.title} `/* add space to avoid text is truncated */}
+                    {
+                      ` ${route.title} ` /* add space to avoid text is truncated */
+                    }
                   </Text>
                 )}
               />
             )}
           />
-          : [
-            FirstRoute()
-          ]
-        }
+        ) : (
+          [FirstRoute()]
+        )}
       </ScrollView>
       <ValidatorHeaderCard
         animOpacity={opacityAnim}

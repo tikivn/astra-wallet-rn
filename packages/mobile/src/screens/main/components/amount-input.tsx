@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useRef, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useStyle } from "../../../styles";
 import { Button } from "../../../components/button";
@@ -6,7 +6,14 @@ import { IAmountConfig, IFeeConfig } from "@keplr-wallet/hooks";
 import { useIntl } from "react-intl";
 import { NormalInput } from "../../../components/input/normal-input";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { Text, View, ViewStyle } from "react-native";
+import {
+  NativeSyntheticEvent,
+  ReturnKeyTypeOptions,
+  Text,
+  TextInputSubmitEditingEventData,
+  View,
+  ViewStyle,
+} from "react-native";
 import {
   formatTextNumber,
   MIN_AMOUNT,
@@ -25,6 +32,15 @@ export const AmountInput: FunctionComponent<{
     errorText: string,
     isFocus: boolean
   ) => void;
+  config?: {
+    feeReservation: number;
+    minAmount: number;
+  };
+  inputRef?: any;
+  onSubmitEditting?: (
+    e: NativeSyntheticEvent<TextInputSubmitEditingEventData>
+  ) => void;
+  returnKeyType?: ReturnKeyTypeOptions;
 }> = observer(
   ({
     labelText,
@@ -36,6 +52,13 @@ export const AmountInput: FunctionComponent<{
     onAmountChanged = (amount: string, errorText: string, isFocus: boolean) => {
       console.log(amount, errorText, isFocus);
     },
+    config = {
+      feeReservation: 0,
+      minAmount: MIN_AMOUNT,
+    },
+    inputRef,
+    onSubmitEditting,
+    returnKeyType,
   }) => {
     const style = useStyle();
     const intl = useIntl();
@@ -49,7 +72,7 @@ export const AmountInput: FunctionComponent<{
 
     const infoText = intl.formatMessage(
       { id: "component.amount.input.error.minimum" },
-      { amount: MIN_AMOUNT, denom: amountConfig.sendCurrency.coinDenom }
+      { amount: config.minAmount, denom: amountConfig.sendCurrency.coinDenom }
     );
 
     useEffect(() => {
@@ -78,19 +101,37 @@ export const AmountInput: FunctionComponent<{
       const amountDec = new Dec(text);
 
       let errorText = "";
-      if (amountDec.lt(new Dec(MIN_AMOUNT))) {
+      if (amountDec.lt(new Dec(config.minAmount))) {
         errorText = intl.formatMessage(
           { id: "component.amount.input.error.minimum" },
-          { amount: MIN_AMOUNT, denom: amountConfig.sendCurrency.coinDenom }
+          {
+            amount: config.minAmount,
+            denom: amountConfig.sendCurrency.coinDenom,
+          }
         );
-      } else if (availableAmount && availableAmount.toDec().lt(new Dec(text))) {
-        errorText = intl.formatMessage({
-          id: "component.amount.input.error.insufficientAmount",
-        });
-      } else if (feeConfig && feeConfig.error) {
-        errorText = intl.formatMessage({
-          id: "component.amount.input.error.insufficientFee",
-        });
+      } else if (
+        (availableAmount &&
+          availableAmount
+            .toDec()
+            .sub(new Dec(config.feeReservation))
+            .lt(new Dec(text))) ||
+        (feeConfig && feeConfig.error)
+      ) {
+        if (config.feeReservation > 0) {
+          errorText = intl.formatMessage(
+            {
+              id: "component.amount.input.error.insufficientFeeReservation",
+            },
+            {
+              amount: config.feeReservation,
+              denom: amountConfig.sendCurrency.coinDenom,
+            }
+          );
+        } else {
+          errorText = intl.formatMessage({
+            id: "component.amount.input.error.insufficientAmount",
+          });
+        }
       }
 
       setErrorText(errorText);
@@ -102,9 +143,12 @@ export const AmountInput: FunctionComponent<{
         return;
       }
 
-      setAmountText(
-        removeZeroFractionDigits(availableAmount.toDec().toString())
-      );
+      const maxAmount = availableAmount
+        .toDec()
+        .gt(new Dec(config.feeReservation))
+        ? availableAmount.toDec().sub(new Dec(config.feeReservation))
+        : new Dec(0);
+      setAmountText(removeZeroFractionDigits(maxAmount.toString()));
     };
 
     return (
@@ -157,6 +201,9 @@ export const AmountInput: FunctionComponent<{
             )
           }
           style={{ marginBottom: errorText || infoText ? 24 : 0 }}
+          inputRef={inputRef}
+          onSubmitEditting={onSubmitEditting}
+          returnKeyType={returnKeyType}
         />
       </View>
     );

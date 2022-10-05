@@ -16,7 +16,6 @@ import {
   useRedelegateTxConfig,
 } from "@keplr-wallet/hooks";
 import { Keyboard, Text, View } from "react-native";
-import { ValidatorItem } from "../../../components/input";
 import { AmountInput } from "../../main/components";
 import { Button } from "../../../components/button";
 import { useSmartNavigation } from "../../../navigation-util";
@@ -36,6 +35,7 @@ import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 import { IRow, ListRowView } from "../../../components";
+import { ValidatorInfo } from "../delegate/components/validator-info";
 
 export const RedelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -51,8 +51,6 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
   >();
 
   const validatorAddress = route.params.validatorAddress;
-
-  const smartNavigation = useSmartNavigation();
 
   const {
     chainStore,
@@ -78,18 +76,6 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     queries.cosmos.queryValidators
       .getQueryStatus(Staking.BondStatus.Unbonded)
       .getValidator(validatorAddress);
-
-  const srcValidatorThumbnail = srcValidator
-    ? queries.cosmos.queryValidators
-        .getQueryStatus(Staking.BondStatus.Bonded)
-        .getValidatorThumbnail(validatorAddress) ||
-      queries.cosmos.queryValidators
-        .getQueryStatus(Staking.BondStatus.Unbonding)
-        .getValidatorThumbnail(validatorAddress) ||
-      queries.cosmos.queryValidators
-        .getQueryStatus(Staking.BondStatus.Unbonded)
-        .getValidatorThumbnail(validatorAddress)
-    : undefined;
 
   const staked = queries.cosmos.queryDelegations
     .getQueryBech32Address(account.bech32Address)
@@ -136,15 +122,6 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
   const [amountErrorText, setAmountErrorText] = useState("");
 
   const rows: IRow[] = [
-    {
-      type: "items",
-      cols: [
-        buildLeftColumn({
-          text: intl.formatMessage({ id: "stake.redelegate.available" }),
-        }),
-        buildRightColumn({ text: formatCoin(staked) }),
-      ],
-    },
     {
       type: "items",
       cols: [
@@ -246,13 +223,12 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
         enableOnAndroid
       >
         <View style={style.flatten(["height-24"])} />
-        <Text style={style.flatten(["color-gray-30", "text-medium-medium"])}>
+        <Text style={style.flatten(["color-gray-30", "text-base-semi-bold"])}>
           {intl.formatMessage({ id: "stake.redelegate.from" })}
         </Text>
-        <ValidatorItem
-          containerStyle={style.flatten(["margin-top-8", "margin-bottom-24"])}
-          name={srcValidator ? srcValidator.description.moniker : "..."}
-          thumbnail={srcValidatorThumbnail}
+        <ValidatorInfo
+          style={style.flatten(["margin-top-4", "margin-bottom-24"])}
+          validatorAddress={sendConfigs.srcValidatorAddress}
         />
         <SelectValidatorItem
           currentValidator={validatorAddress}

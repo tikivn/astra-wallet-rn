@@ -47,7 +47,7 @@ export function buildRightColumn(config: ITextColumn): IColumn {
     text: config.text,
     textStyle: config.textStyle ?? style.get("text-base-regular"),
     textAlign: config.textAlign ?? TextAlign.right,
-    textColor: style.get("color-label-text-1").color,
+    textColor: config.textColor ?? style.get("color-label-text-1").color,
     flex: config.flex ?? 1,
   };
 }

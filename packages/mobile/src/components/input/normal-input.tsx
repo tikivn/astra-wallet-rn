@@ -1,10 +1,5 @@
 import { observer } from "mobx-react-lite";
-import React, {
-  FunctionComponent,
-  useEffect,
-  useState,
-  forwardRef,
-} from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import {
   KeyboardTypeOptions,
   NativeSyntheticEvent,
@@ -76,7 +71,7 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(
 
     const labelStyle = {
       ...styleBuilder.flatten([
-        "text-medium-medium",
+        "text-base-semi-bold",
         "color-input-label",
         "margin-bottom-4",
       ]),
@@ -84,7 +79,7 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(
 
     const errorLabelStyle = {
       ...styleBuilder.flatten([
-        "text-base-regular",
+        "text-small-regular",
         errorText && errorText.length != 0
           ? "color-input-error"
           : "color-input-label",
@@ -192,6 +187,7 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(
           inputContainerStyle={inputContainerStyle}
           containerStyle={containerStyle}
           style={textInputStyle}
+          selectionColor={textInputStyle.color}
           secureTextEntry={secureTextEntry && !showPassword}
           multiline={multiline}
           numberOfLines={numberOfLines}
