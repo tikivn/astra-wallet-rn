@@ -12,6 +12,7 @@
   "swap.buttonText.InsufficientBalances": "Không đủ số dư",
   "swap.buttonText.InvalidInput": "Giá trị không hợp lệ",
   "swap.buttonText.LimitOneASA": "Tối thiểu 1 ASA",
+  "swap.buttonText.EnableError": "Lỗi xác nhận Token",
   "swap.slipageTolarance": "Tối đa <b>amount</b>",
   "swap.titleSlippageInput": "Trượt giá tối đa",
   "swap.titleSlippageDescribe": "Trượt giá",

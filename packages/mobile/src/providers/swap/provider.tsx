@@ -3,13 +3,15 @@ import { ChainId, Currency, ETHER, Token } from "@solarswap/sdk";
 import React, {
   FunctionComponent,
   useCallback,
+  useEffect,
   useMemo,
   useReducer,
 } from "react";
 import { initialSwapReducerValue, SwapContext, SwapProviderProps } from ".";
 import { useAmountOut, useSwapInfo, useSwapState, useWeb3 } from "../../hooks";
-import { SwapField } from "../../utils/for-swap";
-import { reducer } from "./reducer";
+import { ApprovalState, useApproveCallback } from "../../hooks/use-approve";
+import { SwapField, SWAP_ERROR_KEY } from "../../utils/for-swap";
+import { reducer, SwapType } from "./reducer";
 
 export const SwapProvider: FunctionComponent<SwapProviderProps> = ({
   children,
@@ -76,7 +78,46 @@ export const SwapProvider: FunctionComponent<SwapProviderProps> = ({
     pairData,
   });
 
+  const [approvalState, onApproval, approve0] = useApproveCallback(
+    inputCurrency
+  );
+  const setLoading = useCallback((value: boolean = false) => {
+    dispatch({ type: SwapType.SET_LOADING, payload: value });
+  }, []);
+
+  // auto approve
+  useEffect(() => {
+    if (
+      approvalState !== ApprovalState.APPROVED &&
+      inputCurrency instanceof Token
+    ) {
+      if (swapInfos.loading) return;
+      setLoading(true);
+
+      onApproval()
+        .then((res) => {})
+        .catch((error) => {
+          dispatch({
+            type: SwapType.SET_ERROR,
+            payload: SWAP_ERROR_KEY.ENABLE_ERROR,
+          });
+        })
+        .finally(() => {
+          console.log("set loading false");
+          setLoading();
+        });
+    }
+  }, [
+    approvalState,
+    inputCurrency,
+    onApproval,
+    setLoading,
+    swapInfos.loading,
+    values,
+  ]);
+
   if (!dispatch) return null;
+
   return (
     <SwapContext.Provider
       value={{
@@ -89,6 +130,7 @@ export const SwapProvider: FunctionComponent<SwapProviderProps> = ({
       }}
     >
       {children}
+      {/* <Button text="Approve 0" onPress={approve0} /> */}
     </SwapContext.Provider>
   );
 };

@@ -12,6 +12,7 @@
   "swap.buttonText.InsufficientBalances": "Insufficient balance",
   "swap.buttonText.InvalidInput": "Invalid value",
   "swap.buttonText.LimitOneASA": "Limit 1 ASA",
+  "swap.buttonText.EnableError": "Enable token error",
   "swap.slipageTolarance": "Max <b>amount</b>",
   "swap.titleSlippageInput": "Maximum slippage",
   "swap.titleSlippageDescribe": "Slippage",

@@ -18,11 +18,17 @@ export const TransactionTitleView: FunctionComponent = observer(() => {
   return (
     <View
       style={StyleSheet.flatten([
-        styleBuilder.flatten(["items-center"]),
+        styleBuilder.flatten(["items-center", "padding-x-16"]),
         { marginTop: -16 },
       ])}
     >
-      <Text style={styleBuilder.flatten(["text-success", "color-gray-10"])}>
+      <Text
+        style={styleBuilder.flatten([
+          "text-success",
+          "color-gray-10",
+          "text-center",
+        ])}
+      >
         <FormattedMessage
           id="swap.success.text.from"
           values={{
@@ -36,6 +42,7 @@ export const TransactionTitleView: FunctionComponent = observer(() => {
           "text-success",
           "color-gray-10",
           "margin-top-4",
+          "text-center",
         ])}
       >
         <FormattedMessage

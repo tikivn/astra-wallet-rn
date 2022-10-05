@@ -123,3 +123,10 @@ export function maxAmountSpend(
   }
   return currencyAmount;
 }
+
+export function formatValue(value: string): string {
+  if (!value) return "";
+  if (value.length > 6) return value.substring(0, 6) + "...";
+
+  return value;
+}
