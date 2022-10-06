@@ -13,6 +13,7 @@ export class RemoteConfigStore {
         feature_socialLogin_enabled: false,
         feature_networkDetectionOnAndroid_enabled: false,
         feature_debug_enabled: false,
+        feature_wallet_connect: false,
       })
       .then(() => {
         remoteConfig()

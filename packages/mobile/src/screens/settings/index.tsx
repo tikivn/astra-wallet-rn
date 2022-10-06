@@ -29,9 +29,14 @@ export const SettingsScreen: FunctionComponent = observer(() => {
     signClientStore,
     keychainStore,
     chainStore,
+    remoteConfigStore,
   } = useStore();
 
-  const connect = signClientStore.sessions.length;
+  const walletConnectEnabled = remoteConfigStore.getBool(
+    "feature_wallet_connect"
+  );
+
+  const connect = walletConnectEnabled ? signClientStore.sessions.length : 0;
 
   const style = useStyle();
   const intl = useIntl();
@@ -182,17 +187,19 @@ export const SettingsScreen: FunctionComponent = observer(() => {
           <View style={style.get("height-32")} />
           <AccountNetworkItem accountItemProps={accountItemProps} />
           <View style={style.get("height-8")} />
-          <AccountItem
-            {...accountItemProps}
-            label={intl.formatMessage({ id: "settings.connectedApps" })}
-            left={<ConnectIcon />}
-            right={<RightView paragraph={connect.toString()} />}
-            onPress={() => {
-              smartNavigation.navigate("Others", {
-                screen: "ManageWalletConnect",
-              });
-            }}
-          />
+          {walletConnectEnabled ? (
+            <AccountItem
+              {...accountItemProps}
+              label={intl.formatMessage({ id: "settings.connectedApps" })}
+              left={<ConnectIcon />}
+              right={<RightView paragraph={connect.toString()} />}
+              onPress={() => {
+                smartNavigation.navigate("Others", {
+                  screen: "ManageWalletConnect",
+                });
+              }}
+            />
+          ) : null}
           <View style={style.get("height-32")} />
           <AccountItem
             containerStyle={accountItemProps.containerStyle}

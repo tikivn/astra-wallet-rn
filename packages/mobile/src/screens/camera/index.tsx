@@ -20,7 +20,15 @@ import { View, Text } from "react-native";
 import { isAddress } from "@ethersproject/address";
 
 export const CameraScreen: FunctionComponent = observer(() => {
-  const { chainStore, signClientStore, analyticsStore } = useStore();
+  const {
+    chainStore,
+    signClientStore,
+    analyticsStore,
+    remoteConfigStore,
+  } = useStore();
+  const walletConnectEnabled = remoteConfigStore.getBool(
+    "feature_wallet_connect"
+  );
   const toastModal = useToastModal();
   const smartNavigation = useSmartNavigation();
   const style = useStyle();
@@ -68,7 +76,7 @@ export const CameraScreen: FunctionComponent = observer(() => {
             setIsLoading(true);
             setIsCompleted(false);
             try {
-              if (data.startsWith("wc:")) {
+              if (walletConnectEnabled && data.startsWith("wc:")) {
                 await signClientStore.pair(data);
               } else {
                 const isBech32Address = (() => {

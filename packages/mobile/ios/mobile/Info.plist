@@ -53,10 +53,6 @@
 			</dict>
 		</dict>
 	</dict>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>App uses bluetooth to find, connect and communicate with Ledger Nano devices</string>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>App uses bluetooth to find, connect and communicate with Ledger Nano devices</string>
 	<key>NSCameraUsageDescription</key>
 	<string>App uses camera to scan address, extension, and WalletConnect QR code</string>
 	<key>NSFaceIDUsageDescription</key>
