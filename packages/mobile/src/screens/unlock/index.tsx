@@ -430,7 +430,9 @@ export const UnlockScreen: FunctionComponent = observer(() => {
                     keychainStore.isBiometryType === BIOMETRY_TYPE.FACE ||
                     keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
                       ? "settings.unlockBiometrics.face"
-                      : "settings.unlockBiometrics.touch",
+                      : (Platform.OS === "ios"
+                      ? "settings.unlockBiometrics.touch"
+                      : "settings.unlockBiometrics.fingerprint"),
                 })}
               </Text>
             </TouchableOpacity>

@@ -1,11 +1,11 @@
 {
   "common.alert.content.accessTestnet": "You are connecting to Astra Testnet.",
-  "common.alert.content.notShareMnemonic": "Anyone has the phrase can log in to your account",
+  "common.alert.content.notShareMnemonic": "Anyone has the phrase can log in to your wallet",
   "common.alert.title.notShareMnemonic": "Do not share your mnemonic",
   "common.loading": "Loading...",
   "common.modal.cannotRedelegate.title": "Cannot Redelegate",
   "common.modal.cannotRedelegate.content": "Redelegating to this validator is in progress. Please wait within 48h, retry at {date}.",
-  "common.text.accountHolder": "Username",
+  "common.text.accountHolder": "Wallet name",
   "common.text.approve": "Approve",
   "common.text.backupNow": "Backup",
   "common.text.cancel": "Cancel",
@@ -16,6 +16,10 @@
   "common.text.currentPassword": "Current password",
   "common.text.disconnect": "Disconnect",
   "common.text.done": "Done",
+  "common.text.enable": "Enable",
+  "common.text.enableBiometrics.face": "Enable Face ID authentication",
+  "common.text.enableBiometrics.fingerprint": "Enable Fingerprint authentication",
+  "common.text.enableBiometrics.touch": "Enable Touch ID authentication",
   "common.text.inputVerifyNewPassword": "Input new password",
   "common.text.inputVerifyPassword": "Confirm",
   "common.text.minimumCharacters": "Input minimum {number} characters",
@@ -35,8 +39,8 @@
   "common.text.save": "Save",
   "common.text.securePassword": "Secured password",
   "common.text.understand": "I understand",
-  "common.text.updateWalletName": "Change wallet's name",
+  "common.text.updateWalletName": "Change wallet name",
   "common.text.verify": "Verify",
   "common.text.view": "View",
-  "common.text.wrongPassword": "Wrong password"
+  "common.text.wrongPassword": "Invalid password"
 }

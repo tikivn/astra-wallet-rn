@@ -1,9 +1,9 @@
 import React, { FunctionComponent, useState } from "react";
 import { useIntl } from "react-intl";
-import { Keyboard, Text, TouchableOpacity, View } from "react-native";
+import { Keyboard, Platform, Text, View } from "react-native";
+import { BIOMETRY_TYPE } from "react-native-keychain";
 import { Button } from "../../../components";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
-import { CloseLargeIcon } from "../../../components/icon/outlined/navigation";
 import { NormalInput } from "../../../components/input/normal-input";
 import { registerModal } from "../../../modals/base";
 import { useStore } from "../../../stores";
@@ -14,21 +14,22 @@ export const EnableBiometricsModal: FunctionComponent<{
   close: () => void;
   title: string;
   value?: string;
-}> = registerModal(({ close, value = "" }) => {
+}> = registerModal(({ close }) => {
   const style = useStyle();
   const intl = useIntl();
 
   const { keychainStore } = useStore();
 
-  const [password, setPassword] = useState(value);
-  const [errorText, setErrorText] = useState(value);
+  const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState("");
+  const [errorText, setErrorText] = useState("");
 
   const enableBiometrics = async () => {
     try {
       if (keychainStore.isBiometryOn) {
-        await keychainStore.turnOffBiometryWithoutReset();
+        await keychainStore.disableBiometrics();
       } else {
-        await keychainStore.turnOnBiometry(password);
+        await keychainStore.enableBiometrics(password);
       }
     } catch (e) {
       console.log("failed to verify Biometrics", e);
@@ -53,49 +54,38 @@ export const EnableBiometricsModal: FunctionComponent<{
           "border-radius-8",
         ])}
       >
-        <View
-          style={{
-            flexDirection: "row",
-            alignContent: "stretch",
-            alignItems: "center",
-          }}
+        <Text
+          style={style.flatten([
+            "text-center",
+            "text-medium-medium",
+            "color-label-text-1",
+            "margin-x-16",
+            "margin-y-16",
+          ])}
         >
-          <Text
-            style={{
-              ...style.flatten([
-                "flex-1",
-                "text-medium-medium",
-                "color-label-text-1",
-                "margin-left-16",
-              ]),
-              marginVertical: 12,
-            }}
-          >
-            {intl.formatMessage({ id: "common.text.securePassword" })}
-          </Text>
-          <TouchableOpacity
-            onPress={() => {
-              Keyboard.dismiss();
-              close();
-            }}
-            style={{ marginRight: 12 }}
-          >
-            <CloseLargeIcon />
-          </TouchableOpacity>
-        </View>
-        <View style={style.flatten(["height-1", "background-color-border"])} />
+          {intl.formatMessage({
+            id:
+              keychainStore.isBiometryType === BIOMETRY_TYPE.FACE ||
+              keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
+                ? "common.text.enableBiometrics.face"
+                : (Platform.OS === "ios"
+                ? "common.text.enableBiometrics.touch"
+                : "common.text.enableBiometrics.fingerprint"),
+          })}
+        </Text>
         <NormalInput
           value={password}
           error={errorText}
           onChangeText={setPassword}
+          secureTextEntry={true}
+          showPassword={showPassword}
+          onShowPasswordChanged={setShowPassword}
           style={{
             marginHorizontal: 16,
-            marginVertical: 12,
             paddingBottom: errorText.length !== 0 ? 24 : 0,
           }}
           autoFocus
         />
-        <View style={style.flatten(["height-1", "background-color-border"])} />
         <View
           style={{
             flexDirection: "row",
@@ -103,7 +93,8 @@ export const EnableBiometricsModal: FunctionComponent<{
             alignContent: "stretch",
             alignItems: "center",
             paddingHorizontal: 16,
-            paddingVertical: 12,
+            marginTop: 16,
+            marginBottom: 12,
           }}
         >
           <Button
@@ -114,16 +105,13 @@ export const EnableBiometricsModal: FunctionComponent<{
               Keyboard.dismiss();
               close();
             }}
-            containerStyle={{ flex: 1 }}
+            containerStyle={style.flatten(["flex-1"])}
           />
           <Button
-            text={intl.formatMessage({ id: "common.text.verify" })}
+            text={intl.formatMessage({ id: "common.text.enable" })}
             onPress={enableBiometrics}
             disabled={password.length == 0}
-            containerStyle={{
-              flex: 1,
-              marginLeft: 8,
-            }}
+            containerStyle={style.flatten(["flex-1", "margin-left-8"])}
           />
         </View>
       </View>

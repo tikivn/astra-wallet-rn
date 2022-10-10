@@ -2,7 +2,7 @@
   "history.action.MsgBeginRedelegate.receiver": "",
   "history.action.MsgBeginRedelegate.sender": "Redelegate",
   "history.action.MsgDelegate.receiver": "",
-  "history.action.MsgDelegate.sender": "Staking",
+  "history.action.MsgDelegate.sender": "Stake",
   "history.action.MsgMultiSend.receiver": "",
   "history.action.MsgMultiSend.sender": "",
   "history.action.MsgSend.receiver": "Receive",

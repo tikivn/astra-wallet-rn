@@ -39,7 +39,7 @@ export const ValidatorThumbnail: FunctionComponent<{
           resizeMode={FastImage.resizeMode.contain}
         />
       ) : (
-        <PersonIcon size={size} color="black" />
+        <PersonIcon size={size} />
       )}
     </View>
   );

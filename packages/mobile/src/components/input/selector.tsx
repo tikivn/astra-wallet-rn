@@ -11,6 +11,8 @@ import { useStyle } from "../../styles";
 import { registerModal } from "../../modals/base";
 import { RectButton } from "../rect-button";
 import { ArrowDownIcon } from "../icon";
+import { ValidatorThumbnail } from "../thumbnail";
+
 export const SelectorModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
@@ -234,6 +236,7 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
     | {
         label: string;
         key: string;
+        thumbnailUrl?: string;
       }
     | undefined;
 
@@ -292,9 +295,16 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
         ])}
         onPress={onPress}
       >
+        {selected && (
+          <ValidatorThumbnail
+            style={style.flatten(["margin-right-8"])}
+            size={24}
+            url={selected.thumbnailUrl}
+          />
+        )}
         <Text
           style={StyleSheet.flatten([
-            style.flatten(["text-base-regular", "color-gray-10"]),
+            style.flatten(["text-base-regular", "color-gray-10", "flex-1"]),
             textStyle,
           ])}
         >
