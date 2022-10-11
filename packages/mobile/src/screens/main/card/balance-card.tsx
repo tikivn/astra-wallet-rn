@@ -22,9 +22,13 @@ export const BalanceCard: FunctionComponent<{
 }> = observer(({ containerStyle }) => {
   const style = useStyle();
   const intl = useIntl();
-  const { chainStore, queriesStore, accountStore, priceStore } = useStore();
+  const {
+    chainStore,
+    queriesStore,
+    accountStore,
+    remoteConfigStore,
+  } = useStore();
 
-  const priceChange = priceStore.getPriceChangePercent();
   const queryBalances = queriesStore
     .get(chainStore.current.chainId)
     .queryBalances.getQueryBech32Address(
@@ -51,8 +55,20 @@ export const BalanceCard: FunctionComponent<{
     [accountHex, chainStore, queriesStore]
   );
 
-  const tokens = queryBalances.balances
+  const swapEnabled = remoteConfigStore.getBool("feature_swap_enabled");
+  let tokens = queryBalances.balances
     .concat(queryBalances.nonNativeBalances)
+    .filter((item) => {
+      const token = item.currency as Erc20Currency;
+      if (token.type === "erc20") {
+        const balanceErc20 = getBalanceErc20(token);
+        if (swapEnabled && balanceErc20?.toDec().isPositive() === true) {
+          return true;
+        }
+        return false;
+      }
+      return true;
+    })
     .map(
       (item): TypeBalances => {
         const token = item.currency as Erc20Currency;
@@ -66,19 +82,7 @@ export const BalanceCard: FunctionComponent<{
         };
       }
     );
-  // .sort((a, b) => {
-  //   const aDecIsZero = a.balance.toDec().isZero();
-  //   const bDecIsZero = b.balance.toDec().isZero();
 
-  //   if (aDecIsZero && !bDecIsZero) {
-  //     return 1;
-  //   }
-  //   if (!aDecIsZero && bDecIsZero) {
-  //     return -1;
-  //   }
-
-  //   return a.currency.coinDenom < b.currency.coinDenom ? -1 : 1;
-  // });
   return (
     <Card style={containerStyle}>
       <CardBody style={style.flatten(["padding-y-0"])}>
@@ -100,7 +104,6 @@ export const BalanceCard: FunctionComponent<{
                   ? token.balanceErc20
                   : token.item.balance
               }
-              priceChange={priceChange}
             />
           );
         })}

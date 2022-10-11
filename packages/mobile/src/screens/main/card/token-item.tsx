@@ -3,7 +3,6 @@ import { CoinPretty } from "@keplr-wallet/unit";
 import React, { FunctionComponent } from "react";
 import { ViewStyle, View, StyleSheet, Text } from "react-native";
 import { RectButton } from "../../../components/rect-button";
-import { useSmartNavigation } from "../../../navigation-util";
 import { useStyle } from "../../../styles";
 import FastImage from "react-native-fast-image";
 import { VectorCharacter } from "../../../components/vector-character";
@@ -17,11 +16,8 @@ export const TokenItemNew: FunctionComponent<{
     stakeCurrency: Currency;
   };
   balance: CoinPretty;
-  priceChange: string;
-}> = ({ containerStyle, balance, priceChange }) => {
+}> = ({ containerStyle, balance }) => {
   const style = useStyle();
-
-  const smartNavigation = useSmartNavigation();
 
   return (
     <RectButton
