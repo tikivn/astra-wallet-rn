@@ -9,6 +9,7 @@ import {
 } from "./supply";
 import {
   ObservableQueryDelegations,
+  ObservableQueryRedelegations,
   ObservableQueryRewards,
   ObservableQueryStakingParams,
   ObservableQueryStakingPool,
@@ -38,7 +39,10 @@ import {
 } from "./supply/osmosis";
 import { ObservableQueryDistributionParams } from "./distribution";
 import { ObservableQueryRPCStatus } from "./status";
+import { ObservableQueryTxs } from "./tx";
 import { ObservableQueryJunoAnnualProvisions } from "./supply/juno";
+import { ObservableQueryGrants } from "./authz";
+import { ObservableQueryAllowance, ObservableQueryAllowances } from "./feegrant";
 
 export interface CosmosQueries {
   cosmos: CosmosQueriesImpl;
@@ -82,10 +86,15 @@ export class CosmosQueriesImpl {
   public readonly queryInflation: DeepReadonly<ObservableQueryInflation>;
   public readonly queryRewards: DeepReadonly<ObservableQueryRewards>;
   public readonly queryDelegations: DeepReadonly<ObservableQueryDelegations>;
+  public readonly queryRedelegations: DeepReadonly<ObservableQueryRedelegations>;
   public readonly queryUnbondingDelegations: DeepReadonly<ObservableQueryUnbondingDelegations>;
   public readonly queryValidators: DeepReadonly<ObservableQueryValidators>;
   public readonly queryGovernance: DeepReadonly<ObservableQueryGovernance>;
   public readonly queryProposalVote: DeepReadonly<ObservableQueryProposalVote>;
+  public readonly queryTxs: DeepReadonly<ObservableQueryTxs>;
+  public readonly queryGrants: DeepReadonly<ObservableQueryGrants>;
+  public readonly queryAllowance: DeepReadonly<ObservableQueryAllowance>;
+  public readonly queryAllowances: DeepReadonly<ObservableQueryAllowances>;
 
   public readonly queryIBCClientState: DeepReadonly<ObservableQueryIBCClientState>;
   public readonly queryIBCChannel: DeepReadonly<ObservableQueryIBCChannel>;
@@ -186,6 +195,11 @@ export class CosmosQueriesImpl {
       chainId,
       chainGetter
     );
+    this.queryRedelegations = new ObservableQueryRedelegations(
+      kvStore,
+      chainId,
+      chainGetter
+    );
     this.queryUnbondingDelegations = new ObservableQueryUnbondingDelegations(
       kvStore,
       chainId,
@@ -203,6 +217,30 @@ export class CosmosQueriesImpl {
       this.queryPool
     );
     this.queryProposalVote = new ObservableQueryProposalVote(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+
+    this.queryTxs = new ObservableQueryTxs(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+
+    this.queryGrants = new ObservableQueryGrants(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+
+    this.queryAllowance = new ObservableQueryAllowance(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+
+    this.queryAllowances = new ObservableQueryAllowances(
       kvStore,
       chainId,
       chainGetter

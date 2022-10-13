@@ -1,13 +1,7 @@
 import React from "react";
 import { PageWithScrollView } from "./scroll-view";
-import {
-  ScrollViewProps,
-  ScrollView,
-  StyleSheet,
-  ViewStyle,
-} from "react-native";
+import { ScrollViewProps, ScrollView, StyleSheet } from "react-native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { BackgroundMode } from "./background";
 
 // eslint-disable-next-line react/display-name
 export const PageWithScrollViewInBottomTabView = React.forwardRef<
@@ -15,9 +9,7 @@ export const PageWithScrollViewInBottomTabView = React.forwardRef<
   React.PropsWithChildren<
     ScrollViewProps & {
       fixed?: React.ReactNode;
-      containerStyle?: ViewStyle;
-
-      backgroundMode: BackgroundMode;
+      backgroundColor?: string;
     }
   >
 >((props, ref) => {

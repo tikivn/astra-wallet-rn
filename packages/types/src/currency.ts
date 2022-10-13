@@ -29,6 +29,11 @@ export interface Secret20Currency extends Currency {
   readonly viewingKey: string;
 }
 
+export interface Erc20Currency extends Currency {
+  readonly type: "erc20";
+  readonly contractAddress: string;
+}
+
 /**
  * IBCCurrency is the currency that is sent from the other chain via IBC.
  * This will be handled as similar to the native currency.
@@ -58,6 +63,7 @@ export type AppCurrency =
   | Currency
   | CW20Currency
   | Secret20Currency
+  | Erc20Currency
   | IBCCurrency;
 
 export interface FiatCurrency {
@@ -65,6 +71,7 @@ export interface FiatCurrency {
   readonly symbol: string;
   readonly maxDecimals: number;
   readonly locale: string;
+  readonly isCustom?: boolean;
 }
 
 export type WithGasPriceStep<T> = T & {

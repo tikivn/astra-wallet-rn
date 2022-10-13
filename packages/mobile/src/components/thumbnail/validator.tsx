@@ -16,11 +16,6 @@ export const ValidatorThumbnail: FunctionComponent<{
       style={StyleSheet.flatten([
         style.flatten([
           "overflow-hidden",
-          "background-color-gray-50",
-          "dark:background-color-platinum-500",
-          "border-width-1",
-          "border-color-gray-100@20%",
-          "dark:border-color-gray-400@40%",
           "items-center",
           "justify-center",
         ]),
@@ -44,12 +39,7 @@ export const ValidatorThumbnail: FunctionComponent<{
           resizeMode={FastImage.resizeMode.contain}
         />
       ) : (
-        <PersonIcon
-          size={size}
-          color={
-            style.flatten(["color-gray-300", "dark:color-platinum-300"]).color
-          }
-        />
+        <PersonIcon size={size} />
       )}
     </View>
   );

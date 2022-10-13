@@ -13,10 +13,10 @@ import {
   CosmosAccount,
   CosmwasmAccount,
   SecretAccount,
-  LedgerInitStore,
   IBCCurrencyRegsitrar,
   PermissionStore,
   ChainSuggestStore,
+  AccountSetBaseSuper,
 } from "@keplr-wallet/stores";
 import { AsyncKVStore } from "../common";
 import { APP_PORT } from "@keplr-wallet/router";
@@ -26,25 +26,24 @@ import { ChainStore } from "./chain";
 import EventEmitter from "eventemitter3";
 import { Keplr } from "@keplr-wallet/provider";
 import { KeychainStore } from "./keychain";
-import { WalletConnectStore } from "./wallet-connect";
-import { FeeType } from "@keplr-wallet/hooks";
-import { AmplitudeApiKey } from "../config";
-import { AnalyticsStore, NoopAnalyticsClient } from "@keplr-wallet/analytics";
-import { Amplitude } from "@amplitude/react-native";
-import { ChainIdHelper } from "@keplr-wallet/cosmos";
 import {
   AxelarEVMBridgeCurrencyRegistrar,
   GravityBridgeCurrencyRegsitrar,
   KeplrETCQueries,
 } from "@keplr-wallet/stores-etc";
 
+import { UserBalanceStore } from "./user-balance";
+import { TransactionStore } from "./transaction";
+import { SignClientStore } from "./wallet-connect-v2";
+import { RemoteConfigStore } from "./remote-config";
+import { UserLoginStore } from "./user-login";
+import { initializeAnalyticsStore, StackityAnalyticsStore } from "./analytics";
 export class RootStore {
   public readonly chainStore: ChainStore;
   public readonly keyRingStore: KeyRingStore;
 
   protected readonly interactionStore: InteractionStore;
   public readonly permissionStore: PermissionStore;
-  public readonly ledgerInitStore: LedgerInitStore;
   public readonly signInteractionStore: SignInteractionStore;
   public readonly chainSuggestStore: ChainSuggestStore;
 
@@ -52,7 +51,8 @@ export class RootStore {
     [CosmosQueries, CosmwasmQueries, SecretQueries, KeplrETCQueries]
   >;
   public readonly accountStore: AccountStore<
-    [CosmosAccount, CosmwasmAccount, SecretAccount]
+    [CosmosAccount, CosmwasmAccount, SecretAccount],
+    AccountSetBaseSuper & CosmosAccount & CosmwasmAccount & SecretAccount
   >;
   public readonly priceStore: CoinGeckoPriceStore;
   public readonly tokensStore: TokensStore<ChainInfoWithEmbed>;
@@ -62,29 +62,16 @@ export class RootStore {
   protected readonly axelarEVMBridgeCurrencyRegistrar: AxelarEVMBridgeCurrencyRegistrar<ChainInfoWithEmbed>;
 
   public readonly keychainStore: KeychainStore;
-  public readonly walletConnectStore: WalletConnectStore;
-
-  public readonly analyticsStore: AnalyticsStore<
-    {
-      chainId?: string;
-      chainName?: string;
-      toChainId?: string;
-      toChainName?: string;
-      registerType?: "seed" | "google" | "apple" | "ledger" | "qr";
-      feeType?: FeeType | undefined;
-      isIbc?: boolean;
-      validatorName?: string;
-      toValidatorName?: string;
-      proposalId?: string;
-      proposalTitle?: string;
-    },
-    {
-      registerType?: "seed" | "google" | "ledger" | "qr" | "apple";
-      accountType?: "mnemonic" | "privateKey" | "ledger";
-      currency?: string;
-      language?: string;
-    }
+  public readonly signClientStore: SignClientStore;
+  public readonly analyticsStore: StackityAnalyticsStore<
+    Record<string, Readonly<string | number | boolean | undefined | null>>,
+    Record<string, Readonly<string | number | boolean | undefined | null>>
   >;
+
+  public readonly userBalanceStore: UserBalanceStore;
+  public readonly transactionStore: TransactionStore;
+  public readonly remoteConfigStore: RemoteConfigStore;
+  public readonly userLoginStore: UserLoginStore;
 
   constructor() {
     const router = new RNRouterUI(RNEnv.produceEnv);
@@ -97,10 +84,6 @@ export class RootStore {
       new RNMessageRequesterInternal()
     );
     this.permissionStore = new PermissionStore(
-      this.interactionStore,
-      new RNMessageRequesterInternal()
-    );
-    this.ledgerInitStore = new LedgerInitStore(
       this.interactionStore,
       new RNMessageRequesterInternal()
     );
@@ -169,7 +152,7 @@ export class RootStore {
       },
       CosmosAccount.use({
         queriesStore: this.queriesStore,
-        msgOptsCreator: (chainId) => {
+        msgOptsCreator: (chainId: string) => {
           if (chainId.startsWith("osmosis")) {
             return {
               send: {
@@ -177,14 +160,21 @@ export class RootStore {
                   gas: 100000,
                 },
               },
-              undelegate: {
-                gas: 350000,
-              },
-              redelegate: {
-                gas: 550000,
-              },
               withdrawRewards: {
                 gas: 300000,
+              },
+            };
+          }
+
+          if (chainId.toLowerCase().startsWith("astra-")) {
+            return {
+              send: {
+                native: {
+                  gas: 200000,
+                },
+              },
+              withdrawRewards: {
+                gas: 200000,
               },
             };
           }
@@ -214,6 +204,13 @@ export class RootStore {
     this.priceStore = new CoinGeckoPriceStore(
       new AsyncKVStore("store_prices"),
       {
+        xu: {
+          currency: "xu",
+          symbol: "Xu",
+          maxDecimals: 2,
+          locale: "vi-VN",
+          isCustom: true,
+        },
         usd: {
           currency: "usd",
           symbol: "$",
@@ -269,7 +266,7 @@ export class RootStore {
           locale: "ja-JP",
         },
       },
-      "usd"
+      "xu"
     );
 
     this.tokensStore = new TokensStore(
@@ -311,8 +308,8 @@ export class RootStore {
       this.keyRingStore
     );
 
-    this.walletConnectStore = new WalletConnectStore(
-      new AsyncKVStore("store_wallet_connect"),
+    this.signClientStore = new SignClientStore(
+      new AsyncKVStore("store_wallet_connect_v2"),
       {
         addEventListener: (type: string, fn: () => void) => {
           eventEmitter.addListener(type, fn);
@@ -326,43 +323,27 @@ export class RootStore {
       this.permissionStore
     );
 
-    this.analyticsStore = new AnalyticsStore(
-      (() => {
-        if (!AmplitudeApiKey) {
-          return new NoopAnalyticsClient();
-        } else {
-          const amplitudeClient = Amplitude.getInstance();
-          amplitudeClient.init(AmplitudeApiKey);
+    this.userBalanceStore = new UserBalanceStore(
+      this.chainStore,
+      this.accountStore,
+      this.queriesStore
+    );
+    this.transactionStore = new TransactionStore(
+      this.signInteractionStore,
+      this.chainStore,
+      this.accountStore,
+      this.queriesStore
+    );
+    this.remoteConfigStore = new RemoteConfigStore();
+    this.userLoginStore = new UserLoginStore({
+      socialLoginEnabledFunc: () => {
+        return this.remoteConfigStore.getBool("feature_socialLogin_enabled");
+      },
+    });
 
-          return amplitudeClient;
-        }
-      })(),
-      {
-        logEvent: (eventName, eventProperties) => {
-          if (eventProperties?.chainId || eventProperties?.toChainId) {
-            eventProperties = {
-              ...eventProperties,
-            };
-
-            if (eventProperties.chainId) {
-              eventProperties.chainId = ChainIdHelper.parse(
-                eventProperties.chainId
-              ).identifier;
-            }
-
-            if (eventProperties.toChainId) {
-              eventProperties.toChainId = ChainIdHelper.parse(
-                eventProperties.toChainId
-              ).identifier;
-            }
-          }
-
-          return {
-            eventName,
-            eventProperties,
-          };
-        },
-      }
+    this.analyticsStore = initializeAnalyticsStore();
+    this.analyticsStore.setup(
+      this.remoteConfigStore.getString("feature_stackity_env")
     );
   }
 }

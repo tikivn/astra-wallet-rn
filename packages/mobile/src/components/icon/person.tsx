@@ -2,22 +2,19 @@ import React, { FunctionComponent } from "react";
 import Svg, { Path } from "react-native-svg";
 
 export const PersonIcon: FunctionComponent<{
-  color: string;
   size: number;
-}> = ({ color, size }) => {
+}> = ({ size }) => {
   return (
-    <Svg
-      viewBox="0 0 128 128"
-      width={size}
-      height={size}
-      style={{
-        width: size,
-        height: size,
-      }}
-    >
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
-        fill={color}
-        d="M64 27c-12.7 0-23 10.3-23 23s10.3 23 23 23 23-10.3 23-23-10.3-23-23-23zm0 6c9.4 0 17 7.6 17 17s-7.6 17-17 17-17-7.6-17-17 7.6-17 17-17zm0 48c-16.4 0-31.6 8.9-39.7 23.1-.8 1.4-.3 3.3 1.2 4.1.5.3 1 .4 1.5.4 1 0 2.1-.5 2.6-1.5C36.6 94.7 49.8 87 64 87s27.4 7.7 34.5 20.1c.8 1.4 2.7 1.9 4.1 1.1 1.4-.8 1.9-2.7 1.1-4.1C95.6 89.9 80.4 81 64 81z"
+        d="M24 12L18 22.3923L6 22.3923L-5.24537e-07 12L6 1.60769L18 1.6077L24 12Z"
+        fill="#30CFB4"
+      />
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M16 5.07275L8 5.07275L4 12.001L8 18.9292L16 18.9292L20 12.001L16 5.07275ZM15.7113 6.57275L12.5774 12.001L15.7113 17.4292L18.8453 12.001L15.7113 6.57275ZM14.8453 17.9292L11.7113 12.501L5.44338 12.501L8.57735 17.9292L14.8453 17.9292ZM5.44338 11.501L11.7113 11.501L14.8453 6.07275L8.57735 6.07275L5.44338 11.501Z"
+        fill="white"
       />
     </Svg>
   );

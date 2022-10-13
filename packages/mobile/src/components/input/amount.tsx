@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { TextInput } from "./input";
-import { Platform, TextStyle, View, ViewStyle } from "react-native";
+import { Platform, Text, TextStyle, View, ViewStyle } from "react-native";
 import {
   EmptyAmountError,
   IAmountConfig,
@@ -12,7 +12,7 @@ import {
 } from "@keplr-wallet/hooks";
 import { Button } from "../button";
 import { useStyle } from "../../styles";
-import * as RNLocalize from "react-native-localize";
+import { useIntl } from "react-intl";
 
 export const AmountInput: FunctionComponent<{
   labelStyle?: TextStyle;
@@ -33,6 +33,33 @@ export const AmountInput: FunctionComponent<{
     amountConfig,
   }) => {
     const style = useStyle();
+    const intl = useIntl();
+    labelStyle = {
+      ...style.flatten(["subtitle2", "color-gray-30", "margin-bottom-4"]),
+      ...labelStyle,
+    };
+
+    inputContainerStyle = {
+      ...style.flatten([
+        "height-44",
+        "padding-y-0",
+        "border-radius-4",
+        "border-width-1",
+        "border-color-gray-60",
+        "background-color-gray-90",
+      ]),
+      ...inputContainerStyle,
+    };
+
+    const textInputStyle = {
+      ...style.flatten(["text-medium-regular", "color-gray-10"]),
+      ...Platform.select({
+        android: {
+          height: 19,
+        },
+      }),
+      lineHeight: 19,
+    };
 
     const error = amountConfig.error;
     const errorText: string | undefined = useMemo(() => {
@@ -57,6 +84,7 @@ export const AmountInput: FunctionComponent<{
 
     return (
       <TextInput
+        style={textInputStyle}
         label={label}
         labelStyle={labelStyle}
         containerStyle={containerStyle}
@@ -69,63 +97,34 @@ export const AmountInput: FunctionComponent<{
         inputRight={
           <View
             style={style.flatten([
-              "height-1",
+              "flex-row",
+              "items-center",
+              "margin-left-16",
               "overflow-visible",
               "justify-center",
             ])}
           >
+            <Text
+              style={style.flatten([
+                "text-base-regular",
+                "color-gray-50",
+                "margin-right-16",
+              ])}
+            >
+              {amountConfig.sendCurrency.coinDenom}
+            </Text>
             <Button
-              text="MAX"
-              mode={(() => {
-                if (style.theme === "dark") {
-                  return "light";
-                } else {
-                  return amountConfig.fraction === 1 ? "light" : "fill";
-                }
-              })()}
+              text={intl.formatMessage({ id: "component.amount.input.max" })}
+              mode="ghost"
               size="small"
-              style={style.flatten(["padding-x-5", "padding-y-3"])}
-              containerStyle={style.flatten(
-                ["height-24", "border-radius-4"],
-                [
-                  !amountConfig.fraction &&
-                    "dark:background-color-platinum-500",
-                  amountConfig.fraction === 1 &&
-                    "dark:background-color-platinum-600",
-                ]
-              )}
-              textStyle={style.flatten(
-                ["normal-case", "text-caption2"],
-                [
-                  !amountConfig.fraction && "dark:color-platinum-50",
-                  amountConfig.fraction === 1 && "dark:color-platinum-200",
-                ]
-              )}
               onPress={() => {
-                amountConfig.setFraction(
-                  !amountConfig.fraction ? 1 : undefined
-                );
+                amountConfig.setFraction(1);
               }}
             />
           </View>
         }
         error={errorText}
-        keyboardType={(() => {
-          if (Platform.OS === "ios") {
-            // In IOS, the numeric type keyboard has a decimal separator "." or "," depending on the language and region of the user device.
-            // However, asset input in keplr unconditionally follows the US standard, so it must be ".".
-            // However, if only "," appears on the keyboard, "." cannot be entered.
-            // In this case, it is inevitable to use a different type of keyboard.
-            if (RNLocalize.getNumberFormatSettings().decimalSeparator !== ".") {
-              return "numbers-and-punctuation";
-            }
-            return "numeric";
-          } else {
-            // In Android, the numeric type keyboard has both "." and ",".
-            // So, there is no need to use other keyboard type on any case.
-            return "numeric";
-          }
-        })()}
+        keyboardType="numeric"
       />
     );
   }

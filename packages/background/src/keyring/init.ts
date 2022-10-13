@@ -8,7 +8,9 @@ import {
   RequestSignDirectMsg,
   LockKeyRingMsg,
   DeleteKeyRingMsg,
+  ForceDeleteKeyRingMsg,
   UpdateNameKeyRingMsg,
+  UpdatePasswordKeyRingMsg,
   ShowKeyRingMsg,
   AddMnemonicKeyMsg,
   AddPrivateKeyMsg,
@@ -22,6 +24,7 @@ import {
   CheckPasswordMsg,
   ExportKeyRingDatasMsg,
   RequestVerifyADR36AminoSignDoc,
+  ExportPrivateKeyMsg,
 } from "./messages";
 import { ROUTE } from "./constants";
 import { getHandler } from "./handler";
@@ -30,7 +33,9 @@ import { KeyRingService } from "./service";
 export function init(router: Router, service: KeyRingService): void {
   router.registerMessage(RestoreKeyRingMsg);
   router.registerMessage(DeleteKeyRingMsg);
+  router.registerMessage(ForceDeleteKeyRingMsg);
   router.registerMessage(UpdateNameKeyRingMsg);
+  router.registerMessage(UpdatePasswordKeyRingMsg);
   router.registerMessage(ShowKeyRingMsg);
   router.registerMessage(CreateMnemonicKeyMsg);
   router.registerMessage(AddMnemonicKeyMsg);
@@ -50,6 +55,7 @@ export function init(router: Router, service: KeyRingService): void {
   router.registerMessage(SetKeyStoreCoinTypeMsg);
   router.registerMessage(CheckPasswordMsg);
   router.registerMessage(ExportKeyRingDatasMsg);
+  router.registerMessage(ExportPrivateKeyMsg);
 
   router.addHandler(ROUTE, getHandler(service));
 }

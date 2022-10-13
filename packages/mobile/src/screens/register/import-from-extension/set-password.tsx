@@ -4,7 +4,7 @@ import { PageWithScrollView } from "../../../components/page";
 import { View } from "react-native";
 import { useStyle } from "../../../styles";
 import { Button } from "../../../components/button";
-import { useSmartNavigation } from "../../../navigation";
+import { useSmartNavigation } from "../../../navigation-util";
 import { ExportKeyRingData } from "@keplr-wallet/background";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -98,7 +98,6 @@ export const ImportFromExtensionSetPasswordScreen: FunctionComponent = observer(
 
     return (
       <PageWithScrollView
-        backgroundMode="tertiary"
         contentContainerStyle={style.get("flex-grow-1")}
         style={style.flatten(["padding-x-page"])}
       >

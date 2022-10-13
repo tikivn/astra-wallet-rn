@@ -1,20 +1,23 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
-import { View, Text } from "react-native";
+import React, { FunctionComponent, useEffect, useRef, useState } from "react";
+import { View, Text, useWindowDimensions } from "react-native";
 import { observer } from "mobx-react-lite";
 import { RouteProp, useIsFocused, useRoute } from "@react-navigation/native";
 import { RegisterConfig } from "@keplr-wallet/hooks";
 import { useNewMnemonicConfig } from "./hook";
 import { PageWithScrollView } from "../../../components/page";
-import { CheckIcon } from "../../../components/icon";
 import { useStyle } from "../../../styles";
 import { WordChip } from "../../../components/mnemonic";
 import { Button } from "../../../components/button";
 import Clipboard from "expo-clipboard";
-import { TextInput } from "../../../components/input";
-import { Controller, useForm } from "react-hook-form";
-import { useSmartNavigation } from "../../../navigation";
-import { useSimpleTimer } from "../../../hooks";
-import { BIP44AdvancedButton, useBIP44Option } from "../bip44";
+
+import { useForm } from "react-hook-form";
+import { useSmartNavigation } from "../../../navigation-util";
+import { useBIP44Option } from "../bip44";
+
+import { AlertInline } from "../../../components";
+import { useIntl } from "react-intl";
+import { useToastModal } from "../../../providers/toast-modal";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface FormData {
   name: string;
@@ -36,14 +39,16 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
   >();
 
   const style = useStyle();
+  const intl = useIntl();
 
   const smartNavigation = useSmartNavigation();
+  const { height } = useWindowDimensions();
+  const safeAreaInsets = useSafeAreaInsets();
 
   const registerConfig: RegisterConfig = route.params.registerConfig;
   const bip44Option = useBIP44Option();
 
   const newMnemonicConfig = useNewMnemonicConfig(registerConfig);
-  const [mode] = useState(registerConfig.mode);
 
   const words = newMnemonicConfig.mnemonic.split(" ");
 
@@ -56,8 +61,6 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
   } = useForm<FormData>();
 
   const submit = handleSubmit(() => {
-    newMnemonicConfig.setName(getValues("name"));
-    newMnemonicConfig.setPassword(getValues("password"));
     smartNavigation.navigateSmart("Register.VerifyMnemonic", {
       registerConfig,
       newMnemonicConfig,
@@ -65,126 +68,50 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
     });
   });
 
+  const [toastBottomOffet, setToastBottomOffet] = useState(0);
+  const alertRef = useRef<View>(null);
+  useEffect(() => {
+    console.log("height", height);
+    alertRef.current?.measureInWindow(async (x, y) => {
+      console.log("alertRef.current", x, y);
+      setToastBottomOffet(height - (y + safeAreaInsets.bottom));
+    });
+  }, [alertRef.current]);
+
   return (
     <PageWithScrollView
-      backgroundMode="tertiary"
+      backgroundColor={style.get("color-background").color}
       contentContainerStyle={style.get("flex-grow-1")}
       style={style.flatten(["padding-x-page"])}
     >
-      {/* Mock for flexible margin top */}
-      <View style={style.flatten(["max-height-32", "flex-1"])} />
       <Text
         style={style.flatten([
-          "h5",
-          "color-text-middle",
+          "text-x-large-semi-bold",
+          "color-gray-10",
+          "margin-top-24",
           "margin-bottom-4",
           "text-center",
         ])}
       >
-        Backup your mnemonic securely
+        {intl.formatMessage({ id: "register.text.backupMnemonic" })}
       </Text>
-      <WordsCard words={words} />
-      <Controller
-        control={control}
-        rules={{
-          required: "Name is required",
-        }}
-        render={({ field: { onChange, onBlur, value, ref } }) => {
-          return (
-            <TextInput
-              label="Wallet nickname"
-              containerStyle={style.flatten(["padding-bottom-6"])}
-              returnKeyType={mode === "add" ? "done" : "next"}
-              onSubmitEditing={() => {
-                if (mode === "add") {
-                  submit();
-                }
-                if (mode === "create") {
-                  setFocus("password");
-                }
-              }}
-              error={errors.name?.message}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              ref={ref}
-            />
-          );
-        }}
-        name="name"
-        defaultValue=""
-      />
-      <BIP44AdvancedButton bip44Option={bip44Option} />
-      {mode === "create" ? (
-        <React.Fragment>
-          <Controller
-            control={control}
-            rules={{
-              required: "Password is required",
-              validate: (value: string) => {
-                if (value.length < 8) {
-                  return "Password must be longer than 8 characters";
-                }
-              },
-            }}
-            render={({ field: { onChange, onBlur, value, ref } }) => {
-              return (
-                <TextInput
-                  label="Password"
-                  returnKeyType="next"
-                  secureTextEntry={true}
-                  onSubmitEditing={() => {
-                    setFocus("confirmPassword");
-                  }}
-                  error={errors.password?.message}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  ref={ref}
-                />
-              );
-            }}
-            name="password"
-            defaultValue=""
-          />
-          <Controller
-            control={control}
-            rules={{
-              required: "Confirm password is required",
-              validate: (value: string) => {
-                if (value.length < 8) {
-                  return "Password must be longer than 8 characters";
-                }
-
-                if (getValues("password") !== value) {
-                  return "Password doesn't match";
-                }
-              },
-            }}
-            render={({ field: { onChange, onBlur, value, ref } }) => {
-              return (
-                <TextInput
-                  label="Confirm password"
-                  returnKeyType="done"
-                  secureTextEntry={true}
-                  onSubmitEditing={() => {
-                    submit();
-                  }}
-                  error={errors.confirmPassword?.message}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  ref={ref}
-                />
-              );
-            }}
-            name="confirmPassword"
-            defaultValue=""
-          />
-        </React.Fragment>
-      ) : null}
+      <WordsCard words={words} toastBottomOffet={toastBottomOffet} />
       <View style={style.flatten(["flex-1"])} />
-      <Button text="Next" size="large" onPress={submit} />
+      <AlertInline
+        viewRef={alertRef}
+        type="warning"
+        title={intl.formatMessage({
+          id: "common.alert.title.notShareMnemonic",
+        })}
+        content={intl.formatMessage({
+          id: "common.alert.content.notShareMnemonic",
+        })}
+      />
+      <View style={style.flatten(["height-16"])} />
+      <Button
+        text={intl.formatMessage({ id: "common.text.continue" })}
+        onPress={submit}
+      />
       {/* Mock element for bottom padding */}
       <View style={style.flatten(["height-page-pad"])} />
     </PageWithScrollView>
@@ -193,17 +120,17 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
 
 const WordsCard: FunctionComponent<{
   words: string[];
-}> = ({ words }) => {
+  toastBottomOffet?: number;
+}> = ({ words, toastBottomOffet }) => {
   const style = useStyle();
-  const { isTimedOut, setTimer } = useSimpleTimer();
-
+  const toast = useToastModal();
   /*
     On IOS, user can peek the words by right side gesture from the verifying mnemonic screen.
     To prevent this, hide the words if the screen lost the focus.
    */
   const [hideWord, setHideWord] = useState(false);
   const isFocused = useIsFocused();
-
+  const intl = useIntl();
   useEffect(() => {
     if (isFocused) {
       setHideWord(false);
@@ -217,48 +144,30 @@ const WordsCard: FunctionComponent<{
   }, [isFocused]);
 
   return (
-    <View
-      style={style.flatten([
-        "margin-top-14",
-        "margin-bottom-16",
-        "padding-24",
-        "padding-x-28",
-        "padding-bottom-12",
-        "background-color-white",
-        "dark:background-color-platinum-700",
-        "border-radius-8",
-        "flex-row",
-        "flex-wrap",
-      ])}
-    >
-      {words.map((word, i) => {
-        return (
-          <WordChip
-            key={i.toString()}
-            index={i + 1}
-            word={word}
-            hideWord={hideWord}
-          />
-        );
-      })}
-      <View style={style.flatten(["width-full"])}>
+    <View style={style.flatten(["justify-center"])}>
+      <View style={style.flatten(["margin-y-16", "words-container"])}>
+        {words.map((word, i) => {
+          return (
+            <WordChip
+              key={i.toString()}
+              index={i + 1}
+              word={word}
+              hideWord={hideWord}
+            />
+          );
+        })}
+      </View>
+      <View style={style.flatten(["items-center"])}>
         <Button
-          textStyle={style.flatten(
-            ["text-button1", "color-blue-400", "dark:color-platinum-50"],
-            [isTimedOut && "color-green-400"]
-          )}
-          mode="text"
-          {...(isTimedOut && {
-            rightIcon: (
-              <View style={style.flatten(["margin-left-8"])}>
-                <CheckIcon />
-              </View>
-            ),
-          })}
-          text="Copy to clipboard"
+          mode="outline"
+          text={intl.formatMessage({ id: "component.text.copy" })}
           onPress={() => {
             Clipboard.setString(words.join(" "));
-            setTimer(3000);
+            toast.makeToast({
+              title: intl.formatMessage({ id: "seedphrase.copied" }),
+              type: "neutral",
+              bottomOffset: toastBottomOffet,
+            });
           }}
         />
       </View>

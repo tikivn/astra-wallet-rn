@@ -17,7 +17,7 @@ import {
   TextInput,
 } from "../../../../components/input";
 import { Button } from "../../../../components/button";
-import { useSmartNavigation } from "../../../../navigation";
+import { useSmartNavigation } from "../../../../navigation-util";
 
 export const AddAddressBookScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -50,7 +50,6 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollView
-      backgroundMode="tertiary"
       contentContainerStyle={style.get("flex-grow-1")}
       style={style.flatten(["padding-x-page"])}
     >

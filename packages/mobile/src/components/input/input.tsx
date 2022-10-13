@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Platform,
   StyleSheet,
@@ -31,26 +31,7 @@ export const TextInput = React.forwardRef<
     inputRight?: React.ReactNode;
   }
 >((props, ref) => {
-  const [isFocused, setIsFocused] = useState(false);
-
-  const {
-    style: propsStyle,
-    labelStyle,
-    containerStyle,
-    inputContainerStyle,
-    errorLabelStyle,
-    label,
-    error,
-    paragraph,
-    topInInputContainer,
-    bottomInInputContainer,
-    inputLeft,
-    inputRight,
-
-    onBlur,
-    onFocus,
-    ...restProps
-  } = props;
+  const { style: propsStyle, ...restProps } = props;
 
   const style = useStyle();
 
@@ -58,17 +39,21 @@ export const TextInput = React.forwardRef<
     <View
       style={StyleSheet.flatten([
         style.flatten(["padding-bottom-28"]),
-        containerStyle,
+        props.containerStyle,
       ])}
     >
-      {label ? (
+      {props.label ? (
         <Text
           style={StyleSheet.flatten([
-            style.flatten(["subtitle3", "color-text-label", "margin-bottom-3"]),
-            labelStyle,
+            style.flatten([
+              "subtitle3",
+              "color-text-black-medium",
+              "margin-bottom-3",
+            ]),
+            props.labelStyle,
           ])}
         >
-          {label}
+          {props.label}
         </Text>
       ) : null}
       <View
@@ -76,54 +61,35 @@ export const TextInput = React.forwardRef<
           style.flatten(
             [
               "background-color-white",
-              "dark:background-color-platinum-700",
               "padding-x-11",
               "padding-y-12",
-              "border-radius-6",
+              "border-radius-4",
               "border-width-1",
-              "border-color-gray-100@20%",
-              "dark:border-color-platinum-600@50%",
+              "border-color-border-white",
             ],
             [
-              // The order is important.
-              // The border color has different priority according to state.
-              // The more in front, the lower the priority.
-              isFocused ? "border-color-blue-400" : undefined,
-              isFocused ? "dark:border-color-platinum-100" : undefined,
-              error ? "border-color-red-200" : undefined,
-              error ? "dark:border-color-red-400" : undefined,
-              !(props.editable ?? true) && "background-color-gray-50",
-              !(props.editable ?? true) && "dark:background-color-platinum-500",
+              props.error ? "border-color-error" : undefined,
+              !(props.editable ?? true) && "background-color-disabled",
             ]
           ),
-          inputContainerStyle,
+          props.inputContainerStyle,
         ])}
       >
-        {topInInputContainer}
+        {props.topInInputContainer}
         <View style={style.flatten(["flex-row", "items-center"])}>
-          {inputLeft}
+          {props.inputLeft}
           <NativeTextInput
             placeholderTextColor={
               props.placeholderTextColor ??
-              style.flatten(
-                ["color-gray-300", "dark:color-platinum-500"],
-                [!(props.editable ?? true) && "dark:color-platinum-200"]
-              ).color
+              style.get("color-text-black-low").color
             }
             style={StyleSheet.flatten([
-              style.flatten(
-                [
-                  "padding-0",
-                  "body2-in-text-input",
-                  "color-gray-600",
-                  "dark:color-platinum-50",
-                  "flex-1",
-                ],
-                [
-                  !(props.editable ?? true) && "color-gray-300",
-                  !(props.editable ?? true) && "dark:color-platinum-200",
-                ]
-              ),
+              style.flatten([
+                "padding-0",
+                "body2-in-text-input",
+                "color-text-black-medium",
+                "flex-1",
+              ]),
               Platform.select({
                 ios: {},
                 android: {
@@ -134,65 +100,49 @@ export const TextInput = React.forwardRef<
               }),
               propsStyle,
             ])}
-            onFocus={(e) => {
-              setIsFocused(true);
-
-              if (onFocus) {
-                onFocus(e);
-              }
-            }}
-            onBlur={(e) => {
-              setIsFocused(false);
-
-              if (onBlur) {
-                onBlur(e);
-              }
-            }}
             {...restProps}
             ref={ref}
           />
-          {inputRight}
+          {props.inputRight}
         </View>
-        {bottomInInputContainer}
+        {props.bottomInInputContainer}
       </View>
-      {paragraph && !error ? (
-        typeof paragraph === "string" ? (
+      {props.paragraph && !props.error ? (
+        typeof props.paragraph === "string" ? (
           <View>
             <Text
               style={StyleSheet.flatten([
                 style.flatten([
                   "absolute",
                   "text-caption2",
-                  "color-blue-400",
-                  "dark:color-blue-300",
+                  "color-primary",
                   "margin-top-2",
                   "margin-left-4",
                 ]),
-                errorLabelStyle,
+                props.errorLabelStyle,
               ])}
             >
-              {paragraph}
+              {props.paragraph}
             </Text>
           </View>
         ) : (
-          paragraph
+          props.paragraph
         )
       ) : null}
-      {error ? (
+      {props.error ? (
         <View>
           <Text
             style={StyleSheet.flatten([
               style.flatten([
                 "absolute",
                 "text-caption2",
-                "color-red-400",
-                "margin-top-2",
-                "margin-left-4",
+                "color-error",
+                "margin-top-4",
               ]),
-              errorLabelStyle,
+              props.errorLabelStyle,
             ])}
           >
-            {error}
+            {props.error}
           </Text>
         </View>
       ) : null}

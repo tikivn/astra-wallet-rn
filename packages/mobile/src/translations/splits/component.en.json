@@ -1,0 +1,17 @@
+{
+  "component.address.input.error.invalid": "Invalid address",
+  "component.address.input.receiver.label": "Recipient address",
+  "component.address.input.warning": "Note: Double check to make sure you input the right address",
+  "component.amount.input.available": "(Balance: {amount})",
+  "component.amount.input.error.insufficientAmount": "Insufficient amount",
+  "component.amount.input.error.insufficientFeeReservation": "{amount} {denom} is reserved for transaction fee",
+  "component.amount.input.error.invalid": "Invalid amount",
+  "component.amount.input.error.minimum": "Minimum {amount} {denom}",
+  "component.amount.input.fee": "Transaction fee",
+  "component.amount.input.feeReservation": "{denom} is reserved for transaction fee",
+  "component.amount.input.max": "Max",
+  "component.amount.input.sendAll": "Max",
+  "component.amount.input.sendindAmount": "Input amount",
+  "component.text.copied": "Copied to clipboard",
+  "component.text.copy": "Copy"
+}

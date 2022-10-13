@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from "react";
 import { KeyStoreItem, RightArrow } from "../components";
 import { useStyle } from "../../../styles";
-import { useSmartNavigation } from "../../../navigation";
+import { useSmartNavigation } from "../../../navigation-util";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
 import { View } from "react-native";
@@ -21,11 +21,7 @@ export const SettingSelectAccountItem: FunctionComponent = observer(() => {
   return (
     <React.Fragment>
       <View
-        style={style.flatten([
-          "height-1",
-          "background-color-gray-50",
-          "dark:background-color-platinum-500@75%",
-        ])}
+        style={style.flatten(["height-1", "background-color-border-white"])}
       />
       <KeyStoreItem
         containerStyle={style.flatten(["padding-left-10"])}
@@ -40,11 +36,7 @@ export const SettingSelectAccountItem: FunctionComponent = observer(() => {
         }}
       />
       <View
-        style={style.flatten([
-          "height-1",
-          "background-color-gray-50",
-          "dark:background-color-platinum-500@75%",
-        ])}
+        style={style.flatten(["height-1", "background-color-border-white"])}
       />
     </React.Fragment>
   );

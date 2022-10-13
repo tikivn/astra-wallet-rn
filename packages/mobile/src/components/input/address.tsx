@@ -16,7 +16,7 @@ import { LoadingSpinner } from "../spinner";
 import { useStyle } from "../../styles";
 import { AddressBookIcon } from "../icon";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { useSmartNavigation } from "../../navigation";
+import { useSmartNavigation } from "../../navigation-util";
 
 export const AddressInput: FunctionComponent<
   {
@@ -107,10 +107,7 @@ export const AddressInput: FunctionComponent<
                 >
                   <LoadingSpinner
                     size={14}
-                    color={
-                      style.flatten(["color-blue-400", "dark:color-blue-300"])
-                        .color
-                    }
+                    color={style.get("color-loading-spinner").color}
                   />
                 </View>
               </View>
@@ -138,10 +135,7 @@ export const AddressInput: FunctionComponent<
                 }}
               >
                 <AddressBookIcon
-                  color={
-                    style.flatten(["color-blue-400", "dark:color-blue-100"])
-                      .color
-                  }
+                  color={style.get("color-primary").color}
                   height={18}
                 />
               </TouchableOpacity>

@@ -15,11 +15,11 @@ import {
 import { useStyle } from "../../styles";
 import { Button } from "../../components/button";
 import { RouteProp, useRoute } from "@react-navigation/native";
-import { useSmartNavigation } from "../../navigation";
+import { useSmartNavigation } from "../../navigation-util";
 import { Buffer } from "buffer/";
 
 export const SendScreen: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
+  const { chainStore, accountStore, queriesStore, analyticsStore, transactionStore } = useStore();
 
   const route = useRoute<
     RouteProp<
@@ -81,7 +81,6 @@ export const SendScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollView
-      backgroundMode="tertiary"
       contentContainerStyle={style.get("flex-grow-1")}
       style={style.flatten(["padding-x-page"])}
     >
@@ -125,23 +124,17 @@ export const SendScreen: FunctionComponent = observer(() => {
                 },
                 {
                   onBroadcasted: (txHash) => {
-                    analyticsStore.logEvent("Send token tx broadcasted", {
-                      chainId: chainStore.current.chainId,
-                      chainName: chainStore.current.chainName,
-                      feeType: sendConfigs.feeConfig.feeType,
-                    });
-                    smartNavigation.pushSmart("TxPendingResult", {
-                      txHash: Buffer.from(txHash).toString("hex"),
-                    });
+                    transactionStore.updateTxHash(txHash);
                   },
                 }
               );
-            } catch (e) {
+            } catch (e: any) {
               if (e?.message === "Request rejected") {
                 return;
               }
+              transactionStore.rejectTransaction();
               console.log(e);
-              smartNavigation.navigateSmart("Home", {});
+              smartNavigation.navigateSmart("NewHome", {});
             }
           }
         }}

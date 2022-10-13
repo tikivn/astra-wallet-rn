@@ -10,6 +10,8 @@ import {
 import { useStyle } from "../../styles";
 import { registerModal } from "../../modals/base";
 import { RectButton } from "../rect-button";
+import { ArrowDownIcon } from "../icon";
+import { ValidatorThumbnail } from "../thumbnail";
 
 export const SelectorModal: FunctionComponent<{
   isOpen: boolean;
@@ -41,8 +43,7 @@ export const SelectorModal: FunctionComponent<{
               "width-24",
               "height-24",
               "border-radius-32",
-              "background-color-blue-400",
-              "dark:background-color-blue-300",
+              "background-color-primary",
               "items-center",
               "justify-center",
             ])}
@@ -65,10 +66,8 @@ export const SelectorModal: FunctionComponent<{
               "height-24",
               "border-radius-32",
               "background-color-white",
-              "dark:background-color-platinum-600",
               "border-width-1",
-              "border-color-gray-100",
-              "dark:border-color-platinum-300",
+              "border-color-text-black-very-low",
             ])}
           />
         );
@@ -110,7 +109,6 @@ export const SelectorModal: FunctionComponent<{
             "border-radius-8",
             "overflow-hidden",
             "background-color-white",
-            "dark:background-color-platinum-600",
           ])}
         >
           <ScrollView
@@ -120,7 +118,6 @@ export const SelectorModal: FunctionComponent<{
             ref={scrollViewRef}
             persistentScrollbar={true}
             onLayout={onInit}
-            indicatorStyle={style.theme === "dark" ? "white" : "black"}
           >
             {items.map((item) => {
               return (
@@ -135,11 +132,7 @@ export const SelectorModal: FunctionComponent<{
                       "items-center",
                       "justify-between",
                     ],
-                    [
-                      item.key === selectedKey && "background-color-blue-50",
-                      item.key === selectedKey &&
-                        "dark:background-color-platinum-500",
-                    ]
+                    [item.key === selectedKey && "background-color-primary-10"]
                   )}
                   onPress={() => {
                     setSelectedKey(item.key);
@@ -151,8 +144,7 @@ export const SelectorModal: FunctionComponent<{
                   <Text
                     style={style.flatten([
                       "subtitle1",
-                      "color-platinum-400",
-                      "dark:color-platinum-10",
+                      "color-text-black-medium",
                     ])}
                   >
                     {item.label}
@@ -226,7 +218,6 @@ export const Selector: FunctionComponent<{
         placeHolder={placeHolder}
         selected={selected}
         onPress={() => setIsModalOpen(true)}
-        isFocused={isModalOpen}
       />
     </React.Fragment>
   );
@@ -245,12 +236,11 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
     | {
         label: string;
         key: string;
+        thumbnailUrl?: string;
       }
     | undefined;
 
   onPress: () => void;
-
-  isFocused?: boolean;
 }> = ({
   containerStyle,
   labelStyle,
@@ -260,7 +250,6 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
   placeHolder,
   selected,
   onPress,
-  isFocused,
 }) => {
   const style = useStyle();
 
@@ -273,7 +262,11 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
     >
       <Text
         style={StyleSheet.flatten([
-          style.flatten(["subtitle3", "color-text-label", "margin-bottom-3"]),
+          style.flatten([
+            "text-base-semi-bold",
+            "color-gray-30",
+            "margin-bottom-6",
+          ]),
           labelStyle,
         ])}
       >
@@ -283,40 +276,41 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
         style={StyleSheet.flatten([
           style.flatten(
             [
-              "background-color-white",
-              "dark:background-color-platinum-700",
-              "padding-x-11",
-              "padding-y-12",
-              "border-radius-6",
+              "input-container",
+              "background-color-input-background",
+              "padding-x-12",
               "border-width-1",
-              "border-color-gray-100@20%",
-              "dark:border-color-platinum-600@50%",
+              "border-color-gray-60",
+              "flex-row",
+              "justify-between",
+              "items-center",
             ],
             [
-              isFocused ? "border-color-blue-400" : undefined,
-              isFocused ? "dark:border-color-platinum-100" : undefined,
+              selected
+                ? "border-color-input-active"
+                : "border-color-input-inactive",
             ]
           ),
           selectorContainerStyle,
         ])}
         onPress={onPress}
       >
+        {selected && (
+          <ValidatorThumbnail
+            style={style.flatten(["margin-right-8"])}
+            size={24}
+            url={selected.thumbnailUrl}
+          />
+        )}
         <Text
           style={StyleSheet.flatten([
-            style.flatten(
-              [
-                "body2",
-                "color-gray-600",
-                "dark:color-platinum-50",
-                "padding-0",
-              ],
-              [!selected && "color-gray-400", !selected && "color-platinum-200"]
-            ),
+            style.flatten(["text-base-regular", "color-gray-10", "flex-1"]),
             textStyle,
           ])}
         >
           {selected ? selected.label : placeHolder ?? ""}
         </Text>
+        <ArrowDownIcon />
       </RectButton>
     </View>
   );

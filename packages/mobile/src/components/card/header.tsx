@@ -13,8 +13,8 @@ export const CardHeaderWithButton: FunctionComponent<{
 
   onPress?: () => void;
 
-  buttonColor?: "primary" | "danger";
-  buttonMode?: "fill" | "light" | "outline" | "text";
+  buttonColor?: "primary" | "neutral" | "negative";
+  buttonMode?: "fill" | "outline" | "text";
   buttonStyle?: ViewStyle;
   buttonContainerStyle?: ViewStyle;
   buttonDisabled?: boolean;
@@ -46,10 +46,16 @@ export const CardHeaderWithButton: FunctionComponent<{
     >
       {icon && <View style={style.flatten(["margin-right-12"])}>{icon}</View>}
       <View style={style.flatten(["flex", "justify-center"])}>
-        <Text style={style.flatten(["h5", "color-text-highest"])}>{title}</Text>
+        <Text style={style.flatten(["h5", "color-text-black-very-high"])}>
+          {title}
+        </Text>
         {paragraph ? (
           <Text
-            style={style.flatten(["body2", "color-text-low", "margin-top-4"])}
+            style={style.flatten([
+              "body2",
+              "color-text-black-low",
+              "margin-top-4",
+            ])}
           >
             {paragraph}
           </Text>
@@ -61,7 +67,7 @@ export const CardHeaderWithButton: FunctionComponent<{
           style={buttonStyle}
           containerStyle={buttonContainerStyle}
           onPress={onPress}
-          size="small"
+          size="medium"
           text={buttonText}
           color={buttonColor}
           mode={buttonMode}
@@ -87,7 +93,9 @@ export const CardHeader: FunctionComponent<{
         containerStyle,
       ])}
     >
-      <Text style={style.flatten(["h4", "color-text-highest"])}>{title}</Text>
+      <Text style={style.flatten(["h4", "color-text-black-very-high"])}>
+        {title}
+      </Text>
     </View>
   );
 };
@@ -114,14 +122,15 @@ export const CardHeaderFullButton: FunctionComponent<{
       onPress={onPress}
     >
       <View style={style.flatten(["flex", "flex-row", "items-center"])}>
-        <Text style={style.flatten(["h4", "color-text-highest"])}>{title}</Text>
+        <Text style={style.flatten(["h4", "color-text-black-very-high"])}>
+          {title}
+        </Text>
         <View style={style.flatten(["flex-1"])} />
         {buttonText ? (
           <Text
             style={style.flatten([
               "text-button2",
-              "color-gray-200",
-              "dark:color-platinum-300",
+              "color-text-black-very-very-low",
               "margin-right-8",
             ])}
           >
@@ -129,9 +138,7 @@ export const CardHeaderFullButton: FunctionComponent<{
           </Text>
         ) : null}
         <RightArrowIcon
-          color={
-            style.flatten(["color-gray-200", "dark:color-platinum-300"]).color
-          }
+          color={style.get("color-text-black-very-very-low").color}
           height={16}
         />
       </View>

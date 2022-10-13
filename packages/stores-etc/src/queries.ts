@@ -1,8 +1,11 @@
-import { QueriesSetBase, ChainGetter } from "@keplr-wallet/stores";
 import { KVStore } from "@keplr-wallet/common";
+import { ChainGetter, QueriesSetBase } from "@keplr-wallet/stores";
 import { DeepReadonly } from "utility-types";
-import { ObservableQueryERC20Metadata } from "./erc20";
 import { ObservableQueryEVMTokenInfo } from "./axelar";
+import {
+  ObservableQueryERC20Balance,
+  ObservableQueryERC20Metadata,
+} from "./erc20";
 
 export interface KeplrETCQueries {
   keplrETC: KeplrETCQueriesImpl;
@@ -39,6 +42,7 @@ export const KeplrETCQueries = {
 export class KeplrETCQueriesImpl {
   public readonly queryERC20Metadata: DeepReadonly<ObservableQueryERC20Metadata>;
   public readonly queryEVMTokenInfo: DeepReadonly<ObservableQueryEVMTokenInfo>;
+  public readonly queryERC20Balance: DeepReadonly<ObservableQueryERC20Balance>;
 
   constructor(
     _base: QueriesSetBase,
@@ -55,6 +59,11 @@ export class KeplrETCQueriesImpl {
       kvStore,
       chainId,
       chainGetter
+    );
+
+    this.queryERC20Balance = new ObservableQueryERC20Balance(
+      kvStore,
+      ethereumURL
     );
   }
 }

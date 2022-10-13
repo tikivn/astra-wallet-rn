@@ -79,7 +79,6 @@ export class ObservableQueryBalancesInner {
     if ("type" in currency && currency.type === "secret20") {
       key = currency.coinMinimalDenom + "/" + currency.viewingKey;
     }
-
     if (!this.balanceMap.has(key)) {
       runInAction(() => {
         let balanceInner: ObservableQueryBalanceInner | undefined;

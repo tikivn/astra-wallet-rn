@@ -11,7 +11,7 @@ import {
   MultiKeyStoreInfoWithSelectedElem,
 } from "@keplr-wallet/background";
 import { View } from "react-native";
-import { useSmartNavigation } from "../../../../navigation";
+import { useSmartNavigation } from "../../../../navigation-util";
 
 const CheckIcon: FunctionComponent<{
   color: string;
@@ -47,12 +47,6 @@ export const getKeyStoreParagraph = (keyStore: MultiKeyStoreInfoElem) => {
       };
 
   switch (keyStore.type) {
-    case "ledger":
-      return `Ledger - m/44'/118'/${bip44HDPath.account}'${
-        bip44HDPath.change !== 0 || bip44HDPath.addressIndex !== 0
-          ? `/${bip44HDPath.change}/${bip44HDPath.addressIndex}`
-          : ""
-      }`;
     case "mnemonic":
       if (
         bip44HDPath.account !== 0 ||
@@ -112,12 +106,6 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
     );
   }, [keyRingStore.multiKeyStoreInfo]);
 
-  const ledgerKeyStores = useMemo(() => {
-    return keyRingStore.multiKeyStoreInfo.filter(
-      (keyStore) => keyStore.type === "ledger"
-    );
-  }, [keyRingStore.multiKeyStoreInfo]);
-
   const privateKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
       (keyStore) => keyStore.type === "privateKey" && !keyStore.meta?.email
@@ -135,7 +123,7 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
       await keyRingStore.changeKeyRing(index);
       loadingScreen.setIsLoading(false);
 
-      smartNavigation.navigateSmart("Home", {});
+      smartNavigation.navigateSmart("NewHome", {});
     }
   };
 
@@ -159,7 +147,7 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
                   right={
                     keyStore.selected ? (
                       <CheckIcon
-                        color={style.get("color-blue-400").color}
+                        color={style.get("color-primary").color}
                         height={16}
                       />
                     ) : undefined
@@ -178,11 +166,10 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
   };
 
   return (
-    <PageWithScrollViewInBottomTabView backgroundMode="secondary">
+    <PageWithScrollViewInBottomTabView>
       {renderKeyStores("apple id", appleTorusKeyStores)}
       {renderKeyStores("google account", googleTorusKeyStores)}
       {renderKeyStores("mnemonic seed", mnemonicKeyStores)}
-      {renderKeyStores("hardware wallet", ledgerKeyStores)}
       {renderKeyStores("private key", privateKeyStores)}
       {/* Margin bottom for last */}
       <View style={style.get("height-16")} />

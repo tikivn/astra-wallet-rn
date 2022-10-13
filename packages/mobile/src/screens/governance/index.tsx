@@ -22,7 +22,6 @@ export const GovernanceScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithSectionList
-      backgroundMode="gradient"
       sections={sections}
       keyExtractor={(item: ObservableQueryProposal) => {
         return item.id;

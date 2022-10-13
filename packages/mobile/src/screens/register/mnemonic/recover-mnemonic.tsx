@@ -1,18 +1,20 @@
 import React, { FunctionComponent, useState } from "react";
-import { PageWithScrollView } from "../../../components/page";
 import { observer } from "mobx-react-lite";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { RegisterConfig } from "@keplr-wallet/hooks";
 import { useStyle } from "../../../styles";
-import { useSmartNavigation } from "../../../navigation";
+import { useSmartNavigation } from "../../../navigation-util";
 import { Controller, useForm } from "react-hook-form";
 import { TextInput } from "../../../components/input";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { Button } from "../../../components/button";
 import Clipboard from "expo-clipboard";
-import { useStore } from "../../../stores";
-import { BIP44AdvancedButton, useBIP44Option } from "../bip44";
 import { Buffer } from "buffer/";
+import { useBIP44Option } from "../bip44";
+import { useNewMnemonicConfig } from "./hook";
+import { useIntl } from "react-intl";
+import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
+import { RegisterType } from "../../../stores/user-login";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
@@ -63,14 +65,13 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
   >();
 
   const style = useStyle();
-
-  const { analyticsStore } = useStore();
+  const intl = useIntl();
 
   const smartNavigation = useSmartNavigation();
 
   const registerConfig: RegisterConfig = route.params.registerConfig;
   const bip44Option = useBIP44Option();
-  const [mode] = useState(registerConfig.mode);
+  const newMnemonicConfig = useNewMnemonicConfig(registerConfig);
 
   const {
     control,
@@ -78,248 +79,186 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
     setFocus,
     setValue,
     getValues,
-    formState: { errors },
-  } = useForm<FormData>();
+    formState: { errors, isValid },
+  } = useForm<FormData>({ mode: "onChange" });
 
   const [isCreating, setIsCreating] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const [canVerify, setCanVerify] = useState(false);
+
+  const onSubmitEditing = () => {
+    setCanVerify(isValid);
+    submit();
+  };
 
   const submit = handleSubmit(async () => {
     setIsCreating(true);
-
     const mnemonic = trimWordsStr(getValues("mnemonic"));
-
-    if (!isPrivateKey(mnemonic)) {
-      await registerConfig.createMnemonic(
-        getValues("name"),
-        mnemonic,
-        getValues("password"),
-        bip44Option.bip44HDPath
-      );
-      analyticsStore.setUserProperties({
-        registerType: "seed",
-        accountType: "mnemonic",
-      });
-    } else {
-      const privateKey = Buffer.from(mnemonic.trim().replace("0x", ""), "hex");
-      await registerConfig.createPrivateKey(
-        getValues("name"),
-        privateKey,
-        getValues("password")
-      );
-      analyticsStore.setUserProperties({
-        registerType: "seed",
-        accountType: "privateKey",
-      });
-    }
-
-    smartNavigation.reset({
-      index: 0,
-      routes: [
-        {
-          name: "Register.End",
-          params: {
-            password: getValues("password"),
-          },
-        },
-      ],
+    newMnemonicConfig.setMnemonic(mnemonic);
+    smartNavigation.navigateSmart("Register.SetPincode", {
+      registerType: RegisterType.recover,
+      registerConfig,
+      bip44HDPath: bip44Option.bip44HDPath,
+      mnemonic: newMnemonicConfig.mnemonic,
     });
+    setIsCreating(false);
   });
 
   return (
-    <PageWithScrollView
-      backgroundMode="tertiary"
-      contentContainerStyle={style.get("flex-grow-1")}
-      style={style.flatten(["padding-x-page"])}
-    >
-      <Controller
-        control={control}
-        rules={{
-          required: "Mnemonic is required",
-          validate: (value: string) => {
-            value = trimWordsStr(value);
-            if (!isPrivateKey(value)) {
-              if (value.split(" ").length < 8) {
-                return "Too short mnemonic";
-              }
-
-              if (!bip39.validateMnemonic(value)) {
-                return "Invalid mnemonic";
-              }
-            } else {
-              value = value.replace("0x", "");
-              if (value.length !== 64) {
-                return "Invalid length of private key";
-              }
-
-              try {
-                if (
-                  Buffer.from(value, "hex").toString("hex").toLowerCase() !==
-                  value.toLowerCase()
-                ) {
-                  return "Invalid private key";
-                }
-              } catch {
-                return "Invalid private key";
-              }
-            }
-          },
-        }}
-        render={({ field: { onChange, onBlur, value, ref } }) => {
-          return (
-            <TextInput
-              label="Mnemonic seed"
-              returnKeyType="next"
-              multiline={true}
-              numberOfLines={4}
-              inputContainerStyle={style.flatten([
-                "padding-x-20",
-                "padding-y-16",
-              ])}
-              bottomInInputContainer={
-                <View style={style.flatten(["flex-row"])}>
-                  <View style={style.flatten(["flex-1"])} />
-                  <Button
-                    containerStyle={style.flatten(["height-36"])}
-                    style={style.flatten(["padding-x-12"])}
-                    mode="text"
-                    text="Paste"
-                    onPress={async () => {
-                      const text = await Clipboard.getStringAsync();
-                      if (text) {
-                        setValue("mnemonic", text, {
-                          shouldValidate: true,
-                        });
-
-                        setFocus("name");
-                      }
-                    }}
-                  />
-                </View>
-              }
-              style={StyleSheet.flatten([
-                style.flatten(["h6", "color-text-middle"]),
-                {
-                  minHeight: 20 * 4,
-                  textAlignVertical: "top",
-                },
-              ])}
-              onSubmitEditing={() => {
-                setFocus("name");
-              }}
-              error={errors.mnemonic?.message}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              ref={ref}
-            />
-          );
-        }}
-        name="mnemonic"
-        defaultValue=""
-      />
-      <Controller
-        control={control}
-        rules={{
-          required: "Name is required",
-        }}
-        render={({ field: { onChange, onBlur, value, ref } }) => {
-          return (
-            <TextInput
-              label="Wallet nickname"
-              containerStyle={style.flatten(["padding-bottom-6"])}
-              returnKeyType={mode === "add" ? "done" : "next"}
-              onSubmitEditing={() => {
-                if (mode === "add") {
-                  submit();
-                }
-                if (mode === "create") {
-                  setFocus("password");
-                }
-              }}
-              error={errors.name?.message}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              ref={ref}
-            />
-          );
-        }}
-        name="name"
-        defaultValue=""
-      />
-      <BIP44AdvancedButton bip44Option={bip44Option} />
-      {mode === "create" ? (
-        <React.Fragment>
-          <Controller
-            control={control}
-            rules={{
-              required: "Password is required",
-              validate: (value: string) => {
-                if (value.length < 8) {
-                  return "Password must be longer than 8 characters";
-                }
-              },
-            }}
-            render={({ field: { onChange, onBlur, value, ref } }) => {
-              return (
-                <TextInput
-                  label="Password"
-                  returnKeyType="next"
-                  secureTextEntry={true}
-                  onSubmitEditing={() => {
-                    setFocus("confirmPassword");
-                  }}
-                  error={errors.password?.message}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  ref={ref}
-                />
-              );
-            }}
-            name="password"
-            defaultValue=""
-          />
-          <Controller
-            control={control}
-            rules={{
-              required: "Confirm password is required",
-              validate: (value: string) => {
-                if (value.length < 8) {
-                  return "Password must be longer than 8 characters";
+    <View style={style.flatten(["flex-1", "background-color-background"])}>
+      <View style={{ height: 24 }} />
+      <View style={style.flatten(["padding-x-page"])}>
+        <Text style={style.flatten(["text-medium-medium", "color-gray-10"])}>
+          {intl.formatMessage({ id: "recover.wallet.mnemonicInput.label" })}
+        </Text>
+        <Text
+          style={style.flatten([
+            "text-small-regular",
+            "color-gray-30",
+            "margin-top-4",
+          ])}
+        >
+          {intl.formatMessage({ id: "recover.wallet.mnemonicInput.info" })}
+        </Text>
+        <Controller
+          control={control}
+          rules={{
+            required: intl.formatMessage({
+              id: "common.text.mnemonic.isRequired",
+            }),
+            validate: (value: string) => {
+              value = trimWordsStr(value);
+              if (!isPrivateKey(value)) {
+                if (value.split(" ").length < 8) {
+                  return intl.formatMessage({
+                    id: "common.text.mnemonic.tooShort",
+                  });
                 }
 
-                if (getValues("password") !== value) {
-                  return "Password doesn't match";
+                if (!bip39.validateMnemonic(value)) {
+                  return intl.formatMessage({
+                    id: "common.text.mnemonic.invalid",
+                  });
                 }
-              },
-            }}
-            render={({ field: { onChange, onBlur, value, ref } }) => {
-              return (
-                <TextInput
-                  label="Confirm password"
-                  returnKeyType="done"
-                  secureTextEntry={true}
-                  onSubmitEditing={() => {
-                    submit();
-                  }}
-                  error={errors.confirmPassword?.message}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  ref={ref}
-                />
-              );
-            }}
-            name="confirmPassword"
-            defaultValue=""
-          />
-        </React.Fragment>
-      ) : null}
-      <View style={style.flatten(["flex-1"])} />
-      <Button text="Next" size="large" loading={isCreating} onPress={submit} />
-      {/* Mock element for bottom padding */}
-      <View style={style.flatten(["height-page-pad"])} />
-    </PageWithScrollView>
+              } else {
+                value = value.replace("0x", "");
+                if (value.length !== 64) {
+                  return intl.formatMessage({
+                    id: "common.text.privateKey.invalidLength",
+                  });
+                }
+
+                try {
+                  if (
+                    Buffer.from(value, "hex").toString("hex").toLowerCase() !==
+                    value.toLowerCase()
+                  ) {
+                    return intl.formatMessage({
+                      id: "common.text.privateKey.invalid",
+                    });
+                  }
+                } catch {
+                  return intl.formatMessage({
+                    id: "common.text.privateKey.invalid",
+                  });
+                }
+              }
+            },
+          }}
+          render={({ field: { onChange, onBlur, value, ref } }) => {
+            return (
+              <TextInput
+                labelStyle={style.flatten(["color-text-black-low", "body3"])}
+                returnKeyType="done"
+                blurOnSubmit={true}
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoFocus={true}
+                multiline={true}
+                numberOfLines={4}
+                inputContainerStyle={style.flatten([
+                  "padding-x-16",
+                  "padding-top-16",
+                  "background-color-input-background",
+                  isFocused
+                    ? "border-color-input-active"
+                    : "border-color-input-inactive",
+                  "input-container",
+                  "margin-top-12",
+                ])}
+                bottomInInputContainer={
+                  <View
+                    style={{ ...style.flatten(["flex-row"]), marginRight: -12 }}
+                  >
+                    <View style={style.flatten(["flex-1"])} />
+                    <Button
+                      size="medium"
+                      mode="ghost"
+                      text={intl.formatMessage({ id: "common.text.paste" })}
+                      onPress={async () => {
+                        const text = await Clipboard.getStringAsync();
+                        if (text) {
+                          setValue("mnemonic", text, {
+                            shouldValidate: true,
+                          });
+                          setCanVerify(true);
+                          setFocus("name");
+                        }
+                      }}
+                    />
+                  </View>
+                }
+                style={StyleSheet.flatten([
+                  style.flatten(["text-base-regular", "color-text-gray"]),
+                  {
+                    minHeight: 24 * 2,
+                    textAlignVertical: "top",
+                  },
+                ])}
+                errorLabelStyle={style.flatten([
+                  "text-base-regular",
+                  "color-input-error",
+                ])}
+                onSubmitEditing={onSubmitEditing}
+                error={canVerify ? "" : errors.mnemonic?.message}
+                onBlur={() => {
+                  console.log("__onBlur__");
+                  onBlur();
+                  setIsFocused(false);
+                }}
+                onFocus={() => {
+                  setIsFocused(true);
+                }}
+                onChangeText={(text) => {
+                  if (text.length > 0) {
+                    setCanVerify(true);
+                  } else {
+                    setCanVerify(false);
+                  }
+                  onChange(text);
+                }}
+                value={value}
+                ref={ref}
+              />
+            );
+          }}
+          name="mnemonic"
+          defaultValue=""
+        />
+      </View>
+      <View
+        style={style.flatten(["flex-1", "justify-end", "margin-bottom-12"])}
+      >
+        <View style={style.flatten(["height-1", "background-color-gray-70"])} />
+        <Button
+          text={intl.formatMessage({ id: "common.text.verify" })}
+          loading={isCreating}
+          onPress={onSubmitEditing}
+          disabled={!canVerify}
+          containerStyle={style.flatten(["margin-x-page", "margin-top-12"])}
+        />
+        <AvoidingKeyboardBottomView />
+      </View>
+    </View>
   );
 });

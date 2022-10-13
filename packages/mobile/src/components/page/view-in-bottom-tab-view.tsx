@@ -3,13 +3,10 @@ import { StyleSheet, ViewProps } from "react-native";
 import { useStyle } from "../../styles";
 import { PageWithView } from "./view";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { BackgroundMode } from "./background";
 
-export const PageWithViewInBottomTabView: FunctionComponent<
-  ViewProps & {
-    backgroundMode: BackgroundMode;
-  }
-> = (props) => {
+export const PageWithViewInBottomTabView: FunctionComponent<ViewProps> = (
+  props
+) => {
   const style = useStyle();
 
   const bottomTabBarHeight = useBottomTabBarHeight();

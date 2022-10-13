@@ -8,13 +8,15 @@ import React, {
   useState,
 } from "react";
 import { StyleBuilder } from "./builder";
-import { Appearance, AppState, Platform } from "react-native";
 import { DeepPartial } from "utility-types";
 import { AsyncKVStore } from "../../common";
+
+type ThemeVersion = "v1" | "v2";
 
 const createStyleContext = <
   Themes extends ReadonlyArray<string>,
   Custom extends Record<string, unknown>,
+  Typos extends Record<string, unknown>,
   Colors extends Record<string, string>,
   Widths extends Record<string, string | number>,
   Heights extends Record<string, string | number>,
@@ -26,29 +28,33 @@ const createStyleContext = <
 >() =>
   createContext<
     | {
-        builder: StyleBuilder<
-          Themes,
-          Custom,
-          Colors,
-          Widths,
-          Heights,
-          PaddingSizes,
-          MarginSizes,
-          BorderWidths,
-          BorderRadiuses,
-          Opacities
-        >;
-        isInitializing: boolean;
-        isAutomatic: boolean;
-        theme: "light" | "dark";
-        setTheme: (theme: "light" | "dark" | null) => void;
-      }
+      builder: StyleBuilder<
+        Themes,
+        Custom,
+        Typos,
+        Colors,
+        Widths,
+        Heights,
+        PaddingSizes,
+        MarginSizes,
+        BorderWidths,
+        BorderRadiuses,
+        Opacities
+      >;
+      isInitializing: boolean;
+      isAutomatic: boolean;
+      theme: ThemeVersion;
+      setTheme: (theme: ThemeVersion | null) => void;
+    }
     | undefined
   >(undefined);
 
+export const supportedThemeVersions: readonly ThemeVersion[] = ["v1", "v2"];
+
 export const createStyleProvider = <
-  Themes extends readonly ["dark"],
+  Themes extends typeof supportedThemeVersions,
   Custom extends Record<string, unknown>,
+  Typos extends Record<string, unknown>,
   Colors extends Record<string, string>,
   Widths extends Record<string, string | number>,
   Heights extends Record<string, string | number>,
@@ -61,6 +67,7 @@ export const createStyleProvider = <
   config: {
     themes: Themes;
     custom: Custom;
+    typos: Typos;
     colors: Colors;
     widths: Widths;
     heights: Heights;
@@ -73,6 +80,7 @@ export const createStyleProvider = <
   themeConfigs?: {
     [K in Themes[number]]?: DeepPartial<{
       custom: Custom;
+      typos: Typos;
       colors: Colors;
       widths: Widths;
       heights: Heights;
@@ -82,12 +90,13 @@ export const createStyleProvider = <
       borderRadiuses: BorderRadiuses;
       opacities: Opacities;
     }>;
-  }
+  },
 ): {
   StyleProvider: FunctionComponent;
   useStyle: () => StyleBuilder<
     Themes,
     Custom,
+    Typos,
     Colors,
     Widths,
     Heights,
@@ -100,13 +109,14 @@ export const createStyleProvider = <
   useStyleThemeController: () => {
     isInitializing: boolean;
     isAutomatic: boolean;
-    theme: "light" | "dark";
-    setTheme: (theme: "light" | "dark" | null) => void;
+    theme: ThemeVersion;
+    setTheme: (theme: ThemeVersion | null) => void;
   };
 } => {
   const context = createStyleContext<
     Themes,
     Custom,
+    Typos,
     Colors,
     Widths,
     Heights,
@@ -120,10 +130,6 @@ export const createStyleProvider = <
   return {
     // eslint-disable-next-line react/display-name
     StyleProvider: ({ children }) => {
-      const [isDarkMode, setIsDarkMode] = useState(
-        Appearance.getColorScheme() === "dark"
-      );
-
       const [kvStore] = useState(
         () => new AsyncKVStore("__app-theme-setting__")
       );
@@ -135,66 +141,36 @@ export const createStyleProvider = <
           setIsInitializing(false);
 
           switch (theme) {
-            case "light":
+            case "v1":
               setIsAutomatic(false);
-              setIsDarkMode(false);
               break;
-            case "dark":
+            case "v2":
               setIsAutomatic(false);
-              setIsDarkMode(true);
               break;
             default:
               setIsAutomatic(true);
-              setIsDarkMode(Appearance.getColorScheme() === "dark");
               break;
           }
         });
       }, [kvStore]);
 
-      useEffect(() => {
-        if (isInitializing || !isAutomatic) {
-          return;
-        }
-
-        const listener = () => {
-          setIsDarkMode(Appearance.getColorScheme() === "dark");
-        };
-
-        Appearance.addChangeListener(listener);
-        // On android, appearance's listener not work.
-        // So, just check the color scheme whenever app get focused.
-        if (Platform.OS === "android") {
-          AppState.addEventListener("focus", listener);
-        }
-
-        return () => {
-          Appearance.removeChangeListener(listener);
-          if (Platform.OS === "android") {
-            AppState.removeEventListener("focus", listener);
-          }
-        };
-      }, [isInitializing, isAutomatic]);
-
       const setTheme = useCallback(
-        (theme: "light" | "dark" | null) => {
+        (theme: ThemeVersion | null) => {
           if (isInitializing) {
             return;
           }
 
           switch (theme) {
-            case "light":
+            case "v1":
               setIsAutomatic(false);
-              setIsDarkMode(false);
-              kvStore.set("theme", "light");
+              kvStore.set("theme", "v1");
               break;
-            case "dark":
+            case "v2":
               setIsAutomatic(false);
-              setIsDarkMode(true);
-              kvStore.set("theme", "dark");
+              kvStore.set("theme", "v2");
               break;
             default:
               setIsAutomatic(true);
-              setIsDarkMode(Appearance.getColorScheme() === "dark");
               kvStore.set("theme", null);
               break;
           }
@@ -204,13 +180,9 @@ export const createStyleProvider = <
 
       const builder = useMemo(() => {
         const builder = new StyleBuilder(config, themeConfigs);
-
-        if (isDarkMode) {
-          builder.setTheme("dark");
-        }
-
+        builder.setTheme("v1");
         return builder;
-      }, [isDarkMode]);
+      }, []);
 
       return (
         <context.Provider
@@ -218,7 +190,7 @@ export const createStyleProvider = <
             builder,
             isInitializing,
             isAutomatic,
-            theme: builder.theme === "dark" ? "dark" : "light",
+            theme: builder.theme ?? "v1",
             setTheme,
           }}
         >

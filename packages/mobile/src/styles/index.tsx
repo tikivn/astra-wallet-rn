@@ -1,135 +1,13 @@
-import { createStyleProvider } from "./builder";
+import { createStyleProvider, supportedThemeVersions } from "./builder";
 import { EnumTextTransform, EnumTextDecorationLine } from "./builder/types";
-import { PixelRatio, Platform, StatusBarStyle } from "react-native";
+import { Platform } from "react-native";
 import { getPlatformFontWeight } from "./builder/utils";
-import { BlurViewProperties } from "@react-native-community/blur";
+import { Typos } from "./typos";
+import { AllColors, V1AllColors } from "./theme/color-palette";
+import { Custom, V1Custom } from "./theme/custom-styles";
 
-function handleImageHighRes(image: any, highResImage: any): any {
-  if (PixelRatio.get() >= 2) {
-    // In order to ignore the error of eslint without a comment, it simply accepts a function.
-    if (typeof highResImage === "function") {
-      highResImage = highResImage();
-    }
-    return highResImage;
-  }
-  // In order to ignore the error of eslint without a comment, it simply accepts a function.
-  if (typeof image === "function") {
-    image = image();
-  }
-  return image;
-}
-
-export const ColorPalette = {
-  "blue-10": "#F6F8FF",
-  "blue-50": "#F0F3FF",
-  "blue-100": "#E4E9FF",
-  "blue-200": "#9DACF4",
-  "blue-300": "#536EF8",
-  "blue-400": "#314FDF",
-  "blue-500": "#1B319E",
-  "blue-600": "#1E2C70",
-  "blue-700": "#0D1749",
-  "blue-800": "#051124",
-
-  "platinum-10": "#F7F9FC",
-  "platinum-50": "#EFF3FA",
-  "platinum-100": "#CBD3DF",
-  "platinum-200": "#95A1B4",
-  "platinum-300": "#566172",
-  "platinum-400": "#323C4A",
-  "platinum-500": "#252E3D",
-  "platinum-600": "#121924",
-  "platinum-700": "#0A101C",
-
-  "green-50": "#ECFDF6",
-  "green-100": "#DBF9EC",
-  "green-200": "#AAECD0",
-  "green-300": "#68EAB2",
-  "green-400": "#2DD98F",
-  "green-500": "#22AC71",
-  "green-600": "#136844",
-
-  "red-50": "#FFF7F8",
-  "red-100": "#FFD8E0",
-  "red-200": "#FC91A6",
-  "red-300": "#FD5778",
-  "red-400": "#F5365C",
-  "red-500": "#BF2342",
-  "red-600": "#911830",
-  "red-700": "#440B17",
-
-  "pink-50": "#FDF4F9",
-  "pink-100": "#FFE9F4",
-  "pink-200": "#FFCFE7",
-  "pink-300": "#F891C4",
-  "pink-400": "#FF6BB8",
-
-  "purple-50": "#FBF8FF",
-  "purple-100": "#F7F0FF",
-  "purple-200": "#E4D3FD",
-  "purple-300": "#C198FF",
-  "purple-400": "#864FFC",
-  // purple 500~700 not exist yet. But, can be added in the future.
-  "purple-800": "#0A0314",
-
-  white: "#FFFFFF",
-
-  "gray-10": "#F8F9FC",
-  "gray-50": "#F2F2F7",
-  "gray-100": "#DCDCE3",
-  "gray-200": "#C6C6CD",
-  "gray-300": "#9A9AA2",
-  "gray-400": "#64646D",
-  "gray-500": "#37373E",
-  "gray-600": "#1E1E24",
-  "gray-700": "#09090A",
-
-  black: "#000000",
-
-  transparent: "rgba(255,255,255,0)",
-};
-
-export const TextColors = {
-  "text-highest": ColorPalette["black"],
-  "text-high": ColorPalette["platinum-700"],
-  "text-middle": ColorPalette["platinum-400"],
-  "text-low": ColorPalette["gray-300"],
-  "text-label": ColorPalette["platinum-300"],
-};
-
-export const DarkThemeTextColors = {
-  "text-highest": ColorPalette["white"],
-  "text-high": ColorPalette["platinum-50"],
-  "text-middle": ColorPalette["platinum-100"],
-  "text-low": ColorPalette["platinum-200"],
-  "text-label": ColorPalette["platinum-100"],
-};
-
-export const BackgroundColors = {
-  card: "rgba(255, 255, 255, 0.95)",
-  "background-secondary": ColorPalette["gray-10"],
-  // The background tertiary has a color that is distinct with the inputs.
-  // Used in card modal or screen where input exists.
-  "background-tertiary": ColorPalette["gray-10"],
-};
-
-export const DarkThemeBackgroundColors = {
-  // Platinum600 95%
-  card: "rgba(18, 25, 36, 0.95)",
-  "background-secondary": ColorPalette["platinum-700"],
-  "background-tertiary": ColorPalette["platinum-600"],
-};
-
-export const ProfileColors = {
-  "profile-sky-blue": "#80CAFF",
-  "profile-mint": "#47DDE7",
-  "profile-green": "#78F0C5",
-  "profile-yellow-green": "#ADE353",
-  "profile-purple": "#D378FE",
-  "profile-red": "#FF6D88",
-  "profile-orange": "#FEC078",
-  "profile-yellow": "#F2ED64",
-};
+export * from "./typos";
+export * from "./theme/color-palette";
 
 export const {
   StyleProvider,
@@ -137,8 +15,27 @@ export const {
   useStyleThemeController,
 } = createStyleProvider(
   {
-    themes: ["dark"] as const,
+    themes: supportedThemeVersions,
     custom: {
+      ...Custom,
+      title1: {
+        fontSize: 32,
+        lineHeight: 40,
+        letterSpacing: 0.3,
+        ...getPlatformFontWeight("600"),
+      },
+      title2: {
+        fontSize: 16,
+        lineHeight: 24,
+        letterSpacing: 0.3,
+        ...getPlatformFontWeight("700"),
+      },
+      title3: {
+        fontSize: 28,
+        lineHeight: 40,
+        letterSpacing: 0.3,
+        ...getPlatformFontWeight("600"),
+      },
       h1: {
         fontSize: 32,
         lineHeight: 56,
@@ -193,7 +90,19 @@ export const {
       },
       subtitle3: {
         fontSize: 14,
-        lineHeight: 21,
+        lineHeight: 20,
+        letterSpacing: 0.1,
+        ...getPlatformFontWeight("500"),
+      },
+      subtitle4: {
+        fontSize: 12,
+        lineHeight: 16,
+        letterSpacing: 0.1,
+        ...getPlatformFontWeight("500"),
+      },
+      subtitle5: {
+        fontSize: 10,
+        lineHeight: 12,
         letterSpacing: 0.1,
         ...getPlatformFontWeight("500"),
       },
@@ -233,6 +142,18 @@ export const {
         textTransform: "capitalize" as EnumTextTransform,
         ...getPlatformFontWeight("600"),
       },
+      "text-caption": {
+        fontSize: 14,
+        lineHeight: 20,
+        letterSpacing: 0.3,
+        ...getPlatformFontWeight("400"),
+      },
+      "text-caption-center": {
+        fontSize: 14,
+        lineHeight: 0,
+        letterSpacing: 0.3,
+        ...getPlatformFontWeight("400"),
+      },
       "text-caption1": {
         fontSize: 13,
         lineHeight: 18,
@@ -255,6 +176,24 @@ export const {
       "text-underline": {
         textDecorationLine: "underline" as EnumTextDecorationLine,
       },
+      "text-amount-input": {
+        fontSize: 24,
+        lineHeight: 32,
+        letterSpacing: 0.3,
+        ...getPlatformFontWeight("400"),
+      },
+      "text-amount-input-center": {
+        fontSize: 24,
+        lineHeight: 0,
+        letterSpacing: 0.3,
+        ...getPlatformFontWeight("400"),
+      },
+      "text-success": {
+        fontSize: 24,
+        lineHeight: 32,
+        letterSpacing: 0.3,
+        ...getPlatformFontWeight("500"),
+      },
       // This style is for the text input and aims to mock the body2 style.
       // In IOS, it is hard to position the input text to the middle vertically.
       // So, to solve this problem, decrease the line height and add the additional vertical padding.
@@ -274,180 +213,9 @@ export const {
           ...getPlatformFontWeight("400"),
         },
       }),
-      "background-gradient": {
-        degree: 90,
-        stops: [
-          {
-            offset: "0%",
-            color: ColorPalette["purple-50"],
-          },
-          {
-            offset: "100%",
-            color: ColorPalette["blue-10"],
-          },
-        ],
-        // On android, the gradient rendered without dithering.
-        // Since there is no effective way to solve this problem,
-        // provides an option to stretch the bitmap image and show it.
-        fallbackAndroidImage: handleImageHighRes(
-          () => require("../assets/gradients/gradient-background.png"),
-          () => require("../assets/gradients/gradient-background-3x.png")
-        ),
-      },
-
-      "status-bar-style": "dark-content" as StatusBarStyle,
-
-      "header-on-gradient-screen": {
-        blurOnIOS: {
-          type: "light" as BlurViewProperties["blurType"],
-          amount: 30,
-          reducedTransparencyFallbackColor: "white",
-          minOpacity: 0.4,
-        },
-        bottomBorderOnAndroid: {
-          color: ColorPalette["gray-50"],
-          width: 0.5,
-        },
-        background: BackgroundColors["card"],
-      },
-      "header-on-secondary-screen": {
-        blurOnIOS: {
-          type: "light" as BlurViewProperties["blurType"],
-          amount: 30,
-          reducedTransparencyFallbackColor: "white",
-          minOpacity: 0.4,
-        },
-        bottomBorderOnAndroid: {
-          color: ColorPalette["gray-50"],
-          width: 0.5,
-        },
-        background: "white",
-      },
-      "header-at-secondary-screen": {
-        blurOnIOS: {
-          type: "light" as BlurViewProperties["blurType"],
-          amount: 30,
-          reducedTransparencyFallbackColor: "white",
-          minOpacity: 0.4,
-        },
-        bottomBorderOnAndroid: {
-          color: "white",
-          width: 0,
-        },
-        background: BackgroundColors["background-secondary"],
-      },
-      "header-on-tertiary-screen": {
-        blurOnIOS: {
-          type: "light" as BlurViewProperties["blurType"],
-          amount: 30,
-          reducedTransparencyFallbackColor: "white",
-          minOpacity: 0.4,
-        },
-        bottomBorderOnAndroid: {
-          color: "white",
-          width: 0,
-        },
-        background: BackgroundColors["background-tertiary"],
-      },
-
-      "blurred-tabbar-blur-type": "light" as BlurViewProperties["blurType"],
-      "blurred-tabbar-blur-amount": 40,
-      "blurred-tabbar-reducedTransparencyFallbackColor": "white",
-      "blurred-tabbar-top-border": ColorPalette["gray-50"],
-
-      "unlock-screen-gradient-background": {
-        degree: 168,
-        stops: [
-          {
-            offset: "0%",
-            color: "#F8F8FF",
-          },
-          {
-            offset: "60%",
-            color: "#ECEEFC",
-          },
-          {
-            offset: "100%",
-            color: "#E3E4FF",
-          },
-        ],
-        fallbackAndroidImage: handleImageHighRes(
-          () => require("../assets/gradients/unlock-screen.png"),
-          () => require("../assets/gradients/unlock-screen-3x.png")
-        ),
-      },
-
-      "tx-result-screen-pending-gradient-background": {
-        degree: 168,
-        stops: [
-          {
-            offset: "0%",
-            color: "#E3E4FF",
-          },
-          {
-            offset: "50%",
-            color: "#FFFFFF",
-          },
-        ],
-        fallbackAndroidImage: handleImageHighRes(
-          () => require("../assets/gradients/tx-result-screen-pending.png"),
-          () => require("../assets/gradients/tx-result-screen-pending-3x.png")
-        ),
-      },
-
-      "tx-result-screen-success-gradient-background": {
-        degree: 168,
-        stops: [
-          {
-            offset: "0%",
-            color: "#F4FFFB",
-          },
-          {
-            offset: "46%",
-            color: "#FFFFFF",
-          },
-        ],
-        fallbackAndroidImage: handleImageHighRes(
-          () => require("../assets/gradients/tx-result-screen-success.png"),
-          () => require("../assets/gradients/tx-result-screen-success-3x.png")
-        ),
-      },
-
-      "tx-result-screen-failed-gradient-background": {
-        degree: 168,
-        stops: [
-          {
-            offset: "0%",
-            color: "#FFF4F4",
-          },
-          {
-            offset: "50%",
-            color: "#FFFFFF",
-          },
-        ],
-        fallbackAndroidImage: handleImageHighRes(
-          () => require("../assets/gradients/tx-result-screen-failed.png"),
-          () => require("../assets/gradients/tx-result-screen-failed-3x.png")
-        ),
-      },
     },
-    colors: {
-      ...ColorPalette,
-      ...ProfileColors,
-      ...TextColors,
-      ...BackgroundColors,
-      ...{
-        "blurred-tabbar-background": BackgroundColors["card"],
-
-        // Belows are for the button props and may not be used as styles.
-        "rect-button-default-ripple": ColorPalette["gray-100"],
-        // Active opacity is 0.2 by default.
-        "rect-button-default-underlay": ColorPalette["gray-300"],
-
-        // Belows are for the loading spinner props and may not be used as styles.
-        "loading-spinner": "#BABAC1",
-      },
-    },
+    typos: Typos,
+    colors: AllColors,
     widths: {
       full: "100%",
       half: "50%",
@@ -456,6 +224,7 @@ export const {
       "8": 8,
       "12": 12,
       "16": 16,
+      "18": 18,
       "20": 20,
       "24": 24,
       "32": 32,
@@ -463,14 +232,20 @@ export const {
       "36": 36,
       "38": 38,
       "40": 40,
+      "42": 42,
       "44": 44,
+      "48": 48,
       "54": 54,
       "56": 56,
       "58": 58,
+      "64": 64,
       "72": 72,
       "80": 80,
       "122": 122,
+      "132": 132,
       "160": 160,
+      "200": 200,
+      "248": 248,
       "240": 240,
       "292": 292,
       "300": 300,
@@ -485,6 +260,7 @@ export const {
       "1": 1,
       "4": 4,
       "5": 5,
+      "6": 6,
       "8": 8,
       "12": 12,
       "16": 16,
@@ -496,13 +272,17 @@ export const {
       "36": 36,
       "38": 38,
       "40": 40,
+      "42": 42,
       "44": 44,
+      "48": 48,
       "50": 50,
       "56": 56,
       "58": 58,
+      "60": 60,
       "62": 62,
-      "66": 66,
       "64": 64,
+      "66": 66,
+      "68": 68,
       "72": 72,
       "74": 74,
       "80": 80,
@@ -513,7 +293,13 @@ export const {
       "104": 104,
       "116": 116,
       "122": 122,
+      "148": 148,
+      "160": 160,
+      "184": 184,
+      "200": 200,
+      "208": 208,
       "214": 214,
+      "276": 276,
       "400": 400,
       "600": 600,
 
@@ -630,7 +416,9 @@ export const {
       "8": 8,
       "12": 12,
       "16": 16,
+      "22": 22,
       "32": 32,
+      "52": 52,
       "64": 64,
     },
     opacities: {
@@ -645,185 +433,17 @@ export const {
       "80": 0.8,
       "90": 0.9,
       "100": 1,
-
-      "blurred-tabbar": 0.6,
     },
   },
   {
-    dark: {
+    v1: {
       custom: {
-        "background-gradient": {
-          degree: 90,
-          stops: [
-            {
-              offset: "0%",
-              color: "#07020E",
-            },
-            {
-              offset: "100%",
-              color: "#020915",
-            },
-          ],
-          fallbackAndroidImage: handleImageHighRes(
-            () => require("../assets/gradients/gradient-background-dark.png"),
-            () => require("../assets/gradients/gradient-background-dark-3x.png")
-          ),
-        },
-
-        "status-bar-style": "light-content" as StatusBarStyle,
-
-        "header-on-gradient-screen": {
-          blurOnIOS: {
-            type: "dark" as BlurViewProperties["blurType"],
-            amount: 40,
-            reducedTransparencyFallbackColor: "black",
-            minOpacity: 0.2,
-          },
-          bottomBorderOnAndroid: {
-            color: ColorPalette["platinum-500"],
-            width: 0.5,
-          },
-          background: DarkThemeBackgroundColors["card"],
-        },
-        "header-on-secondary-screen": {
-          blurOnIOS: {
-            type: "dark" as BlurViewProperties["blurType"],
-            amount: 40,
-            reducedTransparencyFallbackColor: "black",
-            minOpacity: 0.2,
-          },
-          bottomBorderOnAndroid: {
-            color: ColorPalette["platinum-500"],
-            width: 0.5,
-          },
-          background: ColorPalette["platinum-600"],
-        },
-        "header-at-secondary-screen": {
-          blurOnIOS: {
-            type: "dark" as BlurViewProperties["blurType"],
-            amount: 40,
-            reducedTransparencyFallbackColor: "black",
-            minOpacity: 0.2,
-          },
-          bottomBorderOnAndroid: {
-            color: "black",
-            width: 0,
-          },
-          background: DarkThemeBackgroundColors["background-secondary"],
-        },
-        "header-on-tertiary-screen": {
-          blurOnIOS: {
-            type: "dark" as BlurViewProperties["blurType"],
-            amount: 40,
-            reducedTransparencyFallbackColor: "black",
-            minOpacity: 0.2,
-          },
-          bottomBorderOnAndroid: {
-            color: "black",
-            width: 0,
-          },
-          background: DarkThemeBackgroundColors["background-tertiary"],
-        },
-
-        "blurred-tabbar-blur-type": "dark" as BlurViewProperties["blurType"],
-        "blurred-tabbar-blur-amount": 50,
-        "blurred-tabbar-reducedTransparencyFallbackColor": "black",
-        "blurred-tabbar-top-border": ColorPalette["platinum-500"],
-
-        "unlock-screen-gradient-background": {
-          degree: 168,
-          stops: [
-            {
-              offset: "0%",
-              color: "#1E2C5E",
-            },
-            {
-              offset: "51%",
-              color: "#10213D",
-            },
-            {
-              offset: "100%",
-              color: "#050B14",
-            },
-          ],
-          fallbackAndroidImage: handleImageHighRes(
-            () => require("../assets/gradients/unlock-screen-dark.png"),
-            () => require("../assets/gradients/unlock-screen-dark-3x.png")
-          ),
-        },
-
-        "tx-result-screen-pending-gradient-background": {
-          degree: 168,
-          stops: [
-            {
-              offset: "0%",
-              color: "#2B4267",
-            },
-            {
-              offset: "46%",
-              color: "#030E21",
-            },
-          ],
-          fallbackAndroidImage: handleImageHighRes(
-            () =>
-              require("../assets/gradients/tx-result-screen-pending-dark.png"),
-            () =>
-              require("../assets/gradients/tx-result-screen-pending-dark-3x.png")
-          ),
-        },
-
-        "tx-result-screen-success-gradient-background": {
-          degree: 168,
-          stops: [
-            {
-              offset: "0%",
-              color: "#174045",
-            },
-            {
-              offset: "48%",
-              color: "#021213",
-            },
-          ],
-          fallbackAndroidImage: handleImageHighRes(
-            () =>
-              require("../assets/gradients/tx-result-screen-success-dark.png"),
-            () =>
-              require("../assets/gradients/tx-result-screen-success-dark-3x.png")
-          ),
-        },
-
-        "tx-result-screen-failed-gradient-background": {
-          degree: 168,
-          stops: [
-            {
-              offset: "0%",
-              color: "#381111",
-            },
-            {
-              offset: "45%",
-              color: "#0C0101",
-            },
-          ],
-          fallbackAndroidImage: handleImageHighRes(
-            () =>
-              require("../assets/gradients/tx-result-screen-failed-dark.png"),
-            () =>
-              require("../assets/gradients/tx-result-screen-failed-dark-3x.png")
-          ),
-        },
+        ...V1Custom,
       },
-      colors: {
-        ...DarkThemeTextColors,
-        ...DarkThemeBackgroundColors,
-
-        "blurred-tabbar-background": DarkThemeBackgroundColors["card"],
-
-        "rect-button-default-ripple": ColorPalette["platinum-400"],
-        "rect-button-default-underlay": ColorPalette["platinum-400"],
-      },
-      opacities: {
-        "blurred-tabbar": 0.5,
-      },
+      colors: V1AllColors,
+    },
+    v2: {
+      colors: {},
     },
   }
 );

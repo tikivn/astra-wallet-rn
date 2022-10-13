@@ -1,259 +1,318 @@
-import React, { FunctionComponent, useRef, useState } from "react";
-import { PageWithScrollViewInBottomTabView } from "../../components/page";
-import {
-  Image,
-  ImageSourcePropType,
-  StyleSheet,
-  Text,
-  View,
-  ViewStyle,
-} from "react-native";
+import React, { FunctionComponent, useEffect, useState } from "react";
+import { PageWithScrollView, PageWithView } from "../../components/page";
+import { Image, Platform, StyleSheet, Text, View } from "react-native";
 import { useStyle } from "../../styles";
-import { useSmartNavigation } from "../../navigation";
+import { useSmartNavigation } from "../../navigation-util";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { RectButton } from "../../components/rect-button";
-import Svg, { Path, G, Defs, ClipPath } from "react-native-svg";
+import { useIntl } from "react-intl";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import FastImage from "react-native-fast-image";
+import { useHeaderHeight } from "@react-navigation/stack";
+import { AsyncKVStore } from "../../common";
+import { Button } from "../../components";
+import { registerModal } from "../../modals/base";
+import { NormalInput } from "../../components/input/normal-input";
+import { useStore } from "../../stores";
+
+const defaultDappsInfo = [
+  {
+    name: "Astra Web App",
+    type: "DEX",
+    url: "https://app.astranaut.dev",
+    thumbnail:
+      "https://salt.tikicdn.com/ts/upload/ae/af/2a/d24e08ad40c1bec8958cc39d5bc924cc.png",
+    description:
+      "You can open a Vault and borrow Dai against your preffered collateral",
+  },
+  {
+    name: "Astra Defi",
+    type: "DEFI",
+    url: "https://defi.astranaut.dev",
+    thumbnail:
+      "https://salt.tikicdn.com/ts/upload/69/0f/b8/0385f053c018ea3208125e96a1b3fca0.png",
+    description:
+      "Yearn Finance is a suite of decentralized finance (DeFi) products that let users optimize their earning",
+  },
+];
 
 export const WebScreen: FunctionComponent = () => {
+  const { remoteConfigStore } = useStore();
   const style = useStyle();
 
   const smartNavigation = useSmartNavigation();
 
   const safeAreaInsets = useSafeAreaInsets();
+  const headerHeight = useHeaderHeight();
+  const actualHeaderHeight = headerHeight - safeAreaInsets.top;
+  const intl = useIntl();
+  const debugKVStore = new AsyncKVStore("__DEBUG_DAPPS__");
+
+  const [dappsInfo, setDappsInfo] = useState(defaultDappsInfo);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const DEBUG = remoteConfigStore.getBool("feature_debug_enabled");
+
+  useEffect(() => {
+    debugKVStore.get("dapps").then((value) => {
+      const info = value as typeof defaultDappsInfo;
+      if (info) {
+        setDappsInfo(defaultDappsInfo.concat(info));
+      }
+    }).catch((e) => {
+      console.log("get dapps_info error", e);
+    });
+  }, []);
 
   return (
-    <PageWithScrollViewInBottomTabView
-      backgroundMode="gradient"
-      contentContainerStyle={style.get("flex-grow-1")}
-      style={StyleSheet.flatten([
-        style.flatten(["padding-x-20"]),
-        {
-          marginTop: safeAreaInsets.top,
-        },
-      ])}
+    <PageWithView
+      disableSafeArea={true}
+      style={style.flatten(["background-color-background"])}
     >
-      <Text
-        style={style.flatten([
-          "h3",
-          "color-text-high",
-          "margin-top-44",
-          "margin-bottom-20",
+      <PageWithScrollView
+        backgroundColor={style.get("color-background").color}
+        contentContainerStyle={style.get("flex-grow-1")}
+        style={StyleSheet.flatten([
+          style.flatten(["padding-0"]),
+          {
+            marginTop:
+              Platform.OS === "ios" ? actualHeaderHeight : headerHeight,
+          },
         ])}
       >
-        Discover Apps
-      </Text>
-      <WebpageImageButton
-        name="Osmosis"
-        source={require("../../assets/image/webpage/osmosis.png")}
-        onPress={() => {
-          smartNavigation.pushSmart("Web.Osmosis", {});
-        }}
-      />
-      <WebpageImageButton
-        name="Stargaze"
-        source={require("../../assets/image/webpage/stargaze.png")}
-        onPress={() => {
-          smartNavigation.pushSmart("Web.Stargaze", {});
-        }}
-      />
-      <WebpageImageButton
-        name="Junoswap"
-        source={require("../../assets/image/webpage/junoswap.png")}
-        nameContainerStyle={style.flatten(["flex-row"])}
-        onPress={() => {
-          smartNavigation.pushSmart("Web.Junoswap", {});
-        }}
-      />
-      <WebpageImageButton
-        name="Osmosis"
-        source={require("../../assets/image/webpage/osmosis-frontier.png")}
-        nameContainerStyle={style.flatten(["flex-row"])}
-        nameAppend={
-          <View style={style.flatten(["justify-end"])}>
-            <Image
-              source={require("../../assets/image/webpage/osmosis-frontier-text.png")}
-              style={{
-                width: 52.8,
-                height: 18,
-                marginLeft: 8,
-                marginBottom: 7,
+        {DEBUG && (
+          <View style={style.flatten(["flex-row", "padding-16", "border-width-bottom-1", "border-color-border"])}>
+            <Button
+              text="Add dApps"
+              loading={isLoading}
+              containerStyle={style.flatten(["flex-1"])}
+              onPress={() => { setIsOpen(true) }}
+            />
+            <Button
+              text="Reset dApps"
+              color="negative"
+              loading={isLoading}
+              containerStyle={style.flatten(["flex-1", "margin-left-16"])}
+              onPress={async () => {
+                setIsLoading(true);
+
+                await debugKVStore.set("dapps", []);
+                setDappsInfo(defaultDappsInfo);
+                setIsLoading(false);
               }}
-              fadeDuration={0}
             />
           </View>
+        )}
+        {
+          dappsInfo.map((info) => {
+            return <DappButton
+              infor={info}
+              onPress={() => {
+                smartNavigation.pushSmart("Web.Dapps", {
+                  name: info.name,
+                  uri: info.url,
+                });
+              }}
+            />
+          })
         }
-        onPress={() => {
-          smartNavigation.pushSmart("Web.OsmosisFrontier", {});
-        }}
-      />
-      <WebpageImageButton
-        overrideInner={
-          <View style={style.flatten(["flex-1", "items-center"])}>
-            <Text
-              style={style.flatten([
-                "h4",
-                "color-gray-200",
-                "dark:color-platinum-300",
-              ])}
-            >
-              Coming soon
-            </Text>
-          </View>
-        }
-      />
-    </PageWithScrollViewInBottomTabView>
+      </PageWithScrollView>
+      {DEBUG && (
+        <AddDappsModal
+          title="Add new dApps"
+          isOpen={isOpen}
+          close={() => { setIsOpen(false) }}
+          onAddHandler={async (params) => {
+            setIsLoading(true);
+
+            const value = await debugKVStore.get("dapps");
+            var info = value as typeof defaultDappsInfo;
+            if (!info) {
+              info = [];
+            }
+
+            info.push(params);
+
+            await debugKVStore.set("dapps", info);
+            setDappsInfo(defaultDappsInfo.concat(info));
+            setIsLoading(false);
+          }}
+        />
+      )}
+      <View
+        style={StyleSheet.flatten([
+          style.flatten([
+            "absolute",
+            "background-color-background",
+            "width-full",
+          ]),
+          {
+            height: headerHeight,
+          },
+        ])}
+      >
+        <View
+          style={{
+            height:
+              safeAreaInsets.top -
+              (Platform.OS === "ios" && safeAreaInsets.top > 44 ? 6 : 0),
+          }}
+        />
+        <View
+          style={StyleSheet.flatten([
+            style.flatten([
+              "background-color-background",
+              "flex-row",
+              "padding-x-16",
+              "justify-center",
+              "items-center",
+            ]),
+            {
+              height: actualHeaderHeight,
+            },
+          ])}
+        >
+          <Text style={style.flatten(["color-white", "title2"])}>
+            {intl.formatMessage({ id: "tabs.d-apps" })}
+          </Text>
+        </View>
+        <View style={style.flatten(["height-1", "background-color-gray-70"])} />
+      </View>
+    </PageWithView>
   );
 };
 
-export const WebpageImageButton: FunctionComponent<{
-  name?: string;
-  source?: ImageSourcePropType;
+export interface DappInfor {
+  readonly name: string;
+  readonly type: string;
+  readonly description?: string;
+  readonly thumbnail?: string;
+  readonly url: string;
+}
+
+export const DappButton: FunctionComponent<{
+  infor: DappInfor;
   onPress?: () => void;
-
-  nameContainerStyle?: ViewStyle;
-  nameAppend?: React.ReactElement;
-  overrideInner?: React.ReactElement;
-}> = ({
-  name,
-  source,
-  onPress,
-  nameContainerStyle,
-  nameAppend,
-  overrideInner,
-}) => {
+}> = ({ infor, onPress }) => {
   const style = useStyle();
-
-  const height = 104;
-
-  /*
-    Adjust the size of image view manually because react native's resize mode doesn't provide the flexible API.
-    First load the image view with invisible,
-    after it is loaded, obtain the image view's size and the appropriate size is set accordingly to it.
-   */
-  const [imageSize, setImageSize] = useState<
-    | {
-        width: number;
-        height: number;
-      }
-    | undefined
-  >(undefined);
-
-  const imageRef = useRef<Image | null>(null);
-  const onImageLoaded = () => {
-    if (imageRef.current) {
-      imageRef.current.measure((_x, _y, measureWidth, measureHeight) => {
-        setImageSize({
-          width: (measureWidth / measureHeight) * height,
-          height,
-        });
-      });
-    }
-  };
-
   return (
-    <View
-      style={StyleSheet.flatten([
-        style.flatten([
-          "flex-row",
-          "items-center",
-          "overflow-hidden",
-          "border-radius-8",
-          "background-color-gray-100@50%",
-          "dark:background-color-platinum-500@50%",
-          "margin-bottom-16",
-        ]),
-        {
-          height,
-        },
-      ])}
+    <TouchableOpacity
+      onPress={onPress}
+      style={style.flatten(["background-color-background", "padding-x-16"])}
     >
-      {source ? (
-        <View style={style.flatten(["absolute-fill", "items-end"])}>
-          <Image
-            ref={imageRef}
-            style={
-              imageSize
-                ? {
-                    width: imageSize.width,
-                    height: imageSize.height,
-                  }
-                : {
-                    opacity: 0,
-                  }
-            }
-            onLoadEnd={onImageLoaded}
-            source={source}
-            fadeDuration={0}
+      <View style={style.flatten(["padding-y-16", "flex-row"])}>
+        {infor.thumbnail && infor.thumbnail.length > 0 ? (
+          <FastImage
+            style={{
+              width: 40,
+              height: 40,
+            }}
+            source={{
+              uri: infor.thumbnail,
+            }}
+            resizeMode={FastImage.resizeMode.contain}
           />
-          {imageSize ? (
+        ) : (
+          <Image
+            source={require("../../assets/image/icon_dapps.png")}
+            resizeMode="contain"
+            style={{
+              width: 40,
+              height: 40,
+            }}
+          />
+        )}
+        <View style={style.flatten(["margin-left-16", "flex-1"])}>
+          <View style={style.flatten(["flex-row", "items-center"])}>
+            <Text style={style.flatten(["color-gray-10", "subtitle3"])}>
+              {infor.name}
+            </Text>
             <View
               style={style.flatten([
-                "absolute-fill",
-                "background-color-black",
-                "opacity-40",
+                "background-color-gray-10",
+                "margin-left-4",
+                "padding-x-2",
+                "border-radius-4",
               ])}
-            />
-          ) : null}
+            >
+              <Text style={style.flatten(["color-gray-100", "subtitle5"])}>
+                {infor.type}
+              </Text>
+            </View>
+          </View>
+          <Text style={style.flatten(["color-gray-30", "text-caption2"])}>
+            {infor.description ? infor.description : infor.url}
+          </Text>
         </View>
-      ) : null}
-      <View style={style.flatten(["absolute-fill"])}>
-        <RectButton
-          style={StyleSheet.flatten([
-            style.flatten(["flex-row", "items-center", "padding-x-38"]),
-            { height },
-          ])}
-          activeOpacity={0.2}
-          underlayColor={style.get("color-white").color}
-          enabled={onPress != null}
-          onPress={onPress}
-        >
-          {overrideInner ? (
-            overrideInner
-          ) : (
-            <React.Fragment>
-              <View style={nameContainerStyle}>
-                <Text style={style.flatten(["h2", "color-white"])}>{name}</Text>
-                {nameAppend}
-              </View>
-              <View style={style.get("flex-1")} />
-              <GoIcon
-                width={34.7}
-                height={21}
-                color={style.get("color-white").color}
-              />
-            </React.Fragment>
-          )}
-        </RectButton>
       </View>
-    </View>
+
+      <View style={style.flatten(["background-color-gray-70", "height-1"])} />
+    </TouchableOpacity>
   );
 };
 
-const GoIcon: FunctionComponent<{
-  width?: number;
-  height?: number;
-  color?: string;
-}> = ({ width = 38, height = 23, color = "white" }) => {
+const AddDappsModal: FunctionComponent<{
+  title: string,
+  isOpen: boolean,
+  close: () => void
+  onAddHandler: (params: {
+    name: string,
+    type: string,
+    url: string,
+    thumbnail: string,
+    description: string,
+  }) => void;
+}> = registerModal(({
+  title,
+  close,
+  onAddHandler
+}) => {
+  const style = useStyle();
+  const [url, setUrl] = useState("");
+
   return (
-    <Svg width={width} height={height} fill="none" viewBox="0 0 38 23">
-      <G clipPath="url(#clip0_4026_25847)">
-        <Path
-          stroke={color}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="4"
-          d="M25.91 2.125l9.362 9.375-9.363 9.375m8.063-9.375H2.5"
+    <View style={style.flatten(["height-full", "justify-center"])}>
+      <View style={style.flatten([
+        "border-width-1",
+        "border-radius-16",
+        "border-color-border",
+        "background-color-background",
+        "margin-x-page",
+        "padding-16",
+      ])}>
+        <Text style={style.flatten(["text-base-medium", "color-label-text-1"])}>
+          {title}
+        </Text>
+        <NormalInput
+          value={url}
+          onChangeText={setUrl}
+          style={style.flatten(["margin-top-16"])}
         />
-      </G>
-      <Defs>
-        <ClipPath id="clip0_4026_25847">
-          <Path
-            fill={color}
-            d="M0 0H38V23H0z"
-            transform="rotate(-180 19 11.5)"
-          />
-        </ClipPath>
-      </Defs>
-    </Svg>
+        <View style={style.flatten(["height-1", "background-color-border", "margin-top-16"])} />
+        <View style={style.flatten(["flex-row", "margin-top-16"])}>
+          <Button
+            text="Cancel"
+            mode="outline"
+            containerStyle={style.flatten(["flex-1"])}
+            onPress={close} />
+          <Button
+            text="Add"
+            containerStyle={style.flatten(["flex-1", "margin-left-8"])}
+            disabled={url.length === 0}
+            onPress={() => {
+              onAddHandler({
+                name: "Astra Web App",
+                type: "DEX",
+                url: url,
+                thumbnail:
+                  "https://salt.tikicdn.com/ts/upload/ae/af/2a/d24e08ad40c1bec8958cc39d5bc924cc.png",
+                description:
+                  "You can open a Vault and borrow Dai against your preffered collateral",
+              });
+              close();
+            }} />
+        </View>
+      </View>
+    </View >
   );
-};
+});

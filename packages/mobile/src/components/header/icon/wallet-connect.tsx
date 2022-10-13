@@ -9,7 +9,7 @@ export const HeaderWalletConnectIcon: FunctionComponent<{
   const style = useStyle();
 
   if (!color) {
-    color = style.get("color-blue-400").color;
+    color = style.get("color-primary").color;
   }
 
   return (

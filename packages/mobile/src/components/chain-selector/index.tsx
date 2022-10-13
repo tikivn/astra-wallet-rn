@@ -25,10 +25,7 @@ export const ChainSelectorModal: FunctionComponent<{
         title="Select Chain"
         childrenContainerStyle={style.flatten(["padding-0"])}
       >
-        <ScrollView
-          style={style.flatten(["max-height-600"])}
-          indicatorStyle={style.theme === "dark" ? "white" : "black"}
-        >
+        <ScrollView style={style.flatten(["max-height-600"])}>
           {chainIds.map((chainId) => {
             const chainName = chainStore.hasChain(chainId)
               ? chainStore.getChain(chainId).chainName
@@ -58,7 +55,7 @@ export const ChainSelectorModal: FunctionComponent<{
                     "border-radius-64",
                     "items-center",
                     "justify-center",
-                    "background-color-blue-400",
+                    "background-color-primary",
                     "margin-right-12",
                   ])}
                 >
@@ -81,7 +78,7 @@ export const ChainSelectorModal: FunctionComponent<{
                     />
                   )}
                 </View>
-                <Text style={style.flatten(["h5", "color-text-middle"])}>
+                <Text style={style.flatten(["h5", "color-text-black-medium"])}>
                   {chainName}
                 </Text>
               </RectButton>

@@ -100,11 +100,11 @@ export const FeeInSign: FunctionComponent<{
         <View
           style={style.flatten(["flex-row", "items-center", "margin-bottom-4"])}
         >
-          <Text style={style.flatten(["subtitle3", "color-text-middle"])}>
+          <Text style={style.flatten(["subtitle3", "color-text-black-medium"])}>
             Fee
           </Text>
           <View style={style.get("flex-1")} />
-          <Text style={style.flatten(["body3", "color-text-low"])}>
+          <Text style={style.flatten(["body3", "color-text-black-low"])}>
             {feePrice ? feePrice.toString() : "-"}
           </Text>
         </View>
@@ -119,8 +119,8 @@ export const FeeInSign: FunctionComponent<{
           >
             <Text
               style={style.flatten(
-                ["subtitle1", "color-text-middle"],
-                [canFeeEditable && "color-blue-400"]
+                ["subtitle1", "color-text-black-medium"],
+                [canFeeEditable && "color-primary"]
               )}
             >
               {fee.trim(true).toString()}
@@ -128,7 +128,7 @@ export const FeeInSign: FunctionComponent<{
             {canFeeEditable ? (
               <View style={style.flatten(["margin-left-6"])}>
                 <RightArrowIcon
-                  color={style.get("color-blue-400").color}
+                  color={style.get("color-primary").color}
                   height={12}
                 />
               </View>
@@ -159,7 +159,7 @@ export const FeeInSign: FunctionComponent<{
               style={style.flatten([
                 "absolute",
                 "text-caption1",
-                "color-red-400",
+                "color-error",
                 "margin-top-2",
                 "margin-left-4",
               ])}

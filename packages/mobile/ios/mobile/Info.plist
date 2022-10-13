@@ -2,15 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>bugsnag</key>
-	<dict>
-		<key>apiKey</key>
-		<string>f07be1dce2391227e818fbe3e4235bf4</string>
-	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Keplr</string>
+	<string>Astra Wallet</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIconName</key>
@@ -20,7 +15,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Keplr</string>
+	<string>astra-wallet</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -34,15 +29,14 @@
 			<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>app.keplr.oauth</string>
-				<string>keplrwallet</string>
+				<string>astrawallet</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>CodePushDeploymentKey</key>
-	<string>Bp7ApGEQu01igCf6axrsaAgi6Mc0X5oBgGjFI</string>
+	<string>$(CODEPUSH_KEY)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -59,9 +53,7 @@
 		</dict>
 	</dict>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>App uses bluetooth to find, connect and communicate with Ledger Nano devices</string>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>App uses bluetooth to find, connect and communicate with Ledger Nano devices</string>
+	<string>App uses Bluetooth to connect ledger</string>
 	<key>NSCameraUsageDescription</key>
 	<string>App uses camera to scan address, extension, and WalletConnect QR code</string>
 	<key>NSFaceIDUsageDescription</key>
@@ -82,5 +74,10 @@
 	<false/>
 	<key>XSAppIconAssets</key>
 	<string>Images.xcassets/AppIcon.appiconset</string>
+	<key>bugsnag</key>
+	<dict>
+		<key>apiKey</key>
+		<string>ec1ffe4e30f9124c487d474e6fb41df3</string>
+	</dict>
 </dict>
 </plist>

@@ -1,6 +1,7 @@
 /**
  * @format
  */
+import "./ignore-warnings";
 
 import Bugsnag from "@bugsnag/react-native";
 import BugsnagPluginReactNavigation from "@bugsnag/plugin-react-navigation";
@@ -10,7 +11,7 @@ Bugsnag.start({
   plugins: [new BugsnagPluginReactNavigation()],
   codeBundleId,
 });
-
+import "fast-text-encoding";
 import "./shim";
 
 import "text-encoding";

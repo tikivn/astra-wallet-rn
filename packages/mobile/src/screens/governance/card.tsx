@@ -9,7 +9,7 @@ import { Text, View } from "react-native";
 import { LoadingSpinner } from "../../components/spinner";
 import { useIntl } from "react-intl";
 import { dateToLocalString } from "./utils";
-import { useSmartNavigation } from "../../navigation";
+import { useSmartNavigation } from "../../navigation-util";
 import { RectButton } from "../../components/rect-button";
 
 export const GovernanceProposalStatusChip: FunctionComponent<{
@@ -161,24 +161,29 @@ export const GovernanceCardBody: FunctionComponent<{
             ])}
           >
             <Text
-              style={style.flatten(["h5", "color-text-high"])}
+              style={style.flatten(["h5", "color-text-black-high"])}
             >{`#${proposal.id}`}</Text>
             <View style={style.flatten(["flex-1"])} />
             <GovernanceProposalStatusChip status={proposal.proposalStatus} />
           </View>
           <View style={style.flatten(["margin-bottom-8"])}>
-            <Text style={style.flatten(["h6", "color-text-high"])}>
+            <Text style={style.flatten(["h6", "color-text-black-high"])}>
               {proposal.title}
             </Text>
           </View>
           <View style={style.flatten(["flex-row", "items-center"])}>
-            <Text style={style.flatten(["text-caption1", "color-text-low"])}>
+            <Text
+              style={style.flatten(["text-caption1", "color-text-black-low"])}
+            >
               {renderProposalDateString(proposal)}
             </Text>
             <View style={style.flatten(["flex-1"])} />
             {proposalRelativeEndTimeString ? (
               <Text
-                style={style.flatten(["text-caption1", "color-text-middle"])}
+                style={style.flatten([
+                  "text-caption1",
+                  "color-text-black-medium",
+                ])}
               >
                 {proposalRelativeEndTimeString}
               </Text>

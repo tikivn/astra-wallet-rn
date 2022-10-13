@@ -6,12 +6,12 @@ import {
 import { useStyle } from "../../styles";
 import { usePageRegisterScrollYValue, useSetFocusedScreen } from "./utils";
 import { Animated, SafeAreaView, StyleSheet, View } from "react-native";
-import { BackgroundMode, ScreenBackground } from "./background";
+import { GradientBackground } from "../svg";
 
 export function PageWithFixedHeightSortableList<Item extends { key: string }>(
   props: FixedHeightSortableListProps<Item> & {
     disableSafeArea?: boolean;
-    backgroundMode: BackgroundMode;
+    backgroundColor?: string;
   }
 ) {
   const style = useStyle();
@@ -22,7 +22,7 @@ export function PageWithFixedHeightSortableList<Item extends { key: string }>(
   const {
     style: propStyle,
     disableSafeArea,
-    backgroundMode,
+    backgroundColor,
     onScroll,
     ...restProps
   } = props;
@@ -31,7 +31,27 @@ export function PageWithFixedHeightSortableList<Item extends { key: string }>(
 
   return (
     <React.Fragment>
-      <ScreenBackground backgroundMode={backgroundMode} />
+      <View
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          top: -100,
+          bottom: -100,
+        }}
+      >
+        {backgroundColor ? (
+          <View
+            style={{
+              width: "100%",
+              height: "100%",
+              backgroundColor,
+            }}
+          />
+        ) : (
+          <GradientBackground />
+        )}
+      </View>
       <ContainerElement style={style.get("flex-1")}>
         <FixedHeightSortableList
           style={StyleSheet.flatten([

@@ -79,7 +79,7 @@ export class ObservableQueryERC20MetadataName extends ObservableJsonRPCQuery<str
         "name",
         this.response.data
       )[0];
-    } catch (e) {
+    } catch (e: any) {
       console.log(e);
     }
     return undefined;
@@ -116,7 +116,7 @@ export class ObservableQueryERC20MetadataSymbol extends ObservableJsonRPCQuery<s
         "symbol",
         this.response.data
       )[0];
-    } catch (e) {
+    } catch (e: any) {
       console.log(e);
     }
     return undefined;
@@ -153,7 +153,7 @@ export class ObservableQueryERC20MetadataDecimals extends ObservableJsonRPCQuery
         "decimals",
         this.response.data
       )[0];
-    } catch (e) {
+    } catch (e: any) {
       console.log(e);
     }
     return undefined;

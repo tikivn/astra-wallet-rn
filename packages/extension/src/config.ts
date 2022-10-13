@@ -3,10 +3,6 @@ import { ChainInfo } from "@keplr-wallet/types";
 
 import {
   PRIVILEGED_ORIGINS,
-  COSMOS_REST_CONFIG,
-  COSMOS_REST_ENDPOINT,
-  COSMOS_RPC_CONFIG,
-  COSMOS_RPC_ENDPOINT,
   OSMOSIS_REST_CONFIG,
   OSMOSIS_REST_ENDPOINT,
   OSMOSIS_RPC_CONFIG,
@@ -107,52 +103,62 @@ import {
   EVMOS_RPC_CONFIG,
   EVMOS_REST_ENDPOINT,
   EVMOS_REST_CONFIG,
+  ASTRA_RPC_ENDPOINT,
+  ASTRA_RPC_CONFIG,
+  ASTRA_REST_ENDPOINT,
+  ASTRA_REST_CONFIG,
 } from "./config.var";
 
 export const EmbedChainInfos: ChainInfo[] = [
   {
-    rpc: COSMOS_RPC_ENDPOINT,
-    rpcConfig: COSMOS_RPC_CONFIG,
-    rest: COSMOS_REST_ENDPOINT,
-    restConfig: COSMOS_REST_CONFIG,
-    chainId: "cosmoshub-4",
-    chainName: "Cosmos Hub",
+    rpc: ASTRA_RPC_ENDPOINT,
+    rpcConfig: ASTRA_RPC_CONFIG,
+    rest: ASTRA_REST_ENDPOINT,
+    restConfig: ASTRA_REST_CONFIG,
+    chainId: "astra_11115-1",
+    chainName: "Astra Testnet",
     stakeCurrency: {
-      coinDenom: "ATOM",
-      coinMinimalDenom: "uatom",
-      coinDecimals: 6,
-      coinGeckoId: "cosmos",
+      coinDenom: "ASA",
+      coinMinimalDenom: "aastra",
+      coinDecimals: 18,
+      coinGeckoId: "aastra",
+      coinImageUrl:
+        "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
     },
     walletUrl:
       process.env.NODE_ENV === "production"
-        ? "https://wallet.keplr.app/chains/cosmos-hub"
-        : "http://localhost:8080/chains/cosmos-hub",
+        ? "https://wallet.keplr.app/chains/astra_11115-1"
+        : "http://localhost:8080/chains/astra_11115-1",
     walletUrlForStaking:
       process.env.NODE_ENV === "production"
-        ? "https://wallet.keplr.app/chains/cosmos-hub"
-        : "http://localhost:8080/chains/cosmos-hub",
+        ? "https://wallet.keplr.app/chains/astra_11115-1"
+        : "http://localhost:8080/chains/astra_11115-1",
     bip44: {
-      coinType: 118,
+      coinType: 60,
     },
-    bech32Config: Bech32Address.defaultBech32Config("cosmos"),
+    bech32Config: Bech32Address.defaultBech32Config("astra"),
     currencies: [
       {
-        coinDenom: "ATOM",
-        coinMinimalDenom: "uatom",
-        coinDecimals: 6,
-        coinGeckoId: "cosmos",
+        coinDenom: "ASA",
+        coinMinimalDenom: "aastra",
+        coinDecimals: 18,
+        coinGeckoId: "aastra",
+        coinImageUrl:
+          "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
       },
     ],
     feeCurrencies: [
       {
-        coinDenom: "ATOM",
-        coinMinimalDenom: "uatom",
-        coinDecimals: 6,
-        coinGeckoId: "cosmos",
+        coinDenom: "ASA",
+        coinMinimalDenom: "aastra",
+        coinDecimals: 18,
+        coinGeckoId: "aastra",
+        coinImageUrl:
+          "https://salt.tikicdn.com/ts/upload/87/4c/61/222e62fdd14e6b76189017f97f5101ed.png",
       },
     ],
-    coinType: 118,
-    features: ["ibc-transfer", "ibc-go"],
+    coinType: 60,
+    features: ["ibc-transfer", "ibc-go", "eth-key-sign", "eth-address-gen"],
   },
   {
     rpc: OSMOSIS_RPC_ENDPOINT,

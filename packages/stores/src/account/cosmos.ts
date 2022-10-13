@@ -289,7 +289,9 @@ export class CosmosAccountImpl {
           recipient.replace("0x", "").toLowerCase(),
           "hex"
         );
-        return new Bech32Address(buf).toBech32(bech32prefix);
+        const bech32Add = new Bech32Address(buf).toBech32(bech32prefix);
+        console.log("__DEBUG__ converterAdd: ", bech32Add);
+        return bech32Add;
       }
       return recipient;
     };
@@ -315,6 +317,8 @@ export class CosmosAccountImpl {
             ],
           },
         };
+
+        console.log("__DEBUG__ sendMsg: ", msg);
 
         await this.sendMsgs(
           "send",
@@ -394,7 +398,7 @@ export class CosmosAccountImpl {
       );
       txHash = result.txHash;
       signDoc = result.signDoc;
-    } catch (e) {
+    } catch (e: any) {
       this.base.setTxTypeInProgress("");
 
       if (this.txOpts.preTxEvents?.onBroadcastFailed) {

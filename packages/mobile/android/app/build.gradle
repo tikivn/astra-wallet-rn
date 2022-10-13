@@ -125,8 +125,10 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  * and the benefits of using Hermes will therefore be sharply reduced.
  */
 def enableHermes = project.ext.react.get("enableHermes", false);
+apply from: '../gradle/props.ext.gradle'
 
 android {
+    ext.theRootDir = "$project.rootDir"
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     compileOptions {
@@ -135,11 +137,11 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.chainapsis.keplr"
+        applicationId "io.astranaut.app.wallet"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 6
-        versionName "1.0.0"
+        versionCode getPropOrDefault('ASTRA_WALLET_ANDROID_VERSION_CODE', '6').toInteger()
+        versionName getPropOrDefault('ASTRA_WALLET_ANDROID_VERSION_NAME', '1.0.0')
 
         missingDimensionStrategy 'react-native-camera', 'general'
     }
@@ -153,22 +155,60 @@ android {
     }
     signingConfigs {
         debug {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
+            def keyFolder = "$theRootDir/keys/debug"
+            def keysPass = file("$keyFolder/keys-pass").readLines()
+            storeFile file("$keyFolder/debug.keystore")
+            storePassword keysPass.get(0)
+            keyAlias keysPass.get(1)
+            keyPassword keysPass.get(2)
+        }
+        release {
+            // Caution! DO NOT commit raw value of release key to git
+            def keyFile = getProp("ASTRA_WALLET_ANDROID_KEY_FILE")
+            def keyPassFile = getProp("ASTRA_WALLET_ANDROID_KEY_PASS_FILE")
+            def isCI = getProp("CI")
+            if ((keyFile == "" || keyPassFile == "") && isCI == '1') {
+                keyFile = "$theRootDir/keys/debug/debug.keystore"
+                keyPassFile = "$theRootDir/keys/debug/keys-pass"
+            } else if (keyFile == "" || keyPassFile == "") {
+                throw new GradleException(
+                    "No value for env key: 'ASTRA_WALLET_ANDROID_KEY_FILE' or 'ASTRA_WALLET_ANDROID_KEY_PASS_FILE'." + 
+                    "\nFor local build and use debug key, set env key 'CI' to 1"
+                )
+            }
+            def keysPass = file(keyPassFile).readLines()
+            storeFile file(keyFile)
+            storePassword keysPass.get(0)
+            keyAlias keysPass.get(1)
+            keyPassword keysPass.get(2)
         }
     }
     buildTypes {
         debug {
+            resValue "string", "CodePushDeploymentKey", "\"${getProp('ASTRA_HUB_APP_CENTER_ANDROID_UAT')}\""
             signingConfig signingConfigs.debug
         }
+
         release {
+            // key for CodePush Prod
+            resValue "string", "CodePushDeploymentKey", "\"${getProp('ASTRA_HUB_APP_CENTER_ANDROID_PROD')}\""
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        }
+
+        releaseUAT {
+            // key for CodePush UAT 
+            resValue "string", "CodePushDeploymentKey", "\"${getProp('ASTRA_HUB_APP_CENTER_ANDROID_UAT')}\""
+            signingConfig signingConfigs.release
+            minifyEnabled enableProguardInReleaseBuilds
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+
+            // Note: It's a good idea to provide matchingFallbacks for the new buildType you create to prevent build issues
+            // Add the following line if not already there
+            matchingFallbacks = ['release']
         }
     }
 

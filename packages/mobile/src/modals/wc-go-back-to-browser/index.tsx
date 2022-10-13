@@ -27,7 +27,7 @@ export const WCGoBackToBrowserModal: FunctionComponent<{
                 cx="21"
                 cy="21"
                 r="21"
-                fill={style.get("color-blue-400").color}
+                fill={style.get("color-primary").color}
               />
               <Path
                 stroke="#fff"
@@ -38,7 +38,7 @@ export const WCGoBackToBrowserModal: FunctionComponent<{
               />
             </Svg>
           </View>
-          <Text style={style.flatten(["subtitle1", "color-text-middle"])}>
+          <Text style={style.flatten(["subtitle1", "color-text-black-medium"])}>
             Go back to your browser
           </Text>
         </View>

@@ -3,7 +3,6 @@ import {
   AddressBookConfigMap,
   RegisterConfig,
 } from "@keplr-wallet/hooks";
-import WalletConnect from "@walletconnect/client";
 import AES, { Counter } from "aes-js";
 import { Buffer } from "buffer/";
 import { ExportKeyRingData } from "@keplr-wallet/background";

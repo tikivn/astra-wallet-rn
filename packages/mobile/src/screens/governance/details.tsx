@@ -2,7 +2,7 @@ import React, { FunctionComponent, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { PageWithScrollView } from "../../components/page";
 import { Platform, StyleSheet, Text, View, ViewStyle } from "react-native";
-import { Card, CardBody } from "../../components/card";
+import { Card, CardBody, CardDivider } from "../../components/card";
 import { useStyle } from "../../styles";
 import { Button } from "../../components/button";
 import { useStore } from "../../stores";
@@ -15,13 +15,13 @@ import { useIntl } from "react-intl";
 import { dateToLocalString } from "./utils";
 import { registerModal } from "../../modals/base";
 import { RectButton } from "../../components/rect-button";
-import { useSmartNavigation } from "../../navigation";
+import { useSmartNavigation } from "../../navigation-util";
 
 export const TallyVoteInfoView: FunctionComponent<{
   vote: "yes" | "no" | "abstain" | "noWithVeto";
   percentage: IntPretty;
-  highlight?: boolean;
-}> = ({ vote, percentage, highlight = false }) => {
+  hightlight?: boolean;
+}> = ({ vote, percentage, hightlight = false }) => {
   const style = useStyle();
 
   const text = (() => {
@@ -45,40 +45,31 @@ export const TallyVoteInfoView: FunctionComponent<{
           "padding-8",
           "border-radius-4",
           "border-width-1",
-          "border-color-gray-50",
-          "dark:border-color-platinum-500",
+          "border-color-border-white",
         ],
-        [
-          highlight && "background-color-blue-50",
-          highlight && "border-color-blue-50",
-          highlight && "dark:background-color-platinum-700",
-          highlight && "dark:border-color-platinum-700",
-        ]
+        [hightlight && "background-color-primary-10"]
       )}
     >
       <View style={style.flatten(["flex-row", "height-full"])}>
         <View
-          style={style.flatten(
-            [
-              "width-4",
-              "background-color-blue-100",
-              "dark:background-color-platinum-500",
-              "margin-right-8",
-            ],
-            [highlight && "background-color-blue-400"]
-          )}
+          style={style.flatten([
+            "width-4",
+            "background-color-primary",
+            "margin-right-8",
+          ])}
         />
         <View style={style.flatten(["justify-center"])}>
           <Text
-            style={style.flatten(
-              ["text-caption1", "color-text-low", "margin-bottom-2"],
-              [highlight && "color-text-high"]
-            )}
+            style={style.flatten([
+              "text-caption1",
+              "color-text-black-low",
+              "margin-bottom-2",
+            ])}
           >
             {text}
           </Text>
           <Text
-            style={style.flatten(["text-button3", "color-text-middle"])}
+            style={style.flatten(["text-button3", "color-text-black-medium"])}
           >{`${percentage.trim(true).maxDecimals(1).toString()}%`}</Text>
         </View>
       </View>
@@ -129,13 +120,17 @@ export const GovernanceDetailsCardBody: FunctionComponent<{
             ])}
           >
             <Text
-              style={style.flatten(["h6", "color-text-high"])}
+              style={style.flatten(["h6", "color-text-black-high"])}
             >{`#${proposal.id}`}</Text>
             <View style={style.flatten(["flex-1"])} />
             <GovernanceProposalStatusChip status={proposal.proposalStatus} />
           </View>
           <Text
-            style={style.flatten(["h6", "color-text-high", "margin-bottom-16"])}
+            style={style.flatten([
+              "h6",
+              "color-text-black-high",
+              "margin-bottom-16",
+            ])}
             // Text selection is only supported well in android.
             // In IOS, the whole text would be selected, this process is somewhat strange, so it is disabled in IOS.
             selectable={Platform.OS === "android"}
@@ -150,12 +145,12 @@ export const GovernanceDetailsCardBody: FunctionComponent<{
                 "margin-bottom-6",
               ])}
             >
-              <Text style={style.flatten(["h7", "color-text-middle"])}>
+              <Text style={style.flatten(["h7", "color-text-black-medium"])}>
                 Turnout
               </Text>
               <View style={style.flatten(["flex-1"])} />
               <Text
-                style={style.flatten(["body3", "color-text-middle"])}
+                style={style.flatten(["body3", "color-text-black-medium"])}
               >{`${proposal.turnout
                 .trim(true)
                 .maxDecimals(1)
@@ -164,8 +159,7 @@ export const GovernanceDetailsCardBody: FunctionComponent<{
             <View
               style={style.flatten([
                 "height-8",
-                "background-color-gray-50",
-                "dark:background-color-platinum-500",
+                "background-color-border-white",
                 "border-radius-32",
                 "overflow-hidden",
               ])}
@@ -174,7 +168,7 @@ export const GovernanceDetailsCardBody: FunctionComponent<{
                 style={StyleSheet.flatten([
                   style.flatten([
                     "height-8",
-                    "background-color-blue-400",
+                    "background-color-primary",
                     "border-radius-32",
                   ]),
                   {
@@ -186,13 +180,13 @@ export const GovernanceDetailsCardBody: FunctionComponent<{
               />
             </View>
           </View>
-          <View style={style.flatten(["margin-bottom-24"])}>
+          <View>
             <View style={style.flatten(["flex-row", "margin-bottom-8"])}>
               <View style={style.flatten(["flex-1"])}>
                 <TallyVoteInfoView
                   vote="yes"
                   percentage={proposal.tallyRatio.yes}
-                  highlight={voted === "Yes"}
+                  hightlight={voted === "Yes"}
                 />
               </View>
               <View style={style.flatten(["width-12"])} />
@@ -200,7 +194,7 @@ export const GovernanceDetailsCardBody: FunctionComponent<{
                 <TallyVoteInfoView
                   vote="no"
                   percentage={proposal.tallyRatio.no}
-                  highlight={voted === "No"}
+                  hightlight={voted === "No"}
                 />
               </View>
             </View>
@@ -209,7 +203,7 @@ export const GovernanceDetailsCardBody: FunctionComponent<{
                 <TallyVoteInfoView
                   vote="noWithVeto"
                   percentage={proposal.tallyRatio.noWithVeto}
-                  highlight={voted === "NoWithVeto"}
+                  hightlight={voted === "NoWithVeto"}
                 />
               </View>
               <View style={style.flatten(["width-12"])} />
@@ -217,37 +211,26 @@ export const GovernanceDetailsCardBody: FunctionComponent<{
                 <TallyVoteInfoView
                   vote="abstain"
                   percentage={proposal.tallyRatio.abstain}
-                  highlight={voted === "Abstain"}
+                  hightlight={voted === "Abstain"}
                 />
               </View>
             </View>
           </View>
-          <View style={style.flatten(["flex-row", "margin-bottom-24"])}>
+          <CardDivider style={style.flatten(["margin-x-0", "margin-y-16"])} />
+          <View style={style.flatten(["flex-row", "margin-bottom-12"])}>
             <View style={style.flatten(["flex-1"])}>
-              <Text style={style.flatten(["h7", "color-text-middle"])}>
+              <Text style={style.flatten(["h7", "color-text-black-medium"])}>
                 Voting Start
               </Text>
-              <Text
-                style={style.flatten([
-                  "body3",
-                  "color-text-middle",
-                  "dark:color-platinum-200",
-                ])}
-              >
+              <Text style={style.flatten(["body3", "color-text-black-medium"])}>
                 {dateToLocalString(intl, proposal.raw.voting_start_time)}
               </Text>
             </View>
             <View style={style.flatten(["flex-1"])}>
-              <Text style={style.flatten(["h7", "color-text-middle"])}>
+              <Text style={style.flatten(["h7", "color-text-black-medium"])}>
                 Voting End
               </Text>
-              <Text
-                style={style.flatten([
-                  "body3",
-                  "color-text-middle",
-                  "dark:color-platinum-200",
-                ])}
-              >
+              <Text style={style.flatten(["body3", "color-text-black-medium"])}>
                 {dateToLocalString(intl, proposal.raw.voting_end_time)}
               </Text>
             </View>
@@ -255,18 +238,14 @@ export const GovernanceDetailsCardBody: FunctionComponent<{
           <Text
             style={style.flatten([
               "h7",
-              "color-text-middle",
+              "color-text-black-medium",
               "margin-bottom-4",
             ])}
           >
             Description
           </Text>
           <Text
-            style={style.flatten([
-              "body3",
-              "color-text-middle",
-              "dark:color-platinum-200",
-            ])}
+            style={style.flatten(["body3", "color-text-black-medium"])}
             // Text selection is only supported well in android.
             // In IOS, the whole text would be selected, this process is somewhat strange, so it is disabled in IOS.
             selectable={Platform.OS === "android"}
@@ -299,6 +278,7 @@ export const GovernanceVoteModal: FunctionComponent<{
       accountStore,
       queriesStore,
       analyticsStore,
+      transactionStore,
     } = useStore();
 
     const account = accountStore.getAccount(chainStore.current.chainId);
@@ -320,8 +300,7 @@ export const GovernanceVoteModal: FunctionComponent<{
               "width-24",
               "height-24",
               "border-radius-32",
-              "background-color-blue-400",
-              "dark:background-color-blue-300",
+              "background-color-primary",
               "items-center",
               "justify-center",
             ])}
@@ -344,17 +323,13 @@ export const GovernanceVoteModal: FunctionComponent<{
               "height-24",
               "border-radius-32",
               "background-color-white",
-              "dark:background-color-platinum-600",
               "border-width-1",
-              "border-color-gray-100",
-              "dark:border-color-platinum-300",
+              "border-color-text-black-very-low",
             ])}
           />
         );
       }
     };
-
-    const [isSendingTx, setIsSendingTx] = useState(false);
 
     return (
       <View style={style.flatten(["padding-page"])}>
@@ -363,7 +338,6 @@ export const GovernanceVoteModal: FunctionComponent<{
             "border-radius-8",
             "overflow-hidden",
             "background-color-white",
-            "dark:background-color-platinum-600",
           ])}
         >
           <RectButton
@@ -376,18 +350,20 @@ export const GovernanceVoteModal: FunctionComponent<{
                 "items-center",
                 "justify-between",
               ],
-              [
-                vote === "Yes" && "background-color-blue-50",
-                vote === "Yes" && "dark:background-color-platinum-500",
-              ]
+              [vote === "Yes" && "background-color-primary-10"]
             )}
             onPress={() => setVote("Yes")}
           >
-            <Text style={style.flatten(["subtitle1", "color-text-middle"])}>
+            <Text
+              style={style.flatten(["subtitle1", "color-text-black-medium"])}
+            >
               Yes
             </Text>
             {renderBall(vote === "Yes")}
           </RectButton>
+          <View
+            style={style.flatten(["height-1", "background-color-divider"])}
+          />
           <RectButton
             style={style.flatten(
               [
@@ -398,18 +374,20 @@ export const GovernanceVoteModal: FunctionComponent<{
                 "items-center",
                 "justify-between",
               ],
-              [
-                vote === "No" && "background-color-blue-50",
-                vote === "No" && "dark:background-color-platinum-500",
-              ]
+              [vote === "No" && "background-color-primary-10"]
             )}
             onPress={() => setVote("No")}
           >
-            <Text style={style.flatten(["subtitle1", "color-text-middle"])}>
+            <Text
+              style={style.flatten(["subtitle1", "color-text-black-medium"])}
+            >
               No
             </Text>
             {renderBall(vote === "No")}
           </RectButton>
+          <View
+            style={style.flatten(["height-1", "background-color-divider"])}
+          />
           <RectButton
             style={style.flatten(
               [
@@ -420,18 +398,20 @@ export const GovernanceVoteModal: FunctionComponent<{
                 "items-center",
                 "justify-between",
               ],
-              [
-                vote === "NoWithVeto" && "background-color-blue-50",
-                vote === "NoWithVeto" && "dark:background-color-platinum-500",
-              ]
+              [vote === "NoWithVeto" && "background-color-primary-10"]
             )}
             onPress={() => setVote("NoWithVeto")}
           >
-            <Text style={style.flatten(["subtitle1", "color-text-middle"])}>
+            <Text
+              style={style.flatten(["subtitle1", "color-text-black-medium"])}
+            >
               No with veto
             </Text>
             {renderBall(vote === "NoWithVeto")}
           </RectButton>
+          <View
+            style={style.flatten(["height-1", "background-color-divider"])}
+          />
           <RectButton
             style={style.flatten(
               [
@@ -442,14 +422,13 @@ export const GovernanceVoteModal: FunctionComponent<{
                 "items-center",
                 "justify-between",
               ],
-              [
-                vote === "Abstain" && "background-color-blue-50",
-                vote === "Abstain" && "dark:background-color-platinum-500",
-              ]
+              [vote === "Abstain" && "background-color-primary-10"]
             )}
             onPress={() => setVote("Abstain")}
           >
-            <Text style={style.flatten(["subtitle1", "color-text-middle"])}>
+            <Text
+              style={style.flatten(["subtitle1", "color-text-black-medium"])}
+            >
               Abstain
             </Text>
             {renderBall(vote === "Abstain")}
@@ -460,30 +439,15 @@ export const GovernanceVoteModal: FunctionComponent<{
           text="Vote"
           size="large"
           disabled={vote === "Unspecified" || !account.isReadyToSendMsgs}
-          loading={isSendingTx || account.isSendingMsg === "govVote"}
+          loading={account.isSendingMsg === "govVote"}
           onPress={async () => {
             if (vote !== "Unspecified" && account.isReadyToSendMsgs) {
-              const tx = account.cosmos.makeGovVoteTx(proposalId, vote);
-
-              setIsSendingTx(true);
-
               try {
-                let gas = account.cosmos.msgOpts.govVote.gas;
-
-                // Gas adjustment is 1.5
-                // Since there is currently no convenient way to adjust the gas adjustment on the UI,
-                // Use high gas adjustment to prevent failure.
-                try {
-                  gas = (await tx.simulate()).gasUsed * 1.5;
-                } catch (e) {
-                  // Some chain with older version of cosmos sdk (below @0.43 version) can't handle the simulation.
-                  // Therefore, the failure is expected. If the simulation fails, simply use the default value.
-                  console.log(e);
-                }
-
-                await tx.send(
-                  { amount: [], gas: gas.toString() },
+                await account.cosmos.sendGovVoteMsg(
+                  proposalId,
+                  vote,
                   "",
+                  {},
                   {},
                   {
                     onBroadcasted: (txHash) => {
@@ -493,9 +457,7 @@ export const GovernanceVoteModal: FunctionComponent<{
                         proposalId,
                         proposalTitle: proposal?.title,
                       });
-                      smartNavigation.pushSmart("TxPendingResult", {
-                        txHash: Buffer.from(txHash).toString("hex"),
-                      });
+                      transactionStore.updateTxHash(txHash);
                     },
                   }
                 );
@@ -504,10 +466,9 @@ export const GovernanceVoteModal: FunctionComponent<{
                 if (e?.message === "Request rejected") {
                   return;
                 }
+                transactionStore.rejectTransaction();
                 console.log(e);
-                smartNavigation.navigateSmart("Home", {});
-              } finally {
-                setIsSendingTx(false);
+                smartNavigation.navigateSmart("NewHome", {});
               }
             }
           }}
@@ -563,7 +524,6 @@ export const GovernanceDetailsScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollView
-      backgroundMode="gradient"
       fixed={
         <View
           style={style.flatten(["flex-1", "padding-page"])}

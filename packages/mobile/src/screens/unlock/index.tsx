@@ -5,32 +5,39 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Dimensions, Image, StatusBar, StyleSheet, View } from "react-native";
+import {
+  Dimensions,
+  Image,
+  StatusBar,
+  StyleSheet,
+  View,
+  Text,
+  Platform,
+  SafeAreaView,
+} from "react-native";
 import Animated, { Easing } from "react-native-reanimated";
 import { observer } from "mobx-react-lite";
-import { useStyle, useStyleThemeController } from "../../styles";
-import * as SplashScreen from "expo-splash-screen";
-import { TextInput } from "../../components/input";
-import { Button } from "../../components/button";
+import { useStyle } from "../../styles";
+import { Button, TextLink } from "../../components/button";
 import delay from "delay";
 import { useStore } from "../../stores";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { StackActions, useNavigation } from "@react-navigation/native";
 import { KeyRingStatus } from "@keplr-wallet/background";
 import { KeychainStore } from "../../stores/keychain";
 import { IAccountStore } from "@keplr-wallet/stores";
 import { autorun } from "mobx";
-import { SimpleGradient } from "../../components/svg";
-
-let splashScreenHided = false;
-async function hideSplashScreen() {
-  if (!splashScreenHided) {
-    console.log("Hide Splash screen");
-    if (await SplashScreen.hideAsync()) {
-      splashScreenHided = true;
-    }
-  }
-}
+import { NormalInput } from "../../components/input/normal-input";
+import { useIntl } from "react-intl";
+import { BiometricsIcon } from "../../components";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { useRegisterConfig } from "@keplr-wallet/hooks";
+import { useBIP44Option } from "../register/bip44";
+import { BIOMETRY_TYPE } from "react-native-keychain";
+import { AvoidingKeyboardBottomView } from "../../components/avoiding-keyboard/avoiding-keyboard-bottom";
+import { hideSplashScreen } from "../splash";
+import { useLanguage } from "../../translations";
+import { MIN_PASSWORD_LENGTH } from "../../common/utils";
+import { RegisterType } from "../../stores/user-login";
 
 async function waitAccountLoad(
   accountStore: IAccountStore,
@@ -100,11 +107,22 @@ const useAutoBiomtric = (keychainStore: KeychainStore, tryEnabled: boolean) => {
  * @constructor
  */
 export const UnlockScreen: FunctionComponent = observer(() => {
-  const { keyRingStore, keychainStore, accountStore, chainStore } = useStore();
+  const {
+    keyRingStore,
+    keychainStore,
+    accountStore,
+    chainStore,
+    userLoginStore,
+    analyticsStore,
+  } = useStore();
 
   const style = useStyle();
+  const intl = useIntl();
+  const language = useLanguage();
 
   const navigation = useNavigation();
+  const registerConfig = useRegisterConfig(keyRingStore, []);
+  const bip44Option = useBIP44Option();
 
   const [isSplashEnd, setIsSplashEnd] = useState(false);
 
@@ -158,6 +176,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   ]);
 
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isBiometricLoading, setIsBiometricLoading] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
@@ -170,8 +189,19 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       await delay(10);
       await keychainStore.tryUnlockWithBiometry();
 
+      analyticsStore.logEvent("astra_hub_login_account", {
+        use_biometrics: true,
+        success: true,
+      });
+
       await hideSplashScreen();
     } catch (e) {
+      analyticsStore.logEvent("astra_hub_login_account", {
+        use_biometrics: true,
+        success: false,
+        error: JSON.stringify(e),
+      });
+
       console.log(e);
       setIsBiometricLoading(false);
     }
@@ -184,15 +214,74 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       // Because javascript is synchronous language, the loadnig state change would not delivered to the UI thread
       // before the actually decryption is complete.
       // So to make sure that the loading state changes, just wait very short time.
+      if (
+        userLoginStore.socialLoginData &&
+        userLoginStore.isSocialLoginActive
+      ) {
+        try {
+          await userLoginStore.reconstructSocialLoginData({ password });
+          const name = userLoginStore.socialLoginData.email;
+          const registerMnemonic = await userLoginStore.getSeedPhrase();
+          const registerPassword = await userLoginStore.getPassword();
+
+          const index = keyRingStore.multiKeyStoreInfo.findIndex(
+            (keyStore: any) => {
+              return keyStore.selected;
+            }
+          );
+          if (index !== -1) {
+            await keyRingStore.forceDeleteKeyRing(index);
+          }
+
+          await registerConfig.createMnemonic(
+            name,
+            registerMnemonic,
+            registerPassword,
+            bip44Option.bip44HDPath
+          );
+
+          if (keychainStore.isBiometrySupported && keychainStore.isBiometryOn) {
+            await keychainStore.turnOnBiometry(registerPassword);
+          }
+        } catch (e) {
+          setIsLoading(false);
+          setIsFailed(true);
+          return;
+        }
+
+        await hideSplashScreen();
+        return;
+      }
+
       await delay(10);
       await keyRingStore.unlock(password);
 
+      analyticsStore.logEvent("astra_hub_login_account", {
+        use_biometrics: false,
+        success: true,
+      });
+
       await hideSplashScreen();
-    } catch (e) {
-      console.log(e);
+    } catch (e: any) {
+      analyticsStore.logEvent("astra_hub_login_account", {
+        use_biometrics: false,
+        success: false,
+        error: JSON.stringify(e),
+      });
+
+      console.log(JSON.stringify(e));
       setIsLoading(false);
       setIsFailed(true);
     }
+  };
+
+  const forgotPasswordHandler = () => {
+    navigation.navigate("Register", {
+      screen: "Register.RecoverMnemonic",
+      params: {
+        registerConfig,
+      },
+    });
   };
 
   const routeToRegisterOnce = useRef(false);
@@ -204,6 +293,17 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       isSplashEnd &&
       keyRingStore.status === KeyRingStatus.EMPTY
     ) {
+      if (
+        userLoginStore.isSocialLoginActive &&
+        userLoginStore.socialLoginData
+      ) {
+        return;
+      }
+
+      if (userLoginStore.registerType === RegisterType.recover) {
+        return;
+      }
+
       (async () => {
         await hideSplashScreen();
         routeToRegisterOnce.current = true;
@@ -218,62 +318,134 @@ export const UnlockScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     if (keyRingStore.status === KeyRingStatus.UNLOCKED) {
+      if (userLoginStore.registerType !== RegisterType.unknown) {
+        return;
+      }
+
       (async () => {
+        userLoginStore.updateRegisterType(RegisterType.unknown);
+
         await hideSplashScreen();
         navigateToHome();
       })();
     }
   }, [keyRingStore.status, navigateToHome]);
 
+  useEffect(() => {
+    setIsFailed(false);
+  }, [password]);
+
+  analyticsStore.setUserProperties({
+    astra_hub_chain_id: chainStore.current.chainId,
+    astra_hub_chain_name: chainStore.current.chainName,
+    astra_hub_app_lang: language.language,
+  });
+
   return (
     <React.Fragment>
-      <UnlockScreenGradientBackground />
-      <View style={style.flatten(["flex-1"])}>
-        <KeyboardAwareScrollView
-          contentContainerStyle={style.flatten(["flex-grow-1"])}
-          indicatorStyle={style.theme === "dark" ? "white" : "black"}
+      <View
+        style={style.flatten(["absolute-fill", "background-color-background"])}
+      >
+        <Image
+          resizeMode="contain"
+          source={require("../../assets/image/background_top.png")}
+        />
+      </View>
+      <View
+        style={style.flatten([
+          "flex-1",
+          "padding-x-page",
+          "background-color-transparent",
+        ])}
+      >
+        <SafeAreaView
+          style={{ paddingTop: Platform.OS === "android" ? 25 : 0 }}
+        />
+        <View style={{ height: 44, marginBottom: 32 }} />
+
+        <Text
+          style={style.flatten([
+            "color-gray-10",
+            "text-medium-regular",
+            "text-center",
+            "margin-bottom-16",
+          ])}
         >
-          <View style={style.get("flex-5")} />
-          <Image
-            style={StyleSheet.flatten([style.flatten(["width-full"])])}
-            fadeDuration={0}
-            resizeMode="contain"
-            source={
-              style.theme === "dark"
-                ? require("../../assets/logo/splash-image-dark-mode.png")
-                : require("../../assets/logo/splash-image.png")
-            }
-          />
-          <View style={style.get("flex-3")} />
-          <View style={style.flatten(["padding-x-page"])}>
-            <TextInput
-              containerStyle={style.flatten(["padding-bottom-40"])}
-              label="Password"
-              returnKeyType="done"
-              secureTextEntry={true}
-              value={password}
-              error={isFailed ? "Invalid password" : undefined}
-              onChangeText={setPassword}
-              onSubmitEditing={tryUnlock}
-            />
-            <Button
-              text="Sign in"
-              size="large"
-              loading={isLoading}
-              onPress={tryUnlock}
-            />
-            {keychainStore.isBiometryOn ? (
-              <Button
-                containerStyle={style.flatten(["margin-top-40"])}
-                text="Use Biometric Authentication"
-                mode="text"
-                loading={isBiometricLoading}
-                onPress={tryBiometric}
+          {intl.formatMessage({ id: "unlock.title" })}
+        </Text>
+
+        <NormalInput
+          value={password}
+          error={
+            isFailed
+              ? intl.formatMessage({ id: "common.text.wrongPassword" })
+              : ""
+          }
+          secureTextEntry={true}
+          showPassword={showPassword}
+          onShowPasswordChanged={setShowPassword}
+          onChangeText={setPassword}
+          onSubmitEditting={tryUnlock}
+          style={{ marginBottom: isFailed ? 24 : 0 }}
+        />
+
+        <TextLink
+          size="medium"
+          onPress={forgotPasswordHandler}
+          style={style.flatten(["margin-y-16"])}
+        >
+          {intl.formatMessage({ id: "unlock.button.forgotPassword.text" })}
+        </TextLink>
+
+        <View style={{ flex: 1, justifyContent: "flex-end", marginBottom: 12 }}>
+          {keychainStore.isBiometryOn ? (
+            <TouchableOpacity
+              onPress={tryBiometric}
+              style={{
+                flexDirection: "row",
+                alignContent: "stretch",
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: 24,
+              }}
+            >
+              <BiometricsIcon
+                color={style.get("color-gray-10").color}
+                type={
+                  keychainStore.isBiometryType === BIOMETRY_TYPE.FACE ||
+                  keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
+                    ? "face"
+                    : "touch"
+                }
               />
-            ) : null}
-          </View>
-          <View style={style.get("flex-7")} />
-        </KeyboardAwareScrollView>
+              <Text
+                style={style.flatten([
+                  "text-base-medium",
+                  "color-gray-10",
+                  "margin-left-8",
+                ])}
+              >
+                {intl.formatMessage({
+                  id:
+                    keychainStore.isBiometryType === BIOMETRY_TYPE.FACE ||
+                    keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
+                      ? "settings.unlockBiometrics.face"
+                      : (Platform.OS === "ios"
+                      ? "settings.unlockBiometrics.touch"
+                      : "settings.unlockBiometrics.fingerprint"),
+                })}
+              </Text>
+            </TouchableOpacity>
+          ) : null}
+
+          <Button
+            text={intl.formatMessage({ id: "unlock.button.login.text" })}
+            loading={isLoading}
+            onPress={tryUnlock}
+            disabled={password.length < MIN_PASSWORD_LENGTH}
+          />
+          <AvoidingKeyboardBottomView />
+        </View>
       </View>
       <Animated.View
         style={StyleSheet.flatten([
@@ -308,7 +480,6 @@ const useAnimationState = () => {
 export const SplashContinuityEffectView: FunctionComponent<{
   onAnimationEnd: () => void;
 }> = ({ onAnimationEnd }) => {
-  const themeController = useStyleThemeController();
   const style = useStyle();
 
   const onAnimationEndRef = useRef(onAnimationEnd);
@@ -343,21 +514,14 @@ export const SplashContinuityEffectView: FunctionComponent<{
   const backgroundHeight = useAnimationState();
 
   useEffect(() => {
-    // When the splash screen disappears and the transition starts, the color should change according to the theme.
-    // In most cases, there is no problem because the theme is loaded very quickly, but it waits for an asynchronous load just in case.
-    if (!themeController.isInitializing && isBackgroundLoaded && logoSize) {
+    if (isBackgroundLoaded && logoSize) {
       (async () => {
         await hideSplashScreen();
 
         animation.isStarted.setValue(1);
       })();
     }
-  }, [
-    themeController.isInitializing,
-    animation.isStarted,
-    isBackgroundLoaded,
-    logoSize,
-  ]);
+  }, [animation.isStarted, isBackgroundLoaded, logoSize]);
 
   const backgroundClippingAnimationDuration = 700;
   const backgroundAnimationDuration = 900;
@@ -512,7 +676,9 @@ export const SplashContinuityEffectView: FunctionComponent<{
 
   return (
     <React.Fragment>
-      <UnlockScreenGradientBackground />
+      <View
+        style={style.flatten(["absolute-fill", "background-color-background"])}
+      />
       <View
         style={style.flatten([
           "absolute-fill",
@@ -597,21 +763,5 @@ export const SplashContinuityEffectView: FunctionComponent<{
         />
       </View>
     </React.Fragment>
-  );
-};
-
-const UnlockScreenGradientBackground: FunctionComponent = () => {
-  const style = useStyle();
-
-  return (
-    <View style={style.flatten(["absolute-fill"])}>
-      <SimpleGradient
-        degree={style.get("unlock-screen-gradient-background").degree}
-        stops={style.get("unlock-screen-gradient-background").stops}
-        fallbackAndroidImage={
-          style.get("unlock-screen-gradient-background").fallbackAndroidImage
-        }
-      />
-    </View>
   );
 };

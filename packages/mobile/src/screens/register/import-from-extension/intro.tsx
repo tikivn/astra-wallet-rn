@@ -8,7 +8,7 @@ import { Button } from "../../../components/button";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import ImportFromExtensionSvg from "../../../assets/svg/import-from-extension.svg";
-import { useSmartNavigation } from "../../../navigation";
+import { useSmartNavigation } from "../../../navigation-util";
 
 export const ImportFromExtensionIntroScreen: FunctionComponent = () => {
   const route = useRoute<
@@ -28,7 +28,7 @@ export const ImportFromExtensionIntroScreen: FunctionComponent = () => {
   const style = useStyle();
 
   return (
-    <PageWithView backgroundMode="secondary">
+    <PageWithView>
       <View style={style.flatten(["padding-page", "flex-grow-1"])}>
         <View style={style.get("flex-2")} />
         <View style={style.flatten(["items-center"])}>
@@ -38,7 +38,7 @@ export const ImportFromExtensionIntroScreen: FunctionComponent = () => {
           <Text
             style={style.flatten([
               "h3",
-              "color-text-high",
+              "color-text-black-high",
               "margin-top-68",
               "margin-bottom-46",
             ])}
@@ -48,7 +48,7 @@ export const ImportFromExtensionIntroScreen: FunctionComponent = () => {
           <Text
             style={style.flatten([
               "body1",
-              "color-text-low",
+              "color-text-black-low",
               "text-center",
               "margin-x-18",
               "margin-bottom-24",
@@ -59,7 +59,7 @@ export const ImportFromExtensionIntroScreen: FunctionComponent = () => {
           <Text
             style={style.flatten([
               "body3",
-              "color-text-low",
+              "color-text-black-low",
               "text-center",
               "margin-x-38",
             ])}

@@ -2,8 +2,9 @@ import { ObservableQuery, QueryResponse } from "../common";
 import { CoinGeckoSimplePrice } from "./types";
 import Axios from "axios";
 import { KVStore, toGenerator } from "@keplr-wallet/common";
-import { Dec, CoinPretty, Int, PricePretty } from "@keplr-wallet/unit";
+import { Dec, CoinPretty, Int } from "@keplr-wallet/unit";
 import { FiatCurrency } from "@keplr-wallet/types";
+import { PricePretty } from "@keplr-wallet/unit/build/price-pretty";
 import { DeepReadonly } from "utility-types";
 import deepmerge from "deepmerge";
 import { action, flow, makeObservable, observable } from "mobx";
@@ -180,10 +181,11 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     } = {}
   ) {
     const instance = Axios.create({
-      baseURL: options.baseURL || "https://api.coingecko.com/api/v3",
+      baseURL: options.baseURL || "https://api.tiki.vn/sandseel/api/v2",
     });
 
-    super(kvStore, instance, "/simple/price");
+    super(kvStore, instance, "/public/markets/astra/summary");
+    super.fetch();
 
     this.isInitialized = false;
 
@@ -372,5 +374,10 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     const priceDec = new Dec(price.toString());
 
     return new PricePretty(fiatCurrency, dec.mul(priceDec));
+  }
+
+  getPriceChangePercent(): string {
+    const percent = this.response?.data?.ticker?.price_change_percent;
+    return String(percent || "0%");
   }
 }

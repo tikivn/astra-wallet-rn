@@ -6,7 +6,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useWebViewState } from "../context";
 import Svg, { Path } from "react-native-svg";
 import { RectButton } from "../../../../components/rect-button";
-import { useSmartNavigation } from "../../../../navigation";
+import { useSmartNavigation } from "../../../../navigation-util";
+import { LeftArrowIcon } from "../../../../components";
 
 const ArrowLeftIcon: FunctionComponent<{
   size: number;
@@ -25,7 +26,7 @@ const ArrowLeftIcon: FunctionComponent<{
   );
 };
 
-const ArrowRightIcon: FunctionComponent<{
+const ArrowAllIcon: FunctionComponent<{
   size: number;
   color: string;
 }> = ({ size = 32, color }) => {
@@ -98,8 +99,7 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = () => {
             (Platform.OS === "ios" && safeAreaInsets.top > 44 ? 6 : 0),
         },
         style.flatten([
-          "background-color-white",
-          "dark:background-color-platinum-600",
+          "background-color-background",
           "flex-row",
           "items-center",
         ]),
@@ -114,7 +114,12 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = () => {
         ])}
       >
         {/* Name and refresh icon on center */}
-        <RectButton
+        <Text
+          style={style.flatten(["title2", "color-white", "margin-right-8"])}
+        >
+          {webViewState.name}
+        </Text>
+        {/* <RectButton
           style={style.flatten([
             "flex-row",
             "items-center",
@@ -130,17 +135,12 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = () => {
           }}
         >
           <Text
-            style={style.flatten(["h4", "color-text-middle", "margin-right-8"])}
+            style={style.flatten(["title2", "color-white", "margin-right-8"])}
           >
             {webViewState.name}
           </Text>
-          <RefreshIcon
-            size={20}
-            color={
-              style.flatten(["color-gray-200", "dark:color-platinum-300"]).color
-            }
-          />
-        </RectButton>
+          <RefreshIcon size={20} color={style.get("color-white").color} />
+        </RectButton> */}
 
         {/* Other buttons like the back, forward, home... */}
         <View
@@ -162,11 +162,11 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = () => {
             style={style.flatten([
               "border-radius-4",
               "padding-4",
-              "margin-left-20",
+              "margin-left-12",
             ])}
-            rippleColor={
-              style.flatten(["color-blue-50", "dark:color-platinum-300"]).color
-            }
+            rippleColor={style.get("color-primary-50").color}
+            activeOpacity={1}
+            underlayColor={style.get("color-primary-10").color}
             onPress={() => {
               if (!webViewState.canGoBack) {
                 smartNavigation.goBack();
@@ -175,58 +175,42 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = () => {
               }
             }}
           >
-            <ArrowLeftIcon
-              size={32}
-              color={
-                style.flatten(["color-blue-400", "dark:color-platinum-50"])
-                  .color
-              }
-            />
+            <LeftArrowIcon size={24} color={style.get("color-white").color} />
           </RectButton>
-          <RectButton
+          {/* <RectButton
             style={style.flatten([
               "border-radius-4",
               "padding-4",
               "margin-left-8",
             ])}
-            rippleColor={
-              style.flatten(["color-blue-50", "dark:color-platinum-300"]).color
-            }
+            rippleColor={style.get("color-primary-50").color}
+            activeOpacity={1}
+            underlayColor={style.get("color-primary-10").color}
             onPress={() => {
               if (webViewState.webView) {
                 webViewState.webView.goForward();
               }
             }}
           >
-            <ArrowRightIcon
-              size={32}
-              color={
-                style.flatten(["color-blue-400", "dark:color-platinum-50"])
-                  .color
-              }
-            />
-          </RectButton>
+            <ArrowAllIcon size={32} color={style.get("color-white").color} />
+          </RectButton> */}
           <View style={style.get("flex-1")} />
           <RectButton
             style={style.flatten([
               "border-radius-4",
               "padding-4",
-              "margin-right-20",
+              "margin-right-12",
             ])}
-            rippleColor={
-              style.flatten(["color-blue-50", "dark:color-platinum-300"]).color
-            }
+            rippleColor={style.get("color-primary-50").color}
+            activeOpacity={1}
+            underlayColor={style.get("color-primary-10").color}
             onPress={() => {
-              smartNavigation.navigateSmart("Web.Intro", {});
+              if (webViewState.webView) {
+                webViewState.webView.reload();
+              }
             }}
           >
-            <HomeIcon
-              size={32}
-              color={
-                style.flatten(["color-blue-400", "dark:color-platinum-50"])
-                  .color
-              }
-            />
+            <RefreshIcon size={20} color={style.get("color-white").color} />
           </RectButton>
         </View>
       </View>

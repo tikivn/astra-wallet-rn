@@ -44,6 +44,12 @@ export class AccountSetBase {
 
   @observable
   protected _bech32Address: string = "";
+  
+  @observable
+  protected _bech32Prefix: string = "";
+
+  @observable
+  protected _hexAddress: string = "";
 
   @observable
   protected _txTypeInProgress: string = "";
@@ -127,7 +133,7 @@ export class AccountSetBase {
 
   protected async enable(keplr: Keplr, chainId: string): Promise<void> {
     const chainInfo = this.chainGetter.getChain(chainId);
-
+    this._bech32Prefix = chainInfo.bech32Config.bech32PrefixAccAddr;
     if (this.opts.suggestChain) {
       if (this.opts.suggestChainFn) {
         await this.opts.suggestChainFn(keplr, chainInfo);
@@ -177,7 +183,7 @@ export class AccountSetBase {
 
     try {
       yield this.enable(keplr, this.chainId);
-    } catch (e) {
+    } catch (e: any) {
       console.log(e);
       this._walletStatus = WalletStatus.Rejected;
       this._rejectionReason = e;
@@ -187,16 +193,19 @@ export class AccountSetBase {
     try {
       const key = yield* toGenerator(keplr.getKey(this.chainId));
       this._bech32Address = key.bech32Address;
+      const buffer = Buffer.from(key.address);
+      this._hexAddress = `0x${buffer.toString("hex")}`;
       this._name = key.name;
       this.pubKey = key.pubKey;
 
       // Set the wallet status as loaded after getting all necessary infos.
       this._walletStatus = WalletStatus.Loaded;
-    } catch (e) {
+    } catch (e: any) {
       console.log(e);
       // Caught error loading key
       // Reset properties, and set status to Rejected
       this._bech32Address = "";
+      this._hexAddress = "";
       this._name = "";
       this.pubKey = new Uint8Array(0);
 
@@ -219,6 +228,7 @@ export class AccountSetBase {
       this.handleInit
     );
     this._bech32Address = "";
+    this._hexAddress = "";
     this._name = "";
     this.pubKey = new Uint8Array(0);
   }

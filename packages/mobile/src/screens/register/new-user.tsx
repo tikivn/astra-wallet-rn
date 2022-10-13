@@ -1,18 +1,12 @@
 import React, { FunctionComponent } from "react";
 import { useHeaderHeight } from "@react-navigation/stack";
 import { PageWithScrollView } from "../../components/page";
+import { AstraLogo } from "../../components/svg";
 import { GoogleIcon, AppleIcon } from "../../components/icon";
 import { useStyle } from "../../styles";
-import {
-  View,
-  Text,
-  Dimensions,
-  Platform,
-  StyleSheet,
-  Image,
-} from "react-native";
+import { View, Text, Dimensions, Platform, StyleSheet } from "react-native";
 import { Button } from "../../components/button";
-import { useSmartNavigation } from "../../navigation";
+import { useSmartNavigation } from "../../navigation-util";
 import { useRegisterConfig } from "@keplr-wallet/hooks";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
@@ -33,7 +27,6 @@ export const RegisterNewUserScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollView
-      backgroundMode="gradient"
       contentContainerStyle={style.get("flex-grow-1")}
       style={StyleSheet.flatten([
         style.flatten(["padding-x-42"]),
@@ -47,27 +40,14 @@ export const RegisterNewUserScreen: FunctionComponent = observer(() => {
       <View
         style={style.flatten(["flex-grow-1", "items-center", "padding-x-18"])}
       >
-        <Image
-          source={
-            style.theme === "dark"
-              ? require("../../assets/logo/keplr-logo-dark-mode.png")
-              : require("../../assets/logo/keplr-logo.png")
-          }
-          style={{
-            height: 90,
-            aspectRatio: 2.977,
-          }}
-          resizeMode="contain"
-          fadeDuration={0}
-        />
+        <AstraLogo width="100%" />
       </View>
       {Platform.OS === "ios" ? (
         <Button
           containerStyle={style.flatten([
             "margin-bottom-20",
             "border-width-1",
-            "border-color-gray-50",
-            "dark:border-color-platinum-400",
+            "border-color-divider",
           ])}
           text="Sign in with Apple"
           leftIcon={
@@ -77,11 +57,7 @@ export const RegisterNewUserScreen: FunctionComponent = observer(() => {
           }
           style={style.flatten(["background-color-white"])}
           textStyle={style.flatten(["color-black"])}
-          underlayColor={
-            style.flatten(["color-gray-50", "dark:color-gray-100"]).color
-          }
           size="large"
-          mode="light"
           onPress={() => {
             analyticsStore.logEvent("OAuth sign in started", {
               registerType: "apple",
@@ -102,7 +78,6 @@ export const RegisterNewUserScreen: FunctionComponent = observer(() => {
           </View>
         }
         size="large"
-        mode="light"
         onPress={() => {
           analyticsStore.logEvent("OAuth sign in started", {
             registerType: "google",
@@ -117,7 +92,7 @@ export const RegisterNewUserScreen: FunctionComponent = observer(() => {
         style={style.flatten([
           "margin-bottom-20",
           "text-center",
-          "color-text-low",
+          "color-text-black-low",
         ])}
       >
         Powered by Torus

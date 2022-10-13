@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { RegisterConfig } from "@keplr-wallet/hooks";
 import { useStyle } from "../../../styles";
-import { useSmartNavigation } from "../../../navigation";
+import { useSmartNavigation } from "../../../navigation-util";
 import { Controller, useForm } from "react-hook-form";
 import { PageWithScrollView } from "../../../components/page";
 import { TextInput } from "../../../components/input";
@@ -357,7 +357,6 @@ export const TorusSignInScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollView
-      backgroundMode="tertiary"
       contentContainerStyle={style.get("flex-grow-1")}
       style={style.flatten(["padding-x-page"])}
     >

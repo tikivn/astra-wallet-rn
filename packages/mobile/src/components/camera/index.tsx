@@ -3,11 +3,11 @@ import { RNCamera } from "react-native-camera";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { useStyle } from "../../styles";
 import { StyleSheet, Text, View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { CloseIcon } from "../icon";
-import Svg, { Path } from "react-native-svg";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { LoadingSpinner } from "../spinner";
+import { BarcodeMask } from "@nartc/react-native-barcode-mask";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { CloseIcon, LeftArrowIcon } from "../icon";
+import { RectButton } from "../rect-button";
 
 export const FullScreenCameraView: FunctionComponent<
   React.ComponentProps<typeof RNCamera> & {
@@ -17,10 +17,8 @@ export const FullScreenCameraView: FunctionComponent<
 > = (props) => {
   const style = useStyle();
 
-  const navigation = useNavigation();
-
   const isFocused = useIsFocused();
-
+  const navigation = useNavigation();
   const {
     children,
     containerBottom,
@@ -38,94 +36,84 @@ export const FullScreenCameraView: FunctionComponent<
             propStyle,
           ])}
           {...rest}
-        />
+        >
+          <BarcodeMask
+            edgeBorderWidth={4}
+            width={304}
+            height={304}
+            edgeColor={"#FFFFFF"}
+            edgeRadius={16}
+            backgroundColor={"#141828"}
+            maskOpacity={0.7}
+            edgeHeight={32}
+            edgeWidth={32}
+          />
+        </RNCamera>
       ) : null}
-      <SafeAreaView style={style.flatten(["absolute-fill", "items-center"])}>
+
+      <View style={style.flatten(["absolute-fill", "items-center"])}>
         <View style={style.flatten(["flex-row"])}>
-          <View style={style.get("flex-1")} />
+          <View style={style.flatten(["flex"])} />
           {navigation.canGoBack() ? (
-            <TouchableOpacity
+            <RectButton
+              style={style.flatten([
+                "border-radius-32",
+                "padding-4",
+                "margin-top-44",
+                "margin-left-20",
+                "background-color-black-transparent",
+                "width-32",
+                "height-32",
+              ])}
               onPress={() => {
                 navigation.goBack();
               }}
             >
-              <View
-                style={style.flatten([
-                  "width-38",
-                  "height-38",
-                  "border-radius-64",
-                  "background-color-blue-100",
-                  "dark:background-color-platinum-500",
-                  "opacity-90",
-                  "margin-top-8",
-                  "margin-right-16",
-                  "items-center",
-                  "justify-center",
-                ])}
-              >
-                <CloseIcon
-                  size={28}
-                  color={
-                    style.flatten(["color-blue-400", "dark:color-platinum-50"])
-                      .color
-                  }
-                />
-              </View>
-            </TouchableOpacity>
+              <LeftArrowIcon size={24} color={style.get("color-white").color} />
+            </RectButton>
           ) : null}
+          <View style={style.flatten(["flex-1"])} />
         </View>
-        <View style={style.get("flex-1")} />
-        <View>
-          <Svg width="217" height="217" fill="none" viewBox="0 0 217 217">
-            <Path
-              stroke={style.get("color-blue-400").color}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="6"
-              d="M34 3H3v31M3 183v31h31M183 3h31v31M214 183v31h-31"
-            />
-          </Svg>
-          {isLoading ? (
+        <View style={style.get("flex-5")} />
+
+        {isLoading ? (
+          <View
+            style={style.flatten([
+              "absolute-fill",
+              "items-center",
+              "justify-center",
+            ])}
+          >
             <View
               style={style.flatten([
-                "absolute-fill",
+                "padding-x-32",
+                "padding-top-48",
+                "padding-bottom-31",
+                "background-color-camera-loading-background",
+                "border-radius-8",
                 "items-center",
-                "justify-center",
               ])}
             >
-              <View
+              <LoadingSpinner
+                size={42}
+                color={style.get("color-primary").color}
+              />
+              <Text
                 style={style.flatten([
-                  "padding-x-32",
-                  "padding-top-48",
-                  "padding-bottom-31",
-                  "background-color-card",
-                  "border-radius-8",
-                  "items-center",
+                  "subtitle1",
+                  "color-text-black-low",
+                  "margin-top-34",
                 ])}
               >
-                <LoadingSpinner
-                  size={42}
-                  color={
-                    style.flatten(["color-blue-400", "dark:color-platinum-100"])
-                      .color
-                  }
-                />
-                <Text
-                  style={style.flatten([
-                    "subtitle1",
-                    "color-text-low",
-                    "margin-top-34",
-                  ])}
-                >
-                  Loading...
-                </Text>
-              </View>
+                Loading...
+              </Text>
             </View>
-          ) : null}
-        </View>
+          </View>
+        ) : null}
+
         {containerBottom}
         <View style={style.get("flex-1")} />
-      </SafeAreaView>
+      </View>
       {children}
     </React.Fragment>
   );

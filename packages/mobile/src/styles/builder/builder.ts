@@ -26,31 +26,31 @@ export class DefinitionKebabCase {
   }
 
   peek(): string {
-    const index = this._definition.indexOf("-", this.startIndex + 1);
+    const index = this.definition.indexOf("-", this.startIndex + 1);
     if (index < 0) {
-      return this._definition.slice(this.startIndex + 1);
+      return this.definition.slice(this.startIndex + 1);
     }
-    return this._definition.slice(this.startIndex + 1, index);
+    return this.definition.slice(this.startIndex + 1, index);
   }
 
   read(): string {
-    const index = this._definition.indexOf("-", this.startIndex + 1);
+    const index = this.definition.indexOf("-", this.startIndex + 1);
     if (index < 0) {
       return this.flush();
     }
-    const result = this._definition.slice(this.startIndex + 1, index);
+    const result = this.definition.slice(this.startIndex + 1, index);
     this.startIndex = index;
     return result;
   }
 
   flush(): string {
-    const result = this._definition.slice(this.startIndex + 1);
-    this.startIndex = this._definition.length - 1;
+    const result = this.definition.slice(this.startIndex + 1);
+    this.startIndex = this.definition.length - 1;
     return result;
   }
 
   segments(): string[] {
-    return this._definition.split("-");
+    return this.definition.split("-");
   }
 
   reset() {
@@ -66,6 +66,7 @@ export type DefinitionsWithThemes<T extends ReadonlyArray<string>, S> = S &
 export class StyleBuilder<
   Themes extends ReadonlyArray<string>,
   Custom extends Record<string, unknown>,
+  Typos extends Record<string, unknown>,
   Colors extends Record<string, string>,
   Widths extends Record<string, string | number>,
   Heights extends Record<string, string | number>,
@@ -78,26 +79,26 @@ export class StyleBuilder<
   protected static readonly ReservedWords: {
     [word: string]: boolean | undefined;
   } = {
-    color: true,
-    padding: true,
-    margin: true,
-    top: true,
-    bottom: true,
-    left: true,
-    right: true,
-    x: true,
-    y: true,
-    width: true,
-    height: true,
-    radius: true,
-    flex: true,
-    min: true,
-    max: true,
-    opacity: true,
-    solid: true,
-    dotted: true,
-    dashed: true,
-  };
+      color: true,
+      padding: true,
+      margin: true,
+      top: true,
+      bottom: true,
+      left: true,
+      right: true,
+      x: true,
+      y: true,
+      width: true,
+      height: true,
+      radius: true,
+      flex: true,
+      min: true,
+      max: true,
+      opacity: true,
+      solid: true,
+      dotted: true,
+      dashed: true,
+    };
 
   static readonly checkReservedWord = (config: Record<string, any>) => {
     for (const key in config) {
@@ -120,6 +121,7 @@ export class StyleBuilder<
 
   protected currentConfig: {
     custom: Custom;
+    typos: Typos;
     colors: Colors;
     widths: Widths;
     heights: Heights;
@@ -139,6 +141,7 @@ export class StyleBuilder<
     protected readonly config: {
       themes: Themes;
       custom: Custom;
+      typos: Typos;
       colors: Colors;
       widths: Widths;
       heights: Heights;
@@ -151,6 +154,7 @@ export class StyleBuilder<
     protected readonly themeConfigs?: {
       [K in Themes[number]]?: DeepPartial<{
         custom: Custom;
+        typos: Typos;
         colors: Colors;
         widths: Widths;
         heights: Heights;
@@ -193,6 +197,7 @@ export class StyleBuilder<
     // Initially, no theme is set.
     this.currentStaticStyles = {
       ...config.custom,
+      ...config.typos,
       ...StaticStyles,
     };
 
@@ -218,6 +223,7 @@ export class StyleBuilder<
 
       this.currentStaticStyles = {
         ...config.custom,
+        ...config.typos,
         ...StaticStyles,
       };
 
@@ -232,6 +238,7 @@ export class StyleBuilder<
       Themes,
       StyleBuilderDefinitions<
         Custom,
+        Typos,
         Colors,
         Widths,
         Heights,
@@ -250,6 +257,7 @@ export class StyleBuilder<
       Themes,
       StyleBuilderDefinitions<
         Custom,
+        Typos,
         Colors,
         Widths,
         Heights,
@@ -272,6 +280,7 @@ export class StyleBuilder<
       Themes,
       StyleBuilderDefinitions<
         Custom,
+        Typos,
         Colors,
         Widths,
         Heights,
@@ -330,6 +339,7 @@ export class StyleBuilder<
       Themes,
       StyleBuilderDefinitions<
         Custom,
+        Typos,
         Colors,
         Widths,
         Heights,

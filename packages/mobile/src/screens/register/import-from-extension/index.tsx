@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useState } from "react";
 import { FullScreenCameraView } from "../../../components/camera";
 import { RNCamera } from "react-native-camera";
-import { useSmartNavigation } from "../../../navigation";
+import { useSmartNavigation } from "../../../navigation-util";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
 import { RouteProp, useRoute } from "@react-navigation/native";
@@ -12,7 +12,6 @@ import {
 } from "@keplr-wallet/hooks";
 import {
   parseQRCodeDataForImportFromExtension,
-  importFromExtension,
   registerExportedAddressBooks,
   registerExportedKeyRingDatas,
 } from "../../../utils/import-from-extension";
@@ -64,64 +63,58 @@ export const ImportFromExtensionScreen: FunctionComponent = observer(() => {
   const [isLoading, setIsLoading] = useState(false);
 
   const onBarCodeRead = async ({ data }: { data: string }) => {
-    if (isLoading) {
-      return;
-    }
+    return;
+    // if (isLoading) {
+    //   return;
+    // }
 
-    try {
-      const sharedData = parseQRCodeDataForImportFromExtension(data);
+    // try {
+    //   const sharedData = parseQRCodeDataForImportFromExtension(data);
 
-      setIsLoading(true);
+    //   setIsLoading(true);
 
-      const imported = await importFromExtension(
-        sharedData,
-        chainStore.chainInfosInUI.map((chainInfo) => chainInfo.chainId)
-      );
-      analyticsStore.setUserProperties({
-        registerType: "qr",
-        accountType: imported.KeyRingDatas[0].type,
-      });
 
-      if (keyRingStore.multiKeyStoreInfo.length > 0) {
-        // If already has accounts,
-        await registerExportedKeyRingDatas(
-          keyRingStore,
-          route.params.registerConfig,
-          imported.KeyRingDatas,
-          ""
-        );
 
-        await registerExportedAddressBooks(
-          addressBookConfigMap,
-          imported.addressBooks
-        );
+    //   if (keyRingStore.multiKeyStoreInfo.length > 0) {
+    //     // If already has accounts,
+    //     await registerExportedKeyRingDatas(
+    //       keyRingStore,
+    //       route.params.registerConfig,
+    //       imported.KeyRingDatas,
+    //       ""
+    //     );
 
-        smartNavigation.reset({
-          index: 0,
-          routes: [
-            {
-              name: "Register.End",
-              params: {},
-            },
-          ],
-        });
-      } else {
-        // If there is no account,
-        // should set the password.
-        smartNavigation.replaceSmart(
-          "Register.ImportFromExtension.SetPassword",
-          {
-            registerConfig: route.params.registerConfig,
-            exportKeyRingDatas: imported.KeyRingDatas,
-            addressBooks: imported.addressBooks,
-          }
-        );
-      }
-    } catch (e) {
-      console.log(e);
-      setIsLoading(false);
-      smartNavigation.goBack();
-    }
+    //     await registerExportedAddressBooks(
+    //       addressBookConfigMap,
+    //       imported.addressBooks
+    //     );
+
+    //     smartNavigation.reset({
+    //       index: 0,
+    //       routes: [
+    //         {
+    //           name: "Register.End",
+    //           params: {},
+    //         },
+    //       ],
+    //     });
+    //   } else {
+    //     // If there is no account,
+    //     // should set the password.
+    //     smartNavigation.replaceSmart(
+    //       "Register.ImportFromExtension.SetPassword",
+    //       {
+    //         registerConfig: route.params.registerConfig,
+    //         exportKeyRingDatas: imported.KeyRingDatas,
+    //         addressBooks: imported.addressBooks,
+    //       }
+    //     );
+    //   }
+    // } catch (e) {
+    //   console.log(e);
+    //   setIsLoading(false);
+    //   smartNavigation.goBack();
+    // }
   };
 
   return (

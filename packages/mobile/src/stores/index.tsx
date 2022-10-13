@@ -2,6 +2,10 @@ import React, { FunctionComponent, useEffect, useState } from "react";
 
 import { createRootStore, RootStore } from "./root";
 
+export * from "./analytics";
+export * from "./chain";
+export * from "./transaction";
+
 const storeContext = React.createContext<RootStore | null>(null);
 
 /*
@@ -21,14 +25,6 @@ export const StoreProvider: FunctionComponent = ({ children }) => {
     rootStore = createRootStore();
     return rootStore;
   });
-
-  useEffect(() => {
-    return () => {
-      // Check the comment of `_isAndroidActivityKilled` field on `WalletConnectStore`
-      stores.walletConnectStore.onAndroidActivityKilled();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <storeContext.Provider value={stores}>{children}</storeContext.Provider>

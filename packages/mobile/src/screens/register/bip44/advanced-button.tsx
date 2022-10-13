@@ -30,7 +30,7 @@ export const BIP44AdvancedButton: FunctionComponent<{
       <Button
         containerStyle={style.flatten(["margin-bottom-16"])}
         text="Advanced"
-        mode="text"
+        mode="ghost"
         size="small"
         onPress={() => {
           setIsModalOpen(true);
@@ -94,7 +94,7 @@ export const BIP44SelectModal: FunctionComponent<{
         <Text
           style={style.flatten([
             "body2",
-            "color-text-middle",
+            "color-text-black-medium",
             "margin-bottom-18",
           ])}
         >
@@ -107,9 +107,9 @@ export const BIP44SelectModal: FunctionComponent<{
             "margin-bottom-16",
           ])}
         >
-          <Text style={style.flatten(["body2", "color-text-middle"])}>{`m/44’/${
-            bip44Option.coinType ?? "-"
-          }’`}</Text>
+          <Text
+            style={style.flatten(["body2", "color-text-black-medium"])}
+          >{`m/44’/${bip44Option.coinType ?? "-"}’`}</Text>
           <TextInput
             value={account.value}
             containerStyle={style.flatten(["min-width-58", "padding-bottom-0"])}
@@ -138,7 +138,7 @@ export const BIP44SelectModal: FunctionComponent<{
           <Text
             style={style.flatten([
               "text-caption2",
-              "color-red-400",
+              "color-danger",
               "margin-bottom-8",
             ])}
           >

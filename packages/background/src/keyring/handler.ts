@@ -14,7 +14,9 @@ import {
   RequestSignDirectMsg,
   LockKeyRingMsg,
   DeleteKeyRingMsg,
+  ForceDeleteKeyRingMsg,
   UpdateNameKeyRingMsg,
+  UpdatePasswordKeyRingMsg,
   ShowKeyRingMsg,
   AddMnemonicKeyMsg,
   AddPrivateKeyMsg,
@@ -28,6 +30,7 @@ import {
   CheckPasswordMsg,
   ExportKeyRingDatasMsg,
   RequestVerifyADR36AminoSignDoc,
+  ExportPrivateKeyMsg,
 } from "./messages";
 import { KeyRingService } from "./service";
 import { Bech32Address } from "@keplr-wallet/cosmos";
@@ -42,10 +45,17 @@ export const getHandler: (service: KeyRingService) => Handler = (
         return handleRestoreKeyRingMsg(service)(env, msg as RestoreKeyRingMsg);
       case DeleteKeyRingMsg:
         return handleDeleteKeyRingMsg(service)(env, msg as DeleteKeyRingMsg);
+      case ForceDeleteKeyRingMsg:
+        return handleForceDeleteKeyRingMsg(service)(env, msg as ForceDeleteKeyRingMsg);
       case UpdateNameKeyRingMsg:
         return handleUpdateNameKeyRingMsg(service)(
           env,
           msg as UpdateNameKeyRingMsg
+        );
+      case UpdatePasswordKeyRingMsg:
+        return handleUpdatePasswordKeyRingMsg(service)(
+          env,
+          msg as UpdatePasswordKeyRingMsg
         );
       case ShowKeyRingMsg:
         return handleShowKeyRingMsg(service)(env, msg as ShowKeyRingMsg);
@@ -115,6 +125,11 @@ export const getHandler: (service: KeyRingService) => Handler = (
           env,
           msg as ExportKeyRingDatasMsg
         );
+      case ExportPrivateKeyMsg:
+        return handleExportPrivateKeyMsg(service)(
+          env,
+          msg as ExportPrivateKeyMsg
+        );
       default:
         throw new KeplrError("keyring", 221, "Unknown msg type");
     }
@@ -137,11 +152,27 @@ const handleDeleteKeyRingMsg: (
   };
 };
 
+const handleForceDeleteKeyRingMsg: (
+  service: KeyRingService
+) => InternalHandler<ForceDeleteKeyRingMsg> = (service) => {
+  return async (_, msg) => {
+    return await service.forceDeleteKeyRing(msg.index);
+  };
+};
+
 const handleUpdateNameKeyRingMsg: (
   service: KeyRingService
 ) => InternalHandler<UpdateNameKeyRingMsg> = (service) => {
   return async (_, msg) => {
     return await service.updateNameKeyRing(msg.index, msg.name);
+  };
+};
+
+const handleUpdatePasswordKeyRingMsg: (
+  service: KeyRingService
+) => InternalHandler<UpdatePasswordKeyRingMsg> = (service) => {
+  return async (_, msg) => {
+    return await service.updatePasswordKeyRing(msg.index, msg.password, msg.newPassword);
   };
 };
 
@@ -395,5 +426,13 @@ const handleExportKeyRingDatasMsg: (
 ) => InternalHandler<ExportKeyRingDatasMsg> = (service) => {
   return async (_, msg) => {
     return await service.exportKeyRingDatas(msg.password);
+  };
+};
+
+const handleExportPrivateKeyMsg: (
+  service: KeyRingService
+) => InternalHandler<ExportPrivateKeyMsg> = (service) => {
+  return async (_, msg) => {
+    return await service.exportPrivateKey(msg.password);
   };
 };

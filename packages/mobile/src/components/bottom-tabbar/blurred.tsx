@@ -14,21 +14,19 @@ export const BlurredBottomTabBar: FunctionComponent<
     return <AndroidAlternativeBlurredBottomTabBar {...props} />;
   }
 
-  const { style: propStyle, enabledScreens = [], ...rest } = props;
-
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const style = useStyle();
+  const styleBuilder = useStyle();
+  const { style, enabledScreens = [], ...rest } = props;
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const focusedScreen = useFocusedScreen();
 
   const containerOpacity = (() => {
     if (enabledScreens.length === 0) {
-      return style.get("opacity-blurred-tabbar").opacity;
+      return 0.75;
     }
 
     if (focusedScreen.name && enabledScreens.includes(focusedScreen.name)) {
-      return style.get("opacity-blurred-tabbar").opacity;
+      return 0.75;
     }
 
     return 1;
@@ -41,11 +39,9 @@ export const BlurredBottomTabBar: FunctionComponent<
         width: "100%",
         bottom: 0,
       }}
-      blurType={style.get("blurred-tabbar-blur-type")}
-      blurAmount={style.get("blurred-tabbar-blur-amount")}
-      reducedTransparencyFallbackColor={style.get(
-        "blurred-tabbar-reducedTransparencyFallbackColor"
-      )}
+      blurType="light"
+      blurAmount={80}
+      reducedTransparencyFallbackColor="white"
     >
       <View
         style={{
@@ -54,7 +50,7 @@ export const BlurredBottomTabBar: FunctionComponent<
           bottom: 0,
           left: 0,
           right: 0,
-          backgroundColor: style.get("color-blurred-tabbar-background").color,
+          backgroundColor: "white",
           opacity: containerOpacity,
         }}
       />
@@ -63,10 +59,8 @@ export const BlurredBottomTabBar: FunctionComponent<
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         style={StyleSheet.flatten([
-          propStyle,
-          {
-            backgroundColor: "#FFFFFF00",
-          },
+          styleBuilder.get("background-color-tab-bar-background"),
+          style,
         ])}
         {...rest}
       />
@@ -77,6 +71,7 @@ export const BlurredBottomTabBar: FunctionComponent<
 const AndroidAlternativeBlurredBottomTabBar: FunctionComponent<BottomTabBarProps> = (
   props
 ) => {
+  const style = useStyle();
   return (
     <View
       style={{
@@ -85,7 +80,10 @@ const AndroidAlternativeBlurredBottomTabBar: FunctionComponent<BottomTabBarProps
         bottom: 0,
       }}
     >
-      <BottomTabBar {...props} />
+      <BottomTabBar
+        {...props}
+        style={style.get("background-color-tab-bar-background")}
+      />
     </View>
   );
 };

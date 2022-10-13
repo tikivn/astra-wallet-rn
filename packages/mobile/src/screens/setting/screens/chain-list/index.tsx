@@ -18,7 +18,6 @@ export const SettingChainListScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithFixedHeightSortableList
-      backgroundMode="secondary"
       contentContainerStyle={style.get("flex-grow-1")}
       itemHeight={84}
       data={chainStore.chainInfosWithUIConfig.map(
@@ -147,26 +146,19 @@ export const SettingChainListScreenElement: FunctionComponent<{
           [
             !isLast && "border-solid",
             !isLast && "border-width-bottom-1",
-            !isLast && "border-color-gray-50",
-            !isLast && "dark:border-color-platinum-500",
+            !isLast && "border-color-divider",
           ]
         )}
       >
         <Animated.View
           style={StyleSheet.flatten([
-            style.flatten([
-              "absolute-fill",
-              "background-color-white",
-              "dark:background-color-platinum-600",
-            ]),
+            style.flatten(["absolute-fill", "background-color-white"]),
             {
               backgroundColor: Animated.interpolateColors(animIsDragging, {
                 inputRange: [0, 1],
                 outputColorRange: [
-                  style.flatten(["color-white", "dark:color-platinum-600"])
-                    .color,
-                  style.flatten(["color-gray-50", "dark:color-platinum-400"])
-                    .color,
+                  style.get("color-white").color,
+                  style.get("color-chain-list-element-dragging").color,
                 ],
               }) as Animated.Node<string>,
             },
@@ -188,10 +180,7 @@ export const SettingChainListScreenElement: FunctionComponent<{
           >
             <Svg width="17" height="10" fill="none" viewBox="0 0 17 10">
               <Path
-                stroke={
-                  style.flatten(["color-gray-100", "dark:color-platinum-100"])
-                    .color
-                }
+                stroke={style.get("color-card-modal-handle").color}
                 strokeLinecap="round"
                 strokeWidth="3"
                 d="M2 1.5h13M2 8.5h13"
@@ -207,11 +196,11 @@ export const SettingChainListScreenElement: FunctionComponent<{
               "border-radius-64",
               "items-center",
               "justify-center",
-              "background-color-blue-400",
             ],
             [
-              disabled && "background-color-gray-100",
-              disabled && "dark:background-color-platinum-500",
+              disabled
+                ? "background-color-text-black-very-very-very-low"
+                : "background-color-primary",
             ]
           )}
         >
@@ -231,7 +220,7 @@ export const SettingChainListScreenElement: FunctionComponent<{
           )}
         </View>
         <View style={style.flatten(["justify-center", "margin-left-10"])}>
-          <Text style={style.flatten(["h6", "color-text-high"])}>
+          <Text style={style.flatten(["h6", "color-text-black-high"])}>
             {chainName}
           </Text>
         </View>

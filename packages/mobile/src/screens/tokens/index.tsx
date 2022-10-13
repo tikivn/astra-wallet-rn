@@ -5,7 +5,7 @@ import { useStore } from "../../stores";
 import { StyleSheet, Text, View, ViewStyle } from "react-native";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { useStyle } from "../../styles";
-import { useSmartNavigation } from "../../navigation";
+import { useSmartNavigation } from "../../navigation-util";
 import { RightArrowIcon } from "../../components/icon";
 import { Card } from "../../components/card";
 import { RectButton } from "../../components/rect-button";
@@ -75,7 +75,7 @@ export const TokensScreen: FunctionComponent = observer(() => {
   }, [showAddTokenButton, smartNavigation]);
 
   return (
-    <PageWithScrollView backgroundMode="gradient">
+    <PageWithScrollView>
       {tokens.length > 0 ? (
         <Card style={style.flatten(["padding-bottom-14"])}>
           {tokens.map((token) => {
@@ -144,7 +144,7 @@ export const TokenItem: FunctionComponent<{
         <Text
           style={style.flatten([
             "subtitle3",
-            "color-text-low",
+            "color-text-black-low",
             "margin-bottom-4",
             "uppercase",
           ])}
@@ -152,7 +152,11 @@ export const TokenItem: FunctionComponent<{
           {balance.currency.coinDenom}
         </Text>
         <Text
-          style={style.flatten(["h5", "color-text-high", "max-width-240"])}
+          style={style.flatten([
+            "h5",
+            "color-text-black-medium",
+            "max-width-240",
+          ])}
           numberOfLines={1}
           ellipsizeMode="tail"
         >
@@ -168,9 +172,7 @@ export const TokenItem: FunctionComponent<{
       <View style={style.get("flex-1")} />
       <RightArrowIcon
         height={16}
-        color={
-          style.flatten(["color-gray-200", "dark:color-platinum-300"]).color
-        }
+        color={style.get("color-text-black-very-very-low").color}
       />
     </RectButton>
   );

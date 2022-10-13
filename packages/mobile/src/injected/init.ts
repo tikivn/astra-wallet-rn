@@ -14,7 +14,7 @@ export function init(
 ) {
   /* eslint-disable @typescript-eslint/ban-ts-comment */
   // @ts-ignore
-  window.keplr = keplr;
+  window.astra = keplr;
   // @ts-ignore
   window.getOfflineSigner = getOfflineSigner;
   // @ts-ignore

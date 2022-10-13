@@ -14,8 +14,8 @@ export function init(
 ) {
   // Give a priority to production build.
   if (process.env.NODE_ENV !== "production") {
-    if (!window.keplr) {
-      window.keplr = keplr;
+    if (!window.astra) {
+      window.astra = keplr;
     }
 
     if (!window.getOfflineSigner) {
@@ -31,7 +31,7 @@ export function init(
       window.getEnigmaUtils = getEnigmaUtils;
     }
   } else {
-    window.keplr = keplr;
+    window.astra = keplr;
     window.getOfflineSigner = getOfflineSigner;
     window.getOfflineSignerOnlyAmino = getOfflineSignerOnlyAmino;
     window.getOfflineSignerAuto = getOfflineSignerAuto;

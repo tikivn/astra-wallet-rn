@@ -20,6 +20,7 @@ import org.unimodules.adapters.react.ReactModuleRegistryProvider;
 
 import com.microsoft.codepush.react.CodePush;
 import com.bugsnag.android.Bugsnag;
+import vn.tiki.app.astra.wallet.BuildConfig;
 
 public class MainApplication extends Application implements ReactApplication {
   private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(new BasePackageList().getPackageList(), null);
@@ -51,8 +52,9 @@ public class MainApplication extends Application implements ReactApplication {
           return "index";
         }
 
-        @Override
+          @Override
         protected String getJSBundleFile() {
+          // check code push project tiki.mobile.team-tiki.vn/apps/Astra_Wallet_Android
             return CodePush.getJSBundleFile();
         }
       };

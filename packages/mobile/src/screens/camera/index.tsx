@@ -1,81 +1,83 @@
-import React, { FunctionComponent, useCallback, useState } from "react";
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { RNCamera } from "react-native-camera";
 import { useStyle } from "../../styles";
 import { PageWithView } from "../../components/page";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-import { useSmartNavigation } from "../../navigation";
-import { Button } from "../../components/button";
-import { Share, StyleSheet, View } from "react-native";
-import { ChainSelectorModal } from "../../components/chain-selector";
-import { registerModal } from "../../modals/base";
-import { CardModal } from "../../modals/card";
-import { AddressCopyable } from "../../components/address-copyable";
-import QRCode from "react-native-qrcode-svg";
+import { useSmartNavigation } from "../../navigation-util";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { FullScreenCameraView } from "../../components/camera";
-import {
-  importFromExtension,
-  parseQRCodeDataForImportFromExtension,
-  registerExportedAddressBooks,
-  registerExportedKeyRingDatas,
-} from "../../utils/import-from-extension";
-import { AddressBookConfigMap, useRegisterConfig } from "@keplr-wallet/hooks";
-import { AsyncKVStore } from "../../common";
 import { useFocusEffect } from "@react-navigation/native";
+import { useToastModal } from "../../providers/toast-modal";
+import { useIntl } from "react-intl";
+import { View, Text } from "react-native";
+import { isAddress } from "@ethersproject/address";
 
 export const CameraScreen: FunctionComponent = observer(() => {
-  const { chainStore, walletConnectStore, keyRingStore } = useStore();
-
-  const style = useStyle();
-
+  const {
+    chainStore,
+    signClientStore,
+    analyticsStore,
+    remoteConfigStore,
+  } = useStore();
+  const walletConnectEnabled = remoteConfigStore.getBool(
+    "feature_wallet_connect"
+  );
+  const toastModal = useToastModal();
   const smartNavigation = useSmartNavigation();
-
+  const style = useStyle();
   const [isLoading, setIsLoading] = useState(false);
+  const intl = useIntl();
   // To prevent the reading while changing to other screen after processing the result.
   // Expectedly, screen should be moved to other after processing the result.
-  const [isCompleted, setIsCompleted] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(true);
+  const qrCode = useRef("");
 
   useFocusEffect(
     useCallback(() => {
       // If the other screen is pushed according to the qr code data,
       // the `isCompleted` state would remain as true because the screen in the stack is not unmounted.
       // So, we should reset the `isComplete` state whenever getting focused.
-      setIsCompleted(false);
+      setIsCompleted(true);
     }, [])
   );
 
-  const [isSelectChainModalOpen, setIsSelectChainModalOpen] = useState(false);
-  const [isAddressQRCodeModalOpen, setIsAddressQRCodeModalOpen] = useState(
-    false
-  );
-  const [
-    showingAddressQRCodeChainId,
-    setShowingAddressQRCodeChainId,
-  ] = useState(chainStore.current.chainId);
-
-  const registerConfig = useRegisterConfig(keyRingStore, []);
-
-  const [addressBookConfigMap] = useState(
-    () => new AddressBookConfigMap(new AsyncKVStore("address_book"), chainStore)
-  );
+  useEffect(() => {
+    if (signClientStore.pendingProposal) {
+      console.log("useEffect: ", signClientStore.pendingProposal);
+      smartNavigation.replaceSmart("SessionProposal", {
+        proposal: signClientStore.pendingProposal,
+      });
+    }
+  }, [smartNavigation, signClientStore.pendingProposal]);
 
   return (
-    <PageWithView disableSafeArea={true} backgroundMode={null}>
+    <PageWithView disableSafeArea={true}>
       <FullScreenCameraView
         type={RNCamera.Constants.Type.back}
         barCodeTypes={[RNCamera.Constants.BarCodeType.qr]}
         captureAudio={false}
         isLoading={isLoading}
         onBarCodeRead={async ({ data }) => {
-          if (!isLoading && !isCompleted) {
+          if (data === qrCode.current) {
+            return;
+          }
+          qrCode.current = data;
+          if (!isLoading && isCompleted) {
+            analyticsStore.logEvent("astra_hub_scan_qr_code", {
+              type: data.startsWith("wc:") ? "wallet_connect" : "address",
+            });
             setIsLoading(true);
-
+            setIsCompleted(false);
             try {
-              if (data.startsWith("wc:")) {
-                await walletConnectStore.initClient(data);
-
-                smartNavigation.navigateSmart("Home", {});
+              if (walletConnectEnabled && data.startsWith("wc:")) {
+                await signClientStore.pair(data);
               } else {
                 const isBech32Address = (() => {
                   try {
@@ -88,6 +90,8 @@ export const CameraScreen: FunctionComponent = observer(() => {
                   return true;
                 })();
 
+                const isHexAddress = isAddress(data);
+
                 if (isBech32Address) {
                   const prefix = data.slice(0, data.indexOf("1"));
                   const chainInfo = chainStore.chainInfosInUI.find(
@@ -95,158 +99,52 @@ export const CameraScreen: FunctionComponent = observer(() => {
                       chainInfo.bech32Config.bech32PrefixAccAddr === prefix
                   );
                   if (chainInfo) {
-                    smartNavigation.pushSmart("Send", {
+                    smartNavigation.replaceSmart("Wallet.Send", {
                       chainId: chainInfo.chainId,
                       recipient: data,
                     });
                   } else {
-                    smartNavigation.navigateSmart("Home", {});
+                    toastModal.makeToast({
+                      title: intl.formatMessage({ id: "camera.qrcode.error" }),
+                      type: "error",
+                      displayTime: 2000,
+                    });
                   }
+                } else if (isHexAddress) {
+                  smartNavigation.replaceSmart("Wallet.Send", {
+                    recipient: data,
+                  });
                 } else {
-                  const sharedData = parseQRCodeDataForImportFromExtension(
-                    data
-                  );
-
-                  const improted = await importFromExtension(
-                    sharedData,
-                    chainStore.chainInfosInUI.map(
-                      (chainInfo) => chainInfo.chainId
-                    )
-                  );
-
-                  // In this case, there are other accounts definitely.
-                  // So, there is no need to consider the password.
-                  await registerExportedKeyRingDatas(
-                    keyRingStore,
-                    registerConfig,
-                    improted.KeyRingDatas,
-                    ""
-                  );
-
-                  await registerExportedAddressBooks(
-                    addressBookConfigMap,
-                    improted.addressBooks
-                  );
-
-                  smartNavigation.reset({
-                    index: 0,
-                    routes: [
-                      {
-                        name: "Register",
-                        params: {
-                          screen: "Register.End",
-                        },
-                      },
-                    ],
+                  toastModal.makeToast({
+                    title: intl.formatMessage({ id: "camera.qrcode.error" }),
+                    type: "error",
+                    displayTime: 2000,
                   });
                 }
               }
-
-              setIsCompleted(true);
             } catch (e) {
+              toastModal.makeToast({
+                title: intl.formatMessage({ id: "camera.qrcode.error" }),
+                type: "error",
+                displayTime: 2000,
+              });
               console.log(e);
             } finally {
               setIsLoading(false);
+              setIsCompleted(true);
             }
           }
         }}
         containerBottom={
-          <Button
-            text="Show my QR code"
-            mode="light"
-            size="large"
-            containerStyle={style.flatten([
-              "margin-top-64",
-              "border-radius-64",
-              "opacity-90",
-            ])}
-            style={style.flatten(["padding-x-52"])}
-            onPress={() => {
-              setIsSelectChainModalOpen(true);
-            }}
-          />
+          <View style={style.flatten(["flex-1", "width-full", "margin-top-4"])}>
+            <Text
+              style={style.flatten(["text-center", "color-white", "body3"])}
+            >
+              {intl.formatMessage({ id: "camera.text.description" })}
+            </Text>
+          </View>
         }
-      />
-      <ChainSelectorModal
-        isOpen={isSelectChainModalOpen}
-        close={() => setIsSelectChainModalOpen(false)}
-        chainIds={chainStore.chainInfosInUI.map(
-          (chainInfo) => chainInfo.chainId
-        )}
-        onSelectChain={(chainId) => {
-          setShowingAddressQRCodeChainId(chainId);
-          setIsAddressQRCodeModalOpen(true);
-          setIsSelectChainModalOpen(false);
-        }}
-      />
-      <AddressQRCodeModal
-        isOpen={isAddressQRCodeModalOpen}
-        close={() => setIsAddressQRCodeModalOpen(false)}
-        chainId={showingAddressQRCodeChainId}
       />
     </PageWithView>
   );
 });
-
-export const AddressQRCodeModal: FunctionComponent<{
-  isOpen: boolean;
-  close: () => void;
-  chainId: string;
-}> = registerModal(
-  observer(({ chainId }) => {
-    const { accountStore } = useStore();
-
-    const account = accountStore.getAccount(chainId);
-
-    const style = useStyle();
-
-    return (
-      <CardModal title="Scan QR code">
-        <View style={style.flatten(["items-center"])}>
-          <AddressCopyable address={account.bech32Address} maxCharacters={22} />
-          <View style={style.flatten(["margin-y-32"])}>
-            {account.bech32Address ? (
-              <View
-                style={style.flatten([
-                  "padding-8",
-                  "dark:background-color-white",
-                ])}
-              >
-                <QRCode size={200} value={account.bech32Address} />
-              </View>
-            ) : (
-              <View
-                style={StyleSheet.flatten([
-                  {
-                    width: 200,
-                    height: 200,
-                  },
-                  style.flatten(["background-color-gray-400"]),
-                ])}
-              />
-            )}
-          </View>
-          <View style={style.flatten(["flex-row"])}>
-            <Button
-              containerStyle={style.flatten(["flex-1"])}
-              text="Share Address"
-              mode="light"
-              size="large"
-              loading={account.bech32Address === ""}
-              onPress={() => {
-                Share.share({
-                  message: account.bech32Address,
-                }).catch((e) => {
-                  console.log(e);
-                });
-              }}
-            />
-          </View>
-        </View>
-      </CardModal>
-    );
-  }),
-  {
-    disableSafeArea: true,
-  }
-);

@@ -101,7 +101,7 @@ export class ObservableQueryInflation {
               const yearMintingProvision = mintingEpochProvision.mul(
                 new Dec(((365 * 24 * 3600) / epochDuration).toString())
               );
-              const total = DecUtils.getPrecisionDec(8);
+              const total = DecUtils.getPrecisionDec(8).mul(new Dec("1.5"));
               dec = yearMintingProvision
                 .quo(total)
                 .mul(DecUtils.getPrecisionDec(2));
@@ -172,7 +172,7 @@ export class ObservableQueryInflation {
       }
 
       return new IntPretty(dec);
-    } catch (e) {
+    } catch (e: any) {
       console.log(e);
       // XXX: There have been reported errors regarding Sifchain.
       // However, I wasn’t able to reproduce the error so exact cause haven’t been identified.

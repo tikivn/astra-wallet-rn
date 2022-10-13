@@ -50,7 +50,7 @@ export const TokenSymbol: FunctionComponent<{
   size,
   currency,
   chainInfo,
-  imageScale = 32 / 44,
+  imageScale = 1,
 }) => {
   const style = useStyle();
 
@@ -94,7 +94,7 @@ export const TokenSymbol: FunctionComponent<{
             "overflow-hidden",
             `background-color-profile-${profileColor}` as any,
           ],
-          [isStakeCurrency && "background-color-blue-400"]
+          [isStakeCurrency && "background-color-primary"]
         ),
         propStyle,
       ])}

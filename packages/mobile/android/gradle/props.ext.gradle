@@ -1,0 +1,21 @@
+def getProp(key) {
+  if (System.getenv(key) != null) {
+    return System.getenv(key)
+  }
+  if (project.hasProperty(key)) {
+    return project.property(key)
+  }
+  return ""
+}
+
+ext.getProp = this.&getProp
+
+def getPropOrDefault(key, defaultVal) {
+  def val = getProp(key)
+  if (val == null || ((val instanceof String) && val.isEmpty())) {
+    return defaultVal
+  }
+  return val
+}
+
+ext.getPropOrDefault = this.&getPropOrDefault

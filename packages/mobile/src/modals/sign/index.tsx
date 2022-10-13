@@ -18,9 +18,7 @@ import { Msg } from "./msg";
 import { observer } from "mobx-react-lite";
 import { useUnmount } from "../../hooks";
 import { FeeInSign } from "./fee";
-import { WCMessageRequester } from "../../stores/wallet-connect/msg-requester";
-import { WCAppLogoAndName } from "../../components/wallet-connect";
-import WalletConnect from "@walletconnect/client";
+
 import { renderAminoMessage } from "./amino";
 import { renderDirectMessage } from "./direct";
 import { AnyWithUnpacked } from "@keplr-wallet/cosmos";
@@ -35,7 +33,6 @@ export const SignModal: FunctionComponent<{
       chainStore,
       accountStore,
       queriesStore,
-      walletConnectStore,
       signInteractionStore,
     } = useStore();
     useUnmount(() => {
@@ -43,10 +40,6 @@ export const SignModal: FunctionComponent<{
     });
 
     // Check that the request is from the wallet connect.
-    // If this is undefiend, the request is not from the wallet connect.
-    const [wcSession, setWCSession] = useState<
-      WalletConnect["session"] | undefined
-    >();
 
     const style = useStyle();
 
@@ -104,18 +97,6 @@ export const SignModal: FunctionComponent<{
           feeConfig.setFeeType("average");
         }
         setSigner(data.data.signer);
-
-        if (
-          data.data.msgOrigin &&
-          WCMessageRequester.isVirtualSessionURL(data.data.msgOrigin)
-        ) {
-          const sessionId = WCMessageRequester.getSessionIdFromVirtualURL(
-            data.data.msgOrigin
-          );
-          setWCSession(walletConnectStore.getSession(sessionId));
-        } else {
-          setWCSession(undefined);
-        }
       }
     }, [
       feeConfig,
@@ -123,7 +104,6 @@ export const SignModal: FunctionComponent<{
       memoConfig,
       signDocHelper,
       signInteractionStore.waitingData,
-      walletConnectStore,
     ]);
 
     const mode = signDocHelper.signDocWrapper
@@ -150,16 +130,17 @@ export const SignModal: FunctionComponent<{
             <View key={i.toString()}>
               <Msg title={title}>
                 {scrollViewHorizontal ? (
-                  <ScrollView
-                    horizontal={true}
-                    indicatorStyle={style.theme === "dark" ? "white" : "black"}
-                  >
-                    <Text style={style.flatten(["body3", "color-text-low"])}>
+                  <ScrollView horizontal={true}>
+                    <Text
+                      style={style.flatten(["body3", "color-text-black-low"])}
+                    >
                       {content}
                     </Text>
                   </ScrollView>
                 ) : (
-                  <Text style={style.flatten(["body3", "color-text-low"])}>
+                  <Text
+                    style={style.flatten(["body3", "color-text-black-low"])}
+                  >
                     {content}
                   </Text>
                 )}
@@ -168,8 +149,7 @@ export const SignModal: FunctionComponent<{
                 <View
                   style={style.flatten([
                     "height-1",
-                    "background-color-gray-50",
-                    "dark:background-color-platinum-400",
+                    "background-color-border-white",
                     "margin-x-16",
                   ])}
                 />
@@ -188,7 +168,7 @@ export const SignModal: FunctionComponent<{
           return (
             <View key={i.toString()}>
               <Msg title={title}>
-                <Text style={style.flatten(["body3", "color-text-low"])}>
+                <Text style={style.flatten(["body3", "color-text-black-low"])}>
                   {content}
                 </Text>
               </Msg>
@@ -196,8 +176,7 @@ export const SignModal: FunctionComponent<{
                 <View
                   style={style.flatten([
                     "height-1",
-                    "background-color-gray-50",
-                    "dark:background-color-platinum-400",
+                    "background-color-border-white",
                     "margin-x-16",
                   ])}
                 />
@@ -212,18 +191,14 @@ export const SignModal: FunctionComponent<{
 
     return (
       <CardModal title="Confirm Transaction">
-        {wcSession ? (
-          <WCAppLogoAndName
-            containerStyle={style.flatten(["margin-y-14"])}
-            peerMeta={wcSession.peerMeta}
-          />
-        ) : null}
         <View style={style.flatten(["margin-bottom-16"])}>
           <Text style={style.flatten(["margin-bottom-3"])}>
-            <Text style={style.flatten(["subtitle3", "color-blue-400"])}>
+            <Text style={style.flatten(["subtitle3", "color-primary"])}>
               {`${msgs.length.toString()} `}
             </Text>
-            <Text style={style.flatten(["subtitle3", "color-text-middle"])}>
+            <Text
+              style={style.flatten(["subtitle3", "color-text-black-medium"])}
+            >
               Messages
             </Text>
           </Text>
@@ -231,19 +206,13 @@ export const SignModal: FunctionComponent<{
             style={style.flatten([
               "border-radius-8",
               "border-width-1",
-              "border-color-gray-50",
-              "dark:border-color-platinum-400",
+              "border-color-border-white",
               "overflow-hidden",
             ])}
           >
             <ScrollView
-              style={style.flatten([
-                "max-height-214",
-                "background-color-white",
-                "dark:background-color-platinum-500",
-              ])}
+              style={style.flatten(["max-height-214"])}
               persistentScrollbar={true}
-              indicatorStyle={style.theme === "dark" ? "white" : "black"}
             >
               {renderedMsgs}
             </ScrollView>

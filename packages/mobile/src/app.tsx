@@ -1,18 +1,22 @@
-import React, { FunctionComponent } from "react";
+import * as React from "react";
+import { FunctionComponent } from "react";
 import { StoreProvider } from "./stores";
-import { StyleProvider, useStyle } from "./styles";
+import { StyleProvider } from "./styles";
 import { AppNavigation } from "./navigation";
-import { IntlProvider } from "react-intl";
 import { ModalsProvider } from "./modals/base";
 import { Platform, StatusBar } from "react-native";
 
-import codePush from "react-native-code-push";
-import { InteractionModalsProivder } from "./providers/interaction-modals-provider";
+import { InteractionModalsProvider } from "./providers/interaction-modals-provider";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { LoadingScreenProvider } from "./providers/loading-screen";
-import * as SplashScreen from "expo-splash-screen";
+import * as SplashScreen from "./screens/splash";
 import { ConfirmModalProvider } from "./providers/confirm-modal";
+import { ToastModalProvider } from "./providers/toast-modal";
 import Bugsnag from "@bugsnag/react-native";
+import { AppIntlProvider } from "./translations";
+import { autoUpdateBody, withAutoDownloadUI } from "./providers/auto-update";
+import { NetworkConnectionProvider } from "./providers/network-connection";
+import { AlertModalProvider } from "./providers/alert-modal";
 
 if (Platform.OS === "android") {
   // https://github.com/web-ridge/react-native-paper-dates/releases/tag/v0.2.15
@@ -25,21 +29,26 @@ if (Platform.OS === "android") {
 
   require("@formatjs/intl-pluralrules/polyfill");
   require("@formatjs/intl-pluralrules/locale-data/en.js");
+  require("@formatjs/intl-pluralrules/locale-data/vi.js");
 
   require("@formatjs/intl-displaynames/polyfill");
   require("@formatjs/intl-displaynames/locale-data/en.js");
+  require("@formatjs/intl-displaynames/locale-data/vi.js");
 
   // require("@formatjs/intl-listformat/polyfill");
   // require("@formatjs/intl-listformat/locale-data/en.js");
 
   require("@formatjs/intl-numberformat/polyfill");
   require("@formatjs/intl-numberformat/locale-data/en.js");
+  require("@formatjs/intl-numberformat/locale-data/vi.js");
 
   require("@formatjs/intl-relativetimeformat/polyfill");
   require("@formatjs/intl-relativetimeformat/locale-data/en.js");
+  require("@formatjs/intl-relativetimeformat/locale-data/vi.js");
 
   require("@formatjs/intl-datetimeformat/polyfill");
   require("@formatjs/intl-datetimeformat/locale-data/en.js");
+  require("@formatjs/intl-datetimeformat/locale-data/vi.js");
 
   require("@formatjs/intl-datetimeformat/add-golden-tz.js");
 
@@ -56,31 +65,18 @@ if (Platform.OS === "android") {
 }
 
 // Prevent native splash screen from autohiding.
-// UnlockScreen will hide the splash screen
-SplashScreen.preventAutoHideAsync()
-  .then((result) =>
-    console.log(`SplashScreen.preventAutoHideAsync() succeeded: ${result}`)
-  )
-  .catch(console.warn);
+// UnlockScreen/ AutoUpdate screen will hide the splash screen
+SplashScreen.preventAutoHideAsync();
 
-const ThemeStatusBar: FunctionComponent = () => {
-  const style = useStyle();
-
-  return (
-    <StatusBar
-      translucent={true}
-      backgroundColor="#FFFFFF00"
-      barStyle={style.get("status-bar-style")}
-    />
-  );
-};
+const AppNavigationWithAutoUI = withAutoDownloadUI(AppNavigation);
 
 const AppBody: FunctionComponent = () => {
+  const additionalMessages = {};
   return (
     <StyleProvider>
       <StoreProvider>
-        <IntlProvider
-          locale="en"
+        <AppIntlProvider
+          additionalMessages={additionalMessages}
           formats={{
             date: {
               en: {
@@ -98,19 +94,29 @@ const AppBody: FunctionComponent = () => {
             },
           }}
         >
-          <ThemeStatusBar />
+          <StatusBar
+            translucent={true}
+            backgroundColor="#FFFFFF00"
+            barStyle="light-content"
+          />
           <SafeAreaProvider>
             <ModalsProvider>
               <LoadingScreenProvider>
                 <ConfirmModalProvider>
-                  <InteractionModalsProivder>
-                    <AppNavigation />
-                  </InteractionModalsProivder>
+                  <NetworkConnectionProvider>
+                    <AlertModalProvider>
+                      <ToastModalProvider>
+                        <InteractionModalsProvider>
+                          <AppNavigationWithAutoUI />
+                        </InteractionModalsProvider>
+                      </ToastModalProvider>
+                    </AlertModalProvider>
+                  </NetworkConnectionProvider>
                 </ConfirmModalProvider>
               </LoadingScreenProvider>
             </ModalsProvider>
           </SafeAreaProvider>
-        </IntlProvider>
+        </AppIntlProvider>
       </StoreProvider>
     </StyleProvider>
   );
@@ -129,18 +135,22 @@ const ErrorBoundary = (() => {
   }
 })();
 
-const CodePushAppBody: FunctionComponent = __DEV__
-  ? AppBody
-  : codePush(AppBody);
+// should only use codePush in release version,
+// other versions like dev and RC, UAT should use local code
+// set below value = true to use codePush from AppCenter
+const useCodePush = (() => {
+  // return false here if want to use local bundle instead of check for update in AppCenter
+  if (__DEV__) return false;
+  return true;
+})();
+const CodePushAppBody = autoUpdateBody(AppBody, useCodePush);
 
 export const App: FunctionComponent = () => {
-  if (ErrorBoundary) {
-    return (
-      <ErrorBoundary>
-        <CodePushAppBody />
-      </ErrorBoundary>
-    );
-  } else {
-    return <CodePushAppBody />;
-  }
+  return ErrorBoundary ? (
+    <ErrorBoundary>
+      <CodePushAppBody />
+    </ErrorBoundary>
+  ) : (
+    <CodePushAppBody />
+  );
 };

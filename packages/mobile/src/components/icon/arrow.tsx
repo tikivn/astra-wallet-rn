@@ -1,10 +1,14 @@
 import React, { FunctionComponent } from "react";
 import Svg, { Path } from "react-native-svg";
+import { useStyle } from "../../styles";
 
 export const RightArrowIcon: FunctionComponent<{
-  color: string;
+  color?: string;
   height: number;
 }> = ({ color, height }) => {
+  const style = useStyle();
+  color = color ?? style.get("color-icon-default").color;
+
   return (
     <Svg
       fillRule="evenodd"

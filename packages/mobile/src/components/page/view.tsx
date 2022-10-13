@@ -1,29 +1,33 @@
 import React, { FunctionComponent } from "react";
 import { SafeAreaView, ViewProps, StyleSheet, View } from "react-native";
 import { useStyle } from "../../styles";
+import { GradientBackground } from "../svg";
 import { useSetFocusedScreen } from "./utils";
-import { BackgroundMode, ScreenBackground } from "./background";
 
 export const PageWithView: FunctionComponent<
   ViewProps & {
     disableSafeArea?: boolean;
-    backgroundMode: BackgroundMode;
   }
 > = (props) => {
   const style = useStyle();
 
   useSetFocusedScreen();
 
-  const {
-    style: propStyle,
-    disableSafeArea,
-    backgroundMode,
-    ...restProps
-  } = props;
+  const { style: propStyle, disableSafeArea, ...restProps } = props;
 
   return (
     <React.Fragment>
-      <ScreenBackground backgroundMode={backgroundMode} />
+      <View
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          top: -100,
+          bottom: -100,
+        }}
+      >
+        <GradientBackground />
+      </View>
       {!disableSafeArea ? (
         <SafeAreaView style={style.get("flex-1")}>
           <View
