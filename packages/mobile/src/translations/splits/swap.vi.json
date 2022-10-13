@@ -13,6 +13,7 @@
   "swap.buttonText.InvalidInput": "Giá trị không hợp lệ",
   "swap.buttonText.LimitOneASA": "Tối thiểu 1 ASA",
   "swap.buttonText.EnableError": "Lỗi xác nhận Token",
+  "swap.buttonText.InsufficientFee": "Không đủ số dư",
   "swap.slipageTolarance": "Tối đa <b>amount</b>",
   "swap.titleSlippageInput": "Trượt giá tối đa",
   "swap.titleSlippageDescribe": "Trượt giá",
@@ -37,5 +38,7 @@
   "swap.confirm.minimumReceived": "Tối thiểu nhận được",
   "swap.success.text.success": "Chuyển đổi thành công",
   "swap.success.text.from": "Từ <b>text</b>",
-  "swap.success.text.to": "Sang <b>text</b>"
+  "swap.success.text.to": "Sang <b>text</b>",
+  "swap.reserved.text": "{text} cần được dự trữ lại cho phí giao dịch",
+  "swap.reserved.text2": "{symbol} được dự trữ cho phí giao dịch"
 }

@@ -1,6 +1,7 @@
 import { formatUnits, parseUnits } from "@ethersproject/units";
 import { CurrencyAmount, ETHER, JSBI, Pair, Trade } from "@solarswap/sdk";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { FEE_RESERVATION } from "../common/utils";
 import { SwapAction, SwapInfoState, SwapType } from "../providers/swap/reducer";
 import {
   calculateSlippagePercent,
@@ -154,26 +155,12 @@ export const useSwapState = ({
     get();
   }, [debouncedSwapValue, dependentField, getOutputValue]);
 
-  // get transaction fee
-  useEffect(() => {
-    if (
-      !swapCalls ||
-      swapCalls.length === 0 ||
-      swapInfos.error ||
-      swapInfos.loading
-    )
-      return;
-    const get = async () => {
-      await getTransactionFee();
-    };
-    get();
-  }, [swapCalls, getTransactionFee, swapInfos.error, swapInfos.loading]);
-
   // validate input value
   useEffect(() => {
     // check insufficient balance
     const inputValue = values[SwapField.Input];
     const balance = tokenBalances[SwapField.Input];
+
     if (!balance || !inputValue || !dispatch) return;
     let error = "";
     try {
@@ -182,9 +169,23 @@ export const useSwapState = ({
         inputValue,
         balance?.currency?.decimals
       ).toString();
+      // check balance
       const isTrue = JSBI.lessThanOrEqual(JSBI.BigInt(parseInput), balance.raw);
       if (!isTrue) {
         error = SWAP_ERROR_KEY.INSUFFICIENT_BALANCE;
+      }
+
+      // check fee reserve
+      const feeReservation = parseUnits(
+        FEE_RESERVATION.toString(),
+        ETHER.decimals
+      );
+      const isEnoughFeeReserve = JSBI.lessThan(
+        JSBI.add(JSBI.BigInt(parseInput), JSBI.BigInt(feeReservation)),
+        balance.raw
+      );
+      if (balance.currency.symbol === ETHER.symbol && !isEnoughFeeReserve) {
+        error = SWAP_ERROR_KEY.INSUFFICIENT_FEE;
       }
 
       // check limit ASA
@@ -205,6 +206,32 @@ export const useSwapState = ({
       payload: error,
     });
   }, [dispatch, tokenBalances, values]);
+
+  // check balance ASA greater than 0.1
+  useEffect(() => {
+    const feeReservation = parseUnits(
+      FEE_RESERVATION.toString(),
+      ETHER.decimals
+    );
+    Object.values(tokenBalances).forEach((currencyAmount) => {
+      if (
+        currencyAmount &&
+        dispatch &&
+        currencyAmount?.currency.symbol === ETHER.symbol
+      ) {
+        const isEnoughFeeReserve = JSBI.greaterThan(
+          currencyAmount.raw,
+          JSBI.BigInt(feeReservation)
+        );
+        if (!isEnoughFeeReserve) {
+          dispatch({
+            type: SwapType.SET_ERROR,
+            payload: SWAP_ERROR_KEY.INSUFFICIENT_FEE,
+          });
+        }
+      }
+    });
+  }, [tokenBalances, dispatch]);
 
   useEffect(() => {
     // init exchangeRate
@@ -235,6 +262,9 @@ export const useSwapState = ({
 
   return {
     values,
+    actions: {
+      getTransactionFee,
+    },
     ...aggregationValue,
   };
 };

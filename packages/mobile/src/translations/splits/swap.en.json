@@ -13,6 +13,7 @@
   "swap.buttonText.InvalidInput": "Invalid value",
   "swap.buttonText.LimitOneASA": "Limit 1 ASA",
   "swap.buttonText.EnableError": "Enable token error",
+  "swap.buttonText.InsufficientFee": "Insufficient balance",
   "swap.slipageTolarance": "Max <b>amount</b>",
   "swap.titleSlippageInput": "Maximum slippage",
   "swap.titleSlippageDescribe": "Slippage",
@@ -37,5 +38,7 @@
   "swap.confirm.minimumReceived": "Minimum received",
   "swap.success.text.success": "Successful Swap",
   "swap.success.text.from": "From <b>text</b>",
-  "swap.success.text.to": "To <b>text</b>"
+  "swap.success.text.to": "To <b>text</b>",
+  "swap.reserved.text": "{text} needs to be reserved for transaction fees",
+  "swap.reserved.text2": "{symbol} is reserved for transaction fees"
 }

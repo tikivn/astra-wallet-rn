@@ -12,8 +12,9 @@ import {
   Token,
   TokenAmount,
 } from "@solarswap/sdk";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import erc20Abi from "../contracts/abis/erc20.json";
+import { useDataSwapContext } from "../providers/swap/use-data-swap-context";
 import { useStore } from "../stores";
 import { INTERNAL_DELAY } from "../utils/for-swap";
 import { CallProps, multicall } from "../utils/for-swap/multicall";
@@ -95,6 +96,7 @@ export function useCurrencyBalances(
     etherProvider
   );
   const asaBalance = useASABalance(accountHex, etherProvider);
+
   return useMemo(
     () =>
       currencies?.map((currency) => {

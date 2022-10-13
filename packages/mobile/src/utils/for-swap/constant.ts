@@ -48,6 +48,7 @@ export enum SWAP_ERROR_KEY {
   INVALID_INPUT = "InvalidInput",
   LIMIT_ONE_ASA = "LimitOneASA",
   ENABLE_ERROR = "EnableError",
+  INSUFFICIENT_FEE = "InsufficientFee",
 }
 
 export const ONE_ASA = JSBI.BigInt(parseUnits("1", ETHER.decimals));

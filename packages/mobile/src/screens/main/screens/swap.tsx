@@ -1,3 +1,4 @@
+import { ETHER } from "@solarswap/sdk";
 import { observer } from "mobx-react-lite";
 import React, {
   FunctionComponent,
@@ -7,6 +8,7 @@ import React, {
 } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { FEE_RESERVATION } from "../../../common/utils";
 import { Button, SlippageDescribe, SlippageInput } from "../../../components";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 import { ChangeTokenIcon } from "../../../components/icon/change-token";
@@ -20,8 +22,8 @@ import {
   getExchangeRateString,
   getLiquidityFee,
   getSlippageTolaranceString,
-  getTransactionFee,
   SwapField,
+  SWAP_ERROR_KEY,
 } from "../../../utils/for-swap";
 import { AmountSwap, Tooltip } from "../components";
 
@@ -32,10 +34,10 @@ export const SwapScreen: FunctionComponent = observer(() => {
     tokenBalances,
     values,
     lpFee,
-    txFee,
     pricePerInputCurrency,
     isReadyToSwap,
     currencies,
+    actions,
   } = useDataSwapContext();
 
   const {
@@ -57,9 +59,10 @@ export const SwapScreen: FunctionComponent = observer(() => {
   const intl = useIntl();
   const smartNavigation = useSmartNavigation();
 
-  const handleClickContinue = useCallback(() => {
+  const handleClickContinue = useCallback(async () => {
+    actions && (await actions.getTransactionFee());
     smartNavigation.navigateSmart("Swap.Confirm", {});
-  }, [smartNavigation]);
+  }, [actions, smartNavigation]);
 
   const loadingScreen = useLoadingScreen();
 
@@ -123,8 +126,6 @@ export const SwapScreen: FunctionComponent = observer(() => {
                 style.flatten(["items-center", "justify-center"]),
               ])}
               onPress={onReverseCurrencies}
-              // rippleColor={rippleColor}
-              // underlayColor={underlayColor}
               activeOpacity={1}
             >
               <ChangeTokenIcon color={style.get("color-white").color} />
@@ -140,8 +141,25 @@ export const SwapScreen: FunctionComponent = observer(() => {
           onUserInput={onUserInput}
           value={values[SwapField.Output]}
         />
-
-        <View style={style.get("height-12")} />
+        <View
+          style={style.flatten([
+            "background-color-red-50-15",
+            "border-radius-8",
+            "padding-y-8",
+            "margin-top-8",
+            "items-center",
+            swapInfos.error === SWAP_ERROR_KEY.INSUFFICIENT_FEE
+              ? "flex"
+              : "display-none",
+          ])}
+        >
+          <Text style={style.flatten(["color-red-50", "text-caption2"])}>
+            <FormattedMessage
+              id="swap.reserved.text"
+              values={{ text: `${FEE_RESERVATION} ${ETHER.symbol}` }}
+            />
+          </Text>
+        </View>
 
         {/* start describe */}
         <View
@@ -168,7 +186,7 @@ export const SwapScreen: FunctionComponent = observer(() => {
             )}
           </Text>
         </View>
-        <View
+        {/* <View
           style={style.flatten([
             "flex-row",
             "items-center",
@@ -185,6 +203,28 @@ export const SwapScreen: FunctionComponent = observer(() => {
           </Text>
           <Text style={style.flatten(["color-gray-10", "body3"])}>
             {getTransactionFee(txFee)}
+          </Text>
+        </View> */}
+        <View
+          style={style.flatten([
+            "flex-row",
+            "items-center",
+            "justify-between",
+            "margin-bottom-16",
+          ])}
+        >
+          <Text
+            style={StyleSheet.flatten([
+              style.flatten(["color-gray-30", "text-caption"]),
+            ])}
+          >
+            <FormattedMessage
+              id="swap.reserved.text2"
+              values={{ symbol: ETHER.symbol }}
+            />
+          </Text>
+          <Text style={style.flatten(["color-gray-10", "body3"])}>
+            {`${FEE_RESERVATION} ${ETHER.symbol}`}
           </Text>
         </View>
         <View
@@ -239,9 +279,6 @@ export const SwapScreen: FunctionComponent = observer(() => {
             />
           </TouchableOpacity>
         </View>
-        {/* <View>
-          <Button onPress={approve0} text="Click Approve 0" />
-        </View> */}
         {/* end describe */}
 
         <SlippageDescribe

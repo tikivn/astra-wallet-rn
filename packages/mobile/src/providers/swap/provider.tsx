@@ -70,7 +70,7 @@ export const SwapProvider: FunctionComponent<SwapProviderProps> = ({
     swapValue: swapInfos.swapValue,
   });
 
-  const { values, ...aggregationValue } = useSwapState({
+  const { values, actions, ...aggregationValue } = useSwapState({
     fetchTrade,
     swapInfos,
     tokenBalances,
@@ -89,7 +89,8 @@ export const SwapProvider: FunctionComponent<SwapProviderProps> = ({
   useEffect(() => {
     if (
       approvalState !== ApprovalState.APPROVED &&
-      inputCurrency instanceof Token
+      inputCurrency instanceof Token &&
+      !swapInfos.error
     ) {
       if (swapInfos.loading) return;
       setLoading(true);
@@ -112,6 +113,7 @@ export const SwapProvider: FunctionComponent<SwapProviderProps> = ({
     inputCurrency,
     onApproval,
     setLoading,
+    swapInfos.error,
     swapInfos.loading,
     values,
   ]);
@@ -126,6 +128,7 @@ export const SwapProvider: FunctionComponent<SwapProviderProps> = ({
         tokenBalances,
         values,
         currencies,
+        actions,
         ...aggregationValue,
       }}
     >

@@ -19,7 +19,7 @@ export const TransactionTitleView: FunctionComponent = observer(() => {
     <View
       style={StyleSheet.flatten([
         styleBuilder.flatten(["items-center", "padding-x-16"]),
-        { marginTop: -16 },
+        { marginTop: transactionStore.txState === "failure" ? 8 : -16 },
       ])}
     >
       <Text

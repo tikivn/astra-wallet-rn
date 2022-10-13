@@ -19,6 +19,8 @@ export interface SwapContextProps extends UseSwapAggregationValue {
   currencies: {
     [K in SwapField]: Currency | undefined;
   };
+
+  actions?: Record<string, () => Promise<void>>;
 }
 
 export interface SwapProviderProps {
