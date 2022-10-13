@@ -104,7 +104,6 @@ export const SwapProvider: FunctionComponent<SwapProviderProps> = ({
           });
         })
         .finally(() => {
-          console.log("set loading false");
           setLoading();
         });
     }

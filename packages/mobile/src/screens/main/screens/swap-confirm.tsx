@@ -1,6 +1,11 @@
 import { Currency } from "@solarswap/sdk";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useCallback, useState } from "react";
+import React, {
+  FunctionComponent,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import {
   Animated,
@@ -13,7 +18,7 @@ import {
 } from "react-native";
 import FastImage from "react-native-fast-image";
 import { Button } from "../../../components";
-import { useSwapCallback } from "../../../hooks";
+import { SwapCallbackState, useSwapCallback } from "../../../hooks";
 import { useSmartNavigation } from "../../../navigation-util";
 import { useDataSwapContext } from "../../../providers/swap/use-data-swap-context";
 import { useToastModal } from "../../../providers/toast-modal";
@@ -43,9 +48,9 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
     txFee,
   } = useDataSwapContext();
 
-  const { transactionStore, chainStore } = useStore();
+  const { transactionStore, chainStore, analyticsStore } = useStore();
 
-  const { callback: swapCallback } = useSwapCallback(
+  const { callback: swapCallback, state, error } = useSwapCallback(
     trade,
     swapInfos.slippageTolerance
   );
@@ -72,18 +77,54 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
     txFee: getTransactionFee(txFee),
   };
 
+  const paramsForAnalytics = useMemo(
+    () => ({
+      pair: `${currencies[SwapField.Input]?.symbol}/${
+        currencies[SwapField.Output]?.symbol
+      }`,
+      from_token: currencies[SwapField.Input]?.symbol,
+      to_token: currencies[SwapField.Input]?.symbol,
+      from_amount: values[SwapField.Input],
+      to_amount: values[SwapField.Output],
+      gas: txFee,
+      liquidity_fee: lpFee,
+      slippage: swapInfos.slippageTolerance / 100,
+      price: pricePerInputCurrency,
+    }),
+    [
+      currencies,
+      lpFee,
+      pricePerInputCurrency,
+      swapInfos.slippageTolerance,
+      txFee,
+      values,
+    ]
+  );
+
   const handleSwap = useCallback(() => {
     if (loading) {
       return;
     }
     setLoading(true);
 
-    if (swapCallback) {
+    if (swapCallback && state === SwapCallbackState.VALID && !error) {
       transactionStore.updateRawData({ type: "wallet-swap", value: viewData });
+
       swapCallback()
-        .then((hash) => {})
+        .then((hash) => {
+          analyticsStore.logEvent("astra_hub_swap_token", {
+            ...paramsForAnalytics,
+            tx_hash: hash,
+            success: true,
+          });
+        })
         .catch((error) => {
           console.error("Error swap: ", { error });
+          analyticsStore.logEvent("astra_hub_swap_token", {
+            ...paramsForAnalytics,
+            success: false,
+            error: error.message,
+          });
           toastModal.makeToast({
             title: "Swap Failed!",
             type: "error",
@@ -92,7 +133,17 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
         })
         .finally(() => setLoading(false));
     }
-  }, [loading, swapCallback]);
+  }, [
+    loading,
+    swapCallback,
+    state,
+    error,
+    transactionStore,
+    viewData,
+    analyticsStore,
+    paramsForAnalytics,
+    toastModal,
+  ]);
 
   const animatedButtonScale = new Animated.Value(0);
 
@@ -447,6 +498,7 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
           })}
           containerStyle={style.flatten(["flex-1"])}
           onPress={handleSwap}
+          loading={loading || state !== SwapCallbackState.VALID}
         />
       </View>
       <View style={style.flatten(["height-page-pad"])} />
