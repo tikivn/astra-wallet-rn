@@ -224,7 +224,7 @@ export function useSwapCallback(
         error: "Missing dependencies",
       };
     }
-    if (!recipient) {
+    if (!recipient || swapCalls.length === 0) {
       return { state: SwapCallbackState.LOADING, callback: null, error: null };
     }
     return {
