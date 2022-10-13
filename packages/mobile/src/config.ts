@@ -61,7 +61,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinMinimalDenom: "usdt",
         coinDecimals: 18,
         coinImageUrl:
-          "https://pancakeswap.finance/images/tokens/0x55d398326f99059fF775485246999027B3197955.png",
+          "https://salt.tikicdn.com/ts/ta/9d/c3/c2/4420480a5596c4e366a5342f9d7ef87e.png",
         contractAddress: "0x41591484aEB5FA3d1759f1cbA369dC8dc1281298",
       },
     ],

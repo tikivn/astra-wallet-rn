@@ -63,10 +63,6 @@ export const TransactionDetailsView: FunctionComponent<{
     if (chainInfo.raw.txExplorer && transactionStore.rawData) {
       const rawDataValue = transactionStore.rawData.value;
       const transactionHash = (rawDataValue as MsgSwap).transactionHash;
-      console.log(
-        "🚀 -> viewOnAstraExplorer -> transactionHash",
-        transactionHash
-      );
       const url = "https://explorer.astranaut.dev/tx/" + transactionHash;
       smartNavigation.pushSmart("WebView", {
         url,
@@ -89,18 +85,20 @@ export const TransactionDetailsView: FunctionComponent<{
           )}
         </TextLink>
       )}
-      {rawData && rawData.type === "wallet-swap" && (
-        <TextLink
-          size="medium"
-          onPress={viewOnAstraExplorer}
-          style={styleBuilder.flatten(["margin-y-16"])}
-        >
-          {intl.formatMessage(
-            { id: "tx.result.viewDetails" },
-            { page: "Astra Explorer" }
-          )}
-        </TextLink>
-      )}
+      {rawData &&
+        rawData.type === "wallet-swap" &&
+        transactionStore.txState !== "failure" && (
+          <TextLink
+            size="medium"
+            onPress={viewOnAstraExplorer}
+            style={styleBuilder.flatten(["margin-y-16"])}
+          >
+            {intl.formatMessage(
+              { id: "tx.result.viewDetails" },
+              { page: "Astra Explorer" }
+            )}
+          </TextLink>
+        )}
     </View>
   );
 };
