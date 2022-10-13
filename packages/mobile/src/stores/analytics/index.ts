@@ -55,6 +55,7 @@ export class StackityAnalyticsStore<
       "History": "astra_hub_view_history_screen",
       "Setting": "astra_hub_view_settings_screen",
       "Receive": "astra_hub_view_qrcode_screen",
+      "Swap.Home": "astra_hub_view_swap_screen",
     };
 
     if (screenMapping[pageName]) {

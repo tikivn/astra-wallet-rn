@@ -122,15 +122,6 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       type: "items",
       cols: [
         buildLeftColumn({
-          text: intl.formatMessage({ id: "stake.undelegate.available" }),
-        }),
-        buildRightColumn({ text: formatCoin(staked) }),
-      ],
-    },
-    {
-      type: "items",
-      cols: [
-        buildLeftColumn({
           text: intl.formatMessage({ id: "stake.undelegate.fee" }),
         }),
         buildRightColumn({ text: feeText }),
@@ -242,7 +233,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         <Text
           style={style.flatten([
             "color-gray-30",
-            "text-medium-medium",
+            "text-base-semi-bold",
             "margin-top-24",
           ])}
         >

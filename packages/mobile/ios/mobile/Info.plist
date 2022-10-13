@@ -29,8 +29,7 @@
 			<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>app.keplr.oauth</string>
-				<string>keplrwallet</string>
+				<string>astrawallet</string>
 			</array>
 		</dict>
 	</array>
@@ -53,6 +52,8 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>App uses Bluetooth to connect ledger</string>
 	<key>NSCameraUsageDescription</key>
 	<string>App uses camera to scan address, extension, and WalletConnect QR code</string>
 	<key>NSFaceIDUsageDescription</key>
@@ -76,7 +77,7 @@
 	<key>bugsnag</key>
 	<dict>
 		<key>apiKey</key>
-		<string>f07be1dce2391227e818fbe3e4235bf4</string>
+		<string>ec1ffe4e30f9124c487d474e6fb41df3</string>
 	</dict>
 </dict>
 </plist>

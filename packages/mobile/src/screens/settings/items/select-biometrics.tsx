@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { AccountItem } from "../components";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 import { BiometricsIcon } from "../../../components/icon";
 import { useIntl } from "react-intl";
 import { useStore } from "../../../stores";
@@ -28,13 +28,12 @@ export const AccountBiometricsItem: FunctionComponent<{
   const tryUnlock = async () => {
     try {
       if (isBiometricOn) {
-        await keychainStore.turnOffBiometryWithoutReset();
+        await keychainStore.turnOffBiometry();
       } else {
-        await keychainStore.turnOnBiometryWithoutPassword();
+        setIsOpenModal(true);
       }
     } catch (error) {
       console.log("__DEBUG__", error);
-      setIsOpenModal(true);
     }
   };
 
@@ -52,7 +51,9 @@ export const AccountBiometricsItem: FunctionComponent<{
             keychainStore.isBiometryType === BIOMETRY_TYPE.FACE ||
             keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
               ? "settings.unlockBiometrics.face"
-              : "settings.unlockBiometrics.touch",
+              : (Platform.OS === "ios"
+              ? "settings.unlockBiometrics.touch"
+              : "settings.unlockBiometrics.fingerprint"),
         })}
         right={
           <View style={{ marginRight: 12 }}>

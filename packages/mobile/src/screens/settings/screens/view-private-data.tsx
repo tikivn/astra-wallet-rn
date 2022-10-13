@@ -66,7 +66,9 @@ export const ViewPrivateDataScreen: FunctionComponent = () => {
           "text-center",
         ])}
       >
-        Xem cụm từ bí mật
+        {intl.formatMessage({
+          id: "viewPassphase.title",
+        })}
       </Text>
       <AlertInline
         type="warning"

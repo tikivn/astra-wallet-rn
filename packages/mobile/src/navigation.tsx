@@ -106,6 +106,7 @@ import { SmartNavigatorProvider } from "./navigation-util";
 import { RegisterCreateEntryScreen } from "./screens/register/create-entry";
 import { SwapConfirmScreen } from "./screens/main/screens/swap-confirm";
 import { SwapProvider } from "./providers/swap/provider";
+import { SetupBiometricsScreen } from "./screens/register/biometrics";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -251,13 +252,14 @@ export const RegisterNavigation: FunctionComponent = () => {
         component={ImportFromExtensionSetPasswordScreen}
       />
       <Stack.Screen
-        options={{
-          headerShown: false,
-        }}
         name="Register.End"
         component={RegisterEndScreen}
       />
       <Stack.Screen name="Register.SetPincode" component={NewPincodeScreen} />
+      <Stack.Screen
+        name="Register.SetupBiometrics"
+        component={SetupBiometricsScreen}
+      />
       <Stack.Screen
         options={{
           title: intl.formatMessage({ id: "register.createEntry.nav.title" }),
@@ -455,10 +457,7 @@ export const WalletNavigation: FunctionComponent = () => {
         component={StakingRewardScreen}
       />
       <Stack.Screen name="Delegate" component={DelegateScreen} />
-      <Stack.Screen
-        name="Undelegate"
-        component={UndelegateScreen}
-      />
+      <Stack.Screen name="Undelegate" component={UndelegateScreen} />
       <Stack.Screen
         options={{
           title: intl.formatMessage({ id: "redelegate.title" }),

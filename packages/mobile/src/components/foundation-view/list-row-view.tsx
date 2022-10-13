@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { StyleSheet, View, ViewStyle } from "react-native";
-import { Colors, useStyle } from "../../styles";
+import { useStyle } from "../../styles";
 import { HairLine } from "./hair-line";
 import { AlignItems, IColumn, ItemRow } from "./item-row";
 

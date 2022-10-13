@@ -12,6 +12,6 @@
   "component.amount.input.max": "Max",
   "component.amount.input.sendAll": "Max",
   "component.amount.input.sendindAmount": "Input amount",
-  "component.text.copied": "Copied",
+  "component.text.copied": "Copied to clipboard",
   "component.text.copy": "Copy"
 }

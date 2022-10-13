@@ -26,7 +26,10 @@ export const ReceiveScreen: FunctionComponent = observer(() => {
           "body3",
         ])}
       >
-        {intl.formatMessage({ id: "wallet.receive.address.guide" })}
+        {intl.formatMessage(
+          { id: "wallet.receive.address.guide" },
+          { denom: chainStore.current.currencies[0].coinDenom }
+        )}
       </Text>
       <AddressQRCodeItem
         bech32Address={account.bech32Address}

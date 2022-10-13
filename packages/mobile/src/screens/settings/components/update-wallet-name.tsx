@@ -1,9 +1,8 @@
 import React, { FunctionComponent, useState } from "react";
 import { useIntl } from "react-intl";
-import { Keyboard, Text, TouchableOpacity, View } from "react-native";
+import { Keyboard, Text, View } from "react-native";
 import { Button } from "../../../components";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
-import { CloseLargeIcon } from "../../../components/icon/outlined/navigation";
 import { NormalInput } from "../../../components/input/normal-input";
 import { registerModal } from "../../../modals/base";
 import { useStore } from "../../../stores";
@@ -15,7 +14,7 @@ export const UpdateWalletNameModal: FunctionComponent<{
   title: string;
   value?: string;
 }> = registerModal(({ close, value = "" }) => {
-  const styleBuilder = useStyle();
+  const style = useStyle();
   const intl = useIntl();
   const { keyRingStore } = useStore();
 
@@ -31,9 +30,9 @@ export const UpdateWalletNameModal: FunctionComponent<{
   }
 
   return (
-    <View style={styleBuilder.flatten(["height-full", "justify-center"])}>
+    <View style={style.flatten(["height-full", "justify-center"])}>
       <View
-        style={styleBuilder.flatten([
+        style={style.flatten([
           "margin-x-page",
           "content-stretch",
           "items-stretch",
@@ -43,50 +42,24 @@ export const UpdateWalletNameModal: FunctionComponent<{
           "border-radius-8",
         ])}
       >
-        <View
-          style={{
-            flexDirection: "row",
-            alignContent: "stretch",
-            alignItems: "center",
-          }}
+        <Text
+          style={style.flatten([
+            "text-center",
+            "text-large-semi-bold",
+            "color-label-text-1",
+            "margin-x-16",
+            "margin-y-16",
+          ])}
         >
-          <Text
-            style={{
-              ...styleBuilder.flatten([
-                "flex-1",
-                "text-medium-medium",
-                "color-label-text-1",
-                "margin-left-16",
-              ]),
-              marginVertical: 12,
-            }}
-          >
-            {intl.formatMessage({ id: "common.text.updateWalletName" })}
-          </Text>
-          <TouchableOpacity
-            onPress={() => {
-              Keyboard.dismiss();
-              close();
-            }}
-            style={{ marginRight: 12 }}
-          >
-            <CloseLargeIcon />
-          </TouchableOpacity>
-        </View>
-        <View
-          style={styleBuilder.flatten(["height-1", "background-color-border"])}
-        />
+          {intl.formatMessage({ id: "common.text.updateWalletName" })}
+        </Text>
         <NormalInput
           value={name}
           onChangeText={setName}
           style={{
             marginHorizontal: 16,
-            marginVertical: 12,
           }}
           autoFocus
-        />
-        <View
-          style={styleBuilder.flatten(["height-1", "background-color-border"])}
         />
         <View
           style={{
@@ -95,7 +68,8 @@ export const UpdateWalletNameModal: FunctionComponent<{
             alignContent: "stretch",
             alignItems: "center",
             paddingHorizontal: 16,
-            paddingVertical: 12,
+            marginTop: 16,
+            marginBottom: 12,
           }}
         >
           <Button
@@ -106,16 +80,13 @@ export const UpdateWalletNameModal: FunctionComponent<{
               Keyboard.dismiss();
               close();
             }}
-            containerStyle={{ flex: 1 }}
+            containerStyle={style.flatten(["flex-1"])}
           />
           <Button
             text={intl.formatMessage({ id: "common.text.save" })}
             onPress={updateName}
             disabled={name.length == 0}
-            containerStyle={{
-              flex: 1,
-              marginLeft: 8,
-            }}
+            containerStyle={style.flatten(["flex-1", "margin-left-8"])}
           />
         </View>
       </View>

@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useRef, useState } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { useStyle } from "../../../styles";
 import { Button } from "../../../components/button";
 import { RouteProp, useRoute } from "@react-navigation/native";
@@ -10,11 +10,8 @@ import { BIP44HDPath } from "@keplr-wallet/background";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { NormalInput } from "../../../components/input/normal-input";
 import { useIntl } from "react-intl";
-import { BiometricsIcon } from "../../../components";
-import { Toggle } from "../../../components/toggle";
 import { useStore } from "../../../stores";
 import { useToastModal } from "../../../providers/toast-modal";
-import { BIOMETRY_TYPE } from "react-native-keychain";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 import { RegisterType } from "../../../stores/user-login";
 import { MIN_PASSWORD_LENGTH } from "../../../common/utils";
@@ -25,7 +22,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
       Record<
         string,
         {
-          registerType?: RegisterType | undefined;
+          registerType?: RegisterType;
           registerConfig: RegisterConfig;
           mnemonic?: string;
           bip44HDPath: BIP44HDPath;
@@ -35,12 +32,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
     >
   >();
 
-  const {
-    keychainStore,
-    userLoginStore,
-    keyRingStore,
-    analyticsStore,
-  } = useStore();
+  const { userLoginStore, keyRingStore } = useStore();
   const style = useStyle();
   const intl = useIntl();
 
@@ -55,7 +47,6 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [inputDataValid, setInputDataValid] = useState(false);
-  const [isBiometricOn, setIsBiometricOn] = useState(keychainStore.isBiometryOn);
 
   const [isCreating, setIsCreating] = useState(false);
   const [passwordErrorText, setPasswordErrorText] = useState("");
@@ -100,9 +91,10 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
       return;
     }
 
-    //
     userLoginStore.updateRegisterType(
-      registerType === RegisterType.recover ? RegisterType.recover : RegisterType.new
+      registerType === RegisterType.recover
+        ? RegisterType.recover
+        : RegisterType.new
     );
 
     const index = keyRingStore.multiKeyStoreInfo.findIndex((keyStore: any) => {
@@ -119,10 +111,6 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
       bip44HDPath
     );
 
-    if (keychainStore.isBiometrySupported && isBiometricOn) {
-      await keychainStore.turnOnBiometry(confirmPassword);
-    }
-
     try {
       // Definetly, the last key is newest keyring.
       if (keyRingStore.multiKeyStoreInfo.length > 0) {
@@ -134,16 +122,6 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
       console.log(e);
     }
 
-    const eventName =
-      registerType === RegisterType.recover
-        ? "astra_hub_recover_account"
-        : "astra_hub_create_account";
-
-    analyticsStore.logEvent(eventName, {
-      type: "mnemonic",
-      use_biometrics: keychainStore.isBiometrySupported && isBiometricOn,
-    });
-
     userLoginStore.updateRegisterType(RegisterType.unknown);
 
     smartNavigation.reset({
@@ -153,6 +131,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
           name: "Register.End",
           params: {
             registerType: registerType,
+            password: confirmPassword,
           },
         },
       ],
@@ -362,48 +341,6 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
           inputRef={confirmPasswordInputRef}
           onSubmitEditting={onSubmitEditing}
         />
-
-        {keychainStore.isBiometrySupported && (
-          <View
-            style={{
-              flexDirection: "row",
-              alignContent: "stretch",
-              alignItems: "center",
-              marginBottom: 16,
-            }}
-          >
-            <BiometricsIcon
-              color={style.get("color-gray-10").color}
-              size={32}
-              type={
-                keychainStore.isBiometryType === BIOMETRY_TYPE.FACE ||
-                keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
-                  ? "face"
-                  : "touch"
-              }
-            />
-            <Text
-              style={style.flatten([
-                "text-base-medium",
-                "color-gray-10",
-                "flex-1",
-                "margin-left-8",
-              ])}
-            >
-              {intl.formatMessage({
-                id:
-                  keychainStore.isBiometryType === BIOMETRY_TYPE.FACE ||
-                  keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
-                    ? "settings.unlockBiometrics.face"
-                    : "settings.unlockBiometrics.touch",
-              })}
-            </Text>
-            <Toggle
-              on={isBiometricOn}
-              onChange={(value) => setIsBiometricOn(value)}
-            />
-          </View>
-        )}
       </KeyboardAwareScrollView>
       <View style={style.flatten(["flex-1", "justify-end", "margin-bottom-0"])}>
         <View style={style.flatten(["height-1", "background-color-gray-70"])} />

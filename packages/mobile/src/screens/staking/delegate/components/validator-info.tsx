@@ -4,9 +4,9 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { useIntl } from "react-intl";
 import { Text, View, ViewStyle } from "react-native";
-import FastImage from "react-native-fast-image";
 import { formatCoin, formatPercent } from "../../../../common/utils";
 import {
+  AlignItems,
   buildLeftColumn,
   buildRightColumn,
 } from "../../../../components/foundation-view/item-row";
@@ -14,7 +14,7 @@ import {
   IRow,
   ListRowView,
 } from "../../../../components/foundation-view/list-row-view";
-import { PersonIcon } from "../../../../components/icon";
+import { ValidatorThumbnail } from "../../../../components/thumbnail";
 import { useStore } from "../../../../stores";
 import { useStyle } from "../../../../styles";
 import { Typos } from "../../../../styles/typos";
@@ -66,24 +66,13 @@ export const ValidatorInfo: FunctionComponent<
     .maxDecimals(0)
     .toString();
 
-  function thumbnailIcon(url: string): React.ReactNode {
-    return url ? (
-      <FastImage
-        style={{ width: 24, height: 24 }}
-        source={{ uri: thumbnailUrl }}
-        resizeMode={FastImage.resizeMode.contain}
-      />
-    ) : (
-      <PersonIcon size={24} color="white" />
-    );
-  }
-
   let rows: IRow[] = [
     {
       type: "items",
       itemSpacing: 8,
+      alignItems: AlignItems.center,
       cols: [
-        thumbnailIcon(thumbnailUrl),
+        <ValidatorThumbnail size={24} url={thumbnailUrl} />,
         buildLeftColumn({
           text: name,
           textStyle: Typos["text-base-medium"],

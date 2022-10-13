@@ -59,6 +59,9 @@ const {
     "Register.SetPincode": {
       upperScreenName: "Register",
     },
+    "Register.SetupBiometrics": {
+      upperScreenName: "Register",
+    },
     "Register.CreateEntry": {
       upperScreenName: "Register",
     },
@@ -189,10 +192,14 @@ const {
       bip44HDPath: BIP44HDPath;
     };
     "Register.SetPincode": {
-      registerType?: RegisterType | undefined;
+      registerType?: RegisterType;
       registerConfig: RegisterConfig;
       bip44HDPath: BIP44HDPath;
       mnemonic?: string;
+    };
+    "Register.SetupBiometrics": {
+      registerType?: RegisterType;
+      password: string;
     };
     "Register.RecoverMnemonic": {
       registerConfig: RegisterConfig;
@@ -216,7 +223,8 @@ const {
       addressBooks: { [chainId: string]: AddressBookData[] | undefined };
     };
     "Register.End": {
-      registerType?: RegisterType | undefined;
+      registerType?: RegisterType;
+      password: string;
     };
     "Register.CreateEntry": {};
     Send: {
