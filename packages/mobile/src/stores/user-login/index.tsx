@@ -158,7 +158,7 @@ export class UserLoginStore {
     serviceProviderType: ServiceProviderType,
     redirectUrl?: string,
   }) {
-    const { serviceProviderType, redirectUrl = "app.keplr.oauth://" } = params;
+    const { serviceProviderType, redirectUrl = "astrawallet://" } = params;
 
     var { hostUrl, loginPath = "" } = this._serviceProviders[serviceProviderType];
 

@@ -32,7 +32,7 @@
   "tx.result.models.msgWithdrawDelegatorReward.time": "Date and time",
   "tx.result.models.msgWithdrawDelegatorReward.withdraw": "Claim reward ",
   "tx.result.state.delegate.failure": "Transaction failed",
-  "tx.result.state.delegate.pending": "Stalking",
+  "tx.result.state.delegate.pending": "Staking",
   "tx.result.state.delegate.success": "Stake successfully",
   "tx.result.state.error": "Transaction timeout. Please try again later",
   "tx.result.state.initialized": "Confirmed",
