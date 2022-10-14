@@ -85,6 +85,7 @@ export const RewardsItem: FunctionComponent<{
           "margin-x-16",
           "margin-y-1",
           "flex-row",
+          "items-center",
         ])}
       >
         <PropertyView
@@ -94,13 +95,12 @@ export const RewardsItem: FunctionComponent<{
           value={formatCoin(delegated)}
         />
         <Button
-          containerStyle={style.flatten(["self-center", "width-132"])}
+          containerStyle={style.flatten(["width-132"])}
           onPress={() => {
             smartNavigation.navigateSmart("Validator.List", {});
           }}
           text={intl.formatMessage({ id: "staking.dashboard.rewards.invest" })}
           size="medium"
-          textStyle={style.flatten(["color-white", "subtitle3"])}
         />
       </View>
       <CardDivider style={style.flatten(["background-color-card-border"])} />
@@ -110,6 +110,7 @@ export const RewardsItem: FunctionComponent<{
           "margin-x-16",
           "margin-y-1",
           "flex-row",
+          "items-center",
         ])}
       >
         <PropertyView
@@ -121,14 +122,13 @@ export const RewardsItem: FunctionComponent<{
         />
 
         <Button
-          containerStyle={style.flatten(["self-center", "width-132"])}
+          containerStyle={style.flatten(["width-132"])}
           text={intl.formatMessage({
             id: "staking.dashboard.rewards.withdrawProfit",
           })}
           color="neutral"
           mode="outline"
           size="medium"
-          textStyle={style.flatten(["color-gray-10", "subtitle3"])}
           disabled={!isRewardExist}
           onPress={() => {
             smartNavigation.navigateSmart("Staking.Rewards", {});
@@ -142,6 +142,7 @@ export const RewardsItem: FunctionComponent<{
           "margin-x-16",
           "margin-y-1",
           "flex-row",
+          "items-center",
         ])}
       >
         <PropertyView
@@ -153,14 +154,13 @@ export const RewardsItem: FunctionComponent<{
         />
 
         <Button
-          containerStyle={style.flatten(["self-center", "width-132"])}
+          containerStyle={style.flatten(["width-132"])}
           text={intl.formatMessage({
             id: "staking.dashboard.rewards.follow",
           })}
           color="neutral"
           mode="outline"
           size="medium"
-          textStyle={style.flatten(["color-gray-10", "subtitle3"])}
           disabled={!isPending}
           onPress={() => {
             smartNavigation.navigateSmart("Unbonding", {});
