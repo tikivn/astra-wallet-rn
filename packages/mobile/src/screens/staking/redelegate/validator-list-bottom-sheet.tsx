@@ -306,7 +306,7 @@ export const ValidatorsBottomSheet: FunctionComponent<{
             style={style.flatten(["height-1", "background-color-gray-70"])}
           />
           <Button
-            text={intl.formatMessage({ id: "common.text.verify" })}
+            text={intl.formatMessage({ id: "common.text.confirm" })}
             disabled={!toValidator}
             onPress={onContinueHandler}
             containerStyle={style.flatten(["margin-x-page", "margin-top-12"])}

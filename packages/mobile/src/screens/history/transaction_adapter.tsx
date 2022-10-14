@@ -1,4 +1,5 @@
 import { TxResponse } from "@keplr-wallet/stores/build/query/cosmos/tx/types";
+import { IntlShape } from "react-intl";
 import addresses from "../../utils/for-swap/addresses";
 
 export interface Coin {
@@ -62,7 +63,7 @@ interface MsgWithdrawDelegatorReward {
 }
 
 export function toUiItem(
-  intl,
+  intl: IntlShape,
   bech32Address: string,
   txResponse: TxResponse
 ): TransactionItem<TxResponse> {
@@ -110,6 +111,10 @@ export function toUiItem(
             })
             .flatMap((att) => {
               const value = att.value as string;
+              if (!value) {
+                return fromCoin({});
+              }
+
               const index = value.search(/[^0-9]/g);
 
               return {
@@ -124,7 +129,7 @@ export function toUiItem(
       return amounts.reduce((prev, cur) => {
         return {
           amount: (Number(prev.amount) + Number(cur.amount)).toString(),
-          denom: cur.denom,
+          denom: cur.denom.length !== 0 ? cur.denom : prev.denom,
         };
       }, fromCoin({}));
     }

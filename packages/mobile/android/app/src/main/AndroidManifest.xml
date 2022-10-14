@@ -2,8 +2,8 @@
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
   <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
-  <uses-permission android:name="android.permission.BLUETOOTH"/>
-  <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+  <uses-permission android:name="android.permission.BLUETOOTH_SCAN"/>
+  <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
   <uses-permission-sdk-23 android:name="android.permission.ACCESS_FINE_LOCATION"/>
   <uses-permission android:name="android.permission.CAMERA"/>
   <uses-feature android:name="android.hardware.bluetooth_le"/>
@@ -25,6 +25,7 @@
       android:launchMode="singleTask"
       android:windowSoftInputMode="adjustResize"
       android:theme="@style/Theme.App.SplashScreen"
+      android:exported="true"
     >
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>

@@ -33,97 +33,97 @@ export const Button: FunctionComponent<{
   style: buttonStyle,
   textStyle,
 }) => {
-    const style = useStyle();
+  const style = useStyle();
 
-    const [isPressed, setIsPressed] = useState(false);
+  const [isPressed, setIsPressed] = useState(false);
 
-    const styleDefinition = (() => {
-      var state = "default";
-      if (disabled) {
-        state = "disabled";
-      }
-      else if (loading || isPressed) {
-        state = "highlighted";
-      }
+  const styleDefinition = (() => {
+    var state = "default";
+    if (disabled) {
+      state = "disabled";
+    } else if (loading || isPressed) {
+      state = "highlighted";
+    }
 
-      return `button-${color}-${mode}-${state}`;
-    })();
+    return `button-${color}-${mode}-${state}`;
+  })();
 
-    const textDefinition = (() => {
-      switch (size) {
-        case "medium":
-          return "text-base-medium";
-        case "small":
-          return "text-small-medium";
-        default:
-          return "text-medium-medium";
-      }
-    })();
+  const textDefinition = (() => {
+    switch (size) {
+      case "medium":
+        return "text-base-medium";
+      case "small":
+        return "text-small-medium";
+      default:
+        return "text-medium-medium";
+    }
+  })();
 
-    const loadingSpinner = (() => {
-      return <LoadingSpinner
+  const loadingSpinner = (() => {
+    return (
+      <LoadingSpinner
         color={style.get(styleDefinition as any).color}
         size={24}
-      />;
-    })();
+      />
+    );
+  })();
 
-    return (
+  return (
+    <RectButton
+      style={StyleSheet.flatten([
+        style.flatten([
+          styleDefinition as any,
+          `button-${size}-container` as any,
+          "overflow-hidden",
+        ]),
+        containerStyle,
+      ])}
+      onPress={onPress}
+      onActiveStateChange={(active) => setIsPressed(active)}
+      enabled={!loading && !disabled}
+      activeOpacity={0}
+    >
       <View
         style={StyleSheet.flatten([
           style.flatten([
-            styleDefinition as any,
-            `button-${size}-container` as any,
-            "overflow-hidden",
+            "flex-row",
+            "justify-center",
+            "items-center",
+            "height-full",
           ]),
-          containerStyle,
+          buttonStyle,
         ])}
       >
-        <RectButton
-          style={StyleSheet.flatten([
-            style.flatten([
-              "flex-row",
-              "justify-center",
-              "items-center",
-              "height-full",
-            ]),
-            buttonStyle,
-          ])}
-          onPress={onPress}
-          onActiveStateChange={(active) => setIsPressed(active)}
-          enabled={!loading && !disabled}
-          activeOpacity={0}
-        >
-          {(loading || leftIcon) && (
-            <View style={style.flatten(
+        {(loading || leftIcon) && (
+          <View
+            style={style.flatten(
               ["justify-center"],
               [text.length !== 0 && "margin-right-8"]
-            )}>
-              <View>{loading ? loadingSpinner : leftIcon}</View>
-            </View>
-          )}
-          <Text
-            style={StyleSheet.flatten([
-              style.flatten(
-                [
-                  textDefinition,
-                  "text-center",
-                ],
-              ),
-              { color: style.get(styleDefinition as any).color },
-              textStyle,
-            ])}
+            )}
           >
-            {text}
-          </Text>
-          {((loading && !leftIcon && rightIcon) || rightIcon) && (
-            <View style={style.flatten(
+            <View>{loading ? loadingSpinner : leftIcon}</View>
+          </View>
+        )}
+        <Text
+          style={StyleSheet.flatten([
+            style.flatten([textDefinition, "text-center"]),
+            { color: style.get(styleDefinition as any).color },
+            textStyle,
+          ])}
+        >
+          {text}
+        </Text>
+        {((loading && !leftIcon && rightIcon) || rightIcon) && (
+          <View
+            style={style.flatten(
               ["justify-center"],
               [text.length !== 0 && "margin-left-8"]
-            )}>
-              <View>{(loading && !leftIcon) ? loadingSpinner : rightIcon}</View>
-            </View>
-          )}
-        </RectButton>
+            )}
+          >
+            <View>{loading && !leftIcon ? loadingSpinner : rightIcon}</View>
+          </View>
+        )}
       </View>
-    );
-  };
+    </RectButton>
+  );
+};

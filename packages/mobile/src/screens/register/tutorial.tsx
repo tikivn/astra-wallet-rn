@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from "react";
 import { PageWithView } from "../../components/page";
 import { useStyle } from "../../styles";
-import { View, Text } from "react-native";
+import { View, Text, SafeAreaView } from "react-native";
 import { Button } from "../../components/button";
 import { useSmartNavigation } from "../../navigation-util";
 import { observer } from "mobx-react-lite";
@@ -72,8 +72,7 @@ export const RegisterTutorialcreen: FunctionComponent = observer(() => {
           }}
         />
       </View>
-      {/* Mock element for bottom padding */}
-      <View style={style.flatten(["height-page-pad"])} />
+      <SafeAreaView />
     </PageWithView>
   );
 });

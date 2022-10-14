@@ -5,7 +5,7 @@
   "stake.delegate.invest": "Stake",
   "stake.delegate.validator.claimRewardsNotice": "All rewards of validator will be claimed",
   "stake.delegate.validator.totalShares": "Total staked",
-  "stake.delegate.validator.uptime": "Active time",
+  "stake.delegate.validator.uptime": "Active period",
   "stake.delegate.warning": "It will take {days} to unstake and send back {denom} to your account",
   "stake.redelegate.amountLabel": "Amount",
   "stake.redelegate.available": "Available",
