@@ -140,7 +140,7 @@ android {
         applicationId "io.astranaut.app.wallet"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode getPropOrDefault('ASTRA_WALLET_ANDROID_VERSION_CODE', '9').toInteger()
+        versionCode getPropOrDefault('ASTRA_WALLET_ANDROID_VERSION_CODE', '11').toInteger()
         versionName getPropOrDefault('ASTRA_WALLET_ANDROID_VERSION_NAME', '1.0.0')
 
         missingDimensionStrategy 'react-native-camera', 'general'
