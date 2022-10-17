@@ -21,7 +21,7 @@ import { observer } from "mobx-react-lite";
 
 import { usePrevious } from "../../hooks";
 import { RouteProp, useFocusEffect, useRoute } from "@react-navigation/native";
-import { ChainUpdaterService } from "@keplr-wallet/background";
+import { ChainUpdaterService, KeyRingStatus } from "@keplr-wallet/background";
 import { AccountCardNew, ActionsCard, BalanceCard } from "./card";
 import { ScanIcon } from "../../components";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -38,6 +38,7 @@ export const MainScreen: FunctionComponent = observer(() => {
     queriesStore,
     priceStore,
     analyticsStore,
+    keyRingStore,
   } = useStore();
 
   const style = useStyle();
@@ -73,6 +74,9 @@ export const MainScreen: FunctionComponent = observer(() => {
       if (state === "active") {
         checkAndUpdateChainInfo();
       }
+      if (state === "background") {
+        autoLock();
+      }
     };
 
     AppState.addEventListener("change", appStateHandler);
@@ -106,6 +110,17 @@ export const MainScreen: FunctionComponent = observer(() => {
     }
     showAccessTestnetToast();
   }, [chainStore.current.chainId]);
+
+  async function autoLock() {
+    if (keyRingStore.status === KeyRingStatus.UNLOCKED) {
+      await keyRingStore.lock();
+
+      smartNavigation.reset({
+        index: 0,
+        routes: [{ name: "Unlock" }],
+      });
+    }
+  }
 
   const onRefresh = React.useCallback(async () => {
     const account = accountStore.getAccount(chainStore.current.chainId);
